@@ -22,6 +22,8 @@ export interface IANode {
     | "projects"
     | "project"
     | "project-workflows"
+    | "project-components"
+    | "project-create"
     | "project-sandboxes"
     | "project-settings"
     | "user-settings"
@@ -42,6 +44,14 @@ export const projectTemplateTree: IANode[] = [
     pageType: "project",
     dynamic: true,
     children: [
+      // Build
+      {
+        id: "create",
+        label: "Create",
+        description:
+          "Start a new public service from an idea, drawing on every system, channel and service your organization already has.",
+        pageType: "project-create",
+      },
       {
         id: "workflows",
         label: "Workflows",
@@ -49,10 +59,18 @@ export const projectTemplateTree: IANode[] = [
         pageType: "project-workflows",
       },
       {
-        id: "channels",
-        label: "Channels",
+        id: "components",
+        label: "Components",
         description:
-          "Channels this project uses to read from and write to connected systems.",
+          "Every building block in this project, grouped by type: workflows, channels, forms, artifacts and collections.",
+        pageType: "project-components",
+        children: [
+          {
+            id: "component",
+            label: "Component",
+            dynamic: true,
+          },
+        ],
       },
       {
         id: "sandboxes",
@@ -62,11 +80,25 @@ export const projectTemplateTree: IANode[] = [
         pageType: "project-sandboxes",
         actions: ["New Sandbox"],
       },
+      // Maintain
       {
         id: "history",
         label: "History",
         description: "Work orders and channel requests for this project.",
         pageType: "table",
+      },
+      {
+        id: "insights",
+        label: "Insights",
+        description: "Runs, errors and run times for this project over time.",
+        pageType: "insights",
+      },
+      {
+        id: "deployments",
+        label: "Deployments",
+        description:
+          "What's running in production, when it was deployed, and from which sandbox.",
+        actions: ["Deploy"],
       },
       {
         id: "settings",
@@ -85,18 +117,6 @@ export const projectTemplateTree: IANode[] = [
             label: "Service",
             dynamic: true,
             linkedFrom: "/service-builder",
-          },
-        ],
-      },
-      {
-        id: "components",
-        label: "Resources",
-        description: "Reusable building blocks — workflows, artifacts, forms, and collections.",
-        children: [
-          {
-            id: "component",
-            label: "Resource",
-            dynamic: true,
           },
         ],
       },
