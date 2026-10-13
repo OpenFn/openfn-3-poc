@@ -1,9 +1,10 @@
 import { Bot, Workflow } from "lucide-react";
 import type { IANode } from "../ia-tree";
 import type { CatalogPageData, CatalogEntry } from "../page-data";
-import Breadcrumbs from "../components/Breadcrumbs";
-import ChannelCatalogCard from "../components/ChannelCatalogCard";
+import ChannelRow from "../components/ChannelRow";
 import CodeBlock from "../components/CodeBlock";
+import PageHeader from "../components/PageHeader";
+import SectionHeading from "../components/SectionHeading";
 import ServiceCatalogCard from "../components/ServiceCatalogCard";
 import UsageModeCard from "../components/UsageModeCard";
 
@@ -27,19 +28,18 @@ export default function CatalogTemplate({ node, ancestors, data }: Props) {
   const mcpTools = data.entries.filter((e) => e.kind === "workflow" && e.callableAs?.includes("mcp")).length;
 
   return (
-    <div>
-      <Breadcrumbs
-        ancestors={ancestors.map((a) => ({ label: a.node.label, path: a.path }))}
-        current={node.label}
+    <div className="space-y-8">
+      <PageHeader
+        breadcrumbs={{
+          ancestors: ancestors.map((a) => ({ label: a.node.label, path: a.path })),
+          current: node.label,
+        }}
+        title={node.label}
+        description={node.description}
       />
 
-      <div className="mt-6">
-        <h1 className="text-2xl font-semibold text-gray-900">{node.label}</h1>
-        {node.description && <p className="mt-1 text-sm text-gray-500">{node.description}</p>}
-      </div>
-
       {data.entries.length > 0 && (
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           <UsageModeCard
             icon={Workflow}
             title="Call them from your workflows"
@@ -56,23 +56,30 @@ export default function CatalogTemplate({ node, ancestors, data }: Props) {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-gray-400">
+      <p className="text-xs text-gray-400">
         {data.entries.length} services published across the organization
       </p>
 
       {[...bySection.entries()].map(([section, entries]) => (
-        <div key={section} className="mt-8">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">{section}</h2>
+        <section key={section}>
+          <SectionHeading title={section} variant="label" />
           <div className="space-y-2">
             {entries.map((entry) =>
               entry.kind === "channel" ? (
-                <ChannelCatalogCard key={entry.id} entry={entry} />
+                <ChannelRow
+                  key={entry.id}
+                  id={entry.id}
+                  name={entry.name}
+                  description={entry.description}
+                  channelType={entry.channelType}
+                  system={{ name: entry.system, path: entry.systemPath }}
+                />
               ) : (
                 <ServiceCatalogCard key={entry.id} entry={entry} />
               )
             )}
           </div>
-        </div>
+        </section>
       ))}
     </div>
   );

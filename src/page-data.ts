@@ -1,3 +1,5 @@
+import type { BadgeTone } from "./components/Badge";
+
 /* ------------------------------------------------------------------ */
 /*  Shared primitive types                                             */
 /* ------------------------------------------------------------------ */
@@ -147,7 +149,8 @@ export interface CatalogPageData {
 export interface TableColumn {
   key: string;
   label: string;
-  colorMap?: Record<string, string>;
+  /** Shows matching cell values as badges in the given tone. */
+  toneMap?: Record<string, BadgeTone>;
 }
 
 export interface TablePageData {
