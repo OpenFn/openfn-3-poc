@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
 import Button from "../Button";
+import IconButton from "../IconButton";
+import { Checkbox } from "../Inputs";
 import Pagination from "../Pagination";
 import { Table, Th, Tr } from "../Table";
 import type { WorkOrder } from "../../mock-data/history";
@@ -45,10 +46,6 @@ export default function WorkOrdersTable({
   const selected = workOrders.filter((w) => selectedIds.includes(w.id));
   const allSelected = workOrders.length > 0 && selected.length === workOrders.length;
   const partial = selected.length > 0 && !allSelected;
-  const selectAll = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (selectAll.current) selectAll.current.indeterminate = partial;
-  }, [partial]);
 
   const canCancel = selected.length > 0 && selected.every((w) => w.state === "pending");
   const canRetry = selected.length > 0 && selected.every((w) => !activeStates.includes(w.state));
@@ -74,18 +71,14 @@ export default function WorkOrdersTable({
         <Tr>
           <Th className="!pr-1">
             <div className="relative">
-              <input
-                ref={selectAll}
-                type="checkbox"
+              <Checkbox
                 id="select_all"
+                label={<span className="sr-only">Select all work orders</span>}
                 checked={allSelected}
+                indeterminate={partial}
                 disabled={workOrders.length === 0}
                 onChange={(e) => onSelectionChange(e.target.checked ? selectable.map((w) => w.id) : [])}
-                className={
-                  workOrders.length === 0
-                    ? "left-4 top-1/2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 opacity-50 cursor-not-allowed"
-                    : "left-4 top-1/2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                }
+                className="disabled:opacity-50"
               />
               {selected.length > 0 && (
                 <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 flex items-center gap-1 bg-gray-50 whitespace-nowrap">
@@ -142,15 +135,13 @@ export default function WorkOrdersTable({
           actions={
             canRunWorkflow &&
             workOrders.length > 0 && (
-              <button
+              <IconButton
                 id="export-history-button"
-                type="button"
+                icon="hero-cloud-arrow-down"
+                label={`Export all ${workOrders.length} results matching your query`}
                 onClick={onExport}
-                title={`Export all ${workOrders.length} results matching your query`}
-                className="cursor-pointer hover:text-primary-500 font-bold text-secondary-600 transition hover:rotate-[-6deg] inline-flex items-center"
-              >
-                <span className="hero-cloud-arrow-down w-5 h-5" />
-              </button>
+                className="text-secondary-600 hover:bg-transparent hover:text-primary-500 hover:rotate-[-6deg] transition"
+              />
             )
           }
         />
