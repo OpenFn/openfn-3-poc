@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom"
 import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
-import ProjectBreadcrumbs from "../../components/ProjectBreadcrumbs";
+import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelFormModal from "../../components/projects/channels/ChannelFormModal";
 import ChannelMetrics from "../../components/projects/channels/ChannelMetrics";
 import ChannelsTable from "../../components/projects/channels/ChannelsTable";
@@ -46,29 +46,26 @@ export default function ChannelsIndexPage() {
             totalRequests={channels.reduce((sum, c) => sum + c.requestCount, 0)}
             projectId={project.id}
           />
-          <div className="w-full">
-            <div className="mt-14 flex justify-between mb-3">
-              <CountTitle title="Channels" count={channels.length} />
-              <Button
-                id="new-channel-button"
-                theme="primary"
-                disabled={!canEdit}
-                tooltip={canEdit ? undefined : "You are not authorized to perform this action."}
-                onClick={() => navigate(`${back}/new`)}
-              >
-                New Channel
-              </Button>
-            </div>
-            <ChannelsTable
-              channels={channels}
-              projectId={project.id}
-              canEdit={canEdit}
-              canDelete={canEdit}
-              onToggle={(id, v) => setEnabled((m) => ({ ...m, [id]: v }))}
-              onEdit={(id) => navigate(`${back}/${id}/edit`)}
-              onDelete={(id) => setDeleted((d) => [...d, id])}
-            />
+          <div className="mt-14 mb-3 flex justify-between">
+            <CountTitle title="Channels" count={channels.length} />
+            <Button
+              id="new-channel-button"
+              disabled={!canEdit}
+              tooltip={canEdit ? undefined : "You are not authorized to perform this action."}
+              onClick={() => navigate(`${back}/new`)}
+            >
+              New Channel
+            </Button>
           </div>
+          <ChannelsTable
+            channels={channels}
+            projectId={project.id}
+            canEdit={canEdit}
+            canDelete={canEdit}
+            onToggle={(id, v) => setEnabled((m) => ({ ...m, [id]: v }))}
+            onEdit={(id) => navigate(`${back}/${id}/edit`)}
+            onDelete={(id) => setDeleted((d) => [...d, id])}
+          />
         </Centered>
       </PageContent>
       {(creating || editing) && (

@@ -3,7 +3,7 @@ import Button from "../Button";
 import { TextInput } from "../Inputs";
 import Modal from "../Modal";
 import NameBadge from "../NameBadge";
-import { urlSafeName } from "../../utils/urlSafeName";
+import { urlSafeName } from "../../utils/format";
 
 interface Props {
   /** "Create Collection" or "Edit Collection". */
@@ -43,9 +43,9 @@ export default function CollectionFormModal({ title, initialName = "", onCancel,
             value={rawName}
             onChange={(e) => setRawName(e.target.value)}
           />
-          <small className="block text-xs text-gray-600">
+          <p className="text-xs text-gray-600">
             <NameBadge name={name}>Your collection will be named</NameBadge>
-          </small>
+          </p>
         </div>
       </form>
     </Modal>

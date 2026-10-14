@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import Tabs from "../../components/Tabs";
-import ProjectBreadcrumbs from "../../components/ProjectBreadcrumbs";
+import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelRequestsTable from "../../components/history/ChannelRequestsTable";
 import FilterChip, { FilterMenu } from "../../components/history/FilterChip";
 import { channelRequestsIn, channelsIn } from "../../mock-data/channel-requests";
@@ -46,26 +46,21 @@ export default function HistoryChannelLogsPage() {
       }
     >
       <Centered>
-        <div className="top-0 self-start mb-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <FilterChip
-              id="channel-filter-chip"
-              active={selected !== undefined}
-              onClear={() => setChannel(null)}
-              dropdown={(close) => (
-                <FilterMenu
-                  options={[{ value: null, label: "All Channels" }, ...channels.map((c) => ({ value: c.id, label: c.name }))]}
-                  selected={selected?.id ?? null}
-                  onSelect={(v) => {
-                    setChannel(v);
-                    close();
-                  }}
-                />
-              )}
-            >
-              Channel is {selected ? selected.name : "any"}
-            </FilterChip>
-          </div>
+        <div className="mb-4">
+          <FilterChip
+            id="channel-filter-chip"
+            active={selected !== undefined}
+            onClear={() => setChannel(null)}
+            menu={
+              <FilterMenu
+                options={[{ value: null, label: "All Channels" }, ...channels.map((c) => ({ value: c.id, label: c.name }))]}
+                selected={selected?.id ?? null}
+                onSelect={setChannel}
+              />
+            }
+          >
+            Channel is {selected ? selected.name : "any"}
+          </FilterChip>
         </div>
         <ChannelRequestsTable requests={requests} projectId={projectId} />
       </Centered>

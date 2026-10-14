@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
-import ProjectBreadcrumbs from "../../components/ProjectBreadcrumbs";
+import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ProjectMetrics from "../../components/projects/ProjectMetrics";
 import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
@@ -42,7 +42,7 @@ export default function WorkflowsIndexPage() {
           onSearch={setSearch}
         />
         <ProjectMetrics metrics={projectMetricsFor(stats)} projectId={project.id} />
-        <div className="w-full mt-8">
+        <div className="mt-8">
           <WorkflowsTable
             stats={stats}
             projectId={project.id}

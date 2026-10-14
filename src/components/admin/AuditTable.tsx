@@ -2,16 +2,16 @@ import { Fragment } from "react";
 import { shortUuid, type AuditEvent } from "../../mock-data/admin";
 import Pagination from "../Pagination";
 import Pill from "../Pill";
-import RelativeTime from "../projects/RelativeTime";
+import DateTime from "../DateTime";
 import { Table, Td, Th, Tr } from "../Table";
 import AuditChanges from "./AuditChanges";
 
 function TwoLine({ label, sub }: { label: string; sub: string }) {
   return (
-    <div className="flex flex-col overflow-hidden">
-      <div className="overflow-hidden font-normal text-gray-900 whitespace-nowrap text-ellipsis">{label}</div>
-      <div className="overflow-hidden font-normal text-gray-500 text-xs whitespace-nowrap text-ellipsis">{sub}</div>
-    </div>
+    <>
+      <div className="truncate text-gray-900">{label}</div>
+      <div className="truncate text-xs">{sub}</div>
+    </>
   );
 }
 
@@ -51,7 +51,7 @@ export default function AuditTable({
         <Fragment key={audit.id}>
           <Tr className="border-t border-gray-200">
             <Td>
-              <RelativeTime datetime={audit.insertedAt} />
+              <DateTime value={audit.insertedAt} />
             </Td>
             <Td>
               <Pill color="green">{audit.event}</Pill>

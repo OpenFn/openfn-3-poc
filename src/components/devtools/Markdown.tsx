@@ -19,11 +19,11 @@ function gherkin(text: string) {
       const indent = line.length - line.trimStart().length;
       const pad = `style="padding-left:${indent}ch"`;
       if (trimmed.startsWith("@"))
-        return `<span class="block mt-3 text-[11px] font-medium text-primary-600" ${pad}>${escape(trimmed)}</span>`;
+        return `<span class="block mt-3 font-medium text-primary-600" ${pad}>${escape(trimmed)}</span>`;
       if (trimmed.startsWith("# Value:"))
         return `<span class="block italic text-gray-600" ${pad}>${escape(trimmed.slice(2))}</span>`;
       if (trimmed.startsWith("#"))
-        return `<span class="block text-[11px] text-gray-400 break-all" ${pad}>${escape(trimmed)}</span>`;
+        return `<span class="block text-gray-400 break-all" ${pad}>${escape(trimmed)}</span>`;
       const match = trimmed.match(GHERKIN_KEYWORD);
       if (match) {
         const rest = trimmed.slice(match[2].length);
@@ -45,7 +45,7 @@ const marked = new Marked({
     },
     code({ text, lang }) {
       if (lang === "gherkin")
-        return `<div class="not-prose my-4 rounded-md border border-gray-200 bg-gray-50 px-3 py-3 text-xs leading-relaxed whitespace-pre-wrap">${gherkin(text)}</div>`;
+        return `<div class="not-prose my-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed whitespace-pre-wrap">${gherkin(text)}</div>`;
       return `<pre><code>${escape(text)}</code></pre>`;
     },
     link({ href, tokens }) {
@@ -64,7 +64,7 @@ export default function Markdown({ source, className }: { source: string; classN
       className={cn(
         "prose prose-sm max-w-none prose-headings:font-semibold prose-h2:text-base prose-h2:mt-6 prose-h3:text-sm",
         "prose-code:before:content-none prose-code:after:content-none prose-code:bg-gray-100 prose-code:rounded prose-code:px-1 prose-code:font-normal",
-        "prose-pre:bg-slate-800 prose-pre:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:text-xs prose-a:text-primary-600",
+        "prose-pre:bg-gray-800 prose-pre:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:text-xs prose-a:text-primary-600",
         className
       )}
       dangerouslySetInnerHTML={{ __html: html }}

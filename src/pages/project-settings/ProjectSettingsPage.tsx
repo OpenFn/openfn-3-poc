@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
-import ProjectBreadcrumbs from "../../components/ProjectBreadcrumbs";
+import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import SectionHeader from "../../components/SectionHeader";
 import CredentialIndex from "../../components/credentials/CredentialIndex";
 import NewCredentialMenuButton, { projectCredentialMenuOptions } from "../../components/credentials/NewCredentialMenuButton";
@@ -153,7 +153,7 @@ export default function ProjectSettingsPage() {
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} current="Project settings" />} />}>
       <Centered>
         {/* Keyed by project so panel state resets when the project picker switches projects. */}
-        <div key={project.id} id="project-settings-container" className="flex flex-row gap-y-2 h-full">
+        <div key={project.id} id="project-settings-container" className="flex h-full">
           <Tabs
             orientation="vertical"
             label="Project settings"
@@ -162,7 +162,7 @@ export default function ProjectSettingsPage() {
             active={active}
             onChange={(id) => navigate({ pathname: settingsPath, hash: id })}
           />
-          <div className="flex-grow min-w-0">
+          <div className="min-w-0 grow">
             {projectSettingsTabs.map((t) => (
               <div
                 key={t.id}
