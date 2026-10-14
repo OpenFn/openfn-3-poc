@@ -1,51 +1,32 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Breadcrumbs from "./Breadcrumbs";
-import { withRouter, withRouterAt } from "../stories/decorators";
+import { Breadcrumb, Breadcrumbs } from "./Breadcrumbs";
+import ProjectBreadcrumbs from "./ProjectBreadcrumbs";
+import { projects } from "../mock-data/projects";
+import { withRouter } from "../stories/decorators";
 
-const meta: Meta<typeof Breadcrumbs> = {
-  title: "Components/Breadcrumbs",
-  component: Breadcrumbs,
-};
-
+const meta: Meta = { title: "Shell/Breadcrumbs", decorators: [withRouter] };
 export default meta;
-type Story = StoryObj<typeof Breadcrumbs>;
+type Story = StoryObj;
 
-export const SingleAncestor: Story = {
-  decorators: [withRouter],
-  args: {
-    ancestors: [{ label: "Systems", path: "/connected-systems" }],
-    current: "DHIS2",
-  },
+export const Plain: Story = {
+  render: () => (
+    <Breadcrumbs>
+      <Breadcrumb to="/settings/users">Users</Breadcrumb>
+      <Breadcrumb>Amy Admin</Breadcrumb>
+    </Breadcrumbs>
+  ),
 };
 
-export const MultipleAncestors: Story = {
-  decorators: [withRouter],
-  args: {
-    ancestors: [
-      { label: "Projects", path: "/projects" },
-      { label: "Project A", path: "/projects/project-a" },
-      { label: "Services", path: "/projects/project-a/services" },
-    ],
-    current: "Planning Application Intake",
-  },
+export const Project: Story = {
+  render: () => (
+    <ProjectBreadcrumbs
+      project={projects[0]}
+      items={[["History", `/projects/${projects[0].id}/history`]]}
+      current="Run 962b650f"
+    />
+  ),
 };
 
-export const NoAncestors: Story = {
-  decorators: [withRouter],
-  args: {
-    ancestors: [],
-    current: "Overview",
-  },
-};
-
-/** Inside a project, the pickers replace the Home and Projects crumbs. */
-export const InsideProject: Story = {
-  decorators: [withRouterAt("/projects/project-a/history")],
-  args: {
-    ancestors: [
-      { label: "Projects", path: "/projects" },
-      { label: "Project A", path: "/projects/project-a" },
-    ],
-    current: "History",
-  },
+export const Sandbox: Story = {
+  render: () => <ProjectBreadcrumbs project={projects[2]} current="Workflows" />,
 };

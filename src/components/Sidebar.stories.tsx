@@ -1,52 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Sidebar from "./Sidebar";
+import { projects } from "../mock-data/projects";
 import { withRouterAt } from "../stories/decorators";
 
 const meta: Meta<typeof Sidebar> = {
-  title: "Components/Sidebar",
+  title: "Shell/Sidebar",
   component: Sidebar,
-  parameters: {
-    layout: "fullscreen",
-  },
-  render: () => (
-    <div className="flex h-screen">
-      <Sidebar />
-    </div>
-  ),
+  args: { collapsed: false, onToggle: () => {} },
+  decorators: [(Story) => <div className="h-[700px] flex">{<Story />}</div>],
 };
-
 export default meta;
 type Story = StoryObj<typeof Sidebar>;
 
-/** Instance level: Overview, Context, Monitoring and recent Projects. */
-export const Default: Story = {
-  decorators: [withRouterAt("/overview")],
+export const ProjectMenu: Story = {
+  args: { variant: "project", project: projects[0] },
+  decorators: [withRouterAt(`/projects/${projects[0].id}/history`)],
 };
-
-/** A page inside one of the labelled groups. */
-export const MonitoringActive: Story = {
-  decorators: [withRouterAt("/status")],
-};
-
-/** The full Projects list, reached from "View all". */
-export const AllProjects: Story = {
-  decorators: [withRouterAt("/projects")],
-};
-
-/** Inside a project: the project's own menu (Overview; Build; Maintain),
- *  with a way back to all projects.
- *  The project name lives in the top bar's project picker, not here.
- *  Support and the account menu stay pinned at the bottom. */
-export const InsideProject: Story = {
-  decorators: [withRouterAt("/projects/project-a/workflows")],
-};
-
-/** The project's Create page, the first item under Build. */
-export const InsideProjectCreate: Story = {
-  decorators: [withRouterAt("/projects/project-a/create")],
-};
-
-/** A page under Maintain. */
-export const InsideProjectMaintain: Story = {
-  decorators: [withRouterAt("/projects/project-a/deployments")],
+export const ProfileMenu: Story = { args: { variant: "profile" }, decorators: [withRouterAt("/profile")] };
+export const AdminMenu: Story = { args: { variant: "admin" }, decorators: [withRouterAt("/settings/users")] };
+export const Collapsed: Story = {
+  args: { variant: "project", project: projects[0], collapsed: true },
+  decorators: [withRouterAt(`/projects/${projects[0].id}/w`)],
 };

@@ -1,27 +1,45 @@
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { cn } from "../utils/cn";
 
 interface Props {
-  to: string;
+  /** In-app route, or an external URL when `external` is set. */
+  to?: string;
+  /** Plain href (mailto:, docs links). */
+  href?: string;
+  /** Open `to` in a new tab as an external link. */
+  external?: boolean;
+  target?: string;
+  /** With neither `to` nor `href`, the link only runs this (default navigation is prevented). */
+  onClick?: (e: MouseEvent) => void;
+  className?: string;
   children: ReactNode;
-  /**
-   * "default" for names in tables; "action" for "View all"-style links;
-   * "inline" for links inside running prose.
-   */
-  variant?: "default" | "action" | "inline";
 }
 
-const variantClasses = {
-  default: "font-medium text-gray-900 hover:text-indigo-600 hover:underline",
-  action: "text-sm font-medium text-indigo-600 hover:text-indigo-800",
-  inline: "text-indigo-600 hover:text-indigo-800 hover:underline",
-};
-
-/** An in-app link: record names in tables, a "view more" action, or a link in prose. */
-export default function TextLink({ to, children, variant = "default" }: Props) {
+/** An inline text link with Lightning's `link` utility (primary-400, underline on hover). */
+export default function TextLink({ to, href, external = false, target, onClick, className, children }: Props) {
+  const classes = cn("link", className);
+  if (to && !external) {
+    return (
+      <Link to={to} className={classes} onClick={onClick} data-ui="link">
+        {children}
+      </Link>
+    );
+  }
+  const url = to ?? href;
   return (
-    <Link to={to} data-ui="link" data-variant={variant} className={variantClasses[variant]}>
+    <a
+      href={url ?? "#"}
+      target={external ? "_blank" : target}
+      rel={external ? "noreferrer" : undefined}
+      className={classes}
+      data-ui="link"
+      onClick={(e) => {
+        if (!url) e.preventDefault();
+        onClick?.(e);
+      }}
+    >
       {children}
-    </Link>
+    </a>
   );
 }
