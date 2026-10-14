@@ -16,12 +16,17 @@
  *
  * `html[data-theme="…"]` (specificity 0,1,1) deliberately outranks the
  * `:root` defaults below, and a handful of scoped utility overrides at
- * the end resolve the few cases a pure token swap can't (dark surfaces
- * painted with `bg-white`, pill radii under the brutalist theme).
+ * the end resolve the few cases a pure token swap can't (buttons,
+ * tags, form fields, tables and focus states). That component layer is
+ * written once, reads only `--ui-*` tokens, and keys off `data-ui` hooks
+ * the components carry. Basic never sees it.
+ *
+ * ADDING A THEME: add an entry in `themes.ts`, then a token block here
+ * that sets the Tailwind tokens plus the `--ui-*` component tokens.
  */
 
 /* ============================================================== */
-/* Base defaults (theme = "default" / "Sim DTU" — the original UI) */
+/* Base defaults (theme = "default" / "Basic" — the original UI) */
 /* ============================================================== */
 :root {
   /* Font stack used by the original design. Body reads var(--font-sans). */
@@ -39,344 +44,151 @@ body {
 }
 
 /* ============================================================== */
-/* OpenFn — light. "Electric Teal" brand on warm neutral grays.   */
-/* Mirrors the OpenFn Design System colour + type foundations.    */
+/* GDS — the GOV.UK Design System (design-system.service.gov.uk).  */
+/* Every value below comes from GOV.UK Frontend v6 (the 2025       */
+/* brand refresh): its colour palette, functional colours, type    */
+/* scale and component styles. GDS Transport is licensed for       */
+/* gov.uk services only, so we use its published Arial fallback.   */
 /* ============================================================== */
-html[data-theme="openfn"] {
-  --app-bg: #f4faf9; /* teal-tinted canvas */
-  --app-fg: #1e1e1e;
+html[data-theme="gds"] {
+  --app-bg: #ffffff; /* body-background */
+  --app-fg: #0b0c0c; /* text */
 
-  --font-sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: "GDS Transport", arial, sans-serif;
+  --font-mono: ui-monospace, Menlo, Consolas, "Courier New", monospace;
 
-  /* Neutral — warm grays (light mode) */
-  --color-gray-50: #fafafa;
-  --color-gray-100: #f7f6f5;
-  --color-gray-200: #eae9e8;
-  --color-gray-300: #d6d5d4;
-  --color-gray-400: #cccbca;
-  --color-gray-500: #b2b1b0;
-  --color-gray-600: #939290;
-  --color-gray-700: #666564;
-  --color-gray-800: #3c3c3b;
-  --color-gray-900: #1e1e1e;
-  --color-gray-950: #121212;
+  /* GOV.UK uses two weights only: regular 400 and bold 700. */
+  --font-weight-medium: 400;
+  --font-weight-semibold: 700;
 
-  /* Primary / interactive — Electric Teal (AA-tuned light ramp).
-     Drives blue + indigo + violet + teal utilities across the app. */
-  --color-blue-50: #f0fdfb;   --color-indigo-50: #f0fdfb;  --color-violet-50: #f0fdfb;  --color-teal-50: #f0fdfb;
-  --color-blue-100: #ccfbf1;  --color-indigo-100: #ccfbf1; --color-violet-100: #ccfbf1; --color-teal-100: #ccfbf1;
-  --color-blue-200: #99f6e4;  --color-indigo-200: #99f6e4; --color-violet-200: #99f6e4; --color-teal-200: #99f6e4;
-  --color-blue-300: #5febd9;  --color-indigo-300: #5febd9; --color-violet-300: #5febd9; --color-teal-300: #5febd9;
-  --color-blue-400: #2cd9bc;  --color-indigo-400: #2cd9bc; --color-violet-400: #2cd9bc; --color-teal-400: #2cd9bc;
-  --color-blue-500: #14b8a6;  --color-indigo-500: #14b8a6; --color-violet-500: #14b8a6; --color-teal-500: #14b8a6;
-  --color-blue-600: #0d9488;  --color-indigo-600: #0d9488; --color-violet-600: #0d9488; --color-teal-600: #0d9488;
-  --color-blue-700: #0f766e;  --color-indigo-700: #0f766e; --color-violet-700: #0f766e; --color-teal-700: #0f766e;
-  --color-blue-800: #115e59;  --color-indigo-800: #115e59; --color-violet-800: #115e59; --color-teal-800: #115e59;
-  --color-blue-900: #134e4a;  --color-indigo-900: #134e4a; --color-violet-900: #134e4a; --color-teal-900: #134e4a;
-  --color-blue-950: #0a3d38;  --color-indigo-950: #0a3d38; --color-violet-950: #0a3d38; --color-teal-950: #0a3d38;
+  /* GOV.UK type scale (rem at 16px): body-s 16, body 19, heading-m 21,
+     heading-l 27, heading-xl 32. Tailwind sizes step onto it. */
+  --text-xs: 0.875rem;   --text-xs--line-height: 1.1428571429;
+  --text-sm: 1rem;       --text-sm--line-height: 1.25;
+  --text-base: 1.1875rem; --text-base--line-height: 1.3157894737;
+  --text-lg: 1.3125rem;  --text-lg--line-height: 1.1904761905;
+  --text-xl: 1.5rem;     --text-xl--line-height: 1.25;
+  --text-2xl: 1.6875rem; --text-2xl--line-height: 1.1111111111;
+  --text-3xl: 2rem;      --text-3xl--line-height: 1.09375;
 
-  /* Success — green + emerald */
-  --color-green-50: #eafaf3;   --color-emerald-50: #eafaf3;
-  --color-green-100: #c7f2de;  --color-emerald-100: #c7f2de;
-  --color-green-200: #95e5be;  --color-emerald-200: #95e5be;
-  --color-green-300: #5bd49b;  --color-emerald-300: #5bd49b;
-  --color-green-400: #21c77d;  --color-emerald-400: #21c77d;
-  --color-green-500: #00c87a;  --color-emerald-500: #00c87a;
-  --color-green-600: #00a866;  --color-emerald-600: #00a866;
-  --color-green-700: #006840;  --color-emerald-700: #006840;
-  --color-green-800: #00543a;  --color-emerald-800: #00543a;
-  --color-green-900: #00432f;  --color-emerald-900: #00432f;
-  --color-green-950: #002a1e;  --color-emerald-950: #002a1e;
+  /* Neutral — GOV.UK black + its tints: secondary text #484949,
+     border/hover #cecece, light surface #f3f3f3 */
+  --color-gray-50: #f3f3f3;
+  --color-gray-100: #f3f3f3;
+  --color-gray-200: #cecece;
+  --color-gray-300: #cecece;
+  --color-gray-400: #858686;
+  --color-gray-500: #484949;
+  --color-gray-600: #484949;
+  --color-gray-700: #0b0c0c;
+  --color-gray-800: #0b0c0c;
+  --color-gray-900: #0b0c0c;
+  --color-gray-950: #0b0c0c;
 
-  /* Warning — amber + yellow + orange */
-  --color-amber-50: #fffbeb;   --color-yellow-50: #fffbeb;  --color-orange-50: #fffbeb;
-  --color-amber-100: #fef3c7;  --color-yellow-100: #fef3c7; --color-orange-100: #fef3c7;
-  --color-amber-200: #fde68a;  --color-yellow-200: #fde68a; --color-orange-200: #fde68a;
-  --color-amber-300: #fcd34d;  --color-yellow-300: #fcd34d; --color-orange-300: #fcd34d;
-  --color-amber-400: #ffbe00;  --color-yellow-400: #ffbe00; --color-orange-400: #ffbe00;
-  --color-amber-500: #eaa800;  --color-yellow-500: #eaa800; --color-orange-500: #eaa800;
-  --color-amber-600: #b8860b;  --color-yellow-600: #b8860b; --color-orange-600: #b8860b;
-  --color-amber-700: #7a5a00;  --color-yellow-700: #7a5a00; --color-orange-700: #7a5a00;
-  --color-amber-800: #5c4400;  --color-yellow-800: #5c4400; --color-orange-800: #5c4400;
-  --color-amber-900: #463400;  --color-yellow-900: #463400; --color-orange-900: #463400;
-  --color-amber-950: #2a1f00;  --color-yellow-950: #2a1f00; --color-orange-950: #2a1f00;
+  /* Primary — GOV.UK blue: brand #1d70b8, link #1a65a6,
+     link-hover #0f385c, surface #f4f8fb. Drives blue + indigo +
+     violet utilities across the app. */
+  --color-blue-50: #f4f8fb;   --color-indigo-50: #f4f8fb;  --color-violet-50: #f4f8fb;
+  --color-blue-100: #d2e2f1;  --color-indigo-100: #d2e2f1; --color-violet-100: #d2e2f1;
+  --color-blue-200: #8eb8dc;  --color-indigo-200: #8eb8dc; --color-violet-200: #8eb8dc;
+  --color-blue-300: #8eb8dc;  --color-indigo-300: #8eb8dc; --color-violet-300: #8eb8dc;
+  --color-blue-400: #5694ca;  --color-indigo-400: #5694ca; --color-violet-400: #5694ca;
+  --color-blue-500: #1d70b8;  --color-indigo-500: #1d70b8; --color-violet-500: #1d70b8;
+  --color-blue-600: #1a65a6;  --color-indigo-600: #1d70b8; --color-violet-600: #1d70b8;
+  --color-blue-700: #0f385c;  --color-indigo-700: #16548a; --color-violet-700: #16548a;
+  --color-blue-800: #0f385c;  --color-indigo-800: #0f385c; --color-violet-800: #0f385c;
+  --color-blue-900: #0f385c;  --color-indigo-900: #0f385c; --color-violet-900: #0f385c;
+  --color-blue-950: #0f385c;  --color-indigo-950: #0f385c; --color-violet-950: #0f385c;
 
-  /* Error — red + rose */
-  --color-red-50: #fff1f2;   --color-rose-50: #fff1f2;
-  --color-red-100: #ffe0e3;  --color-rose-100: #ffe0e3;
-  --color-red-200: #ffc7cd;  --color-rose-200: #ffc7cd;
-  --color-red-300: #ff9aa6;  --color-rose-300: #ff9aa6;
-  --color-red-400: #ff6b7a;  --color-rose-400: #ff6b7a;
-  --color-red-500: #ff4757;  --color-rose-500: #ff4757;
-  --color-red-600: #e11d2e;  --color-rose-600: #e11d2e;
-  --color-red-700: #c0132a;  --color-rose-700: #c0132a;
-  --color-red-800: #8e0c1f;  --color-rose-800: #8e0c1f;
-  --color-red-900: #6b0817;  --color-rose-900: #6b0817;
-  --color-red-950: #400410;  --color-rose-950: #400410;
+  /* Teal — GOV.UK teal #158187 */
+  --color-teal-50: #f3f9f9;  --color-teal-100: #d0e6e7; --color-teal-200: #8ac0c3;
+  --color-teal-300: #8ac0c3; --color-teal-400: #50a1a5; --color-teal-500: #158187;
+  --color-teal-600: #158187; --color-teal-700: #106165; --color-teal-800: #0b4144;
+  --color-teal-900: #0b4144; --color-teal-950: #0b4144;
 
-  /* Info — sky + cyan */
-  --color-sky-50: #e6f6ff;   --color-cyan-50: #e6f6ff;
-  --color-sky-100: #cceefb;  --color-cyan-100: #cceefb;
-  --color-sky-200: #99dcf6;  --color-cyan-200: #99dcf6;
-  --color-sky-300: #5fc7f0;  --color-cyan-300: #5fc7f0;
-  --color-sky-400: #1fb2e8;  --color-cyan-400: #1fb2e8;
-  --color-sky-500: #00aadb;  --color-cyan-500: #00aadb;
-  --color-sky-600: #0089b0;  --color-cyan-600: #0089b0;
-  --color-sky-700: #005f80;  --color-cyan-700: #005f80;
-  --color-sky-800: #064a63;  --color-cyan-800: #064a63;
-  --color-sky-900: #0a3b4e;  --color-cyan-900: #0a3b4e;
-  --color-sky-950: #06262f;  --color-cyan-950: #06262f;
+  /* Success — GOV.UK green #0f7a52 */
+  --color-green-50: #f3f8f6;   --color-emerald-50: #f3f8f6;
+  --color-green-100: #cfe4dc;  --color-emerald-100: #cfe4dc;
+  --color-green-200: #87bca8;  --color-emerald-200: #87bca8;
+  --color-green-300: #87bca8;  --color-emerald-300: #87bca8;
+  --color-green-400: #4b9b7d;  --color-emerald-400: #4b9b7d;
+  --color-green-500: #0f7a52;  --color-emerald-500: #0f7a52;
+  --color-green-600: #0f7a52;  --color-emerald-600: #0f7a52;
+  --color-green-700: #0b5c3e;  --color-emerald-700: #0b5c3e;
+  --color-green-800: #083d29;  --color-emerald-800: #083d29;
+  --color-green-900: #083d29;  --color-emerald-900: #083d29;
+  --color-green-950: #083d29;  --color-emerald-950: #083d29;
 
-  /* Category accent — refined violet (kept distinct for chips) */
-  --color-purple-50: #f3f0ff;
-  --color-purple-100: #e9e2ff;
-  --color-purple-200: #d4c5ff;
-  --color-purple-300: #b79dff;
-  --color-purple-400: #9b74ff;
-  --color-purple-500: #7c4dff;
-  --color-purple-600: #6b3fe0;
-  --color-purple-700: #5a2fb8;
-  --color-purple-800: #46248f;
-  --color-purple-900: #341b6b;
-  --color-purple-950: #200f45;
+  /* Warning — GOV.UK yellow #ffdd00 and orange #f47738 */
+  --color-amber-50: #fffdf2;   --color-yellow-50: #fffdf2;  --color-orange-50: #fef8f5;
+  --color-amber-100: #fff8cc;  --color-yellow-100: #fff8cc; --color-orange-100: #fde4d7;
+  --color-amber-200: #ffee80;  --color-yellow-200: #ffee80; --color-orange-200: #fabb9c;
+  --color-amber-300: #ffe640;  --color-yellow-300: #ffe640; --color-orange-300: #f7996a;
+  --color-amber-400: #ffdd00;  --color-yellow-400: #ffdd00; --color-orange-400: #f47738;
+  --color-amber-500: #bfa600;  --color-yellow-500: #bfa600; --color-orange-500: #f47738;
+  --color-amber-600: #b7592a;  --color-yellow-600: #806f00; --color-orange-600: #b7592a;
+  --color-amber-700: #7a3c1c;  --color-yellow-700: #7a3c1c; --color-orange-700: #7a3c1c;
+  --color-amber-800: #7a3c1c;  --color-yellow-800: #7a3c1c; --color-orange-800: #7a3c1c;
+  --color-amber-900: #7a3c1c;  --color-yellow-900: #7a3c1c; --color-orange-900: #7a3c1c;
+  --color-amber-950: #7a3c1c;  --color-yellow-950: #7a3c1c; --color-orange-950: #7a3c1c;
 
-  /* Radius — clean & slightly tight; inputs land on 8px (md) */
-  --radius-xs: 3px;
-  --radius-sm: 5px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 18px;
-  --radius-3xl: 24px;
+  /* Error — GOV.UK red #ca3535 */
+  --color-red-50: #fcf5f5;   --color-rose-50: #fcf5f5;
+  --color-red-100: #f4d7d7;  --color-rose-100: #f4d7d7;
+  --color-red-200: #e59a9a;  --color-rose-200: #e59a9a;
+  --color-red-300: #e59a9a;  --color-rose-300: #e59a9a;
+  --color-red-400: #d76868;  --color-rose-400: #d76868;
+  --color-red-500: #ca3535;  --color-rose-500: #ca3535;
+  --color-red-600: #ca3535;  --color-rose-600: #ca3535;
+  --color-red-700: #982828;  --color-rose-700: #982828;
+  --color-red-800: #651b1b;  --color-rose-800: #651b1b;
+  --color-red-900: #651b1b;  --color-rose-900: #651b1b;
+  --color-red-950: #651b1b;  --color-rose-950: #651b1b;
 
-  /* Shadows — soft, neutral, low-spread */
-  --shadow-xs: 0 1px 2px rgba(18, 18, 18, 0.04);
-  --shadow-sm: 0 1px 2px rgba(18, 18, 18, 0.06), 0 1px 3px rgba(18, 18, 18, 0.04);
-  --shadow-md: 0 2px 8px rgba(18, 18, 18, 0.06), 0 1px 2px rgba(18, 18, 18, 0.04);
-  --shadow-lg: 0 8px 24px rgba(18, 18, 18, 0.08);
-  --shadow-xl: 0 16px 40px rgba(18, 18, 18, 0.1);
-}
+  /* Info — GOV.UK light blue (sky) and teal (cyan) */
+  --color-sky-50: #f4f8fb;   --color-cyan-50: #f3f9f9;
+  --color-sky-100: #d2e2f1;  --color-cyan-100: #d0e6e7;
+  --color-sky-200: #8eb8dc;  --color-cyan-200: #8ac0c3;
+  --color-sky-300: #8eb8dc;  --color-cyan-300: #8ac0c3;
+  --color-sky-400: #5694ca;  --color-cyan-400: #50a1a5;
+  --color-sky-500: #1d70b8;  --color-cyan-500: #158187;
+  --color-sky-600: #1d70b8;  --color-cyan-600: #158187;
+  --color-sky-700: #16548a;  --color-cyan-700: #106165;
+  --color-sky-800: #0f385c;  --color-cyan-800: #0b4144;
+  --color-sky-900: #0f385c;  --color-cyan-900: #0b4144;
+  --color-sky-950: #0f385c;  --color-cyan-950: #0b4144;
 
-/* ============================================================== */
-/* OpenFn Dark — teal-tinted neutral blacks, Electric Teal accent  */
-/* ============================================================== */
-html[data-theme="openfn-dark"] {
-  --app-bg: #080e0d; /* dark canvas */
-  --app-fg: #eae9e8;
+  /* Category accent — GOV.UK purple #54319f (also link-visited) */
+  --color-purple-50: #f6f5fa;
+  --color-purple-100: #ddd6ec;
+  --color-purple-200: #aa98cf;
+  --color-purple-300: #aa98cf;
+  --color-purple-400: #7f65b7;
+  --color-purple-500: #54319f;
+  --color-purple-600: #54319f;
+  --color-purple-700: #3f2577;
+  --color-purple-800: #2a1950;
+  --color-purple-900: #2a1950;
+  --color-purple-950: #2a1950;
 
-  --font-sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Component tokens — read by the component layer at the end */
+  --ui-text: #0b0c0c;
+  --ui-border: #cecece;
+  --ui-link: #1a65a6;
+  --ui-link-hover: #0f385c;
+  --ui-focus: #ffdd00;
+  --ui-focus-text: #0b0c0c;
+  --ui-field-border: 2px solid #0b0c0c;
+  --ui-nav-marker: #1d70b8;
+  --ui-tag-radius: 1px;
+  --ui-callout-border-width: 5px;
+  --ui-label-transform: none;
+  --ui-button-weight: 400;
+  --ui-button-bg: #0f7a52;            --ui-button-hover: #0b5c3e;            --ui-button-edge: #083d29;
+  --ui-button-secondary-bg: #f3f3f3;  --ui-button-secondary-hover: #cecece;  --ui-button-secondary-edge: #858686;
+  --ui-button-danger-bg: #ca3535;     --ui-button-danger-hover: #982828;     --ui-button-danger-edge: #651b1b;
 
-  /* Neutral — inverted: low index = dark surface, high index = light text */
-  --color-gray-50: #121212;
-  --color-gray-100: #1e1e1e;
-  --color-gray-200: #2e2e2d;
-  --color-gray-300: #3c3c3b;
-  --color-gray-400: #4a4949;
-  --color-gray-500: #666564;
-  --color-gray-600: #939290;
-  --color-gray-700: #b2b1b0;
-  --color-gray-800: #cccbca;
-  --color-gray-900: #eae9e8;
-  --color-gray-950: #fafafa;
-
-  /* Primary — bright teal for text/links/borders on dark; solid button
-     backgrounds are remapped separately below so white labels stay AA. */
-  --color-blue-50: #0c2b27;   --color-indigo-50: #0c2b27;  --color-violet-50: #0c2b27;  --color-teal-50: #0c2b27;
-  --color-blue-100: #103a33;  --color-indigo-100: #103a33; --color-violet-100: #103a33; --color-teal-100: #103a33;
-  --color-blue-200: #14524a;  --color-indigo-200: #14524a; --color-violet-200: #14524a; --color-teal-200: #14524a;
-  --color-blue-300: #0f766e;  --color-indigo-300: #0f766e; --color-violet-300: #0f766e; --color-teal-300: #0f766e;
-  --color-blue-400: #14b8a6;  --color-indigo-400: #14b8a6; --color-violet-400: #14b8a6; --color-teal-400: #14b8a6;
-  --color-blue-500: #2dd9bb;  --color-indigo-500: #2dd9bb; --color-violet-500: #2dd9bb; --color-teal-500: #2dd9bb;
-  --color-blue-600: #2dd9bb;  --color-indigo-600: #2dd9bb; --color-violet-600: #2dd9bb; --color-teal-600: #2dd9bb;
-  --color-blue-700: #80edd8;  --color-indigo-700: #80edd8; --color-violet-700: #80edd8; --color-teal-700: #80edd8;
-  --color-blue-800: #c4f5eb;  --color-indigo-800: #c4f5eb; --color-violet-800: #c4f5eb; --color-teal-800: #c4f5eb;
-  --color-blue-900: #edfcf9;  --color-indigo-900: #edfcf9; --color-violet-900: #edfcf9; --color-teal-900: #edfcf9;
-  --color-blue-950: #f0fdfb;  --color-indigo-950: #f0fdfb; --color-violet-950: #f0fdfb; --color-teal-950: #f0fdfb;
-
-  /* Success */
-  --color-green-50: #06251a;   --color-emerald-50: #06251a;
-  --color-green-100: #0a3d2a;  --color-emerald-100: #0a3d2a;
-  --color-green-200: #0f5c40;  --color-emerald-200: #0f5c40;
-  --color-green-300: #138a5e;  --color-emerald-300: #138a5e;
-  --color-green-400: #1fb377;  --color-emerald-400: #1fb377;
-  --color-green-500: #00c87a;  --color-emerald-500: #00c87a;
-  --color-green-600: #2dd98f;  --color-emerald-600: #2dd98f;
-  --color-green-700: #5be3a8;  --color-emerald-700: #5be3a8;
-  --color-green-800: #95efc6;  --color-emerald-800: #95efc6;
-  --color-green-900: #c7f7e0;  --color-emerald-900: #c7f7e0;
-  --color-green-950: #eafcf3;  --color-emerald-950: #eafcf3;
-
-  /* Warning */
-  --color-amber-50: #2a1f00;   --color-yellow-50: #2a1f00;  --color-orange-50: #2a1f00;
-  --color-amber-100: #463400;  --color-yellow-100: #463400; --color-orange-100: #463400;
-  --color-amber-200: #5c4400;  --color-yellow-200: #5c4400; --color-orange-200: #5c4400;
-  --color-amber-300: #7a5a00;  --color-yellow-300: #7a5a00; --color-orange-300: #7a5a00;
-  --color-amber-400: #b8860b;  --color-yellow-400: #b8860b; --color-orange-400: #b8860b;
-  --color-amber-500: #ffbe00;  --color-yellow-500: #ffbe00; --color-orange-500: #ffbe00;
-  --color-amber-600: #ffc93d;  --color-yellow-600: #ffc93d; --color-orange-600: #ffc93d;
-  --color-amber-700: #ffd970;  --color-yellow-700: #ffd970; --color-orange-700: #ffd970;
-  --color-amber-800: #ffe9a8;  --color-yellow-800: #ffe9a8; --color-orange-800: #ffe9a8;
-  --color-amber-900: #fff3cc;  --color-yellow-900: #fff3cc; --color-orange-900: #fff3cc;
-  --color-amber-950: #fffbeb;  --color-yellow-950: #fffbeb; --color-orange-950: #fffbeb;
-
-  /* Error */
-  --color-red-50: #400410;   --color-rose-50: #400410;
-  --color-red-100: #6b0817;  --color-rose-100: #6b0817;
-  --color-red-200: #8e0c1f;  --color-rose-200: #8e0c1f;
-  --color-red-300: #c0132a;  --color-rose-300: #c0132a;
-  --color-red-400: #e11d2e;  --color-rose-400: #e11d2e;
-  --color-red-500: #ff4757;  --color-rose-500: #ff4757;
-  --color-red-600: #ff6b7a;  --color-rose-600: #ff6b7a;
-  --color-red-700: #ff9aa6;  --color-rose-700: #ff9aa6;
-  --color-red-800: #ffc7cd;  --color-rose-800: #ffc7cd;
-  --color-red-900: #ffe0e3;  --color-rose-900: #ffe0e3;
-  --color-red-950: #fff1f2;  --color-rose-950: #fff1f2;
-
-  /* Info */
-  --color-sky-50: #06262f;   --color-cyan-50: #06262f;
-  --color-sky-100: #0a3b4e;  --color-cyan-100: #0a3b4e;
-  --color-sky-200: #064a63;  --color-cyan-200: #064a63;
-  --color-sky-300: #005f80;  --color-cyan-300: #005f80;
-  --color-sky-400: #0089b0;  --color-cyan-400: #0089b0;
-  --color-sky-500: #00aadb;  --color-cyan-500: #00aadb;
-  --color-sky-600: #38c5ed;  --color-cyan-600: #38c5ed;
-  --color-sky-700: #7adaf5;  --color-cyan-700: #7adaf5;
-  --color-sky-800: #b0e8f9;  --color-cyan-800: #b0e8f9;
-  --color-sky-900: #d6f3fc;  --color-cyan-900: #d6f3fc;
-  --color-sky-950: #e6f9ff;  --color-cyan-950: #e6f9ff;
-
-  /* Category accent — violet (bright on dark) */
-  --color-purple-50: #200f45;
-  --color-purple-100: #341b6b;
-  --color-purple-200: #46248f;
-  --color-purple-300: #5a2fb8;
-  --color-purple-400: #7c4dff;
-  --color-purple-500: #9b74ff;
-  --color-purple-600: #b79dff;
-  --color-purple-700: #d4c5ff;
-  --color-purple-800: #e9e2ff;
-  --color-purple-900: #f3f0ff;
-  --color-purple-950: #faf8ff;
-
-  --radius-xs: 3px;
-  --radius-sm: 5px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 18px;
-  --radius-3xl: 24px;
-
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.55);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.65);
-}
-
-/* ============================================================== */
-/* Brutalist — stark mono, zero radius, hard offset shadows        */
-/* ============================================================== */
-html[data-theme="brutalist"] {
-  --app-bg: #ffffff;
-  --app-fg: #111111;
-
-  --font-sans: "Geist Mono", ui-monospace, "SF Mono", Menlo, "Courier New", monospace;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, "Courier New", monospace;
-
-  /* Neutral — true grays */
-  --color-gray-50: #fafafa;
-  --color-gray-100: #f2f2f2;
-  --color-gray-200: #e0e0e0;
-  --color-gray-300: #c2c2c2;
-  --color-gray-400: #9c9c9c;
-  --color-gray-500: #6e6e6e;
-  --color-gray-600: #4a4a4a;
-  --color-gray-700: #2e2e2e;
-  --color-gray-800: #1a1a1a;
-  --color-gray-900: #0d0d0d;
-  --color-gray-950: #000000;
-
-  /* Primary — monochrome ink. Buttons => black w/ white text, links => black */
-  --color-blue-50: #f2f2f2;   --color-indigo-50: #f2f2f2;  --color-violet-50: #f2f2f2;  --color-teal-50: #f2f2f2;
-  --color-blue-100: #e6e6e6;  --color-indigo-100: #e6e6e6; --color-violet-100: #e6e6e6; --color-teal-100: #e6e6e6;
-  --color-blue-200: #cfcfcf;  --color-indigo-200: #cfcfcf; --color-violet-200: #cfcfcf; --color-teal-200: #cfcfcf;
-  --color-blue-300: #a8a8a8;  --color-indigo-300: #a8a8a8; --color-violet-300: #a8a8a8; --color-teal-300: #a8a8a8;
-  --color-blue-400: #6e6e6e;  --color-indigo-400: #6e6e6e; --color-violet-400: #6e6e6e; --color-teal-400: #6e6e6e;
-  --color-blue-500: #333333;  --color-indigo-500: #333333; --color-violet-500: #333333; --color-teal-500: #333333;
-  --color-blue-600: #111111;  --color-indigo-600: #111111; --color-violet-600: #111111; --color-teal-600: #111111;
-  --color-blue-700: #000000;  --color-indigo-700: #000000; --color-violet-700: #000000; --color-teal-700: #000000;
-  --color-blue-800: #000000;  --color-indigo-800: #000000; --color-violet-800: #000000; --color-teal-800: #000000;
-  --color-blue-900: #000000;  --color-indigo-900: #000000; --color-violet-900: #000000; --color-teal-900: #000000;
-  --color-blue-950: #000000;  --color-indigo-950: #000000; --color-violet-950: #000000; --color-teal-950: #000000;
-
-  /* Success — stark green */
-  --color-green-50: #e6f7ec;   --color-emerald-50: #e6f7ec;
-  --color-green-100: #c2edd2;  --color-emerald-100: #c2edd2;
-  --color-green-200: #8fddae;  --color-emerald-200: #8fddae;
-  --color-green-300: #4cc77f;  --color-emerald-300: #4cc77f;
-  --color-green-400: #1fae5f;  --color-emerald-400: #1fae5f;
-  --color-green-500: #0a8b45;  --color-emerald-500: #0a8b45;
-  --color-green-600: #097a3d;  --color-emerald-600: #097a3d;
-  --color-green-700: #075c2e;  --color-emerald-700: #075c2e;
-  --color-green-800: #053f20;  --color-emerald-800: #053f20;
-  --color-green-900: #032816;  --color-emerald-900: #032816;
-  --color-green-950: #01140b;  --color-emerald-950: #01140b;
-
-  /* Warning — stark amber */
-  --color-amber-50: #fff8e1;   --color-yellow-50: #fff8e1;  --color-orange-50: #fff8e1;
-  --color-amber-100: #ffefb3;  --color-yellow-100: #ffefb3; --color-orange-100: #ffefb3;
-  --color-amber-200: #ffe082;  --color-yellow-200: #ffe082; --color-orange-200: #ffe082;
-  --color-amber-300: #ffd24d;  --color-yellow-300: #ffd24d; --color-orange-300: #ffd24d;
-  --color-amber-400: #f5c518;  --color-yellow-400: #f5c518; --color-orange-400: #f5c518;
-  --color-amber-500: #d9a800;  --color-yellow-500: #d9a800; --color-orange-500: #d9a800;
-  --color-amber-600: #b58900;  --color-yellow-600: #b58900; --color-orange-600: #b58900;
-  --color-amber-700: #8a6800;  --color-yellow-700: #8a6800; --color-orange-700: #8a6800;
-  --color-amber-800: #5e4700;  --color-yellow-800: #5e4700; --color-orange-800: #5e4700;
-  --color-amber-900: #3d2e00;  --color-yellow-900: #3d2e00; --color-orange-900: #3d2e00;
-  --color-amber-950: #1f1700;  --color-yellow-950: #1f1700; --color-orange-950: #1f1700;
-
-  /* Error — stark red */
-  --color-red-50: #ffe9ec;   --color-rose-50: #ffe9ec;
-  --color-red-100: #ffc9cf;  --color-rose-100: #ffc9cf;
-  --color-red-200: #ff9aa6;  --color-rose-200: #ff9aa6;
-  --color-red-300: #ff5c6e;  --color-rose-300: #ff5c6e;
-  --color-red-400: #f5283f;  --color-rose-400: #f5283f;
-  --color-red-500: #d4001f;  --color-rose-500: #d4001f;
-  --color-red-600: #b00019;  --color-rose-600: #b00019;
-  --color-red-700: #850013;  --color-rose-700: #850013;
-  --color-red-800: #5c000d;  --color-rose-800: #5c000d;
-  --color-red-900: #3d0009;  --color-rose-900: #3d0009;
-  --color-red-950: #1f0004;  --color-rose-950: #1f0004;
-
-  /* Info — stark blue */
-  --color-sky-50: #e6f2ff;   --color-cyan-50: #e6f2ff;
-  --color-sky-100: #c2deff;  --color-cyan-100: #c2deff;
-  --color-sky-200: #8fc2ff;  --color-cyan-200: #8fc2ff;
-  --color-sky-300: #4c99ff;  --color-cyan-300: #4c99ff;
-  --color-sky-400: #1a75ff;  --color-cyan-400: #1a75ff;
-  --color-sky-500: #0057e0;  --color-cyan-500: #0057e0;
-  --color-sky-600: #0047b8;  --color-cyan-600: #0047b8;
-  --color-sky-700: #00348a;  --color-cyan-700: #00348a;
-  --color-sky-800: #00245e;  --color-cyan-800: #00245e;
-  --color-sky-900: #00183d;  --color-cyan-900: #00183d;
-  --color-sky-950: #000c1f;  --color-cyan-950: #000c1f;
-
-  /* Category accent — folded into grayscale to keep it monochrome */
-  --color-purple-50: #f2f2f2;
-  --color-purple-100: #e0e0e0;
-  --color-purple-200: #c2c2c2;
-  --color-purple-300: #9c9c9c;
-  --color-purple-400: #6e6e6e;
-  --color-purple-500: #4a4a4a;
-  --color-purple-600: #2e2e2e;
-  --color-purple-700: #1a1a1a;
-  --color-purple-800: #111111;
-  --color-purple-900: #0d0d0d;
-  --color-purple-950: #000000;
-
-  /* Radius — sharp everywhere */
+  /* Radius — GOV.UK components are square */
   --radius-xs: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -385,38 +197,127 @@ html[data-theme="brutalist"] {
   --radius-2xl: 0px;
   --radius-3xl: 0px;
 
-  /* Shadows — hard black offset blocks */
-  --shadow-xs: 1px 1px 0 0 #111111;
-  --shadow-sm: 2px 2px 0 0 #111111;
-  --shadow-md: 4px 4px 0 0 #111111;
-  --shadow-lg: 6px 6px 0 0 #111111;
-  --shadow-xl: 8px 8px 0 0 #111111;
+  /* Shadows — GOV.UK is flat; borders do the separating work.
+     Menus and dialogs keep a hairline so they still read as raised. */
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: 0 0 0 1px #cecece;
+  --shadow-xl: 0 0 0 1px #cecece;
+}
+
+html[data-theme="gds"] body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================================== */
-/* Scoped utility fixes — the few cases a pure token swap can't do */
+/* Component layer — shared by every theme except Basic.          */
+/* Values come only from the theme's `--ui-*` tokens; selectors    */
+/* target the `data-ui` hooks on our components.                   */
 /* ============================================================== */
+html[data-theme]:not([data-theme="default"]) {
+  /* Button: solid fill with a "pressable" bottom edge that sinks on press. */
+  [data-ui="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="outline-primary"], [data-variant="danger"], [data-variant="outline-danger"]) {
+    --_bg: var(--ui-button-bg);
+    --_hover: var(--ui-button-hover);
+    --_edge: var(--ui-button-edge);
+    --_text: #ffffff;
+    position: relative;
+    border: 2px solid transparent;
+    background-color: var(--_bg);
+    color: var(--_text);
+    box-shadow: 0 2px 0 var(--_edge);
+    font-weight: var(--ui-button-weight);
+    white-space: nowrap;
 
-/* Dark theme: surfaces painted with `bg-white` become elevated dark.
-   `--color-white` itself is left as #fff so `text-white` button labels
-   stay legible on the teal action buttons. */
-html[data-theme="openfn-dark"] .bg-white {
-  background-color: #182420;
-}
+    &:is([data-variant="secondary"], [data-variant="outline-primary"]) {
+      --_bg: var(--ui-button-secondary-bg);
+      --_hover: var(--ui-button-secondary-hover);
+      --_edge: var(--ui-button-secondary-edge);
+      --_text: var(--ui-text);
+    }
+    &:is([data-variant="danger"], [data-variant="outline-danger"]) {
+      --_bg: var(--ui-button-danger-bg);
+      --_hover: var(--ui-button-danger-hover);
+      --_edge: var(--ui-button-danger-edge);
+    }
+    &:hover:not(:disabled) { background-color: var(--_hover); }
+    &:active:not(:disabled) { top: 2px; }
+  }
 
-/* Dark theme: solid accent buttons carry white labels, so their
-   backgrounds must be mid-tone teal (AA with white), not the bright
-   link-tuned 600/700 ramp values. 700 is a touch darker for hover. */
-html[data-theme="openfn-dark"] .bg-blue-600,
-html[data-theme="openfn-dark"] .bg-indigo-600 {
-  background-color: #0d9488;
-}
-html[data-theme="openfn-dark"] .bg-blue-700,
-html[data-theme="openfn-dark"] .bg-indigo-700 {
-  background-color: #0b7d72;
-}
+  /* Tag: the Badge keeps its tone colours; only the shape changes. */
+  [data-ui="tag"] { border-radius: var(--ui-tag-radius); }
 
-/* Brutalist: kill pill radii too (badges, avatars, toggles -> rectangles) */
-html[data-theme="brutalist"] .rounded-full {
-  border-radius: 0;
+  /* Links in prose and "view more" actions: always underlined. */
+  [data-ui="link"]:not([data-variant="default"]) {
+    color: var(--ui-link);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    &:hover {
+      color: var(--ui-link-hover);
+      text-decoration-thickness: 3px;
+    }
+  }
+
+  /* Side navigation: current page marked with a bar, not a fill. */
+  [data-ui="nav-link"] {
+    border-left: 4px solid transparent;
+    &[aria-current="page"] {
+      border-left-color: var(--ui-nav-marker);
+      background-color: transparent;
+      color: var(--ui-text);
+      font-weight: 700;
+    }
+  }
+
+  /* Form fields. */
+  :is(input:not([type="radio"], [type="checkbox"], [type="range"]), textarea, select) {
+    border: var(--ui-field-border);
+  }
+
+  /* Callout: a heavy tone-coloured border on a plain surface. */
+  [data-ui="callout"] {
+    border: var(--ui-callout-border-width) solid var(--color-blue-500);
+    background-color: #ffffff;
+    &[data-tone="success"] { border-color: var(--color-green-500); }
+    &[data-tone="warning"] { border-color: var(--color-orange-500); }
+    &[data-tone="danger"]  { border-color: var(--color-red-500); }
+    :is(h3, div, p) { color: var(--ui-text); }
+  }
+
+  /* Table: bold headers in body colour, rows divided by the border colour. */
+  [data-ui="table"] {
+    thead tr { background-color: transparent; }
+    th { color: var(--ui-text); font-weight: 700; }
+    td { color: var(--ui-text); }
+    tbody tr { border-bottom: 1px solid var(--ui-border); }
+  }
+
+  .uppercase {
+    text-transform: var(--ui-label-transform);
+    letter-spacing: normal;
+  }
+
+  /* Focus: a filled highlight with a dark bar beneath, applied instantly. */
+  :focus-visible {
+    transition: none;
+  }
+  :is(a, button, [tabindex]):focus-visible {
+    outline: 3px solid transparent;
+    background-color: var(--ui-focus);
+    color: var(--ui-focus-text);
+    box-shadow: 0 -2px var(--ui-focus), 0 4px var(--ui-focus-text);
+    text-decoration: none;
+  }
+  [data-ui="button"]:focus-visible:not(:active) {
+    background-color: var(--ui-focus);
+    box-shadow: 0 2px 0 var(--ui-focus-text);
+  }
+  :is(input, select, textarea):focus-visible {
+    background-color: #ffffff;
+    outline: 3px solid var(--ui-focus);
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 2px var(--ui-focus-text);
+  }
 }

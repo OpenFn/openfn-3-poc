@@ -32,10 +32,8 @@ const preview: Preview = {
         title: "Theme",
         icon: "paintbrush",
         items: [
-          { value: "default", title: "Sim DTU (default)" },
-          { value: "openfn", title: "OpenFn" },
-          { value: "openfn-dark", title: "OpenFn Dark" },
-          { value: "brutalist", title: "Brutalist" },
+          { value: "default", title: "Basic (default)" },
+          { value: "gds", title: "GDS" },
         ],
         dynamicTitle: true,
       },
