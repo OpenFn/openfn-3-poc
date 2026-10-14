@@ -5,7 +5,8 @@ import { controlClasses } from "./controlClasses";
 /**
  * Form controls. Every control shares one look (`controlClasses`) and sits
  * in a `Field`, which handles the label, hint and errors. Wrap a custom
- * control in `Field` to give it the same frame.
+ * control in `Field` to give it the same frame, and give the control
+ * `data-ui="field"` so themes style it like the others.
  */
 
 export function Label({ htmlFor, className, children }: { htmlFor?: string; className?: string; children: ReactNode }) {
@@ -31,10 +32,12 @@ interface FieldProps {
   /** Help text between the label and the control. */
   hint?: ReactNode;
   errors?: string[];
+  /** Classes for the field wrapper (label + control + errors), e.g. `flex-1` to grow in a flex row. `className` styles the control itself. */
+  fieldClassName?: string;
 }
 
 /** A label, optional hint, a control and its errors. */
-export function Field({ id, label, required, hint, errors = [], className, children }: FieldProps & { id?: string; className?: string; children: ReactNode }) {
+export function Field({ id, label, required, hint, errors = [], className, children }: Omit<FieldProps, "fieldClassName"> & { id?: string; className?: string; children: ReactNode }) {
   return (
     <div className={className}>
       {label && (
@@ -52,18 +55,18 @@ export function Field({ id, label, required, hint, errors = [], className, child
   );
 }
 
-export function TextInput({ label, required, hint, errors = [], className, id, ...rest }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
+export function TextInput({ label, required, hint, errors = [], fieldClassName, className, id, ...rest }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors}>
-      <input id={id} type="text" autoComplete="off" required={required} className={controlClasses(errors.length > 0, className)} {...rest} />
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
+      <input id={id} type="text" autoComplete="off" required={required} data-ui="field" className={controlClasses(errors.length > 0, className)} {...rest} />
     </Field>
   );
 }
 
-export function TextArea({ label, required, hint, errors = [], className, id, ...rest }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function TextArea({ label, required, hint, errors = [], fieldClassName, className, id, ...rest }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors}>
-      <textarea id={id} required={required} className={controlClasses(errors.length > 0, cn("overflow-y-auto", className))} {...rest} />
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
+      <textarea id={id} required={required} data-ui="field" className={controlClasses(errors.length > 0, cn("overflow-y-auto", className))} {...rest} />
     </Field>
   );
 }
@@ -82,6 +85,7 @@ export function Select({
   required,
   hint,
   errors = [],
+  fieldClassName,
   options,
   prompt,
   className,
@@ -89,8 +93,8 @@ export function Select({
   ...rest
 }: FieldProps & SelectHTMLAttributes<HTMLSelectElement> & { options: SelectOption[]; prompt?: string }) {
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors}>
-      <select id={id} required={required} className={controlClasses(errors.length > 0, className)} {...rest}>
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
+      <select id={id} required={required} data-ui="field" className={controlClasses(errors.length > 0, className)} {...rest}>
         {prompt && <option value="">{prompt}</option>}
         {options.map((o) => {
           const [l, v] = optionParts(o);

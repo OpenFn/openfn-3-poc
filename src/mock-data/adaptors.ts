@@ -5,6 +5,8 @@
  * Static fixtures only.
  */
 
+import { capitalize } from "../utils/format";
+
 export interface Adaptor {
   id: string;
   name: string;
@@ -106,6 +108,16 @@ export function resolveAdaptor(specifier: string): { package: string; version: s
   return { package: match?.[1] ?? specifier, version: match?.[2] ?? "latest" };
 }
 
+/** The same adaptor package at another version: `(…-http@7.0.0, "7.3.3")` → `…-http@7.3.3`. */
+export function adaptorAtVersion(specifier: string, version: string): string {
+  return `${resolveAdaptor(specifier).package}@${version}`;
+}
+
+/** A newly picked adaptor package, at `latest`. */
+export function latestAdaptor(pkg: string): string {
+  return `${pkg}@latest`;
+}
+
 /** `@openfn/language-http@latest` → `http` (Lightning's extractAdaptorName). */
 export function adaptorShortName(specifier: string): string {
   return resolveAdaptor(specifier).package.replace(/^@openfn\/language-/, "");
@@ -113,8 +125,7 @@ export function adaptorShortName(specifier: string): string {
 
 /** `http` → `Http`, `googlesheets` → `Googlesheets` (Lightning's getAdaptorDisplayName). */
 export function adaptorDisplayName(specifier: string): string {
-  const short = adaptorShortName(specifier);
-  return short.charAt(0).toUpperCase() + short.slice(1);
+  return capitalize(adaptorShortName(specifier));
 }
 
 export function adaptorIconUrl(specifier: string): string | null {

@@ -1,9 +1,7 @@
-import { useState, type ReactNode } from "react";
 import type { ChannelEvent } from "../../mock-data/channel-requests";
 import { cn } from "../../utils/cn";
 import Card from "../Card";
 import { DetailItem, DetailList } from "../DetailList";
-import Heading from "../Heading";
 import Pill, { type PillColor } from "../Pill";
 import { formatBytes } from "../../utils/format";
 import CopyButton from "../CopyButton";
@@ -12,60 +10,6 @@ import CopyButton from "../CopyButton";
  * Building blocks of the channel request page
  * (channel_request_live/components.ex).
  */
-
-/** A white card whose header toggles its body (`disclosure_section`). */
-export function DisclosureSection({
-  id,
-  title,
-  titleRight,
-  defaultOpen = true,
-  padded = true,
-  children,
-}: {
-  id?: string;
-  title: string;
-  titleRight?: ReactNode;
-  defaultOpen?: boolean;
-  padded?: boolean;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <Card id={id} padding="none">
-      <button type="button" className="flex w-full items-center gap-3 p-4" onClick={() => setOpen((o) => !o)}>
-        <Heading size="sm">{title}</Heading>
-        {titleRight}
-        <span className={cn("hero-chevron-down-mini ml-auto h-5 w-5 text-gray-400 transition-transform", !open && "rotate-180")} />
-      </button>
-      {open && <div className={cn(padded && "px-4 pb-4")}>{children}</div>}
-    </Card>
-  );
-}
-
-/** A collapsible sub-panel inside a section (`sub_section`). */
-export function SubSection({
-  title,
-  titleRight,
-  children,
-}: {
-  title: string;
-  titleRight?: ReactNode;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(true);
-  return (
-    <div className="border-t border-gray-100">
-      <button type="button" className="flex w-full items-center gap-2 px-4 py-2.5" onClick={() => setOpen((o) => !o)}>
-        <Heading size="eyebrow" as="p">
-          {title}
-        </Heading>
-        {titleRight}
-        <span className={cn("hero-chevron-down-mini ml-auto h-4 w-4 text-gray-400 transition-transform", !open && "rotate-180")} />
-      </button>
-      {open && <div className="px-4 pb-3">{children}</div>}
-    </div>
-  );
-}
 
 const methodColors: Record<string, PillColor> = {
   GET: "blue",

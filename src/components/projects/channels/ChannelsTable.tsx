@@ -42,9 +42,7 @@ export default function ChannelsTable({
           <Th>Requests</Th>
           <Th>Last Activity</Th>
           <Th>Enabled</Th>
-          <Th>
-            <span className="sr-only">Actions</span>
-          </Th>
+          <Th actions />
         </Tr>
       }
     >
@@ -56,7 +54,7 @@ export default function ChannelsTable({
           <Td className="max-w-80">
             <div className="flex items-center gap-1.5 font-mono text-gray-600">
               <span className="hero-arrow-right-start-on-rectangle h-4 w-4 shrink-0 text-gray-400" />
-              <span className="wrap-break-word">{channel.destinationUrl}</span>
+              <span className="min-w-0 wrap-break-word">{channel.destinationUrl}</span>
             </div>
             <ProxyUrlCopy channelId={channel.id} icon className="mt-1" />
           </Td>
@@ -81,25 +79,23 @@ export default function ChannelsTable({
               </span>
             )}
           </Td>
-          <Td>
-            <div className="flex justify-end gap-2">
-              {canEdit && (
-                <Button theme="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
-                  Edit
-                </Button>
-              )}
-              {canDelete && (
-                <Button
-                  theme="danger"
-                  size="xs"
-                  onClick={() => {
-                    if (window.confirm(`Delete "${channel.name}"? This cannot be undone.`)) onDelete?.(channel.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              )}
-            </div>
+          <Td actions>
+            {canEdit && (
+              <Button theme="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
+                Edit
+              </Button>
+            )}
+            {canDelete && (
+              <Button
+                theme="danger"
+                size="xs"
+                onClick={() => {
+                  if (window.confirm(`Delete "${channel.name}"? This cannot be undone.`)) onDelete?.(channel.id);
+                }}
+              >
+                Delete
+              </Button>
+            )}
           </Td>
         </Tr>
       ))}

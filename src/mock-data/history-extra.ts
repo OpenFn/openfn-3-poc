@@ -3,6 +3,7 @@
  * layered on top of the shared `history.ts` (which stays read-only here).
  * Static data only.
  */
+import { shortUuid } from "../utils/format";
 import {
   dataclips,
   findDataclip,
@@ -42,7 +43,7 @@ export function uuidOf(id: string): string {
 
 /** Lightning's `display_short_uuid`: the first 8 characters of the UUID. */
 export function shortId(id: string): string {
-  return uuidOf(id).slice(0, 8);
+  return shortUuid(uuidOf(id));
 }
 
 /**
@@ -118,6 +119,13 @@ export function finalDataclipIdOf(run: Run): string | null {
 
 export function logsOf(run: Run): LogLine[] {
   return runLogs[run.id] ?? [];
+}
+
+const levelScore = (l: string) => ({ debug: 0, info: 1, warn: 2, error: 3 })[l] ?? 4;
+
+/** The log lines a level filter lets through: `level` and everything above it. */
+export function logsAtLevel<T extends { level: string }>(logs: T[], level: LogLine["level"]): T[] {
+  return logs.filter((l) => levelScore(l.level) >= levelScore(level));
 }
 
 /** Lightning's `Run.final_states`. */

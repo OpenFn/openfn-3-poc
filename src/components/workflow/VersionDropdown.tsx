@@ -1,5 +1,6 @@
 import type { WorkflowSnapshot } from "../../mock-data/workflow";
 import { cn } from "../../utils/cn";
+import { formatLocalDateTime } from "../../utils/format";
 import Menu, { MenuHeader, MenuItem } from "../Menu";
 
 interface Props {
@@ -8,8 +9,6 @@ interface Props {
   pinnedVersion: number | null;
   onVersionSelect: (version: number | "latest") => void;
 }
-
-const savedAt = (iso: string) => new Date(iso).toLocaleString();
 
 /**
  * The version pill beside the workflow name (SnapshotVersionDropdown.tsx):
@@ -25,6 +24,7 @@ export default function VersionDropdown({ snapshots, pinnedVersion, onVersionSel
       <Menu
         align="start"
         className="w-56 max-h-80 overflow-y-auto"
+        panelProps={{ "data-annotation": "workflow-editor-versions-and-promote" }}
         trigger={
           <button
             type="button"
@@ -45,7 +45,7 @@ export default function VersionDropdown({ snapshots, pinnedVersion, onVersionSel
         ) : (
           <>
             {newest && (
-              <MenuItem selected={isLatest} description={savedAt(newest.insertedAt)} onClick={() => onVersionSelect("latest")}>
+              <MenuItem selected={isLatest} description={formatLocalDateTime(newest.insertedAt)} onClick={() => onVersionSelect("latest")}>
                 latest
               </MenuItem>
             )}
@@ -53,7 +53,7 @@ export default function VersionDropdown({ snapshots, pinnedVersion, onVersionSel
               <MenuItem
                 key={s.lockVersion}
                 selected={!isLatest && s.lockVersion === pinnedVersion}
-                description={savedAt(s.insertedAt)}
+                description={formatLocalDateTime(s.insertedAt)}
                 onClick={() => onVersionSelect(s.lockVersion)}
               >
                 v{s.lockVersion}

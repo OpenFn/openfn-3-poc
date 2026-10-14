@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Dataclip, LogLine, Run, Step } from "../../mock-data/history";
 import { cn } from "../../utils/cn";
+import { formatElapsed, formatLocalDateTime, shortUuid } from "../../utils/format";
 import CodeEditor from "./CodeEditor";
 import StatePill from "../history/StatePill";
+import { LogLevelFilter, type LogLevel } from "../history/LogViewer";
+import { logsAtLevel } from "../../mock-data/history-extra";
 import { DetailItem, DetailList } from "../DetailList";
 import Heading from "../Heading";
 import InfoTooltip from "../InfoTooltip";
-import Menu, { MenuItem } from "../Menu";
 
 export type RunViewerTab = "log" | "input" | "output";
 
@@ -16,16 +18,6 @@ const STEP_ICONS: Record<string, [string, string]> = {
   fail: ["hero-x-circle-solid", "text-red-500"],
   crash: ["hero-x-circle-solid", "text-orange-800"],
 };
-
-function elapsed(from: string | null, to: string | null): string {
-  if (!from) return "Not started";
-  const ms = (to ? new Date(to).getTime() : Date.now()) - new Date(from).getTime();
-  if (ms < 1000) return `${ms} ms`;
-  if (ms < 60000) return `${Math.floor(ms / 1000)} s`;
-  return `${Math.floor(ms / 60000)} m`;
-}
-
-const LEVELS = ["debug", "info", "warn", "error"] as const;
 
 interface Props {
   projectId: string;
@@ -46,10 +38,10 @@ interface Props {
  * Output of the selected step below.
  */
 export default function RunViewerPanel({ projectId, run, steps, logs, dataclips, selectedStepId, onSelectStep, activeTab, mismatch = false }: Props) {
-  const [level, setLevel] = useState<(typeof LEVELS)[number]>("info");
+  const [level, setLevel] = useState<LogLevel>("info");
   const step = steps.find((s) => s.id === selectedStepId) ?? null;
   const clip = (id: string | null | undefined) => dataclips.find((d) => d.id === id);
-  const visibleLogs = logs.filter((l) => LEVELS.indexOf(l.level) >= LEVELS.indexOf(level));
+  const visibleLogs = logsAtLevel(logs, level);
 
   const empty = (text: string) => <p className="flex h-full items-center justify-center p-12 text-center text-gray-500">{text}</p>;
   const dataView = (id: string | null | undefined, emptyFinished: string) => {
@@ -67,19 +59,19 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
           <DetailList>
             <DetailItem label="Work Order">
               <Link to={`/projects/${projectId}/history?filters[workorder_id]=${run.workOrderId}`} className="link-uuid" title={`View work order ${run.workOrderId}`}>
-                {run.workOrderId.slice(0, 8)}
+                {shortUuid(run.workOrderId)}
               </Link>
             </DetailItem>
             <DetailItem label="Run">
               <Link to={`/projects/${projectId}/runs/${run.id}`} className="link-uuid" title={`View run ${run.id}`}>
-                {run.id.slice(0, 8)}
+                {shortUuid(run.id)}
               </Link>
             </DetailItem>
             <DetailItem label="Status">
               <StatePill state={run.state} />
             </DetailItem>
-            <DetailItem label="Duration">{elapsed(run.startedAt, run.finishedAt)}</DetailItem>
-            {run.startedAt && <DetailItem label="Started">{new Date(run.startedAt).toLocaleString()}</DetailItem>}
+            <DetailItem label="Duration">{formatElapsed(run.startedAt, run.finishedAt)}</DetailItem>
+            {run.startedAt && <DetailItem label="Started">{formatLocalDateTime(run.startedAt)}</DetailItem>}
             {(run.createdBy || run.startingTrigger) && (
               <DetailItem label="Started by">{run.createdBy ? "editor@openfn.org" : `${run.startingTrigger?.toLowerCase()} trigger`}</DetailItem>
             )}
@@ -109,7 +101,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
                     >
                       <span className={cn(icon, color, "h-5 w-5 shrink-0")} />
                       <span className="min-w-0 flex-1 truncate">{s.jobName}</span>
-                      <span className="shrink-0 text-xs text-gray-500">{elapsed(s.startedAt, s.finishedAt)}</span>
+                      <span className="shrink-0 text-xs text-gray-500">{formatElapsed(s.startedAt, s.finishedAt)}</span>
                     </button>
                   </li>
                 );
@@ -122,22 +114,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
         {activeTab === "log" && (
           <div className="flex h-full flex-col bg-gray-700 font-mono text-gray-200">
             <div className="flex h-6 items-center justify-end border-b border-gray-500 px-2">
-              <Menu
-                className="w-32"
-                trigger={
-                  <button type="button" className="flex items-center gap-1 text-xs opacity-75 hover:opacity-100">
-                    <span className="hero-adjustments-vertical size-4" />
-                    {level}
-                    <span className="hero-chevron-down size-4" />
-                  </button>
-                }
-              >
-                {LEVELS.map((l) => (
-                  <MenuItem key={l} selected={l === level} onClick={() => setLevel(l)}>
-                    {l}
-                  </MenuItem>
-                ))}
-              </Menu>
+              <LogLevelFilter selected={level} onChange={setLevel} />
             </div>
             <div className="min-h-0 flex-1 overflow-auto p-2 text-sm">
               {visibleLogs.length === 0 ? (

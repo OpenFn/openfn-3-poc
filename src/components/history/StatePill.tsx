@@ -1,6 +1,7 @@
 import type { RunState, WorkOrderState } from "../../mock-data/history";
 import type { ChannelRequestState } from "../../mock-data/channel-requests";
 import Pill, { type PillColor } from "../Pill";
+import { capitalize } from "../../utils/format";
 
 type State = WorkOrderState | RunState | "running";
 
@@ -35,13 +36,17 @@ function stateLabel(state: State): string {
     case "claimed":
       return "Starting";
     default:
-      return state.charAt(0).toUpperCase() + state.slice(1);
+      return capitalize(state);
   }
 }
 
-/** A work order or run state pill (run_live/components.ex `state_pill`). */
-export default function StatePill({ state }: { state: State }) {
-  return <Pill color={chipColors[state]}>{stateLabel(state)}</Pill>;
+/**
+ * A work order or run state pill (run_live/components.ex `state_pill`).
+ * `labelMode="raw"` shows the state itself, capitalised, as the canvas's
+ * MiniHistory does ("Pending" rather than "Enqueued").
+ */
+export default function StatePill({ state, labelMode = "display" }: { state: State; labelMode?: "display" | "raw" }) {
+  return <Pill color={chipColors[state]}>{labelMode === "raw" ? capitalize(state) : stateLabel(state)}</Pill>;
 }
 
 const channelConfig: Record<ChannelRequestState, { text: string; color: PillColor }> = {

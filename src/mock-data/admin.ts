@@ -30,8 +30,7 @@ export const userRoleOptions: [label: string, value: string][] = [
 /** Projects scheduled for deletion (project id -> ISO date). */
 export const projectScheduledDeletions: Record<string, string> = {};
 
-/** Lightning.Config.purge_deleted_after_days(), used in the delete modal copy. */
-export const purgeDeletedAfterDays = 7;
+export { purgeDeletedAfterDays } from "./project-settings";
 
 export function projectOwnerName(project: Project): string {
   const owner = project.members.find((m) => m.role === "owner");
@@ -176,9 +175,7 @@ export const auditEvents: AuditEvent[] = [
 export const auditPageSize = 10;
 
 /** First 8 hex chars of a UUID (display_short_uuid). */
-export function shortUuid(id: string): string {
-  return id.slice(0, 8);
-}
+export { shortUuid } from "../utils/format";
 
 // ---------------------------------------------------------------------------
 // Authentication (OpenID Connect provider)
