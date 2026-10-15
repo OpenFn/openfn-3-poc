@@ -3,6 +3,7 @@ import type { AIMessage, AISession } from "../../mock-data/ai-assistant";
 import { cn } from "../../utils/cn";
 import Button from "../Button";
 import Card from "../Card";
+import CopyButton from "../CopyButton";
 import Heading from "../Heading";
 import IconButton from "../IconButton";
 import Menu, { MenuDivider, MenuItem } from "../Menu";
@@ -119,9 +120,9 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                         <Heading size="eyebrow" as="p" className="flex-1">
                           Job code
                         </Heading>
-                        <Button theme="secondary" size="xs">
+                        <CopyButton value={m.code} size="xs">
                           Copy
-                        </Button>
+                        </CopyButton>
                         <Button size="xs">Add</Button>
                       </div>
                       <pre className="overflow-x-auto bg-gray-700 p-3 font-mono text-xs text-gray-200">{m.code}</pre>
