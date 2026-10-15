@@ -20,6 +20,10 @@ inline literals scattered through the markup.
 - `npm run lint` — run ESLint
 - `npm run storybook` — start Storybook on port 6006
 - `npm run build-storybook` — build Storybook static site
+- `npm run compare:all` — set up a local Lightning and compare it with the
+  replica, screen by screen. See **Comparing with Lightning** below.
+- `npm run kickstart:sync` — regenerate the shared projects from
+  `kickstart/exports/` (fixtures here, Kickstart scenario for Lightning).
 - `node scripts/design-system-metrics.mjs` — count styling outside the
   primitives (className lists, distinct Tailwind tokens, raw elements). Run it
   before and after design-system work; the numbers should go down.
@@ -39,6 +43,10 @@ inline literals scattered through the markup.
   `validate.ts` (`isValidEmail`), `useUrlParams.ts`, `useCopy.ts`.
 - `src/mock-data/` — fixtures modelled on Lightning's demo seed
   (`lib/lightning/setup_utils.ex`): users, projects, workflows, history.
+  `generated/kickstart.ts` is generated from the project exports in
+  `kickstart/exports/` by `npm run kickstart:sync`, which also writes the
+  Kickstart scenario that loads the same projects into a local Lightning
+  (`kickstart/README.md`). Don't edit it by hand.
 - `src/theme/` — themes, chosen from the settings button (bottom right).
   Lightning v2 is the default.
 - `annotations/` — a copy of the behaviour audit from OpenFn/lightning
@@ -71,6 +79,18 @@ not **how** it's built.
 - Use `cn()` from `src/utils/cn.ts` for conditional classes.
 - Every page is `<PageContent header={<Header … />}>` with a `<Centered>`
   body, unless the page needs a different layout.
+
+### Comparing with Lightning
+
+When asked to "compare with Lightning" (or to check a page against it, or to
+load a project export), follow the `compare-with-lightning` skill
+(`.claude/skills/compare-with-lightning/SKILL.md`). The short version:
+`npm run compare:all` sets up a local Lightning `main` on the demo seed plus
+the shared projects from `kickstart/exports/`, starts the replica, and writes
+side-by-side screenshots and wording reports to `compare-out/`. Read the
+reports, open every shot, then fix wording and behaviour differences. Ignore
+visual drift and the richer fixture data. Add new screens to the specs in
+`scripts/compare-lightning/specs/` so the next run covers them.
 
 ## Components
 
