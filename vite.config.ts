@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/openfn-ia-demo/',
+  base: '/openfn-3-poc/',
   plugins: [react(), tailwindcss()],
 })
