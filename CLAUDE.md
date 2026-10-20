@@ -135,7 +135,8 @@ everywhere. Reach for these first:
 | Any bordered panel, tile or card | `Card` (`title`/`description`/`action` give it a header; `padding`, `muted`, `dashed`) |
 | A heading inside a page | `Heading` (`size` xl/lg/md/sm/eyebrow, `as` for the level) |
 | Labelled values | `DetailList` + `DetailItem` (`rows` or `grid`) |
-| A timestamp | `DateTime` |
+| A timestamp | `DateTime` (hover shows UTC, click copies it) |
+| A tooltip | `Tooltip`; `InfoTooltip` for the faded info icon next to a label |
 | A short work order, run or dataclip id | `UuidChip` (`to` links it, `length={7}` in the workflow editor) |
 | An on/off switch | `Toggle` (`note` adds gray text after the label) |
 | An inline link | `TextLink` (`variant="danger"` for destructive ones) |

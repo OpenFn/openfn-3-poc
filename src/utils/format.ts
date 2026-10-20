@@ -78,7 +78,7 @@ export function formatRelativeDetailed(iso: string, now: Date = new Date()) {
 
 /** The ISO tooltip Lightning shows on hover: "2026-10-14 09:12:00 UTC". */
 export function formatUtc(iso: string) {
-  return new Date(iso).toISOString().replace("T", " ").replace(/\.\d+Z$|Z$/, " UTC");
+  return new Date(iso).toISOString().replace("T", " ").replace(/(\.000)?Z$/, " UTC");
 }
 
 /** "2 hours ago", via Intl.RelativeTimeFormat. */
