@@ -19,9 +19,9 @@ interface MenuProps {
    */
   trigger: ReactNode;
   /** Which edge of the trigger the menu lines up with. */
-  align?: FloatingAlign;
+  align?: FloatingAlign | undefined;
   /** Width class for the menu, e.g. `w-56`. */
-  className?: string;
+  className?: string | undefined;
   /** Extra attributes for the open panel, e.g. `data-annotation`. The panel is portalled, so it doesn't inherit its trigger's. */
   panelProps?: PanelProps;
   children: ReactNode;
@@ -59,14 +59,14 @@ interface MenuItemProps {
   /** Marks the current choice with a check. */
   selected?: boolean;
   tone?: "default" | "danger";
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** A muted line under the label. */
   description?: ReactNode;
   children: ReactNode;
 }
 
 /** One row of a Menu: a button, router link or external link. */
-export function MenuItem({ icon, to, href, onClick, selected, tone = "default", disabled, description, children }: MenuItemProps) {
+export function MenuItem({ icon, to, href, onClick, selected, tone = "default", disabled = false, description, children }: MenuItemProps) {
   const className = cn(
     "group flex w-full items-start gap-x-3 px-4 py-2 text-left text-sm cursor-pointer",
     "data-focus:bg-gray-100 data-focus:outline-none data-disabled:cursor-not-allowed data-disabled:opacity-50",

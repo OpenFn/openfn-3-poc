@@ -25,8 +25,8 @@ interface Props extends Omit<HTMLAttributes<HTMLElement>, "title"> {
   as?: "div" | "section" | "li" | "article" | "button";
   /** Inventory id for the annotations panel (`data-annotation`). */
   annotation?: string;
-  id?: string;
-  className?: string;
+  id?: string | undefined;
+  className?: string | undefined;
   children?: ReactNode;
 }
 

@@ -75,7 +75,7 @@ const data: Record<string, Record<HealthRange["days"], WorkflowHealthData>> = {
   "wf-openhie": {
     "1": {
       counts: { ...zero, success: 41, failed: 1 },
-      signatures: [{ ...openhieSignatures[0], count: 1 }],
+      signatures: [{ ...openhieSignatures[0]!, count: 1 }],
       bucketHours: 2,
       timezone: "UTC",
       buckets: buckets(12, 2, 4, 7),

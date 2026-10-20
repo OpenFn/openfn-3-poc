@@ -8,7 +8,7 @@ import Toggle from "../Toggle";
 
 interface Props {
   /** The user being edited; omit for /settings/users/new. */
-  user?: User;
+  user?: User | undefined;
   onSave?: (values: UserFormValues) => void;
   /** Where Cancel goes. */
   cancelTo?: string;

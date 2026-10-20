@@ -8,7 +8,7 @@ const meta: Meta<typeof ChannelsTable> = {
   title: "Projects/Channels/ChannelsTable",
   component: ChannelsTable,
   decorators: [withRouter],
-  args: { channels: channelsIn(projects[0].id), projectId: projects[0].id },
+  args: { channels: channelsIn(projects[0]!.id), projectId: projects[0]!.id },
 };
 export default meta;
 type Story = StoryObj<typeof ChannelsTable>;

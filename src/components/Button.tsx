@@ -53,7 +53,7 @@ function buttonClasses(theme: ButtonTheme, size: ButtonSize = "md", disabled = f
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   theme?: ButtonTheme;
-  size?: ButtonSize;
+  size?: ButtonSize | undefined;
   /** Render as a router link instead of a <button>. */
   to?: string;
   /** Render as a plain link (external pages, downloads, SSO handlers). */
@@ -64,7 +64,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   target?: string;
   rel?: string;
   /** Shown on hover (often why it's disabled). */
-  tooltip?: string;
+  tooltip?: string | undefined;
   /**
    * The action is in flight: the button is disabled and shows a spinner
    * before its label. Pass `useAction().pending` or let `FormModal` /

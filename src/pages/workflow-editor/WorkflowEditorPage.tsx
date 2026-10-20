@@ -52,7 +52,7 @@ export default function WorkflowEditorPage() {
 function WorkflowEditor({ project, initial, isNew }: { project: Project; initial: WorkflowGraph; isNew: boolean }) {
   const editor = useWorkflowEditorState(initial);
   const { graph } = editor;
-  const { params, update } = useUrlParams();
+  const { params, update } = useUrlParams<"chat" | "edge" | "job" | "panel" | "run" | "runMode" | "step" | "trigger">();
   const [pinnedVersion, setPinnedVersion] = useState<number | null>(null);
   const [historyCollapsed, setHistoryCollapsed] = useState(true);
   const [created, setCreated] = useState(!isNew);
@@ -282,10 +282,10 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
             onRun={() =>
               runs.demoRunId
                 ? followDemoRun(true, isRetryable)
-                : update({ panel: "run", trigger: firstTrigger.id, job: null, edge: null })
+                : update({ panel: "run", trigger: firstTrigger?.id ?? null, job: null, edge: null })
             }
             onRunWithCustomInput={() =>
-              update({ panel: "run", trigger: firstTrigger.id, job: null, edge: null, runMode: "custom" })
+              update({ panel: "run", trigger: firstTrigger?.id ?? null, job: null, edge: null, runMode: "custom" })
             }
             hasChanges={editor.hasChanges || !created}
             onSave={() => {

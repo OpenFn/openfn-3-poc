@@ -50,7 +50,7 @@ export interface PickerItem {
 
 interface PickerProps {
   items: PickerItem[];
-  currentId?: string;
+  currentId?: string | undefined;
   placeholder: string;
   emptyMessage: string;
   viewAllLabel: string;

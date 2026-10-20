@@ -21,7 +21,7 @@ export default function UuidChip({
   length?: number;
   to?: string;
   disabled?: boolean;
-  tooltip?: string;
+  tooltip?: string | undefined;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
 }) {
   const short = shortUuid(uuid, length);

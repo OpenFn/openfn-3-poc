@@ -104,7 +104,7 @@ export default function TriageTable({
             <Td>
               <Signature signature={s} />
             </Td>
-            <Td>{(s.error_type && TIPS[s.error_type]) || TIPS.default}</Td>
+            <Td>{(s.error_type && TIPS[s.error_type]) || TIPS["default"]}</Td>
             <Td actions>
               {s.exit_reason && (
                 <Button theme="secondary" to={historyHref} className="whitespace-nowrap">

@@ -10,7 +10,7 @@ import IconButton from "./IconButton";
  * `data-ui="field"` so themes style it like the others.
  */
 
-export function Label({ htmlFor, className, children }: { htmlFor?: string; className?: string; children: ReactNode }) {
+export function Label({ htmlFor, className, children }: { htmlFor?: string | undefined; className?: string | undefined; children: ReactNode }) {
   return (
     <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-gray-800", className)}>
       {children}
@@ -29,12 +29,12 @@ export function FieldError({ children }: { children: ReactNode }) {
 
 interface FieldProps {
   label?: ReactNode;
-  required?: boolean;
+  required?: boolean | undefined;
   /** Help text between the label and the control. */
   hint?: ReactNode;
   errors?: string[];
   /** Classes for the field wrapper (label + control + errors), e.g. `flex-1` to grow in a flex row. `className` styles the control itself. */
-  fieldClassName?: string;
+  fieldClassName?: string | undefined;
 }
 
 /** The control's id, or a generated one, so its label is always linked to it. */
@@ -44,7 +44,7 @@ function useFieldId(id?: string) {
 }
 
 /** A label, optional hint, a control and its errors. */
-export function Field({ id, label, required, hint, errors = [], className, children }: Omit<FieldProps, "fieldClassName"> & { id?: string; className?: string; children: ReactNode }) {
+export function Field({ id, label, required, hint, errors = [], className, children }: Omit<FieldProps, "fieldClassName"> & { id?: string | undefined; className?: string | undefined; children: ReactNode }) {
   return (
     <div className={className} data-ui="form-group" data-invalid={errors.length > 0 || undefined}>
       {label && (

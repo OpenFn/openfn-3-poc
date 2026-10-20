@@ -40,7 +40,7 @@ export default function WorkOrderStatus({
   period = "last 30 days",
 }: {
   state: WorkOrderDisplayState | null;
-  updatedAt?: string;
+  updatedAt?: string | undefined;
   period?: string;
 }) {
   if (!state) {

@@ -9,7 +9,7 @@ import { useCopy } from "../../utils/useCopy";
 
 interface Props {
   /** Omit to create a new method (starts at the "choose a type" step). */
-  authMethod?: WebhookAuthMethod;
+  authMethod?: WebhookAuthMethod | undefined;
   onCancel: () => void;
   onSave: (method: Omit<WebhookAuthMethod, "id" | "projectId" | "triggers" | "channels">) => void;
 }

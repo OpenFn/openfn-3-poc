@@ -7,12 +7,13 @@ export type ParamPatch = Record<string, string | null>;
 /**
  * The URL's query params as a plain object, and `update(patch)` to set or
  * remove some of them without touching the rest. `update` copies the current
- * params rather than mutating them.
+ * params rather than mutating them. Name the keys a page reads
+ * (`useUrlParams<"job" | "run">()`) to write `params.job`.
  */
-export function useUrlParams() {
+export function useUrlParams<K extends string = string>() {
   const { navigate, useLocation } = useRouter();
   const { pathname, search, hash } = useLocation();
-  const params = useMemo(() => Object.fromEntries(new URLSearchParams(search)) as Record<string, string | undefined>, [search]);
+  const params = useMemo(() => Object.fromEntries(new URLSearchParams(search)) as Partial<Record<K, string>>, [search]);
   const update = useCallback(
     (patch: ParamPatch) => {
       const next = new URLSearchParams(search);

@@ -8,7 +8,7 @@ import { EmptyState } from "../Table";
 import DataclipTypePill from "./DataclipTypePill";
 
 /** The "Dataclip Details" metadata card (dataclip_live/show.ex). */
-export default function DataclipDetailsCard({ dataclip, updatedAt }: { dataclip: Dataclip; updatedAt?: string }) {
+export default function DataclipDetailsCard({ dataclip, updatedAt }: { dataclip: Dataclip; updatedAt?: string | undefined }) {
   return (
     <Card title="Dataclip Details" padding="lg" className="mb-6">
       <DetailList layout="grid">

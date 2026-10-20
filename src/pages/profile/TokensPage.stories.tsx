@@ -24,4 +24,4 @@ type Story = StoryObj<typeof TokensPage>;
 export const WithTokens: Story = {};
 export const Empty: Story = { args: { tokens: [] } };
 export const NewToken: Story = { args: { newToken: "demo.fake-token-not-real.QrStU-24680" } };
-export const DeleteModalOpen: Story = { args: { tokenId: apiTokens[0].id } };
+export const DeleteModalOpen: Story = { args: { tokenId: apiTokens[0]!.id } };

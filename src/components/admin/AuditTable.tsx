@@ -33,7 +33,7 @@ export default function AuditTable({
   pageNumber: number;
   pageSize: number;
   totalEntries: number;
-  onPage?: (page: number) => void;
+  onPage?: ((page: number) => void) | undefined;
 }) {
   return (
     <Table

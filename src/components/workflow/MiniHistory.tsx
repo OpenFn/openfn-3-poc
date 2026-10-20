@@ -78,7 +78,7 @@ export default function MiniHistory({
           const selected = runs.some((r) => r.id === selectedRunId);
           const isExpanded = expanded === workOrder.id;
           const expand = () => {
-            if (!isExpanded && runs.length === 1) onSelectRun(runs[0].id);
+            if (!isExpanded && runs.length === 1) onSelectRun(runs[0]!.id);
             setExpanded((p) => (p === workOrder.id ? "" : workOrder.id));
           };
           return (

@@ -13,7 +13,7 @@ function WithRange({ workflowId, ...props }: { workflowId: string; workflowName:
   return (
     <WorkflowHealth
       {...props}
-      projectId={projects[0].id}
+      projectId={projects[0]!.id}
       days={days}
       onDaysChange={setDays}
       data={healthFor(workflowId, days)}

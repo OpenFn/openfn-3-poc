@@ -19,10 +19,10 @@ interface Props extends Omit<ComponentProps<typeof Modal>, "footer" | "bare"> {
   submitLabel: ReactNode;
   submitTheme?: "primary" | "danger";
   submitDisabled?: boolean;
-  submitId?: string;
+  submitId?: string | undefined;
   /** Shown on hover over the submit button, e.g. why it's disabled. */
-  submitTooltip?: string;
-  cancelLabel?: ReactNode;
+  submitTooltip?: string | undefined;
+  cancelLabel?: ReactNode | undefined;
   cancelId?: string;
   /** Classes for the form, i.e. the spacing between fields. */
   formClassName?: string;

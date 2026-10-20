@@ -20,13 +20,13 @@ export const Plain: Story = {
 export const Project: Story = {
   render: () => (
     <ProjectBreadcrumbs
-      project={projects[0]}
-      items={[["History", `/projects/${projects[0].id}/history`]]}
+      project={projects[0]!}
+      items={[["History", `/projects/${projects[0]!.id}/history`]]}
       current="Run 962b650f"
     />
   ),
 };
 
 export const Sandbox: Story = {
-  render: () => <ProjectBreadcrumbs project={projects[2]} current="Workflows" />,
+  render: () => <ProjectBreadcrumbs project={projects[2]!} current="Workflows" />,
 };

@@ -14,7 +14,7 @@ export default function TableTitle({
   className,
 }: {
   title: ReactNode;
-  count?: number;
+  count?: number | undefined;
   /** Actions on the right, e.g. a search box and a create button. */
   children?: ReactNode;
   className?: string;

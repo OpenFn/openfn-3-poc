@@ -34,5 +34,5 @@ export const ServerErrorOnOtherField: Story = {
     onCreate: () =>
       Promise.reject(new RequestError("Name has already been taken", { fieldErrors: { name: ["has already been taken"] } })),
   },
-  play: ServerFieldError.play,
+  play: ServerFieldError.play!,
 };
