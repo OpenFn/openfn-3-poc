@@ -22,6 +22,7 @@ import { defaultSettingsHash, projectSettingsTabs } from "../../components/proje
 import { collectionsIn, dataRetentionPeriods, projectFilesIn, projectSettingsFor, purgeDeletedAfterDays, vcsFor, webhookAuthMethodsIn } from "../../mock-data/project-settings";
 import { credentialsFor, keychainCredentialsIn, oauthClientsFor } from "../../mock-data/credentials";
 import { findProject } from "../../mock-data/projects";
+import { simulateRequest } from "../../mock-data/request";
 import { users } from "../../mock-data/users";
 import { permissionsFor } from "../../permissions";
 import { useCurrentUser } from "../../session/session";
@@ -68,6 +69,10 @@ export default function ProjectSettingsPage() {
         parentProject={parentProject}
         canEditProject={perms.canEditProject}
         canDeleteProject={perms.canDeleteProject}
+        onUpdate={async () => {
+          await simulateRequest();
+          toast("Project updated successfully");
+        }}
       />
     ),
     credentials: (
