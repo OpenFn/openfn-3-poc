@@ -24,6 +24,7 @@ wrapper.
 
 - `npm run dev` — start dev server
 - `npm run build` — typecheck and build
+- `npm test` — run the unit tests (Vitest)
 - `npm run lint` — run ESLint. CI runs it, and warnings fail too. The
   colour, arbitrary-value and raw-control rules below are lint errors. An
   exception is disabled on its line with a reason after ` -- `; a reason
