@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
 import { useCurrentUser, useInstanceInfo } from "../../session/session";
 import type { Project } from "../../types/projects";
@@ -25,7 +25,7 @@ function isAt(pathname: string, path: string) {
 }
 
 function ProjectItems({ project }: { project: Project }) {
-  const { pathname } = useLocation();
+  const { pathname } = useRouter().useLocation();
   const base = `/projects/${project.id}`;
   const user = useCurrentUser();
   return (
@@ -52,7 +52,7 @@ function ProjectItems({ project }: { project: Project }) {
 }
 
 function ProfileItems() {
-  const { pathname } = useLocation();
+  const { pathname } = useRouter().useLocation();
   return (
     <>
       <NavItem to="/projects" icon="hero-folder" label="Projects" active={pathname === "/projects"} />
@@ -64,7 +64,7 @@ function ProfileItems() {
 }
 
 function AdminItems() {
-  const { pathname } = useLocation();
+  const { pathname } = useRouter().useLocation();
   return (
     <>
       <div className="mt-4" />

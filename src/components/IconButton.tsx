@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode, Ref } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 
 export type IconButtonSize = "sm" | "md" | "lg";

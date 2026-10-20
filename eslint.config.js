@@ -55,6 +55,12 @@ const local = {
   },
 }
 
+const routerMessage = 'Components navigate through useRouter() and Link from src/routing/router.'
+const routerImports = [
+  { name: 'react-router-dom', message: routerMessage },
+  { name: 'react-router', message: routerMessage },
+]
+
 export default defineConfig([
   globalIgnores(['dist', 'storybook-static', 'compare-out']),
   {
@@ -85,6 +91,11 @@ export default defineConfig([
     rules: { 'no-restricted-syntax': ['error', ...designRules, rawControl] },
   },
   {
+    // Utils and annotations navigate through the router adapter too.
+    files: ['src/utils/**/*.{ts,tsx}', 'src/annotations/**/*.{ts,tsx}'],
+    rules: { 'no-restricted-imports': ['error', { paths: routerImports }] },
+  },
+  {
     // The data seam: components get records and permission booleans as props
     // (pages load them), so wiring the backend only touches pages. Stories
     // may use fixtures. An import that still crosses the seam is on the wiring
@@ -95,6 +106,7 @@ export default defineConfig([
       'no-restricted-imports': [
         'error',
         {
+          paths: routerImports,
           patterns: [
             {
               group: ['**/mock-data', '**/mock-data/**'],

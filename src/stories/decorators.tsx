@@ -1,13 +1,16 @@
 import { MemoryRouter } from "react-router-dom";
+import { ReactRouterAdapter } from "../routing/ReactRouterAdapter";
 import type { Decorator } from "@storybook/react";
 import { cn } from "../utils/cn";
 
 /**
- * Wraps a story in a MemoryRouter so components using Link / useLocation work.
+ * Wraps a story in a MemoryRouter, with the adapter that lets components navigate through it.
  */
 export const withRouter: Decorator = (Story) => (
   <MemoryRouter initialEntries={["/"]}>
-    <Story />
+    <ReactRouterAdapter>
+      <Story />
+    </ReactRouterAdapter>
   </MemoryRouter>
 );
 
@@ -19,7 +22,9 @@ export const withRouterAt =
   (path: string): Decorator =>
   (Story) => (
     <MemoryRouter initialEntries={[path]}>
-      <Story />
+      <ReactRouterAdapter>
+        <Story />
+      </ReactRouterAdapter>
     </MemoryRouter>
   );
 

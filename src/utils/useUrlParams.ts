@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useRouter } from "../routing/router";
 
 /** Query params to set (a string) or remove (`null`); others are left alone. */
 export type ParamPatch = Record<string, string | null>;
@@ -10,19 +10,18 @@ export type ParamPatch = Record<string, string | null>;
  * params rather than mutating them.
  */
 export function useUrlParams() {
-  const [search, setSearch] = useSearchParams();
+  const [search, setSearch] = useRouter().useSearchParams();
   const params = useMemo(() => Object.fromEntries(search.entries()) as Record<string, string | undefined>, [search]);
   const update = useCallback(
-    (patch: ParamPatch) =>
-      setSearch((prev) => {
-        const next = new URLSearchParams(prev);
-        for (const [k, v] of Object.entries(patch)) {
-          if (v === null) next.delete(k);
-          else next.set(k, v);
-        }
-        return next;
-      }),
-    [setSearch]
+    (patch: ParamPatch) => {
+      const next = new URLSearchParams(search);
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === null) next.delete(k);
+        else next.set(k, v);
+      }
+      setSearch(next);
+    },
+    [search, setSearch]
   );
   return { params, update };
 }

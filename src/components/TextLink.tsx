@@ -1,5 +1,5 @@
 import type { MouseEvent, ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 
 interface Props {
