@@ -120,6 +120,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
   // Modal brings the backdrop, Escape, click-outside and the focus trap;
   // the panel sits high on the page, like a command palette.
   return (
+    // eslint-disable-next-line no-restricted-syntax -- sized to the viewport
     <Modal open={isOpen} onClose={closePicker} bare className="mt-[15vh] self-start overflow-hidden">
       <SearchList<Row>
         size="lg"

@@ -51,6 +51,7 @@ function TypeOption({ selected, icon, children, onSelect }: { selected: boolean;
         selected && "outline-2 outline-offset-2 outline-primary-600"
       )}
     >
+      {/* eslint-disable-next-line no-restricted-syntax -- visually hidden radio; the card around it is the control */}
       <input type="radio" name="auth_type" className="sr-only" checked={selected} onChange={onSelect} />
       <span className={cn(icon, "h-10 w-10")} />
       {children}

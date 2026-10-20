@@ -29,6 +29,7 @@ export default function CodeLines({
             {/* Monaco's line number gutter (lineNumbersMinChars: 3) */}
             <span
               className={cn(
+                // eslint-disable-next-line no-restricted-syntax -- monospace column, sized in ch
                 "w-[3ch] shrink-0 text-right select-none ml-[0.6ch]",
                 i === 0 ? "text-gray-300" : "text-gray-400"
               )}
@@ -36,6 +37,7 @@ export default function CodeLines({
               {i + 1}
             </span>
             {/* Line decorations column, where the step highlight bar sits. */}
+            {/* eslint-disable-next-line no-restricted-syntax -- monospace column, sized in ch */}
             <span className="w-[2.6ch] shrink-0 relative">
               {highlighted?.has(i + 1) && <span className="absolute inset-y-0 left-1 w-0.5 bg-yellow-400" />}
             </span>

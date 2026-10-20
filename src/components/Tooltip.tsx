@@ -48,14 +48,14 @@ export default function Tooltip({
           {children}
         </RadixTooltip.Trigger>
         <RadixTooltip.Portal>
-          {/* z-[300]: the same layer as Menu and Popover panels, above modals. */}
+          {/* z-300: the same layer as Menu and Popover panels, above modals. */}
           <RadixTooltip.Content
             side={side}
             align={align}
             sideOffset={5}
             // A press on the trigger is the trigger's to handle (it closes unless the trigger prevents it), not a press outside.
             onPointerDownOutside={(e) => trigger.current?.contains(e.target as Node) && e.preventDefault()}
-            className="z-[300] max-w-xs overflow-hidden rounded-md bg-primary-950 px-3 py-1.5 text-center text-xs text-primary-50 shadow-md"
+            className="z-300 max-w-xs overflow-hidden rounded-md bg-primary-950 px-3 py-1.5 text-center text-xs text-primary-50 shadow-md"
             data-ui="tooltip"
           >
             {copied ? "Copied!" : content}

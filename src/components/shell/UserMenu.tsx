@@ -20,6 +20,7 @@ export default function UserMenu({ user }: { user: User }) {
       <Menu
         align="start"
         trigger={
+          // eslint-disable-next-line no-restricted-syntax -- sidebar chrome, styled by the themes through data-ui=account-trigger
           <button
             type="button"
             data-ui="account-trigger"

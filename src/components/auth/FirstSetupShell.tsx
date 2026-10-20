@@ -10,7 +10,7 @@ export default function FirstSetupShell({ children }: { children: ReactNode }) {
   return (
     <main className="flex h-screen">
       <div className="w-48 shrink-0" />
-      <div id="sidebar-panel" data-ui="sidebar" className="fixed z-[100] flex h-full w-48 flex-col">
+      <div id="sidebar-panel" data-ui="sidebar" className="fixed z-100 flex h-full w-48 flex-col">
         <div className="app-logo-container h-20" />
         <nav id="side-menu" className="flex flex-1 flex-col justify-end overflow-hidden">
           <SidebarLogo />

@@ -80,6 +80,7 @@ export default function VolumeBars({
           <div className="h-5" />
         </div>
         <div className="flex flex-1 flex-col">
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
           <div className="relative flex flex-1 items-end gap-[1%] border-b border-gray-100">
             {ticks.slice(1).map((t, i) => (
               <div key={i} className="absolute inset-x-0 border-t border-gray-100" style={{ bottom: `${(t / ceiling) * 100}%` }} />
@@ -97,6 +98,7 @@ export default function VolumeBars({
               </div>
             ))}
           </div>
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
           <div className="flex h-5 gap-[1%] pt-1 text-xs text-gray-500">
             {rows.map((r, i) => (
               <span key={r.at} className="flex-1 truncate text-center">

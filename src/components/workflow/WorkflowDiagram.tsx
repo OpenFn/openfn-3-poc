@@ -99,7 +99,7 @@ export default function WorkflowDiagram({
   const nodeCount = Object.keys(graph.positions).length;
   useEffect(() => {
     fitted.current = fit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refit only for a new workflow or a changed node count, as above
   }, [graph.id, nodeCount]);
 
   const zoomBy = (factor: number, cx = size.width / 2, cy = size.height / 2) => {

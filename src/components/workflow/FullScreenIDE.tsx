@@ -171,6 +171,7 @@ export default function FullScreenIDE({
             <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runCollapsed && panelState === "run-viewer" ? "w-10" : "flex-1")}>
               {panelState === "run-viewer" && runCollapsed && followRunId ? (
                 <div className="flex h-full flex-col items-center gap-3 overflow-hidden pt-3">
+                  {/* eslint-disable-next-line no-restricted-syntax -- vertical tab on the collapsed run panel; Tabs can't set vertical text */}
                   <button
                     type="button"
                     style={{ writingMode: "vertical-rl" }}
@@ -182,6 +183,7 @@ export default function FullScreenIDE({
                   </button>
                   <div className="flex flex-col items-center gap-1">
                     {(["log", "input", "output"] as const).map((t) => (
+                      // eslint-disable-next-line no-restricted-syntax -- vertical tab on the collapsed run panel; Tabs can't set vertical text
                       <button
                         key={t}
                         type="button"

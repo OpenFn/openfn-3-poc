@@ -60,7 +60,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 /** Returns `toast(message, tone?)`. Outside a provider it does nothing, so stories don't need one. */
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components -- useToast belongs beside ToastProvider
 export function useToast(): ShowToast {
   return useContext(ToastContext);
 }

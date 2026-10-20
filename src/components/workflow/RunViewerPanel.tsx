@@ -82,6 +82,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
                 const selected = s.id === selectedStepId;
                 return (
                   <li key={s.id}>
+                    {/* eslint-disable-next-line no-restricted-syntax -- a whole step row is the control */}
                     <button
                       type="button"
                       onClick={() => onSelectStep(s)}
