@@ -8,6 +8,7 @@ import { Radio } from "../Inputs";
 import Popover from "../Popover";
 import Toggle from "../Toggle";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
+import Tooltip from "../Tooltip";
 
 /**
  * Floating settings button in the bottom-right corner. Its panel opens and
@@ -84,10 +85,13 @@ function ThemeName({ theme }: { theme: ThemeMeta }) {
         ))}
       </span>
       {theme.name}
-      <span
-        title={dark ? "Dark" : "Light"}
-        className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-gray-200")}
-      />
+      <Tooltip content={dark ? "Dark" : "Light"}>
+        <span
+          role="img"
+          aria-label={dark ? "Dark" : "Light"}
+          className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-gray-200")}
+        />
+      </Tooltip>
     </span>
   );
 }

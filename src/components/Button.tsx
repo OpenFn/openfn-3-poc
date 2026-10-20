@@ -1,7 +1,8 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, Ref } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
+import Tooltip from "./Tooltip";
 
 export type ButtonTheme = "primary" | "secondary" | "danger" | "success" | "warning";
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
@@ -105,7 +106,6 @@ export default function Button({
   const shared = {
     id,
     className: classes,
-    title: tooltip,
     "data-ui": "button",
     "data-variant": theme,
     "data-pending": pending || undefined,
@@ -119,15 +119,16 @@ export default function Button({
   );
   // Links take the same handlers and aria props as buttons.
   const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
+  const wrap = (el: ReactElement) => <Tooltip content={tooltip}>{el}</Tooltip>;
   if (to && !disabled) {
-    return (
+    return wrap(
       <Link to={to} {...link}>
         {children}
       </Link>
     );
   }
   if (href && !disabled) {
-    return (
+    return wrap(
       <a href={href} download={download} {...link}>
         {children}
       </a>
@@ -139,11 +140,5 @@ export default function Button({
     </button>
   );
   // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return disabled && tooltip && !pending ? (
-    <span title={tooltip} className="inline-flex">
-      {button}
-    </span>
-  ) : (
-    button
-  );
+  return wrap(disabled && tooltip && !pending ? <span className="inline-flex">{button}</span> : button);
 }

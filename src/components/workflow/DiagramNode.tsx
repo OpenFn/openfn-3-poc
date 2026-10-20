@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Button from "../Button";
 import { NODE_SIZE, STROKE, nodeShapeStyle, type NodeRunState, EDGE_COLOR, EDGE_COLOR_SELECTED } from "./diagramGeometry";
+import Tooltip from "../Tooltip";
 
 const RUN_ICONS: Record<string, [icon: string, color: string]> = {
   running: ["hero-arrow-path-solid animate-spin", "text-blue-500"],
@@ -72,21 +73,25 @@ export default function DiagramNode({
       <div className="flex cursor-pointer">
         <div className="relative">
           {run && shape === "rect" && (
-            <div className="absolute -left-2 -top-2 pointer-events-auto z-10" title={runState === "running" ? "Step is running" : undefined}>
-              <div className="relative w-8 h-8">
-                <div className="absolute inset-0 w-6 h-6 ml-1 mt-1 bg-white rounded-full" />
-                <div className={cn("relative flex justify-center items-center w-8 h-8 rounded-full", run[1])}>
-                  <span className={cn(run[0], "w-full h-full")} />
+            <Tooltip content={runState === "running" ? "Step is running" : undefined}>
+              <div className="absolute -left-2 -top-2 pointer-events-auto z-10">
+                <div className="relative w-8 h-8">
+                  <div className="absolute inset-0 w-6 h-6 ml-1 mt-1 bg-white rounded-full" />
+                  <div className={cn("relative flex justify-center items-center w-8 h-8 rounded-full", run[1])}>
+                    <span className={cn(run[0], "w-full h-full")} />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Tooltip>
           )}
           {startedBy && (
-            <div className="absolute -top-2 flex gap-2 items-center z-10" style={{ left: "calc(100% - 24px)" }} title={`Started by ${startedBy}`}>
-              <div className="flex justify-center items-center w-7 h-7 rounded-full text-gray-50 border-gray-700 bg-gray-600">
-                <span className="hero-play-solid w-3 h-3" />
+            <Tooltip content={`Started by ${startedBy}`}>
+              <div className="absolute -top-2 flex gap-2 items-center z-10" style={{ left: "calc(100% - 24px)" }}>
+                <div className="flex justify-center items-center w-7 h-7 rounded-full text-gray-50 border-gray-700 bg-gray-600">
+                  <span className="hero-play-solid w-3 h-3" />
+                </div>
               </div>
-            </div>
+            </Tooltip>
           )}
           {runMeta && (
             <div className="absolute top-2 ml-2 flex gap-2 items-center text-nowrap font-mono" style={{ left: "calc(100% + 6px)" }}>

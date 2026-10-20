@@ -1,6 +1,7 @@
 import { formatNumber } from "../../../utils/format";
 import type { RunBucket } from "../../../types/workflow-health";
 import { CANCELLED, DOT, EMPTY, FAILED, FRAME, LEGEND, SUCCESS } from "./palette";
+import Tooltip from "../../Tooltip";
 
 const SERIES = [
   { key: "success", label: "Success", color: SUCCESS },
@@ -86,16 +87,14 @@ export default function VolumeBars({
               <div key={i} className="absolute inset-x-0 border-t border-gray-100" style={{ bottom: `${(t / ceiling) * 100}%` }} />
             ))}
             {rows.map((r) => (
-              <div
-                key={r.at}
-                className="flex h-full flex-1 flex-col-reverse hover:bg-gray-50"
-                title={`${rangeLabel(r.at, hours, timezone)}: ${totals.map((t) => `${t.label} ${r[t.key]}`).join(", ")}`}
-              >
-                {[...shown].reverse().map((k) => {
-                  const color = SERIES.find((s) => s.key === k)!.color;
-                  return <div key={k} className="mx-auto w-4/5 max-w-16" style={{ height: `${(r[k] / ceiling) * 100}%`, backgroundColor: color }} />;
-                })}
-              </div>
+              <Tooltip key={r.at} content={`${rangeLabel(r.at, hours, timezone)}: ${totals.map((t) => `${t.label} ${r[t.key]}`).join(", ")}`}>
+                <div className="flex h-full flex-1 flex-col-reverse hover:bg-gray-50">
+                  {[...shown].reverse().map((k) => {
+                    const color = SERIES.find((s) => s.key === k)!.color;
+                    return <div key={k} className="mx-auto w-4/5 max-w-16" style={{ height: `${(r[k] / ceiling) * 100}%`, backgroundColor: color }} />;
+                  })}
+                </div>
+              </Tooltip>
             ))}
           </div>
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}

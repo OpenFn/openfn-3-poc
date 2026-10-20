@@ -13,6 +13,7 @@ import UuidChip from "../UuidChip";
 import { RunCard } from "./RunDetails";
 import { cn } from "../../utils/cn";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /**
  * A work order row in History plus, when expanded, its runs and steps
@@ -48,15 +49,17 @@ export default function WorkOrderRow({
         onClick={runs.length ? () => setExpanded((e) => !e) : undefined}
       >
         <Td className="!pr-1">
-          <span title={available ? undefined : zeroPersistence}>
-            <Checkbox
-              label={<span className="sr-only">Select work order</span>}
-              className="disabled:bg-gray-100"
-              checked={selected}
-              disabled={!available}
-              onChange={(e) => onSelect?.(e.target.checked)}
-            />
-          </span>
+          <Tooltip content={available ? undefined : zeroPersistence}>
+            <span>
+              <Checkbox
+                label={<span className="sr-only">Select work order</span>}
+                className="disabled:bg-gray-100"
+                checked={selected}
+                disabled={!available}
+                onChange={(e) => onSelect?.(e.target.checked)}
+              />
+            </span>
+          </Tooltip>
         </Td>
         <Td>
           <UuidChip uuid={uuidOf(wo.id)} to={`/projects/${projectId}/history?filters[workorder_id]=${wo.id}`} />
@@ -67,14 +70,19 @@ export default function WorkOrderRow({
               to={`/projects/${projectId}/w/${wo.workflowId}?run=${lastRun.id}`}
               variant="plain"
               className="workflow-name block max-w-50 truncate text-gray-900 hover:text-primary-600"
-              title={`${wo.workflowName}\nClick to view`}
+              title={
+                <>
+                  {wo.workflowName}
+                  <span className="block text-xs text-gray-400">Click to view</span>
+                </>
+              }
             >
               {wo.workflowName}
             </TextLink>
           ) : (
-            <span title={wo.workflowName} className="workflow-name block max-w-50 truncate text-gray-900">
-              {wo.workflowName}
-            </span>
+            <Tooltip content={wo.workflowName}>
+              <span className="workflow-name block max-w-50 truncate text-gray-900">{wo.workflowName}</span>
+            </Tooltip>
           )}
         </Td>
         <Td>

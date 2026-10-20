@@ -45,8 +45,8 @@ export default function ChannelRequestsTable({
           const error = r.events.find((e) => e.type === "error")?.errorMessage;
           return (
             <Tr key={r.id} id={`request-${r.id}`}>
-              <Td title={r.requestId}>
-                <TextLink to={`/projects/${projectId}/history/channels/${r.id}`} className="font-mono">
+              <Td>
+                <TextLink to={`/projects/${projectId}/history/channels/${r.id}`} title={r.requestId} className="font-mono">
                   {shortUuid(r.requestId)}
                 </TextLink>
               </Td>

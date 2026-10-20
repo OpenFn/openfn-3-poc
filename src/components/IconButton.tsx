@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
+import Tooltip from "./Tooltip";
 
 export type IconButtonSize = "sm" | "md" | "lg";
 
@@ -64,18 +65,22 @@ export default function IconButton({
     className
   );
   const content = typeof icon === "string" ? <span className={cn(icon, s.icon)} aria-hidden="true" /> : icon;
-  const common = { "aria-label": label, title: title ?? label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
+  const common = { "aria-label": label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
 
   if ((to || href) && !rest.disabled) {
     const onClick = rest.onClick as unknown as MouseEventHandler<HTMLAnchorElement> | undefined;
-    return to ? (
-      <Link to={to} onClick={onClick} {...common}>
-        {content}
-      </Link>
-    ) : (
-      <a href={href} onClick={onClick} {...(external && { target: "_blank", rel: "noopener noreferrer" })} {...common}>
-        {content}
-      </a>
+    return (
+      <Tooltip content={title ?? label}>
+        {to ? (
+          <Link to={to} onClick={onClick} {...common}>
+            {content}
+          </Link>
+        ) : (
+          <a href={href} onClick={onClick} {...(external && { target: "_blank", rel: "noopener noreferrer" })} {...common}>
+            {content}
+          </a>
+        )}
+      </Tooltip>
     );
   }
   const button = (
@@ -84,11 +89,5 @@ export default function IconButton({
     </button>
   );
   // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return rest.disabled ? (
-    <span title={common.title} className="inline-flex">
-      {button}
-    </span>
-  ) : (
-    button
-  );
+  return <Tooltip content={title ?? label}>{rest.disabled ? <span className="inline-flex">{button}</span> : button}</Tooltip>;
 }

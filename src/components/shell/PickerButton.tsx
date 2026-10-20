@@ -1,4 +1,5 @@
 import { cn } from "../../utils/cn";
+import Tooltip from "../Tooltip";
 
 interface Props {
   label: string;
@@ -30,7 +31,7 @@ export default function PickerButton({
   const truncated = isSandbox && parts.length > 2;
   const visible = truncated ? parts.slice(-2) : parts;
 
-  return (
+  const button = (
     // eslint-disable-next-line no-restricted-syntax -- debt: a secondary Button that takes the sandbox colour at runtime
     <button
       type="button"
@@ -38,7 +39,6 @@ export default function PickerButton({
         e.preventDefault();
         document.body.dispatchEvent(new CustomEvent(openEvent));
       }}
-      title={truncated ? parts.join(" > ") : undefined}
       className={cn(
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
         isSandbox
@@ -66,4 +66,5 @@ export default function PickerButton({
       <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? "text-white/80" : "text-gray-400")} />
     </button>
   );
+  return <Tooltip content={truncated ? parts.join(" > ") : undefined}>{button}</Tooltip>;
 }

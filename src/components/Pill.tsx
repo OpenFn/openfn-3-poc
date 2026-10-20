@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
 import IconButton from "./IconButton";
+import Tooltip from "./Tooltip";
 
 export type PillColor = "gray" | "red" | "orange" | "yellow" | "green" | "blue" | "primary" | "purple" | "pink" | "dark";
 
@@ -48,12 +49,11 @@ export default function Pill({
   className?: string;
   children: ReactNode;
 }) {
-  return (
+  const pill = (
     <span
       id={id}
       aria-label={ariaLabel}
       data-ui="tag"
-      title={title}
       className={cn(
         "inline-flex items-center gap-1 whitespace-nowrap px-2 py-0.5 text-xs font-medium",
         square ? "rounded-md" : "rounded-full",
@@ -75,4 +75,5 @@ export default function Pill({
       )}
     </span>
   );
+  return <Tooltip content={title}>{pill}</Tooltip>;
 }

@@ -14,6 +14,7 @@ import NewRunButton from "./NewRunButton";
 import SearchInput from "../SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatLocalDate, formatShortLocalDateTime, shortUuid, uuidOf } from "../../utils/format";
+import Tooltip from "../Tooltip";
 
 type Tab = "empty" | "custom" | "existing";
 
@@ -145,7 +146,13 @@ export default function ManualRunPanel({
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     {i === 0 ? (
-                      <span className="hero-star-solid size-4 shrink-0 text-primary-400 group-hover:text-primary-600" title="Current dataclip for this step" />
+                      <Tooltip content="Current dataclip for this step">
+                        <span
+                          role="img"
+                          aria-label="Current dataclip for this step"
+                          className="hero-star-solid size-4 shrink-0 text-primary-400 group-hover:text-primary-600"
+                        />
+                      </Tooltip>
                     ) : (
                       <span className="hero-document-text size-4 shrink-0 group-hover:text-primary-600" />
                     )}

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "../../routing/router";
 import { cn } from "../../utils/cn";
+import Tooltip from "../Tooltip";
 
 interface Props {
   /** In-app route. */
@@ -28,9 +29,9 @@ export default function NavItem({ to, href, target = "_blank", icon, label, acti
   const content: ReactNode = (
     <>
       <span className={cn(icon, "h-5 w-5")} />
-      <span className="menu-item-text truncate" title={title}>
-        {label}
-      </span>
+      <Tooltip content={title} side="right">
+        <span className="menu-item-text truncate">{label}</span>
+      </Tooltip>
     </>
   );
 
