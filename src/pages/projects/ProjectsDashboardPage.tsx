@@ -7,6 +7,7 @@ import { useToast } from "../../components/Toast";
 import ProjectsTable from "../../components/projects/ProjectsTable";
 import WelcomeBanner from "../../components/projects/WelcomeBanner";
 import { projectsOverviewFor } from "../../mock-data/dashboard-stats";
+import { simulateRequest } from "../../mock-data/request";
 import { useCurrentUser } from "../../session/session";
 
 /**
@@ -38,7 +39,10 @@ export default function ProjectsDashboardPage() {
           <CreateProjectModal
             open={creating}
             onClose={() => setCreating(false)}
-            onCreate={() => toast("Project created successfully")}
+            onCreate={async () => {
+              await simulateRequest();
+              toast("Project created successfully");
+            }}
           />
         </div>
       </Centered>
