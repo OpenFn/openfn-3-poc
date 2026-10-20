@@ -3,6 +3,7 @@ import { TextArea } from "../Inputs";
 import NameField from "../NameField";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
 
 /**
  * "Create a new project" (DashboardLive.ProjectCreationModal): Name, with
@@ -22,7 +23,7 @@ export default function CreateProjectModal({
   const form = useForm({
     initial: { rawName: "", description: "" },
     validate: ({ rawName, description }) => ({
-      rawName: urlSafeName(rawName) ? [] : ["can't be blank"],
+      rawName: blank(urlSafeName(rawName)),
       description: description.length > 240 ? ["should be at most 240 character(s)"] : [],
     }),
   });
@@ -39,12 +40,10 @@ export default function CreateProjectModal({
       title="Create a new project"
       size="md"
       formId="project-form"
-      onSubmit={async () => {
-        if (!form.check()) return;
-        await onCreate?.({ name: urlSafeName(form.values.rawName), description: form.values.description });
+      onSubmit={form.modalSubmit(async ({ rawName, description }) => {
+        await onCreate?.({ name: urlSafeName(rawName), description });
         close();
-      }}
-      onFieldErrors={form.setErrors}
+      })}
       submitLabel="Create project"
       cancelId="cancel-project-creation"
     >
@@ -52,7 +51,6 @@ export default function CreateProjectModal({
         id="project_raw_name"
         required
         {...form.fieldProps("rawName")}
-        onChange={(raw) => form.set("rawName", raw)}
         badgeLabel="Your project will be named"
       />
       <div className="space-y-2">

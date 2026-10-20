@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
@@ -22,6 +22,7 @@ import { defaultSettingsHash, projectSettingsTabs } from "../../components/proje
 import { collectionsIn, dataRetentionPeriods, projectFilesIn, projectSettingsFor, purgeDeletedAfterDays, vcsFor, webhookAuthMethodsIn } from "../../mock-data/project-settings";
 import { credentialsFor, keychainCredentialsIn, oauthClientsFor } from "../../mock-data/credentials";
 import { findProject } from "../../mock-data/projects";
+import type { Project } from "../../types/projects";
 import { simulateRequest } from "../../mock-data/request";
 import { users } from "../../mock-data/users";
 import { permissionsFor } from "../../permissions";
@@ -40,7 +41,10 @@ export default function ProjectSettingsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const user = useCurrentUser();
-  const project = findProject(projectId);
+  // Saved Setup changes per project, until the page is wired to the backend.
+  const [edits, setEdits] = useState<Record<string, Partial<Project>>>({});
+  const found = findProject(projectId);
+  const project = found && { ...found, ...edits[found.id] };
 
   if (!project) {
     return (
@@ -69,8 +73,9 @@ export default function ProjectSettingsPage() {
         parentProject={parentProject}
         canEditProject={perms.canEditProject}
         canDeleteProject={perms.canDeleteProject}
-        onUpdate={async () => {
+        onUpdate={async (changes) => {
           await simulateRequest();
+          setEdits((e) => ({ ...e, [project.id]: { ...e[project.id], ...changes } }));
           toast("Project updated successfully");
         }}
       />

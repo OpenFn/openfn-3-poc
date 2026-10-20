@@ -11,6 +11,7 @@ import type { Project } from "../../types/projects";
 import { errorMessage } from "../../utils/errors";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
 
 interface Props {
   project: Project;
@@ -26,14 +27,15 @@ interface Props {
 
 /**
  * The Setup tab (`#project`, settings.html.heex:67-313): Project Identity
- * form, Concurrency Override, Export, and the danger zone. Each form's Save
- * stays disabled until it has changes.
+ * form, Concurrency Override, Export, and the danger zone. As in Lightning,
+ * Identity's Save is enabled whenever the user can edit; Concurrency's waits
+ * for a change.
  */
 export default function ProjectSetupPanel({ project, env, parentProject, canEditProject, canDeleteProject, onUpdate }: Props) {
   const sandbox = project.parentId !== null;
   const identity = useForm({
     initial: { rawName: project.name, description: project.description },
-    validate: ({ rawName }) => ({ rawName: urlSafeName(rawName) ? [] : ["can't be blank"] }),
+    validate: ({ rawName }) => ({ rawName: blank(urlSafeName(rawName)) }),
   });
   const concurrency = useForm({ initial: { serial: project.concurrency === 1 } });
 
@@ -74,7 +76,6 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
             label="Project name"
             disabled={!canEditProject}
             {...identity.fieldProps("rawName")}
-            onChange={(raw) => identity.set("rawName", raw)}
             badgeLabel="Your project will be named"
           />
           <TextInput
@@ -97,7 +98,7 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
           <Button
             id="project-identity-submit-btn"
             type="submit"
-            disabled={!(identity.dirty && canEditProject)}
+            disabled={!canEditProject}
             pending={identity.pending}
           >
             Save

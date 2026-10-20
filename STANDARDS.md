@@ -11,7 +11,7 @@ Status of each pattern, as of this commit:
 | # | Pattern | Status | Where |
 |---|---------|--------|-------|
 | 1 | Async action | **Done** | `useAction`, `Button pending`, `FormModal`, `ConfirmModal`, `Spinner` |
-| 2 | Form with server errors | **Done** | `useForm`, `FormModal onFieldErrors`; render-time validation remains in 3 files (see below) |
+| 2 | Form with server errors | **Done** | `useForm` (`submit`, `modalSubmit`); render-time validation remains in 3 files (see below) |
 | 3 | Server-driven list | Todo | History first |
 | 4 | Data down, mutations up | Convention; 5 panels break it | see list below |
 | 5 | Resource loading states | Todo | needs `AsyncBoundary`, 404, error page |
@@ -53,25 +53,30 @@ disclosure, copying to clipboard).
 One form helper owns values, dirty state, client validation and server
 field errors: `useForm` (`src/utils/useForm.ts`).
 
-- `useForm({ initial, validate })` returns `values`, `set(field, value)`,
-  `errors` (per field, `string[]`, client and server merged), `dirty`,
-  `valid`, `reset()`, and `fieldProps(name)` to spread onto `TextInput` etc.
+- `useForm({ initial, validate, clearOnSave })` returns `values`,
+  `set(field, value)`, `errors` (per field, `string[]`, client and server
+  merged), `dirty`, `reset()`, and `fieldProps(name)` to spread onto
+  `TextInput`, `NameField` etc. `clearOnSave` empties the form after a
+  successful save (password forms) instead of keeping what was typed.
 - A page form submits with `onSubmit={form.submit(save)}`. It runs `save`
   through `useAction` (pattern 1), so `form.pending` goes on the Save button
   and `form.error` shows as an `Alert` by the form (pattern 7). On success
   the submitted values become the saved ones and the form is clean again.
-  A `FormModal` form keeps its own `onSubmit` and passes
-  `onFieldErrors={form.setErrors}`.
+  A `FormModal` form passes `onSubmit={form.modalSubmit(save)}` and closes
+  itself inside `save`; the modal shows pending and other failures.
 - Client validation runs on blur and on submit, not on every keystroke.
+  `blank` from `utils/validate.ts` is the required-field check.
 - A `RequestError` with `fieldErrors` from submit lands on the matching
-  fields (`FormModal onFieldErrors` already routes it). Lightning's changeset
-  messages ("can't be blank", "has already been taken") are used verbatim.
+  fields. If any key isn't a form field (Lightning's `current_password`
+  where the form says `password`), the submit fails with the error's
+  message, so nothing is lost silently. Lightning's changeset messages
+  ("can't be blank", "has already been taken") are used verbatim.
 - Submit is never disabled because the form is invalid: submitting shows
   every error and doesn't save, so the user can always find out why.
   (Lightning disables it, and the reason can sit on a field you haven't
-  touched.) A `FormModal` form calls `form.check()` first in its `onSubmit`
-  and returns if it's false.
-- Save is disabled until `dirty` on every settings form: nothing to save.
+  touched.)
+- Whether Save waits for changes follows Lightning form by form: Project
+  Identity's doesn't, Concurrency's and basic info's do.
 - Field ids keep Lightning's (`project-settings-form_raw_name`), so the
   compare tooling and the annotations still line up. An input without an
   `id` gets a generated one, so every label is linked to its control.

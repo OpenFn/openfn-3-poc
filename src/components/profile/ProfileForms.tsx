@@ -8,7 +8,7 @@ import type { User } from "../../types/users";
 import { contactPreferenceOptions, contactPreferenceTooltip } from "../../constants";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
-import { isValidEmail } from "../../utils/validate";
+import { blank, isValidEmail } from "../../utils/validate";
 
 /**
  * The three forms of ProfileLive.FormComponent (profile_live/form_component.html.heex),
@@ -42,8 +42,6 @@ function FormCard({
 }
 
 type BasicInfo = Pick<User, "firstName" | "lastName" | "contactPreference">;
-
-const blank = (value: string) => (value.trim() ? [] : ["can't be blank"]);
 
 export function BasicInfoForm({ user, onSave }: { user: User; onSave?: (u: BasicInfo) => Promise<void> }) {
   const form = useForm<BasicInfo>({
@@ -82,9 +80,10 @@ export function ChangeEmailForm({ onSubmit }: { onSubmit?: (email: string) => Pr
   const form = useForm({
     initial: { email: "", password: "" },
     validate: ({ email, password }) => ({
-      email: email.trim() ? (isValidEmail(email) ? [] : ["must be a valid email address"]) : ["can't be blank"],
+      email: email.trim() && !isValidEmail(email) ? ["must be a valid email address"] : blank(email),
       password: blank(password),
     }),
+    clearOnSave: true,
   });
   return (
     <FormCard
@@ -108,10 +107,11 @@ export function ChangePasswordForm({ onSubmit }: { onSubmit?: () => Promise<void
   const form = useForm({
     initial: { password: "", confirmation: "", current: "" },
     validate: ({ password, confirmation, current }) => ({
-      password: password === "" ? ["can't be blank"] : password.length < 12 ? ["should be at least 12 character(s)"] : [],
+      password: password.trim() && password.length < 12 ? ["should be at least 12 character(s)"] : blank(password),
       confirmation: confirmation !== password ? ["does not match password"] : [],
       current: blank(current),
     }),
+    clearOnSave: true,
   });
   return (
     <FormCard

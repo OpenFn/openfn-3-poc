@@ -17,6 +17,7 @@ import { useCurrentUser } from "../../session/session";
 // eslint-disable-next-line no-restricted-imports -- wiring: credential schemas come from the adaptor registry.
 import { credentialTypeOptions, fieldsForSchema } from "../../mock-data/credentials";
 import { formatSchemaName } from "../../utils/format";
+import { blank } from "../../utils/validate";
 import type { Credential, OauthClient } from "../../types/credentials";
 
 interface Props {
@@ -219,7 +220,7 @@ export default function CredentialFormModal({
             }
             placeholder="e.g., production, staging, development, test, qa"
             value={env.name}
-            errors={env.name.trim() ? [] : ["can't be blank"]}
+            errors={blank(env.name)}
             onChange={(e) =>
               setEnvs((list) => list.map((x, i) => (i === tab ? { ...x, name: e.target.value } : x)))
             }

@@ -27,3 +27,12 @@ export const ServerFieldError: Story = {
     doc.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
   },
 };
+
+/** The server's error is keyed `name`, which isn't a form field: it shows as an Alert in the modal instead. */
+export const ServerErrorOnOtherField: Story = {
+  args: {
+    onCreate: () =>
+      Promise.reject(new RequestError("Name has already been taken", { fieldErrors: { name: ["has already been taken"] } })),
+  },
+  play: ServerFieldError.play,
+};

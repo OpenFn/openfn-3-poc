@@ -13,6 +13,8 @@ export interface FormOptions<V> {
   initial: V;
   /** Client validation: messages for the invalid fields, nothing for the rest. */
   validate?: (values: V) => FieldErrors<V>;
+  /** Back to `initial` after a successful save, instead of keeping what was typed (password forms). */
+  clearOnSave?: boolean;
 }
 
 /**
@@ -26,10 +28,14 @@ export interface FormOptions<V> {
  * `useAction` (`pending`, `error`, double-submit guard), puts a
  * `RequestError`'s field errors on the fields, and on success makes the
  * submitted values the saved ones, so the form is clean again. A FormModal
- * form passes its own `onSubmit` and routes field errors back with
- * `onFieldErrors={form.setErrors}`.
+ * form passes `onSubmit={form.modalSubmit(save)}`, which validates and puts
+ * field errors on the fields the same way; the modal shows pending and any
+ * other failure.
+ *
+ * A server field error keyed by something that isn't a form field can't be
+ * shown on a field, so the submit fails with the error's message instead.
  */
-export function useForm<V extends object>({ initial, validate }: FormOptions<V>) {
+export function useForm<V extends object>({ initial, validate, clearOnSave = false }: FormOptions<V>) {
   const [saved, setSaved] = useState(initial);
   const [values, setValues] = useState(initial);
   const [touched, setTouched] = useState<Partial<Record<keyof V, boolean>>>({});
@@ -56,17 +62,29 @@ export function useForm<V extends object>({ initial, validate }: FormOptions<V>)
     return valid;
   };
 
-  const action = useAction(async (save: (values: V) => void | Promise<void>) => {
+  /** Runs `save`; resolves false when it failed with field errors that are now on the fields. */
+  const runSave = async (save: (values: V) => void | Promise<void>) => {
     try {
       await save(values);
+      return true;
     } catch (e) {
       if (e instanceof RequestError && e.hasFieldErrors) {
         setServerErrors(e.fieldErrors as FieldErrors<V>);
-        return;
+        if (Object.keys(e.fieldErrors).every((k) => k in values)) return false;
       }
       throw e;
     }
-    setSaved(values);
+  };
+
+  const action = useAction(async (save: (values: V) => void | Promise<void>) => {
+    if (!(await runSave(save))) return;
+    if (clearOnSave) {
+      setValues(saved);
+      setTouched({});
+      setSubmitted(false);
+    } else {
+      setSaved(values);
+    }
   });
 
   return {
@@ -74,12 +92,9 @@ export function useForm<V extends object>({ initial, validate }: FormOptions<V>)
     set,
     errors,
     dirty,
-    valid,
     pending: action.pending,
     /** The last failed submit that wasn't field errors; show it as an `Alert` by the form. */
     error: action.error,
-    /** Puts server field errors on the fields, e.g. from `FormModal onFieldErrors`. */
-    setErrors: (fieldErrors: Record<string, string[]>) => setServerErrors(fieldErrors as FieldErrors<V>),
     /** Back to the saved values (or `next`, which becomes the saved values), with no errors showing. */
     reset: (next: V = saved) => {
       setSaved(next);
@@ -89,19 +104,23 @@ export function useForm<V extends object>({ initial, validate }: FormOptions<V>)
       setServerErrors({});
       action.reset();
     },
-    /** Value, change, blur and errors for a `TextInput`, `TextArea`, `Select` or `PasswordInput`. */
+    /** Value, change, blur and errors for a `TextInput`, `TextArea`, `Select`, `PasswordInput` or `NameField`. */
     fieldProps: <K extends StringKeys<V>>(field: K) => ({
       value: values[field] as string,
       errors: errors[field],
-      onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => set(field, e.target.value as V[K]),
+      // NameField calls onChange with the typed string, the inputs with an event.
+      onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string) =>
+        set(field, (typeof e === "string" ? e : e.target.value) as V[K]),
       onBlur: () => setTouched((t) => ({ ...t, [field]: true })),
     }),
-    /** Shows every client error and says whether the form is valid. A FormModal form returns early from its `onSubmit` when it's false. */
-    check,
     /** A form `onSubmit` handler: shows every client error, and runs `save` if the form is valid. */
     submit: (save: (values: V) => void | Promise<void>) => (e?: FormEvent) => {
       e?.preventDefault();
       if (check()) void action.run(save);
+    },
+    /** A `FormModal` `onSubmit`: shows every client error, and runs `save` if the form is valid. Close the modal inside `save`. */
+    modalSubmit: (save: (values: V) => void | Promise<void>) => async () => {
+      if (check()) await runSave(save);
     },
   };
 }
