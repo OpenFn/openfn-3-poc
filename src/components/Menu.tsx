@@ -8,7 +8,7 @@ import {
   MenuSeparator,
 } from "@headlessui/react";
 import { Fragment, type MouseEvent, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import { floatingPanelClasses, type FloatingAlign, type PanelProps } from "./floating";
 

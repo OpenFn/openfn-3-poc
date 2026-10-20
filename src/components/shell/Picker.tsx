@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
 import Modal from "../Modal";
 import SearchList from "../SearchList";
@@ -77,7 +77,7 @@ const iconClasses = (active: boolean) => cn("shrink-0 group-hover:text-white/70"
  * dispatches `openEvent`; search, arrow keys (wrapping) and Enter navigate.
  */
 export default function Picker({ items: allItems, currentId, placeholder, emptyMessage, viewAllLabel, viewAllHref, openEvent, defaultOpen = false }: PickerProps) {
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [searchTerm, setSearchTerm] = useState("");
 

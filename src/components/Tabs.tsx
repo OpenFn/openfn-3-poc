@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, type To } from "react-router-dom";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 
 export interface Tab<T extends string = string> {
@@ -8,7 +8,7 @@ export interface Tab<T extends string = string> {
   /** Hero icon class shown before the label. */
   icon?: string;
   /** Make the tab a route link (e.g. History's Work Orders / Channel Logs). */
-  to?: To;
+  to?: string;
   disabled?: boolean;
   /** Tooltip on a disabled tab: why it can't be opened. */
   disabledReason?: string;

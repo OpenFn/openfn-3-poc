@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "../../routing/router";
 import type { WorkflowStats } from "../../types/workflows";
 import { cn } from "../../utils/cn";
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
@@ -41,7 +41,7 @@ export default function WorkflowsTable({
   onToggle?: (workflowId: string, enabled: boolean) => void;
   onDelete?: (workflowId: string) => void;
 }) {
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
   const { rows, thProps } = useTableSort({ rows: stats, sortMap, initialKey: "name" });
   const history = `/projects/${projectId}/history`;
 

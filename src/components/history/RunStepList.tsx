@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useRouter } from "../../routing/router";
 import type { Run, Step } from "../../types/history";
 import { cn } from "../../utils/cn";
 import StepIcon from "./StepIcon";
@@ -23,7 +23,7 @@ export default function RunStepList({
   projectId: string;
   workflowId: string;
 }) {
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
   return (
     <ul role="list" className="-mb-8 flex-1">
       {steps.map((step) => {
