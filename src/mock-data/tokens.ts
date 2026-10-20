@@ -26,7 +26,7 @@ export function generateFakeToken(): ApiToken {
   return {
     id: `token-${Date.now()}`,
     token: `demo.fake-token-not-real.${suffix}`,
-    insertedAt: new Date().toISOString(),
+    insertedAt: new Date().toISOString().replace(/\.\d+Z$/, "Z"), // utc_datetime: whole seconds, like Lightning
     lastUsedAt: null,
   };
 }

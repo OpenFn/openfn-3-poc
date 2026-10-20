@@ -1,35 +1,52 @@
 import * as RadixTooltip from "@radix-ui/react-tooltip";
-import { useRef, type ReactNode } from "react";
+import { useRef, useState, type ReactNode, type SyntheticEvent } from "react";
+import { useCopy } from "../utils/useCopy";
 
 /**
  * Lightning's React `Tooltip` (assets/js/components/Tooltip.tsx), on Radix.
  * The child must be a single element that can take a ref; it becomes the
- * trigger. No `content` renders the child alone. `open` and `onOpenChange`
- * control it, e.g. to hold it open while it says "Copied!".
+ * trigger. No `content` renders the child alone. With `copy`, clicking the
+ * child copies that text and the tooltip says "Copied!" for 1.5 seconds,
+ * then hides, like Lightning's Tooltip and Copy hooks.
  */
 export default function Tooltip({
   children,
   content,
+  copy,
   side = "bottom",
   align = "center",
   delayDuration = 200,
-  open,
-  onOpenChange,
 }: {
   children: ReactNode;
   content: ReactNode;
+  /** Text to copy when the child is clicked. */
+  copy?: string;
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
   delayDuration?: number;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
 }) {
   const trigger = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const { copied, copy: copyNow } = useCopy(copy ?? "", 1500);
   if (!content) return <>{children}</>;
+  // Like Lightning's Copy hook, the click copies and goes no further, even inside a link or a clickable row.
+  const onCopy = (e: SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    copyNow();
+    setOpen(false); // "Copied!" holds it open, then it hides.
+  };
   return (
     <RadixTooltip.Provider delayDuration={delayDuration}>
-      <RadixTooltip.Root open={open} onOpenChange={onOpenChange}>
-        <RadixTooltip.Trigger asChild ref={trigger}>{children}</RadixTooltip.Trigger>
+      <RadixTooltip.Root open={open || copied} onOpenChange={setOpen}>
+        <RadixTooltip.Trigger
+          asChild
+          ref={trigger}
+          // Preventing the press stops Radix closing the tooltip, so it doesn't blink before "Copied!".
+          {...(copy !== undefined && { onClick: onCopy, onPointerDown: (e: SyntheticEvent) => e.preventDefault() })}
+        >
+          {children}
+        </RadixTooltip.Trigger>
         <RadixTooltip.Portal>
           {/* z-[300]: the same layer as Menu and Popover panels, above modals. */}
           <RadixTooltip.Content
@@ -41,11 +58,16 @@ export default function Tooltip({
             className="z-[300] max-w-xs overflow-hidden rounded-md bg-primary-950 px-3 py-1.5 text-center text-xs text-primary-50 shadow-md"
             data-ui="tooltip"
           >
-            {content}
+            {copied ? "Copied!" : content}
             <RadixTooltip.Arrow className="fill-primary-950" />
           </RadixTooltip.Content>
         </RadixTooltip.Portal>
       </RadixTooltip.Root>
+      {copy !== undefined && (
+        <span role="status" className="sr-only">
+          {copied ? "Copied!" : ""}
+        </span>
+      )}
     </RadixTooltip.Provider>
   );
 }
