@@ -1,5 +1,4 @@
-// @vitest-environment jsdom
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RequestError } from "./errors";
 import { useForm, type FieldErrors } from "./useForm";
@@ -46,10 +45,9 @@ describe("useForm", () => {
       result.current.set("email", "ada@example.com");
     });
 
-    await act(async () => {
-      result.current.submit(() => Promise.reject(new RequestError("Invalid", { fieldErrors: { email: ["has already been taken"] } })))();
-    });
-    expect(result.current.errors.email).toEqual(["has already been taken"]);
+    // submit() doesn't return the save's promise, so wait for its result.
+    act(() => result.current.submit(() => Promise.reject(new RequestError("Invalid", { fieldErrors: { email: ["has already been taken"] } })))());
+    await waitFor(() => expect(result.current.errors.email).toEqual(["has already been taken"]));
     expect(result.current.error).toBeNull();
 
     act(() => result.current.set("email", "ada@example.org"));
@@ -64,10 +62,8 @@ describe("useForm", () => {
     });
     expect(result.current.dirty).toBe(true);
 
-    await act(async () => {
-      result.current.submit(() => Promise.resolve())();
-    });
-    expect(result.current.dirty).toBe(false);
+    act(() => result.current.submit(() => Promise.resolve())());
+    await waitFor(() => expect(result.current.dirty).toBe(false));
     expect(result.current.values).toEqual({ name: "Ada", email: "ada@example.com" });
   });
 
@@ -78,10 +74,8 @@ describe("useForm", () => {
       result.current.set("email", "ada@example.com");
     });
 
-    await act(async () => {
-      result.current.submit(() => Promise.reject(new Error("Server down")))();
-    });
-    expect(result.current.error?.message).toBe("Server down");
+    act(() => result.current.submit(() => Promise.reject(new Error("Server down")))());
+    await waitFor(() => expect(result.current.error?.message).toBe("Server down"));
     expect(result.current.dirty).toBe(true);
     expect(result.current.values.name).toBe("Ada");
   });
