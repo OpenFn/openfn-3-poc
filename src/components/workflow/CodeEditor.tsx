@@ -43,6 +43,7 @@ export default function CodeEditor({ value, onChange, readOnly = false, classNam
           style={{ top: line * LINE - scroll, height: LINE }}
           aria-hidden="true"
         />
+        {/* eslint-disable-next-line no-restricted-syntax -- the editor surface, laid over the highlighted code */}
         <textarea
           ref={ref}
           value={value}

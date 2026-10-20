@@ -152,6 +152,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             <div className="flex-1 overflow-y-auto">
               <div className="space-y-0.5 p-3">
                 {shown.map((s) => (
+                  // eslint-disable-next-line no-restricted-syntax -- a whole session row is the control
                   <button
                     key={s.id}
                     type="button"
@@ -185,6 +186,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
           }}
         >
           <div className={cn("rounded-xl border-2", input.trim() ? "border-primary-300" : "border-gray-200 hover:border-gray-300")}>
+            {/* eslint-disable-next-line no-restricted-syntax -- debt: chat composer; TextArea has no borderless variant (also LandingScreen) */}
             <textarea
               data-testid="chat-input"
               value={input}

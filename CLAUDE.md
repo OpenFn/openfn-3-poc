@@ -24,7 +24,10 @@ wrapper.
 
 - `npm run dev` — start dev server
 - `npm run build` — typecheck and build
-- `npm run lint` — run ESLint
+- `npm run lint` — run ESLint. CI runs it, and warnings fail too. The
+  colour, arbitrary-value and raw-control rules below are lint errors. An
+  exception is disabled on its line with a reason after ` -- `; a reason
+  starting `debt:` is one to fix (`grep -rn "debt:" src`).
 - `npm run storybook` — start Storybook on port 6006
 - `npm run build-storybook` — build Storybook static site
 - `npm run compare:all` — set up a local Lightning and compare it with the

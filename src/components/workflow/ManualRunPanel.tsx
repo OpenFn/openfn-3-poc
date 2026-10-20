@@ -92,6 +92,7 @@ export default function ManualRunPanel({
               <span className="hero-cloud-arrow-up size-8 text-gray-300" />
               <p className="mt-2">
                 <label className="link font-semibold">
+                  {/* eslint-disable-next-line no-restricted-syntax -- hidden file input; the label around it is the control */}
                   <input
                     type="file"
                     accept=".json"

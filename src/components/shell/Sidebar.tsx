@@ -127,6 +127,7 @@ export function SidebarLogo({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <div className="primary-light mt-3 border-t border-white/10 pt-5 text-center">
       {collapsed ? <OpenFnLogoCollapsed className="mx-auto h-6" /> : <OpenFnLogo className="mx-auto h-6" />}
+      {/* eslint-disable-next-line no-restricted-syntax -- below text-xs, the smallest step on the scale */}
       <code className="block py-1 text-[8px] opacity-50">{releaseLabel}</code>
     </div>
   );
@@ -159,7 +160,7 @@ export default function Sidebar({ variant, project, canAccessAdmin, collapsed, o
         id="sidebar-panel"
         data-ui="sidebar"
         data-collapsed={String(collapsed)}
-        className={cn("fixed z-[100] flex h-full flex-col transition-all duration-200", variant === "admin" && "sudo-variant")}
+        className={cn("fixed z-100 flex h-full flex-col transition-all duration-200", variant === "admin" && "sudo-variant")}
       >
         <div className="app-logo-container flex h-20 items-center">
           <UserMenu user={user} />
@@ -188,6 +189,7 @@ export default function Sidebar({ variant, project, canAccessAdmin, collapsed, o
             </div>
           )}
           <SidebarLogo collapsed={collapsed} />
+          {/* eslint-disable-next-line no-restricted-syntax -- sidebar chrome, styled by the themes through .sidebar-toggle-btn */}
           <button
             type="button"
             onClick={onToggle}
