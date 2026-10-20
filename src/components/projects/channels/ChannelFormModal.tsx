@@ -20,7 +20,7 @@ export default function ChannelFormModal({
   onClose,
 }: {
   /** The channel being edited; omit for New Channel. */
-  channel?: Channel;
+  channel?: Channel | undefined;
   projectId: string;
   /** Project credentials (Destination Credential select). */
   credentialOptions: { id: string; name: string }[];

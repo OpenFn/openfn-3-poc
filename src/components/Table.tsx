@@ -44,7 +44,7 @@ export function Tr({
   id,
 }: {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: (() => void) | undefined;
   className?: string;
   id?: string;
 }) {
@@ -161,7 +161,7 @@ export function EmptyState({
   title?: ReactNode;
   message?: ReactNode;
   buttonText?: string;
-  onClick?: () => void;
+  onClick?: (() => void) | undefined;
   disabled?: boolean;
   className?: string;
   children?: ReactNode;

@@ -1,7 +1,7 @@
 import type { Step } from "../../types/history";
 import { cn } from "../../utils/cn";
 
-const icons: Record<string, [string, string]> = {
+const icons: Record<NonNullable<Step["exitReason"]> | "pending" | "cancel" | "kill" | "exception" | "lost", [string, string]> = {
   pending: ["hero-ellipsis-horizontal-circle-solid", "text-gray-400"],
   success: ["hero-check-circle-solid", "text-green-500"],
   fail: ["hero-x-circle-solid", "text-red-500"],

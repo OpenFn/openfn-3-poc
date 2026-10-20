@@ -49,6 +49,7 @@ export default function Donut({
   if (total === 0) return <p className={EMPTY}>{emptyMessage}</p>;
 
   const drawn = slices.filter((s) => s.value > 0);
+  const only = drawn.length === 1 ? drawn[0] : undefined;
   let angle = 0;
   const middle = centre(total);
 
@@ -56,9 +57,9 @@ export default function Donut({
     <div className="mx-auto w-full max-w-sm">
       <div className={`${FRAME} relative`}>
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full" aria-hidden="true">
-          {drawn.length === 1 ? (
-            <circle cx={C} cy={C} r={(OUTER + INNER) / 2} fill="none" stroke={drawn[0].color} strokeWidth={OUTER - INNER}>
-              <title>{`${drawn[0].label}: ${formatNumber(drawn[0].value)} (${percent(drawn[0].value, total)})`}</title>
+          {only ? (
+            <circle cx={C} cy={C} r={(OUTER + INNER) / 2} fill="none" stroke={only.color} strokeWidth={OUTER - INNER}>
+              <title>{`${only.label}: ${formatNumber(only.value)} (${percent(only.value, total)})`}</title>
             </circle>
           ) : (
             drawn.map((s) => {

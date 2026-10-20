@@ -7,7 +7,7 @@ import NameField from "../NameField";
 
 interface Props {
   /** The collection being edited; omit to create one. */
-  collection?: Collection;
+  collection?: Collection | undefined;
   /** Every project on the instance, as [name, id], sorted by name. */
   projectOptions: [label: string, value: string][];
   onCancel: () => void;

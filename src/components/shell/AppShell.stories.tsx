@@ -30,6 +30,6 @@ const at = (path: string) => () => (
   </MemoryRouter>
 );
 
-export const Project: StoryObj = { render: at(`/projects/${projects[0].id}/w`) };
+export const Project: StoryObj = { render: at(`/projects/${projects[0]!.id}/w`) };
 export const Profile: StoryObj = { render: at("/profile") };
 export const Admin: StoryObj = { render: at("/settings/projects") };

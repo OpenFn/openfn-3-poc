@@ -14,6 +14,6 @@ export const WithAction: Story = {
   args: { title: "Personal Access Tokens", children: <Button>Generate New Token</Button> },
 };
 export const WithBreadcrumbs: Story = {
-  args: { breadcrumbs: <ProjectBreadcrumbs project={projects[0]} current="History" /> },
+  args: { breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} current="History" /> },
 };
 export const LoggedOut: Story = { args: { title: "Log in", loggedOut: true } };

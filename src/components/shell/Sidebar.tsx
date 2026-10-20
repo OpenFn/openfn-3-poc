@@ -13,7 +13,7 @@ export type SidebarVariant = "project" | "profile" | "admin";
 interface Props {
   variant: SidebarVariant;
   /** Required for the project variant. */
-  project?: Project;
+  project?: Project | undefined;
   /** Superusers get the Admin menu in place of the support links. */
   canAccessAdmin: boolean;
   collapsed: boolean;

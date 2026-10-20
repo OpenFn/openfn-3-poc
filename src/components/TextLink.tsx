@@ -4,7 +4,7 @@ import { cn } from "../utils/cn";
 
 interface Props {
   /** In-app route, or an external URL when `external` is set. */
-  to?: string;
+  to?: string | undefined;
   /** Plain href (mailto:, docs links). */
   href?: string;
   /** Open `to` in a new tab as an external link. */

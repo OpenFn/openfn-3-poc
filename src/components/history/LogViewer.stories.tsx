@@ -10,8 +10,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: { logs: runLogs["run-1"], finished: true } };
-export const StepSelected: Story = { args: { logs: runLogs["run-1"], finished: true, selectedStepId: "step-1b" } };
-export const Errors: Story = { args: { logs: runLogs["run-2"], finished: true, defaultLevel: "error" } };
+export const Default: Story = { args: { logs: runLogs["run-1"]!, finished: true } };
+export const StepSelected: Story = { args: { logs: runLogs["run-1"]!, finished: true, selectedStepId: "step-1b" } };
+export const Errors: Story = { args: { logs: runLogs["run-2"]!, finished: true, defaultLevel: "error" } };
 export const Waiting: Story = { args: { logs: [], finished: false, waitingMessage: "Waiting for worker" } };
 export const NoLogs: Story = { args: { logs: [], finished: true } };
