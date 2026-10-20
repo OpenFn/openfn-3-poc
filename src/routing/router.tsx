@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- the provider and its hook belong beside the Link that uses them */
 import { createContext, useContext, useMemo, useSyncExternalStore, type AnchorHTMLAttributes, type Ref } from "react";
 
 export interface NavigateOptions {
@@ -15,7 +16,6 @@ export interface Router {
   /** The href to render for an in-app path, e.g. `#/projects` under a hash router. */
   useHref(to: string): string;
   useLocation(): { pathname: string; search: string; hash: string };
-  useSearchParams(): [URLSearchParams, (next: URLSearchParams, opts?: NavigateOptions) => void];
 }
 
 function subscribe(onChange: () => void) {
@@ -26,9 +26,6 @@ function subscribe(onChange: () => void) {
 const go = (to: string, opts?: NavigateOptions) =>
   opts?.replace ? window.location.replace(to) : window.location.assign(to);
 
-const setSearch = (next: URLSearchParams, opts?: NavigateOptions) =>
-  go(`${next.size ? `?${next}` : window.location.pathname}${window.location.hash}`, opts);
-
 // One URL object per href, so results stay stable between renders.
 const useUrl = () => {
   const href = useSyncExternalStore(subscribe, () => window.location.href);
@@ -36,20 +33,16 @@ const useUrl = () => {
 };
 
 /** The default with no provider: plain anchors and full page loads. */
-// eslint-disable-next-line react-refresh/only-export-components -- the router and its hook belong beside the Link that uses them
-export const browserRouter: Router = {
+const browserRouter: Router = {
   navigate: go,
   useHref: (to) => to,
   useLocation: useUrl,
-  useSearchParams: () => [useUrl().searchParams, setSearch],
 };
 
 const RouterContext = createContext<Router>(browserRouter);
 
-// eslint-disable-next-line react-refresh/only-export-components -- the provider and its hook belong beside the Link that uses them
 export const RouterProvider = RouterContext.Provider;
 
-// eslint-disable-next-line react-refresh/only-export-components -- the provider and its hook belong beside the Link that uses them
 export const useRouter = () => useContext(RouterContext);
 
 export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
@@ -61,11 +54,16 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & 
 /**
  * An `<a href>` that navigates through the router on a plain left click.
  * New-tab clicks, `target`, `download` and a handler's `preventDefault()`
- * fall through to the browser.
+ * fall through to the browser. A link to the current URL replaces the history
+ * entry, as React Router's Link does, so Back doesn't stall.
  */
 export function Link({ to, onClick, ...rest }: LinkProps) {
-  const { navigate, useHref } = useRouter();
+  const { navigate, useHref, useLocation } = useRouter();
   const href = useHref(to);
+  const { pathname, search, hash } = useLocation();
+  const here = `${pathname}${search}${hash}`;
+  const target = new URL(to, `http://x${here}`);
+  const replace = `${target.pathname}${target.search}${target.hash}` === here;
   return (
     <a
       {...rest}
@@ -75,7 +73,7 @@ export function Link({ to, onClick, ...rest }: LinkProps) {
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         if ((rest.target && rest.target !== "_self") || rest.download !== undefined) return;
         e.preventDefault();
-        navigate(to);
+        navigate(to, { replace });
       }}
     />
   );

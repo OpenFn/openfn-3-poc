@@ -4,19 +4,9 @@ import type { Decorator } from "@storybook/react";
 import { cn } from "../utils/cn";
 
 /**
- * Wraps a story in a MemoryRouter, with the adapter that lets components navigate through it.
- */
-export const withRouter: Decorator = (Story) => (
-  <MemoryRouter initialEntries={["/"]}>
-    <ReactRouterAdapter>
-      <Story />
-    </ReactRouterAdapter>
-  </MemoryRouter>
-);
-
-/**
- * Like {@link withRouter}, but starts the router at a given URL so
- * location-aware components (e.g. the sidebar) render that context.
+ * Wraps a story in a MemoryRouter at a given URL, with the adapter that lets
+ * components navigate through it, so location-aware components (e.g. the
+ * sidebar) render that context.
  */
 export const withRouterAt =
   (path: string): Decorator =>
@@ -27,6 +17,9 @@ export const withRouterAt =
       </ReactRouterAdapter>
     </MemoryRouter>
   );
+
+/** {@link withRouterAt} the root URL. */
+export const withRouter = withRouterAt("/");
 
 /**
  * A gray page background with stacked spacing, for panels that render

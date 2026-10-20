@@ -10,8 +10,9 @@ export type ParamPatch = Record<string, string | null>;
  * params rather than mutating them.
  */
 export function useUrlParams() {
-  const [search, setSearch] = useRouter().useSearchParams();
-  const params = useMemo(() => Object.fromEntries(search.entries()) as Record<string, string | undefined>, [search]);
+  const { navigate, useLocation } = useRouter();
+  const { pathname, search, hash } = useLocation();
+  const params = useMemo(() => Object.fromEntries(new URLSearchParams(search)) as Record<string, string | undefined>, [search]);
   const update = useCallback(
     (patch: ParamPatch) => {
       const next = new URLSearchParams(search);
@@ -19,9 +20,10 @@ export function useUrlParams() {
         if (v === null) next.delete(k);
         else next.set(k, v);
       }
-      setSearch(next);
+      const query = String(next);
+      navigate(`${pathname}${query && `?${query}`}${hash}`);
     },
-    [search, setSearch]
+    [navigate, pathname, search, hash]
   );
   return { params, update };
 }
