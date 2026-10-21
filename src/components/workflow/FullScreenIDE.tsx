@@ -72,6 +72,7 @@ export default function FullScreenIDE({
   const [docsCollapsed, setDocsCollapsed] = useState(false);
   const [vertical, setVertical] = useState(false);
   const [runCollapsed, setRunCollapsed] = useState(false);
+  const runStrip = runCollapsed && panelState === "run-viewer";
 
   const showDocs = (tab: "docs" | "metadata") => {
     if (docsTab === tab && !docsCollapsed) setDocsCollapsed(true);
@@ -121,7 +122,7 @@ export default function FullScreenIDE({
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState ? "w-7/10" : "w-full")}>
+        <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState && !runStrip ? "w-7/10" : "flex-1")}>
           <div className={cn("overflow-hidden", docsCollapsed ? "flex-1" : vertical ? "h-3/5" : "w-3/5")}>
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} />
@@ -170,7 +171,7 @@ export default function FullScreenIDE({
         {panelState && (
           <>
             <div className="w-1 shrink-0 bg-gray-200" />
-            <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runCollapsed && panelState === "run-viewer" ? "w-10" : "flex-1")}>
+            <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runStrip ? "w-10" : "flex-1")}>
               {panelState === "run-viewer" && runCollapsed && followRunId ? (
                 <div className="flex h-full flex-col items-center gap-3 overflow-hidden pt-3">
                   <Tooltip content="Expand run panel">
