@@ -34,7 +34,7 @@ import BackupCodesPage from "./pages/profile/BackupCodesPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage";
 import AdminProjectsPage from "./pages/admin/AdminProjectsPage";
-import AdminAuditPage from "./pages/admin/AdminAuditPage";
+import AdminAuditPage from "./pages/admin/AdminAuditPage.replica";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage";
 import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage";
 import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage";

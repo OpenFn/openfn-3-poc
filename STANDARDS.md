@@ -20,7 +20,7 @@ Status of each pattern, as of this commit:
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | Pilot: Tokens | one page at a time |
+| 11 | Page and wrapper | Tokens, Admin audit | one page at a time |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
 `TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
