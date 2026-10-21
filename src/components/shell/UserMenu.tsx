@@ -1,6 +1,10 @@
 import type { User } from "../../types/users";
 import Menu, { MenuDivider, MenuHeader, MenuItem } from "../Menu";
 import UserAvatar from "../UserAvatar";
+import { Link } from "../../routing/router";
+
+/** What the account menu shows of the signed-in user. */
+export type MenuUser = Pick<User, "firstName" | "lastName" | "email" | "experimentalFeatures">;
 
 const items = [
   { to: "/projects", icon: "hero-folder", label: "Projects" },
@@ -14,7 +18,7 @@ const items = [
  * (Lightning's `user_menu_dropdown`): who you're signed in as, the
  * experimental-features notice, your pages, and log out.
  */
-export default function UserMenu({ user }: { user: User }) {
+export default function UserMenu({ user }: { user: MenuUser }) {
   return (
     <div className="mx-3 min-w-0 flex-1">
       <Menu
@@ -42,13 +46,21 @@ export default function UserMenu({ user }: { user: User }) {
           <p className="truncate font-medium text-gray-900">{user.email}</p>
         </MenuHeader>
         {user.experimentalFeatures && (
-          <MenuItem
-            to="/profile"
-            icon="hero-wrench-screwdriver-mini"
-            description="You're using features that are still being built. Things may work differently for you than for your teammates. Turn off in your profile."
-          >
-            Experimental features on
-          </MenuItem>
+          <div className="bg-amber-50 px-4 py-3">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
+              <span className="hero-wrench-screwdriver-mini h-4 w-4 text-amber-600" />
+              Experimental features on
+            </p>
+            <p className="mt-0.5 text-xs text-gray-600">
+              You're using features that are still being built. Things may work differently for you than for your
+              teammates.
+            </p>
+            <p className="mt-1.5 text-xs">
+              <Link to="/profile" className="font-medium text-amber-700 underline underline-offset-2">
+                Turn off in your profile
+              </Link>
+            </p>
+          </div>
         )}
         <MenuDivider />
         {items.map((item) => (
@@ -57,7 +69,7 @@ export default function UserMenu({ user }: { user: User }) {
           </MenuItem>
         ))}
         <MenuDivider />
-        <MenuItem to="/users/log_in">Log out</MenuItem>
+        <MenuItem to="/users/log_out">Log out</MenuItem>
       </Menu>
     </div>
   );
