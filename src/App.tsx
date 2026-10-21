@@ -12,7 +12,7 @@ import FirstSetupPage from "./pages/auth/FirstSetupPage";
 
 import ProjectsDashboardPage from "./pages/projects/ProjectsDashboardPage.replica";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
-import WorkflowsIndexPage from "./pages/projects/WorkflowsIndexPage";
+import WorkflowsIndexPage from "./pages/projects/WorkflowsIndexPage.replica";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage";
 import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage";
 import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage";

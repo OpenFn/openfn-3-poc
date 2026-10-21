@@ -7,7 +7,9 @@ import { projectLabel } from "./projectPickerItems";
 import { projects } from "../../mock-data/projects";
 
 interface Props {
-  project: Project;
+  project: Pick<Project, "id" | "parentId" | "color"> & Partial<Pick<Project, "name">>;
+  /** The picker's label ("parent/child" for a sandbox). The host supplies it; the replica derives it from the fixtures. */
+  label?: string | undefined;
   /** Crumbs between the project and the page, e.g. [["History", "/projects/x/history"]]. */
   items?: [label: string, to: string][];
   /** The current page's crumb (not a link). */
@@ -15,11 +17,15 @@ interface Props {
 }
 
 /** Breadcrumbs for a project page: the project picker, then the trail. */
-export default function ProjectBreadcrumbs({ project, items = [], current }: Props) {
+export default function ProjectBreadcrumbs({ project, label, items = [], current }: Props) {
   return (
     <Breadcrumbs>
       <BreadcrumbPicker>
-        <PickerButton label={projectLabel(project, projects)} isSandbox={project.parentId !== null} color={project.color} />
+        <PickerButton
+          label={label ?? projectLabel(projects.find((p) => p.id === project.id) ?? (project as Project), projects)}
+          isSandbox={project.parentId !== null}
+          color={project.color}
+        />
       </BreadcrumbPicker>
       {items.map(([label, to]) => (
         <Breadcrumb key={to} to={to}>

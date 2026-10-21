@@ -2,6 +2,7 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, Ref } from 
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
+import Tooltip from "./Tooltip";
 
 export type ButtonTheme = "primary" | "secondary" | "danger" | "success" | "warning";
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
@@ -140,9 +141,9 @@ export default function Button({
   );
   // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
   return disabled && tooltip && !pending ? (
-    <span title={tooltip} className="inline-flex">
-      {button}
-    </span>
+    <Tooltip content={tooltip}>
+      <span className="inline-flex">{button}</span>
+    </Tooltip>
   ) : (
     button
   );
