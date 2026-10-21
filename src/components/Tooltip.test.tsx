@@ -78,6 +78,19 @@ describe("Tooltip", () => {
     expect(openTooltips()).toEqual(["Outer"]);
   });
 
+  it("closes one opened by keyboard focus when another opens on hover", async () => {
+    focusVisible(true);
+    render(
+      <>
+        <Tooltip content="A"><button>A</button></Tooltip>
+        <Tooltip content="B"><button>B</button></Tooltip>
+      </>
+    );
+    act(() => screen.getByRole("button", { name: "A" }).focus());
+    await hover(screen.getByRole("button", { name: "B" }));
+    expect(openTooltips()).toEqual(["B"]);
+  });
+
   it("stays shut when its text goes while open and comes back", async () => {
     const { rerender } = render(<Tooltip content="Disabled"><button>…</button></Tooltip>);
     const button = screen.getByRole("button");

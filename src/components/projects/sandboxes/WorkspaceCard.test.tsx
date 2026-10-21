@@ -22,6 +22,7 @@ describe("WorkspaceCard", () => {
     const name = screen.getByRole("heading", { name: "staging" }).parentElement!;
     expect(name.tagName).toBe("DIV"); // A heading inside a span is invalid HTML.
     expect(name.getAttribute("title")).toBeNull();
+    expect(name.closest("[aria-disabled]")!.getAttribute("aria-description")).toMatch(/^Scheduled for deletion on /);
     await hover(name);
     expect(openTooltips()).toEqual([expect.stringMatching(/^Scheduled for deletion on /)]);
   });

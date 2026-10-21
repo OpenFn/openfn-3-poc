@@ -17,6 +17,9 @@ import {
 import { cloneElement, useState, type ReactElement, type ReactNode, type Ref, type SyntheticEvent } from "react";
 import { useCopy } from "../utils/useCopy";
 
+// One tooltip at a time, like Radix: one open from keyboard focus closes when another opens on hover.
+let closeShown: (() => void) | undefined;
+
 /**
  * Lightning's React `Tooltip` (assets/js/components/Tooltip.tsx), on Floating
  * UI, which Headless UI's menus and popovers also sit on. The child must be a
@@ -48,7 +51,13 @@ export default function Tooltip({
   const [arrowEl, setArrowEl] = useState<SVGSVGElement | null>(null);
   const { refs: { setReference, setFloating }, floatingStyles, context } = useFloating({
     open: !!content && (open || copied),
-    onOpenChange: setOpen,
+    onOpenChange: (next) => {
+      if (next) {
+        closeShown?.();
+        closeShown = () => setOpen(false);
+      }
+      setOpen(next);
+    },
     placement: side,
     middleware: [offset(10), flip(), shift(), arrow({ element: arrowEl })],
     whileElementsMounted: autoUpdate,

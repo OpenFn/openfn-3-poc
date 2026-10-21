@@ -8,6 +8,7 @@ describe("Tabs", () => {
     render(<Tabs active="a" tabs={[{ id: "a", label: "Input" }, { id: "b", label: "Output", disabled: true, disabledReason: "No output yet" }]} />);
     const tab = screen.getByRole("tab", { name: "Output" });
     expect(tab.getAttribute("title")).toBeNull();
+    expect(tab.getAttribute("aria-description")).toBe("No output yet");
     expect(tab.parentElement!.classList).toContain("cursor-not-allowed");
     expect(tab.parentElement!.classList).toContain("*:pointer-events-none");
     await hover(tab.parentElement!);

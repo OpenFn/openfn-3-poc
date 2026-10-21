@@ -56,7 +56,7 @@ export default function WorkspaceCard({
       <div
         className={cn("flex min-w-0 flex-1 items-center gap-3 p-4", deleted ? "cursor-not-allowed" : "cursor-pointer")}
         {...(deleted
-          ? { "aria-disabled": true }
+          ? { "aria-disabled": true, "aria-description": deletionTooltip(deleted) }
           : { role: "button", tabIndex: 0, onClick: () => navigate(`/projects/${workspace.id}/w`) })}
       >
         {/* Only on the name: around the badges too, it would open with their own tooltips. */}
