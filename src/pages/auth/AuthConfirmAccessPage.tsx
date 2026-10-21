@@ -62,6 +62,7 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
             <PasswordInput
               id="user_password"
               name="password"
+              aria-label="Password"
               required
               autoComplete="current-password"
               value={value}
@@ -71,6 +72,7 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
             <TextInput
               id="user_code"
               name="code"
+              aria-label="Authentication code"
               required
               autoComplete="one-time-code"
               inputMode="numeric"
