@@ -103,7 +103,8 @@ describe("WorkflowsIndexPage", () => {
 
   it("switches and deletes through the host, asking before a delete", () => {
     const { onToggle, onDelete } = renderPage();
-    fireEvent.click(rowOf("Weekly report").querySelector("[role=switch]")!);
+    // The switch is named by its tooltip, as Lightning's toggle was.
+    fireEvent.click(screen.getByRole("switch", { name: "This workflow is inactive (manual runs only)" }));
     expect(onToggle).toHaveBeenCalledWith("wf-2", true);
 
     const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
@@ -129,6 +130,12 @@ describe("WorkflowsIndexPage", () => {
     expect(name.getAttribute("href")).toBe("/projects/p1/w?sort=name");
     fireEvent.click(name);
     expect(sort.onSort).toHaveBeenCalledWith("name");
+  });
+
+  it("says so when the host refuses a switch", async () => {
+    renderPage({ onToggle: vi.fn().mockRejectedValue(new Error("No more workflows")) });
+    fireEvent.click(rowOf("Weekly report").querySelector("[role=switch]")!);
+    expect(await screen.findByText("No more workflows")).toBeTruthy();
   });
 
   it("shows the lifecycle state instead of a switch outside a sandbox", () => {

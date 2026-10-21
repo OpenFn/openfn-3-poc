@@ -4,6 +4,7 @@ import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ProjectMetrics from "../../components/projects/ProjectMetrics";
 import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
+import { useToast } from "../../components/Toast";
 import type { Project } from "../../types/projects";
 import type { ProjectMetrics as Metrics, WorkflowRow, WorkflowsSort } from "../../types/workflows";
 
@@ -63,6 +64,9 @@ export default function WorkflowsIndexPage({
   onToggle,
   onDelete,
 }: WorkflowsIndexPageProps) {
+  const toast = useToast();
+  // The host announces success (its flash); a refusal or a lost connection is said here.
+  const failed = (error: unknown) => toast(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
   return (
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} />} />}>
       <Centered>
@@ -85,8 +89,8 @@ export default function WorkflowsIndexPage({
             lifecycle={lifecycle}
             isSandbox={project.parentId !== null}
             sort={sort}
-            onToggle={(id, v) => void onToggle(id, v)}
-            onDelete={(id) => void onDelete(id)}
+            onToggle={(id, v) => void onToggle(id, v).catch(failed)}
+            onDelete={(id) => void onDelete(id).catch(failed)}
           />
         </div>
       </Centered>

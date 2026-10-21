@@ -34,6 +34,8 @@ export default function Toggle({ checked, onChange, label, note, description, di
       role="switch"
       aria-checked={checked}
       aria-labelledby={labelledBy ?? (label ? labelId : undefined)}
+      // An unlabelled switch is named by its tooltip, as Lightning's toggle input is.
+      aria-label={label || labelledBy ? undefined : tooltip}
       disabled={disabled}
       data-ui="toggle"
       onClick={() => onChange?.(!checked)}
