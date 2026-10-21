@@ -7,7 +7,7 @@ import AuthResetPasswordPage from "./pages/auth/AuthResetPasswordPage";
 import AuthTwoFactorPage from "./pages/auth/AuthTwoFactorPage";
 import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
 import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage";
-import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage";
+import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage.replica";
 import FirstSetupPage from "./pages/auth/FirstSetupPage";
 
 import ProjectsDashboardPage from "./pages/projects/ProjectsDashboardPage.replica";
