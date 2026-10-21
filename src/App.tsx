@@ -10,7 +10,7 @@ import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredP
 import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage";
 import FirstSetupPage from "./pages/auth/FirstSetupPage";
 
-import ProjectsDashboardPage from "./pages/projects/ProjectsDashboardPage";
+import ProjectsDashboardPage from "./pages/projects/ProjectsDashboardPage.replica";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
 import WorkflowsIndexPage from "./pages/projects/WorkflowsIndexPage";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage";

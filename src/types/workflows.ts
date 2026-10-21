@@ -24,7 +24,8 @@ export interface WorkflowSummary {
 export interface ProjectOverview {
   id: string;
   name: string;
-  role: ProjectRole;
+  /** The user's role, or "support" for a project reached through support access. */
+  role: ProjectRole | "support";
   workflowsCount: number;
   collaboratorsCount: number;
   /** Latest workflow update in the project; null when it has none. */
