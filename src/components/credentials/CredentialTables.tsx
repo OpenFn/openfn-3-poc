@@ -6,6 +6,7 @@ import { Table, Td, Th, Tr } from "../Table";
 // eslint-disable-next-line no-restricted-imports -- wiring: owner emails, project names and OAuth client names are joins; Lightning preloads them.
 import { credentialTypeLabel, credentials as allCredentials, missingOauthClient, ownerEmail, projectNames } from "../../mock-data/credentials";
 import type { Credential, KeychainCredential, OauthClient } from "../../types/credentials";
+import Tooltip from "../Tooltip";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):
@@ -131,7 +132,11 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
               <Td className="wrap-break-word max-w-48">
                 {credential.externalId ? <Code>{credential.externalId}</Code> : <span className="text-gray-400">-</span>}
               </Td>
-              <Td title={credential.environments.join(", ")}>{credential.environments.length}</Td>
+              <Td>
+                <Tooltip content={credential.environments.join(", ")}>
+                  <span>{credential.environments.length}</span>
+                </Tooltip>
+              </Td>
               <Td actions>{actions?.(credential)}</Td>
             </Tr>
           ))}

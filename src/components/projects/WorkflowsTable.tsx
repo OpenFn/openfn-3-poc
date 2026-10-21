@@ -9,6 +9,7 @@ import Button from "../Button";
 import TextLink from "../TextLink";
 import WorkOrderStatus from "./WorkOrderStatus";
 import { useTableSort, type SortValue } from "../useTableSort";
+import Tooltip from "../Tooltip";
 
 type SortKey = "name" | "last_workorder_updated_at" | "workorders_count" | "failed_workorders_count" | "enabled";
 
@@ -83,12 +84,9 @@ export default function WorkflowsTable({
         return (
           <Tr key={wf.id} id={`workflow-${wf.id}`} onClick={() => navigate(`/projects/${projectId}/w/${wf.id}`)}>
             <Td className="max-w-60">
-              <p
-                className={cn("workflow-name truncate font-medium", wf.enabled ? "text-gray-900" : "text-gray-400")}
-                title={wf.enabled ? wf.name : `${wf.name} (disabled)`}
-              >
-                {wf.name}
-              </p>
+              <Tooltip content={wf.enabled ? wf.name : `${wf.name} (disabled)`}>
+                <p className={cn("workflow-name truncate font-medium", wf.enabled ? "text-gray-900" : "text-gray-400")}>{wf.name}</p>
+              </Tooltip>
               <p className="mt-1 text-xs">
                 Updated <DateTime value={wf.updatedAt} />
               </p>

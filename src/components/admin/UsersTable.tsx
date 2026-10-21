@@ -5,6 +5,7 @@ import { MenuItem } from "../Menu";
 import { Table, Td, Th, Tr } from "../Table";
 import { useTableSort, type SortValue } from "../useTableSort";
 import { formatShortDateTime } from "../../utils/format";
+import Tooltip from "../Tooltip";
 
 type SortKey = "first_name" | "last_name" | "email" | "role" | "enabled" | "support_user" | "scheduled_deletion";
 
@@ -61,14 +62,20 @@ export default function UsersTable({
       >
         {rows.map((user) => (
           <Tr key={user.id} id={`user-${user.id}`}>
-            <Td className="max-w-40 wrap-break-word" title={user.firstName}>
-              {user.firstName}
+            <Td className="max-w-40 wrap-break-word">
+              <Tooltip content={user.firstName}>
+                <span>{user.firstName}</span>
+              </Tooltip>
             </Td>
-            <Td className="max-w-40 wrap-break-word" title={user.lastName}>
-              {user.lastName}
+            <Td className="max-w-40 wrap-break-word">
+              <Tooltip content={user.lastName}>
+                <span>{user.lastName}</span>
+              </Tooltip>
             </Td>
-            <Td className="max-w-48 wrap-break-word" title={user.email}>
-              {user.email}
+            <Td className="max-w-48 wrap-break-word">
+              <Tooltip content={user.email}>
+                <span>{user.email}</span>
+              </Tooltip>
             </Td>
             <Td>{user.role}</Td>
             <Td>{!user.disabled && checkIcon}</Td>

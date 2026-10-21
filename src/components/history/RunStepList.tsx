@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 import StepIcon from "./StepIcon";
 import { formatElapsed } from "../../utils/format";
 import { clonedStepMessage, inspectStepPath, isClonedStep } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /**
  * The run page's step list (run_live/components.ex `step_list` +
@@ -41,20 +42,24 @@ export default function RunStepList({
               <StepIcon reason={step.exitReason} />
               <span className={cn("flex min-w-0 flex-1 items-center gap-1 pr-1.5", isClone && "opacity-50")}>
                 {isClone && (
-                  <span className="hero-paper-clip-mini mr-1 h-3 w-3" title={clonedStepMessage} />
+                  <Tooltip content={clonedStepMessage}>
+                    <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini mr-1 h-3 w-3" />
+                  </Tooltip>
                 )}
                 {step.jobName}
                 {/* A link inside the step's link in Lightning; a span here so the DOM stays valid. */}
-                <span
-                  role="link"
-                  className="hero-document-magnifying-glass-mini ml-1 h-5 w-5 cursor-pointer"
-                  title="Inspect Step"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigate(inspectStepPath(projectId, workflowId, run, step));
-                  }}
-                />
+                <Tooltip content="Inspect Step">
+                  <span
+                    role="link"
+                    aria-label="Inspect Step"
+                    className="hero-document-magnifying-glass-mini ml-1 h-5 w-5 cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate(inspectStepPath(projectId, workflowId, run, step));
+                    }}
+                  />
+                </Tooltip>
                 <span className="grow whitespace-nowrap text-right text-gray-500">
                   {formatElapsed(step.startedAt, step.finishedAt)}
                 </span>

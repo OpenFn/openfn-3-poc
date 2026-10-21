@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
+import Tooltip from "./Tooltip";
 
 export interface Tab<T extends string = string> {
   id: T;
@@ -94,7 +95,6 @@ export default function Tabs<T extends string>({
           role: "tab",
           "aria-selected": selected,
           "aria-disabled": tab.disabled || undefined,
-          title: tab.disabled ? tab.disabledReason : undefined,
           className: classes,
         };
         if (tab.to && !tab.disabled) {
@@ -114,9 +114,11 @@ export default function Tabs<T extends string>({
           );
         }
         return (
-          <button key={tab.id} type="button" {...shared} disabled={tab.disabled} onClick={() => onChange?.(tab.id)}>
-            {content}
-          </button>
+          <Tooltip key={tab.id} content={tab.disabled ? tab.disabledReason : undefined} disabled={tab.disabled}>
+            <button type="button" {...shared} disabled={tab.disabled} onClick={() => onChange?.(tab.id)}>
+              {content}
+            </button>
+          </Tooltip>
         );
       })}
     </div>

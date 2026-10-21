@@ -2,7 +2,8 @@ import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import Button from "../Button";
 import type { ExportStatus, ProjectFile } from "../../types/project-settings";
 import type { User } from "../../types/users";
-import { capitalize, formatAgo, fullName } from "../../utils/format";
+import { capitalize, fullName } from "../../utils/format";
+import DateTime from "../DateTime";
 
 interface Props {
   files: ProjectFile[];
@@ -42,7 +43,7 @@ export default function HistoryExportsTable({ files, users }: Props) {
         return (
           <Tr key={f.id}>
             <Td>
-              <span title={f.insertedAt}>{formatAgo(f.insertedAt)}</span>
+              <DateTime value={f.insertedAt} />
             </Td>
             <Td>{f.path ? f.path.split("/").pop() : <em>Pending</em>}</Td>
             <Td>{user ? fullName(user) : ""}</Td>

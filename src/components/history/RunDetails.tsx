@@ -7,6 +7,7 @@ import TextLink from "../TextLink";
 import StepIcon from "./StepIcon";
 import { cn } from "../../utils/cn";
 import { clonedStepMessage, inspectStepPath, isClonedStep, zeroPersistenceMessage } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /**
  * One step row inside an expanded work order (run_live/components.ex
@@ -40,7 +41,9 @@ export function StepListItem({
           {step.jobName}
         </TextLink>
         {isClone && (
-          <span className="hero-paper-clip-mini h-3 w-3" title={clonedStepMessage} />
+          <Tooltip content={clonedStepMessage}>
+            <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini h-3 w-3" />
+          </Tooltip>
         )}
         &bull;
         <span>
