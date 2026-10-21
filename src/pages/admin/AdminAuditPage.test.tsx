@@ -21,7 +21,7 @@ describe("AdminAuditPage", () => {
     render(<AdminAuditPage events={[event]} pageNumber={1} pageSize={10} totalEntries={14} onPage={onPage} />);
 
     expect(screen.getByText("Amy Admin")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "2" }));
+    fireEvent.click(screen.getByRole("link", { name: "2" }));
     expect(onPage).toHaveBeenCalledWith(2);
   });
 });

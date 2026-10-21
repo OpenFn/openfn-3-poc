@@ -46,7 +46,15 @@ export default function AuditTable({
           <Th>Subject</Th>
         </Tr>
       }
-      footer={<Pagination pageNumber={pageNumber} pageSize={pageSize} totalEntries={totalEntries} onPage={onPage} />}
+      footer={
+        <Pagination
+          pageNumber={pageNumber}
+          pageSize={pageSize}
+          totalEntries={totalEntries}
+          onPage={onPage}
+          pageHref={(n) => `?page=${n}`}
+        />
+      }
     >
       {events.map((audit) => (
         <Fragment key={audit.id}>
@@ -61,7 +69,7 @@ export default function AuditTable({
               <TwoLine label={audit.actorLabel} sub={audit.actorIdentifier ?? shortUuid(audit.actorId)} />
             </Td>
             <Td>
-              <TwoLine label={audit.itemType.split(".").at(-1) ?? ""} sub={shortUuid(audit.itemId)} />
+              <TwoLine label={audit.itemType.split(".").pop() ?? ""} sub={shortUuid(audit.itemId)} />
             </Td>
           </Tr>
           <Tr>

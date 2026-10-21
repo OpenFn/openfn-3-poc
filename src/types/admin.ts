@@ -2,6 +2,9 @@
 import type { Collection } from "./project-settings";
 import type { Project } from "./projects";
 
+/** A recorded field value. Lightning stores JSON; the page prints it as text. */
+export type AuditValue = string | number | boolean | null;
+
 export interface AuditEvent {
   id: string;
   /** ISO timestamp. */
@@ -12,9 +15,9 @@ export interface AuditEvent {
   itemId: string;
   actorId: string;
   actorLabel: string;
-  /** Email for users; null shows the actor's short id instead. */
+  /** Email for users; the service account id for service accounts; null shows the actor's short id instead. */
   actorIdentifier: string | null;
-  changes: { before: Record<string, string> | null; after: Record<string, string> | null };
+  changes: { before: Record<string, AuditValue> | null; after: Record<string, AuditValue> | null };
   /** Encrypted credential bodies per environment, shown under the changes. */
   credentialBodies?: Record<string, string>;
 }

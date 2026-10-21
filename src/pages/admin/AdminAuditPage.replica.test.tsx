@@ -32,13 +32,13 @@ describe("AdminAuditPageReplica", () => {
 
   it("writes the chosen page to the URL", () => {
     const router = renderAt("?page=2");
-    fireEvent.click(screen.getByRole("button", { name: "1" }));
+    fireEvent.click(screen.getByRole("link", { name: "1" }));
     expect(router.navigate).toHaveBeenCalledWith("/settings/audit?page=1");
   });
 
   it("leaves the URL alone when the current page is chosen", () => {
     const router = renderAt("?page=2");
-    fireEvent.click(screen.getByRole("button", { name: "2" }));
+    fireEvent.click(screen.getByRole("link", { name: "2" }));
     expect(router.navigate).not.toHaveBeenCalled();
   });
 });
