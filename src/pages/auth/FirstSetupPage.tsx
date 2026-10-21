@@ -53,12 +53,13 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
           </Alert>
         )}
         <form id="superuser-registration-form" onSubmit={form.submit(onSave)} className="mt-4 grid w-1/2 gap-4" aria-busy={form.pending || undefined}>
-          <TextInput id="first_name" label="First name" {...form.fieldProps("firstName")} />
-          <TextInput id="last_name" label="Last name" {...form.fieldProps("lastName")} />
-          <TextInput id="email" type="email" label="Email" {...form.fieldProps("email")} />
-          <PasswordInput id="password" label="Password" autoComplete="new-password" {...form.fieldProps("password")} />
+          <TextInput id="first_name" name="first_name" label="First name" {...form.fieldProps("firstName")} />
+          <TextInput id="last_name" name="last_name" label="Last name" {...form.fieldProps("lastName")} />
+          <TextInput id="email" name="email" type="email" label="Email" {...form.fieldProps("email")} />
+          <PasswordInput id="password" name="password" label="Password" autoComplete="new-password" {...form.fieldProps("password")} />
           <PasswordInput
             id="password_confirmation"
+            name="password_confirmation"
             label="Password confirmation"
             autoComplete="new-password"
             {...form.fieldProps("passwordConfirmation")}
