@@ -8,16 +8,19 @@ import Card from "../Card";
  */
 export default function MaintenanceCard({
   id,
+  buttonId,
   title,
   description,
   onRun,
   running = false,
 }: {
   id?: string;
+  /** The Run button's id (Lightning's `refresh-adaptors-button`). */
+  buttonId?: string | undefined;
   title: string;
   description: ReactNode;
   onRun?: () => void;
-  /** Disables the button while the (mock) action runs. */
+  /** Disables the button while the action runs. */
   running?: boolean;
 }) {
   return (
@@ -27,7 +30,7 @@ export default function MaintenanceCard({
       title={title}
       description={description}
       action={
-        <Button onClick={onRun} disabled={running}>
+        <Button id={buttonId} onClick={onRun} disabled={running}>
           Run
         </Button>
       }
