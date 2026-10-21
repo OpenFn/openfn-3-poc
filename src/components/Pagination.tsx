@@ -5,7 +5,7 @@ interface Props {
   pageNumber: number;
   pageSize: number;
   totalEntries: number;
-  onPage?: (page: number) => void;
+  onPage?: ((page: number) => void) | undefined;
   /** Extra controls after the count, e.g. the export button on History. */
   actions?: ReactNode;
 }

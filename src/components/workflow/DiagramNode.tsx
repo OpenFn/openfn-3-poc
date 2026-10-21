@@ -27,11 +27,11 @@ interface Props {
   /** When a run is shown, nodes it didn't reach fade to 30%. */
   didRun?: boolean;
   /** Duration (jobs) or start time (trigger) shown to the right while viewing a run. */
-  runMeta?: string;
+  runMeta?: string | undefined;
   /** Who started the run, shown as a play badge on the start node. */
-  startedBy?: string;
+  startedBy?: string | undefined;
   /** Shows the "+" path button under the node on hover (jobs only). */
-  onAddPath?: () => void;
+  onAddPath?: (() => void) | undefined;
   onClick?: () => void;
 }
 

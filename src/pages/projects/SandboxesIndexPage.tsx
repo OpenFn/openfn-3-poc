@@ -41,7 +41,8 @@ export default function SandboxesIndexPage() {
   const disabledReason = canCreate ? undefined : "You are not authorized to create sandboxes in this workspace";
   const sandboxes = sandboxRowsUnder(root.id).map((s) => {
     if (restoredIds.includes(s.id)) return { ...s, scheduledDeletion: null };
-    if (deletedAt[s.id]) return { ...s, scheduledDeletion: deletedAt[s.id] };
+    const deleted = deletedAt[s.id];
+    if (deleted) return { ...s, scheduledDeletion: deleted };
     return s;
   });
   const back = `/projects/${project.id}/sandboxes`;

@@ -18,7 +18,7 @@ interface Props {
   /** Project environment, shown read-only. */
   env: string;
   /** The parent, when `project` is a sandbox. */
-  parentProject?: Project;
+  parentProject?: Project | undefined;
   canEditProject: boolean;
   canDeleteProject: boolean;
   /** Saves the identity or concurrency form. Rejects on failure, which the form shows inline. */

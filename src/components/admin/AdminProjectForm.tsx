@@ -36,7 +36,7 @@ const searchFields: ((r: Row) => string)[] = [(r) => fullName(r.user), (r) => r.
 
 interface Props {
   /** The project being edited; omit for /settings/projects/new. */
-  project?: Project;
+  project?: Project | undefined;
   users: User[];
   onSave?: (name: string, roles: Record<string, Role>) => void;
 }
@@ -51,7 +51,7 @@ export default function AdminProjectForm({ project, users, onSave }: Props) {
   const [roles, setRoles] = useState<Record<string, Role>>(() =>
     Object.fromEntries(users.map((u) => [u.id, project?.members.find((m) => m.userId === u.id)?.role ?? ""]))
   );
-  const rows: Row[] = users.map((user) => ({ user, role: roles[user.id] }));
+  const rows: Row[] = users.map((user) => ({ user, role: roles[user.id] ?? "" }));
   const sort = useTableSort({ rows, initialKey: "name", sortMap, searchFields });
 
   const name = urlSafeName(rawName);

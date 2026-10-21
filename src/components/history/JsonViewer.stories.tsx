@@ -10,6 +10,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const HttpRequest: Story = { args: { value: dataclips[0].body } };
-export const StepResult: Story = { args: { value: dataclips[1].body } };
+export const HttpRequest: Story = { args: { value: dataclips[0]!.body } };
+export const StepResult: Story = { args: { value: dataclips[1]!.body } };
 export const Empty: Story = { args: { value: {} } };

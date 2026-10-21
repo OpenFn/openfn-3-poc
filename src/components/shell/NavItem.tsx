@@ -5,7 +5,7 @@ import Tooltip from "../Tooltip";
 
 interface Props {
   /** In-app route. */
-  to?: string;
+  to?: string | undefined;
   /** External link (docs, community, mailto). Opens in a new tab unless `target` says otherwise. */
   href?: string;
   target?: string;

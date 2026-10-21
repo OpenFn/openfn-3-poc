@@ -4,7 +4,7 @@ import Tooltip from "./Tooltip";
 
 interface Props {
   checked: boolean;
-  onChange?: (checked: boolean) => void;
+  onChange?: ((checked: boolean) => void) | undefined;
   /** Shown to the right of the switch. */
   label?: string;
   /** Gray text after the label, e.g. "(currently optional for this project)". */
@@ -13,7 +13,7 @@ interface Props {
   disabled?: boolean;
   id?: string;
   /** Hover text, e.g. why the switch is disabled. */
-  tooltip?: string;
+  tooltip?: string | undefined;
   /** id of an element that labels the switch, when there's no `label`. */
   labelledBy?: string;
 }

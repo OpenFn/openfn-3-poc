@@ -9,7 +9,7 @@ const meta: Meta<typeof ChannelFormModal> = {
   component: ChannelFormModal,
   decorators: [withRouter],
   args: {
-    projectId: projects[0].id,
+    projectId: projects[0]!.id,
     credentialOptions: projectCredentialOptions,
     authMethodOptions: webhookAuthMethods,
     onClose: () => {},
@@ -19,7 +19,7 @@ export default meta;
 type Story = StoryObj<typeof ChannelFormModal>;
 
 export const New: Story = {};
-export const Edit: Story = { args: { channel: channels[0] } };
+export const Edit: Story = { args: { channel: channels[0]! } };
 
 /** A project with no webhook auth methods yet. */
 export const NoAuthMethods: Story = { args: { authMethodOptions: [] } };
