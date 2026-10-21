@@ -30,7 +30,8 @@ export default function MaintenanceCard({
       title={title}
       description={description}
       action={
-        <Button id={buttonId} onClick={onRun} disabled={running}>
+        // Named after its card, so two "Run"s read apart; pending keeps focus and says busy.
+        <Button id={buttonId} onClick={onRun} pending={running} aria-label={`Run ${title}`}>
           Run
         </Button>
       }
