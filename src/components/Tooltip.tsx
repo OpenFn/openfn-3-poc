@@ -39,10 +39,10 @@ export default function Tooltip({
   children: ReactElement;
   content: ReactNode;
   /** Text to copy when the child is clicked. */
-  copy?: string;
-  side?: "top" | "right" | "bottom" | "left";
+  copy?: string | undefined;
+  side?: "top" | "right" | "bottom" | "left" | undefined;
   /** The child is a disabled control. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }) {
   const [open, setOpen] = useState(false);
   // With no content the listeners are off, so text that goes while the tooltip is open would leave this set.
