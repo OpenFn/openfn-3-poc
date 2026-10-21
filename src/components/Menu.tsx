@@ -24,6 +24,8 @@ interface MenuProps {
   className?: string | undefined;
   /** Extra attributes for the open panel, e.g. `data-annotation`. The panel is portalled, so it doesn't inherit its trigger's. */
   panelProps?: PanelProps;
+  /** Whether the rest of the page goes inert while the menu is open. Off for chrome such as the account menu, which Lightning left interactive. */
+  modal?: boolean;
   children: ReactNode;
 }
 
@@ -31,12 +33,13 @@ interface MenuProps {
  * A dropdown list of actions or choices, opened from a trigger. Keyboard
  * navigation, typeahead and closing on select or click-away come with it.
  */
-export default function Menu({ trigger, align = "end", className = "w-56", panelProps, children }: MenuProps) {
+export default function Menu({ trigger, align = "end", className = "w-56", panelProps, modal = true, children }: MenuProps) {
   return (
     <HeadlessMenu>
       <MenuButton as={Fragment}>{trigger}</MenuButton>
       <MenuItems
         anchor={{ to: `bottom ${align}`, gap: 8 }}
+        modal={modal}
         transition
         data-ui="menu"
         {...panelProps}
