@@ -37,7 +37,7 @@ import AdminProjectsPage from "./pages/admin/AdminProjectsPage";
 import AdminAuditPage from "./pages/admin/AdminAuditPage.replica";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
 import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage";
-import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage";
+import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage.replica";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
 
 function ProjectRoot() {

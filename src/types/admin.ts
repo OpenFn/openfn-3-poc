@@ -40,8 +40,15 @@ export interface AdminProjectRow extends Project {
 }
 
 /** A row of /settings/collections: the collection with its project's name. */
-export interface AdminCollectionRow extends Collection {
+/** One row of the instance-wide collections table: what it shows, no preview. */
+export interface AdminCollectionRow extends Omit<Collection, "previewJson"> {
   projectName: string;
+}
+
+/** What the create / edit collection form saves: the name as typed (the host derives the URL-safe name) and the project. */
+export interface CollectionFormValues {
+  rawName: string;
+  projectId: string;
 }
 
 /** What Phoenix LiveDashboard's home page shows (a static approximation). */

@@ -166,6 +166,7 @@ export function Td({
  * `children` go below the message (e.g. an error code).
  */
 export function EmptyState({
+  id,
   variant = "dashed",
   icon = variant === "dashed" ? "hero-plus-circle" : undefined,
   title,
@@ -176,6 +177,8 @@ export function EmptyState({
   className,
   children,
 }: {
+  /** The box's id (the button's, when it is one), for hosts that address it. */
+  id?: string | undefined;
   variant?: "dashed" | "plain";
   icon?: string;
   title?: ReactNode;
@@ -204,6 +207,7 @@ export function EmptyState({
   if (buttonText && !plain) {
     return (
       <button
+        id={id}
         type="button"
         onClick={onClick}
         disabled={disabled}
@@ -216,7 +220,7 @@ export function EmptyState({
     );
   }
   return (
-    <div data-ui="empty-state" data-variant={variant} className={classes}>
+    <div id={id} data-ui="empty-state" data-variant={variant} className={classes}>
       {body}
     </div>
   );
