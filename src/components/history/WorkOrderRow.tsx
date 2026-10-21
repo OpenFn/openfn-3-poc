@@ -50,15 +50,13 @@ export default function WorkOrderRow({
       >
         <Td className="!pr-1">
           <Tooltip content={available ? undefined : zeroPersistence} disabled={!available}>
-            <span>
-              <Checkbox
-                label={<span className="sr-only">Select work order</span>}
-                className="disabled:bg-gray-100"
-                checked={selected}
-                disabled={!available}
-                onChange={(e) => onSelect?.(e.target.checked)}
-              />
-            </span>
+            <Checkbox
+              label={<span className="sr-only">Select work order</span>}
+              className="disabled:bg-gray-100"
+              checked={selected}
+              disabled={!available}
+              onChange={(e) => onSelect?.(e.target.checked)}
+            />
           </Tooltip>
         </Td>
         <Td>

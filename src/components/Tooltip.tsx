@@ -78,7 +78,8 @@ export default function Tooltip({
       // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
       // swallows the click, since a disabled control's click does nothing (not even a clickable row's).
       <span className="inline-flex cursor-not-allowed *:pointer-events-none" onClick={(e) => e.stopPropagation()}>
-        {children}
+        {/* The tooltip can't open from a disabled control, so the reason goes on it for screen readers. */}
+        {typeof content === "string" ? cloneElement(children as ReactElement<{ "aria-description"?: string }>, { "aria-description": content }) : children}
       </span>
     ) : (
       children

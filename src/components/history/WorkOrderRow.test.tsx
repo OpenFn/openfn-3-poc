@@ -28,6 +28,7 @@ describe("WorkOrderRow", () => {
       </Table>
     );
     const checkbox = screen.getByRole("checkbox", { name: "Select work order" });
+    expect(checkbox.getAttribute("aria-description")).toBe(zeroPersistenceMessage);
     const wrapper = checkbox.closest(".cursor-not-allowed")!;
     expect(wrapper.classList).toContain("*:pointer-events-none");
     await hover(wrapper);

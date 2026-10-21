@@ -95,8 +95,6 @@ export default function Tabs<T extends string>({
           role: "tab",
           "aria-selected": selected,
           "aria-disabled": tab.disabled || undefined,
-          // The tooltip only describes it while open, so screen readers get the reason here.
-          "aria-description": tab.disabled ? tab.disabledReason : undefined,
           className: classes,
         };
         if (tab.to && !tab.disabled) {

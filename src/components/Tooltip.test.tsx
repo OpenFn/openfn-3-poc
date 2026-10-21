@@ -66,6 +66,11 @@ describe("Tooltip", () => {
     expect(ref.current).toBe(screen.getByRole("button"));
   });
 
+  it("gives a disabled control its reason as a description, since it can't take focus to open the tooltip", () => {
+    render(<Tooltip content="Contact an editor or admin to sync." disabled><button disabled>Sync</button></Tooltip>);
+    expect(screen.getByRole("button").getAttribute("aria-description")).toBe("Contact an editor or admin to sync.");
+  });
+
   it("shows the tooltip around a child with no text of its own", async () => {
     render(
       <Tooltip content="Outer">
