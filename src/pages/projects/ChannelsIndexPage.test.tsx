@@ -109,7 +109,25 @@ describe("ChannelsIndexPage", () => {
     expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/new");
   });
 
-  it("saves what was entered in the new channel form, then closes it", async () => {
+  it("shows the empty state, the stat cards and the form's options and links", () => {
+    renderPage({ channels: [], totalChannels: 0, totalRequests: 0, form: options });
+    expect(screen.getByText("No channels found.")).toBeTruthy();
+    expect(screen.getByText("Total Channels")).toBeTruthy();
+    expect(screen.getByText("Total Requests")).toBeTruthy();
+    expect(screen.getByPlaceholderText("https://")).toBeTruthy();
+    const select = screen.getByLabelText("Destination Credential") as HTMLSelectElement;
+    expect(Array.from(select.options).map((o) => [o.text, o.value])).toEqual([
+      ["None", ""],
+      ["My API Key", "pc1"],
+    ]);
+    const links = screen.getAllByRole("link", { name: "Add New" });
+    expect(links.map((a) => [a.getAttribute("href"), a.getAttribute("target")])).toEqual([
+      ["/projects/p1/settings#credentials", "_blank"],
+      ["/projects/p1/settings#webhook_security", "_blank"],
+    ]);
+  });
+
+  it("saves what was entered in the new channel form; the host closes it", async () => {
     const { router, onSave } = renderPage({ form: options });
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "new-channel" } });
     fireEvent.change(screen.getByLabelText("Destination URL"), { target: { value: "https://example.com/destination" } });
@@ -126,7 +144,8 @@ describe("ChannelsIndexPage", () => {
         clientAuthMethodIds: ["wam1"],
       })
     );
-    await waitFor(() => expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels"));
+    // Closing is the host's: it owns the route the form is on.
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it("keeps the form open with the host's field errors", async () => {

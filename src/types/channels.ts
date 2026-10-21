@@ -43,7 +43,8 @@ export interface ChannelFormValues {
 
 /** What the form needs from the host: the options, and the channel when editing. */
 export interface ChannelForm {
-  channel?: (ChannelFormValues & { id: string; proxyUrl: string }) | undefined;
+  /** Absent (or null, as JSON has it) for a new channel. */
+  channel?: (ChannelFormValues & { id: string; proxyUrl: string }) | null | undefined;
   /** The project's credentials (Destination Credential). */
   credentialOptions: { id: string; name: string }[];
   /** The project's webhook auth methods (Client Credentials). */

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../../components/Toast";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import { channelsIn, findChannel, projectCredentialOptions, webhookAuthMethods } from "../../mock-data/channels";
@@ -20,6 +20,7 @@ import ChannelsIndexPage from "./ChannelsIndexPage";
 export default function ChannelsIndexPageReplica() {
   const { projectId, channelId } = useParams();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const user = useCurrentUser();
   const project = findProject(projectId);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({});
@@ -86,6 +87,8 @@ export default function ChannelsIndexPageReplica() {
       onSave={async () => {
         await simulateRequest();
         toast(editing ? "Channel updated successfully." : "Channel created successfully.");
+        // The host owns the form's route, so it closes the form.
+        navigate(`/projects/${project.id}/channels`);
       }}
     />
   );

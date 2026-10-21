@@ -12,7 +12,8 @@ import ProxyUrlCopy from "./ProxyUrlCopy";
  * then Name, Enabled, Destination URL, Destination Credential and Client
  * Credentials. Save calls `onSave`; a rejection with field errors (`name`,
  * `destinationUrl`) shows them on the fields, any other keeps the form open
- * with the message. The host announces success.
+ * with the message. On success the host announces it and closes the form
+ * (it owns the route the form is on).
  */
 export default function ChannelFormModal({
   form,
@@ -48,10 +49,7 @@ export default function ChannelFormModal({
       size="md"
       title={channel ? "Edit Channel" : "New Channel"}
       formId={`channel-form-${channel?.id ?? "new"}`}
-      onSubmit={f.modalSubmit(async (values) => {
-        await onSave(values);
-        onClose();
-      })}
+      onSubmit={f.modalSubmit(onSave)}
       submitLabel="Save"
     >
       {channel && (
@@ -70,14 +68,14 @@ export default function ChannelFormModal({
       />
       <Select
         id="channel_destination_credential"
-        label={<LabelWithLink href={`${settingsHref}#credentials`}>Destination Credential</LabelWithLink>}
-        hint="How OpenFn authenticates with the destination service"
+        label="Destination Credential"
+        hint={<HintWithLink href={`${settingsHref}#credentials`}>How OpenFn authenticates with the destination service</HintWithLink>}
         options={[["None", ""], ...credentialOptions.map((pc): [string, string] => [pc.name, pc.id])]}
         {...f.fieldProps("destinationCredentialId")}
       />
       <Field
-        label={<LabelWithLink href={`${settingsHref}#webhook_security`}>Client Credentials</LabelWithLink>}
-        hint="Credentials that you can use to access this channel"
+        label="Client Credentials"
+        hint={<HintWithLink href={`${settingsHref}#webhook_security`}>Credentials that you can use to access this channel</HintWithLink>}
       >
         {authMethodOptions.length === 0 ? (
           <p className="italic text-xs text-gray-400">No webhook auth methods available.</p>
@@ -99,14 +97,18 @@ export default function ChannelFormModal({
   );
 }
 
-/** A field label with an "Add New" link beside it, opening settings in a new tab as Lightning does. */
-function LabelWithLink({ href, children }: { href: string; children: string }) {
+/**
+ * A field's hint with an "Add New" link after it, opening project settings in
+ * a new tab as Lightning does. Outside the label, so the field's name stays
+ * its own.
+ */
+function HintWithLink({ href, children }: { href: string; children: string }) {
   return (
-    <span className="flex items-baseline gap-2">
-      {children}
-      <TextLink href={href} target="_blank" className="text-xs font-normal">
+    <>
+      {children}{" "}
+      <TextLink href={href} target="_blank" className="text-xs">
         Add New
       </TextLink>
-    </span>
+    </>
   );
 }

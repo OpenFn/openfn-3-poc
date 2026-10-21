@@ -17,6 +17,13 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
         role="button"
         tabIndex={0}
         aria-label="Copy proxy URL"
+        // Enter and Space copy too; the Tooltip's click handler does the work.
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.currentTarget.click();
+          }
+        }}
         className={cn("group flex min-w-0 cursor-pointer items-center gap-1.5 text-gray-500 hover:text-gray-700", className)}
       >
         {icon && <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-gray-300" />}
