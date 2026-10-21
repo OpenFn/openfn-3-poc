@@ -12,6 +12,10 @@ import AnnotationsPanel from "./components/devtools/AnnotationsPanel";
 import AnnotationsFrame from "./components/devtools/AnnotationsFrame";
 import SessionProvider from "./session/SessionProvider";
 import { session } from "./mock-data/users";
+import { setAssetBase } from "./utils/assets";
+
+// Vite serves the replica under a base path; the library never reads it itself.
+setAssetBase(import.meta.env.BASE_URL);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
