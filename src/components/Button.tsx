@@ -119,7 +119,11 @@ export default function Button({
   );
   // Links take the same handlers and aria props as buttons.
   const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
-  const wrap = (el: ReactElement) => <Tooltip content={tooltip}>{el}</Tooltip>;
+  const wrap = (el: ReactElement) => (
+    <Tooltip content={tooltip} disabled={disabled && !pending}>
+      {el}
+    </Tooltip>
+  );
   if (to && !disabled) {
     return wrap(
       <Link to={to} {...link}>
@@ -134,11 +138,9 @@ export default function Button({
       </a>
     );
   }
-  const button = (
+  return wrap(
     <button ref={ref} type={type} disabled={disabled} {...shared} {...rest}>
       {content}
     </button>
   );
-  // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return wrap(disabled && tooltip && !pending ? <span className="inline-flex">{button}</span> : button);
 }

@@ -192,21 +192,24 @@ export default function MiniHistory({
       data-annotation="workflow-editor-versions-and-promote"
       onPointerDown={(e) => e.stopPropagation()}
     >
-        <Tooltip content="⌘ H">
-          <div
-            className={cn(
-              "flex cursor-pointer items-center justify-between gap-3 border-gray-200 bg-gray-50 px-3 py-2 text-gray-400 hover:bg-gray-100",
-              !collapsed && "border-b"
-            )}
-            onClick={onToggle}
-          >
-            <div className="flex items-center gap-2">
-              <Heading size="sm">{collapsed ? "View History" : "Recent History"}</Heading>
-              <FullHistoryLink id="view-history" to={historyHref} />
-            </div>
-            <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />
+        <div
+          className={cn(
+            "flex cursor-pointer items-center justify-between gap-3 border-gray-200 bg-gray-50 px-3 py-2 text-gray-400 hover:bg-gray-100",
+            !collapsed && "border-b"
+          )}
+          onClick={onToggle}
+        >
+          <div className="flex items-center gap-2">
+            {/* Only on the heading: around the link too, it would open with the link's own tooltip. */}
+            <Tooltip content="⌘ H">
+              <div>
+                <Heading size="sm">{collapsed ? "View History" : "Recent History"}</Heading>
+              </div>
+            </Tooltip>
+            <FullHistoryLink id="view-history" to={historyHref} />
           </div>
-        </Tooltip>
+          <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />
+        </div>
         {collapsed && selectedRun && (
           <div className="border-t border-gray-200 px-3 py-2">
             <RunBadge runId={selectedRun.id} onClose={onDeselectRun} />

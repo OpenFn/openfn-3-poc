@@ -5,6 +5,7 @@ import DataclipTypePill from "../history/DataclipTypePill";
 import Button from "../Button";
 import Card from "../Card";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import { FieldError } from "../Inputs";
 import CodeEditor from "./CodeEditor";
@@ -209,7 +210,7 @@ export default function ManualRunPanel({
             tabs={tabOptions}
             active={tab}
             onChange={setTab}
-            after={onClosePanel && <IconButton icon="hero-x-mark" label="Close panel" size="sm" onClick={onClosePanel} />}
+            after={onClosePanel && <CloseButton label="Close panel" size="sm" onClick={onClosePanel} />}
           />
         )}
         <div className="flex-1 overflow-auto">{fromEdge ? edgeMessage : selected ? selectedView : <div className="flex h-full min-h-0 flex-col">{tabContent}</div>}</div>

@@ -3,6 +3,7 @@ import type { ThemeMeta } from "../../theme/themes";
 import { useAnnotations } from "../../annotations/annotations-context";
 import { cn } from "../../utils/cn";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import { Radio } from "../Inputs";
 import Popover from "../Popover";
@@ -44,7 +45,7 @@ export default function SettingsMenu() {
           <div data-devtools aria-label="Settings" className="space-y-4">
             <div className="flex items-center justify-between">
               <Heading size="sm">Settings</Heading>
-              <IconButton icon="hero-x-mark" label="Close settings" title="Close" size="sm" onClick={close} />
+              <CloseButton label="Close settings" size="sm" onClick={close} />
             </div>
             <Toggle
               checked={annotations.open}

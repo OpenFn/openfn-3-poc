@@ -49,7 +49,7 @@ export default function WorkOrderRow({
         onClick={runs.length ? () => setExpanded((e) => !e) : undefined}
       >
         <Td className="!pr-1">
-          <Tooltip content={available ? undefined : zeroPersistence}>
+          <Tooltip content={available ? undefined : zeroPersistence} disabled={!available}>
             <span>
               <Checkbox
                 label={<span className="sr-only">Select work order</span>}

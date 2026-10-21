@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import type { EditorJob } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
 import Button from "../Button";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import Tabs from "../Tabs";
 import AdaptorDisplay from "./AdaptorDisplay";
@@ -154,7 +155,7 @@ export default function FullScreenIDE({
                         className={cn(vertical && "rotate-90")}
                         onClick={() => setVertical((v) => !v)}
                       />
-                      <IconButton icon="hero-x-mark" label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
+                      <CloseButton label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
                     </>
                   }
                 />

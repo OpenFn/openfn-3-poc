@@ -55,8 +55,9 @@ export default function Toggle({ checked, onChange, label, note, description, di
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-3">
-        {/* A disabled button gets no hover events in every browser, so the tooltip goes on a wrapper. */}
-        <Tooltip content={tooltip}>{disabled ? <span className="inline-flex">{button}</span> : button}</Tooltip>
+        <Tooltip content={tooltip} disabled={disabled}>
+          {button}
+        </Tooltip>
         {label && (
           <span id={labelId} className="text-sm text-gray-500">
             <span className="font-medium text-gray-900">{label}</span>

@@ -22,8 +22,8 @@
     "compare:all": "scripts/compare-lightning/run-all.sh"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.26.28",
     "@headlessui/react": "^2.2.10",
-    "@radix-ui/react-tooltip": "^1.2.8",
     "clsx": "^2.1.1",
     "marked": "^16.4.1",
     "tailwind-merge": "^3.3.1"

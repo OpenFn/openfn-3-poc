@@ -13,6 +13,10 @@ type Story = StoryObj<typeof Tooltip>;
 
 export const Default: Story = {};
 export const Top: Story = { args: { side: "top" } };
+/** A disabled control; a wrapper takes its hover and swallows the click. */
+export const Disabled: Story = {
+  args: { disabled: true, content: "Type the name to enable", children: <Button disabled>Delete</Button> },
+};
 /** Click to copy; the tooltip says "Copied!" for 1.5 seconds. */
 export const Copy: Story = {
   args: {

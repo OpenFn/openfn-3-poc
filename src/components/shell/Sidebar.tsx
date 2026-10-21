@@ -192,14 +192,15 @@ export default function Sidebar({ variant, project, canAccessAdmin, collapsed, o
             </div>
           )}
           <SidebarLogo collapsed={collapsed} />
-          <Tooltip content="Toggle sidebar" side="right">
-            {/* eslint-disable-next-line no-restricted-syntax -- sidebar chrome, styled by the themes through .sidebar-toggle-btn */}
-            <button
-              type="button"
-              onClick={onToggle}
-              className="sidebar-toggle-btn mt-2 flex border-t border-white/10 py-1.5 pl-6 transition-colors hover:bg-white/5 focus:outline-none"
-              aria-label="Toggle sidebar"
-            >
+          {/* eslint-disable-next-line no-restricted-syntax -- sidebar chrome, styled by the themes through .sidebar-toggle-btn */}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="sidebar-toggle-btn mt-2 flex border-t border-white/10 py-1.5 pl-6 transition-colors hover:bg-white/5 focus:outline-none"
+            aria-label="Toggle sidebar"
+          >
+            {/* On the icon, not the button: the button spans the sidebar, so the tooltip would float off its far edge. */}
+            <Tooltip content="Toggle sidebar" side="right">
               <svg className="h-5 w-5 text-white/70" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true">
                 {collapsed ? (
                   <path
@@ -213,8 +214,8 @@ export default function Sidebar({ variant, project, canAccessAdmin, collapsed, o
                   />
                 )}
               </svg>
-            </button>
-          </Tooltip>
+            </Tooltip>
+          </button>
         </nav>
       </div>
     </>

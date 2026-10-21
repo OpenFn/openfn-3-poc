@@ -66,11 +66,12 @@ export default function IconButton({
   );
   const content = typeof icon === "string" ? <span className={cn(icon, s.icon)} aria-hidden="true" /> : icon;
   const common = { "aria-label": label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
+  const hint = title ?? label;
 
   if ((to || href) && !rest.disabled) {
     const onClick = rest.onClick as unknown as MouseEventHandler<HTMLAnchorElement> | undefined;
     return (
-      <Tooltip content={title ?? label}>
+      <Tooltip content={hint}>
         {to ? (
           <Link to={to} onClick={onClick} {...common}>
             {content}
@@ -83,11 +84,11 @@ export default function IconButton({
       </Tooltip>
     );
   }
-  const button = (
-    <button ref={ref} type={type} {...rest} {...common}>
-      {content}
-    </button>
+  return (
+    <Tooltip content={hint} disabled={rest.disabled}>
+      <button ref={ref} type={type} {...rest} {...common}>
+        {content}
+      </button>
+    </Tooltip>
   );
-  // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return <Tooltip content={title ?? label}>{rest.disabled ? <span className="inline-flex">{button}</span> : button}</Tooltip>;
 }

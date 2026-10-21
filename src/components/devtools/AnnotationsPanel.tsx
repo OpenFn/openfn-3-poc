@@ -1,6 +1,7 @@
 import { useAnnotations } from "../../annotations/annotations-context";
 import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "../../annotations/source";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import TextLink from "../TextLink";
 import AnnotationCard from "./AnnotationCard";
@@ -41,7 +42,7 @@ export default function AnnotationsPanel() {
             active={!!pinnedId}
             onClick={() => pin(pinnedId ? null : currentId)}
           />
-          <IconButton icon="hero-x-mark" label="Close" onClick={() => setOpen(false)} />
+          <CloseButton onClick={() => setOpen(false)} />
         </div>
       </div>
 
