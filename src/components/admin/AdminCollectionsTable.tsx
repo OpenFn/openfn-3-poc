@@ -63,10 +63,22 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
             <Td className="max-w-100 wrap-break-word">{collection.projectName}</Td>
             <Td className="max-w-100 wrap-break-word">{formatBytes(collection.byteSizeSum)}</Td>
             <Td actions>
-              <Button id={`edit-collection-${collection.id}-button`} theme="secondary" size="xs" onClick={() => onEdit(collection)}>
+              <Button
+                id={`edit-collection-${collection.id}-button`}
+                aria-label={`Edit ${collection.name}`}
+                theme="secondary"
+                size="xs"
+                onClick={() => onEdit(collection)}
+              >
                 Edit
               </Button>
-              <Button id={`delete-collection-${collection.id}-button`} theme="secondary" size="xs" onClick={() => onDelete(collection)}>
+              <Button
+                id={`delete-collection-${collection.id}-button`}
+                aria-label={`Delete ${collection.name}`}
+                theme="secondary"
+                size="xs"
+                onClick={() => onDelete(collection)}
+              >
                 Delete
               </Button>
             </Td>
