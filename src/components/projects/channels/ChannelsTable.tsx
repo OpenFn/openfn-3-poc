@@ -1,4 +1,4 @@
-import type { Channel } from "../../../types/channels";
+import type { ChannelRow } from "../../../types/channels";
 import { cn } from "../../../utils/cn";
 import Button from "../../Button";
 import { EmptyState, Table, Td, Th, Tr } from "../../Table";
@@ -10,19 +10,18 @@ import ProxyUrlCopy from "./ProxyUrlCopy";
 /**
  * The channels table (ChannelLive.Index `channels_table`): name, destination
  * with the copyable proxy URL under it, request count and last activity
- * (both link to channel logs), the Enabled toggle, and Edit / Delete.
+ * (both link to the channel's logs), the Enabled toggle (text for those who
+ * cannot edit), and Edit / Delete. Delete asks first, as `data-confirm` did.
  */
 export default function ChannelsTable({
   channels,
-  projectId,
   canEdit = true,
   canDelete = true,
   onToggle,
   onEdit,
   onDelete,
 }: {
-  channels: Channel[];
-  projectId: string;
+  channels: ChannelRow[];
   canEdit?: boolean;
   canDelete?: boolean;
   onToggle?: (id: string, enabled: boolean) => void;
@@ -30,7 +29,6 @@ export default function ChannelsTable({
   onDelete?: (id: string) => void;
 }) {
   if (channels.length === 0) return <EmptyState variant="plain" message="No channels found." />;
-  const logs = `/projects/${projectId}/history/channels`;
 
   return (
     <Table
@@ -56,19 +54,21 @@ export default function ChannelsTable({
               <span className="hero-arrow-right-start-on-rectangle h-4 w-4 shrink-0 text-gray-400" />
               <span className="min-w-0 wrap-break-word">{channel.destinationUrl}</span>
             </div>
-            <ProxyUrlCopy channelId={channel.id} icon className="mt-1" />
+            <ProxyUrlCopy url={channel.proxyUrl} icon className="mt-1" />
           </Td>
           <Td>
-            <TextLink to={logs}>{channel.requestCount}</TextLink>
+            <TextLink to={channel.logsHref}>{channel.requestCount}</TextLink>
           </Td>
           <Td>
-            <TextLink to={logs}>
+            <TextLink to={channel.logsHref}>
               {channel.lastActivityAt ? <DateTime value={channel.lastActivityAt} /> : <span className="italic">Never</span>}
             </TextLink>
           </Td>
           <Td>
             {canEdit ? (
               <Toggle
+                id={channel.id}
+                name="channel_state"
                 checked={channel.enabled}
                 onChange={(v) => onToggle?.(channel.id, v)}
                 tooltip={channel.enabled ? undefined : `${channel.name} (disabled)`}
@@ -81,14 +81,14 @@ export default function ChannelsTable({
           </Td>
           <Td actions>
             {canEdit && (
-              <Button theme="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
+              <Button theme="secondary" size="sm" onClick={() => onEdit?.(channel.id)}>
                 Edit
               </Button>
             )}
             {canDelete && (
               <Button
                 theme="danger"
-                size="xs"
+                size="sm"
                 onClick={() => {
                   if (window.confirm(`Delete "${channel.name}"? This cannot be undone.`)) onDelete?.(channel.id);
                 }}

@@ -1,0 +1,173 @@
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { RouterProvider, type Router } from "../../routing/router";
+import { ToastProvider } from "../../components/Toast";
+import type { ChannelForm, ChannelRow } from "../../types/channels";
+import { RequestError } from "../../utils/errors";
+import ChannelsIndexPage from "./ChannelsIndexPage";
+
+const rows: ChannelRow[] = [
+  {
+    id: "c1",
+    name: "lab-results",
+    enabled: true,
+    destinationUrl: "https://destination.example.com/data",
+    proxyUrl: "https://lightning.example.com/channels/c1",
+    requestCount: 2,
+    lastActivityAt: "2025-03-05T14:30:00Z",
+    logsHref: "/projects/p1/history/channels?filters[channel_id]=c1",
+  },
+  {
+    id: "c2",
+    name: "idle",
+    enabled: false,
+    destinationUrl: "https://idle.example.com",
+    proxyUrl: "https://lightning.example.com/channels/c2",
+    requestCount: 0,
+    lastActivityAt: null,
+    logsHref: "/projects/p1/history/channels?filters[channel_id]=c2",
+  },
+];
+
+const options = {
+  credentialOptions: [{ id: "pc1", name: "My API Key" }],
+  authMethodOptions: [{ id: "wam1", name: "API Key Auth" }],
+};
+
+function renderPage(props: Partial<React.ComponentProps<typeof ChannelsIndexPage>> = {}) {
+  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/channels", search: "", hash: "" }) };
+  const handlers = {
+    onToggle: vi.fn().mockResolvedValue(undefined),
+    onDelete: vi.fn().mockResolvedValue(undefined),
+    onSave: vi.fn().mockResolvedValue(undefined),
+  };
+  render(
+    <RouterProvider value={router}>
+      <ToastProvider>
+        <ChannelsIndexPage
+          project={{ id: "p1", parentId: null, color: null }}
+          projectLabel="Malawi HIV"
+          channels={rows}
+          totalChannels={2}
+          totalRequests={2}
+          logsHref="/projects/p1/history/channels"
+          canCreateChannel
+          canEditChannel
+          canDeleteChannel
+          form={null}
+          {...handlers}
+          {...props}
+        />
+      </ToastProvider>
+    </RouterProvider>
+  );
+  return { ...handlers, router };
+}
+
+const rowOf = (name: string) => screen.getByText(name).closest("tr")!;
+
+describe("ChannelsIndexPage", () => {
+  it("lists the channels with their requests, last activity and proxy URL", () => {
+    renderPage();
+    expect(screen.getByRole("heading", { name: "Channels (2)" })).toBeTruthy();
+    const lab = rowOf("lab-results");
+    expect(lab.textContent).toContain("https://destination.example.com/data");
+    expect(lab.textContent).toContain("lightning.example.com/channels/c1");
+    expect(lab.querySelector("a[href='/projects/p1/history/channels?filters[channel_id]=c1']")!.textContent).toBe("2");
+    expect(rowOf("idle").textContent).toContain("Never");
+    expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe("/projects/p1/history/channels");
+  });
+
+  it("switches, opens the editor and deletes after asking", () => {
+    const { onToggle, onDelete, router } = renderPage();
+    fireEvent.click(rowOf("idle").querySelector("[role=switch]")!);
+    expect(onToggle).toHaveBeenCalledWith("c2", true);
+
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Edit" }));
+    expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/c2/edit");
+
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete" }));
+    expect(confirm).toHaveBeenCalledWith('Delete "idle"? This cannot be undone.');
+    expect(onDelete).toHaveBeenCalledWith("c2");
+    confirm.mockRestore();
+  });
+
+  it("is read-only for someone who cannot edit", () => {
+    renderPage({ canCreateChannel: false, canEditChannel: false, canDeleteChannel: false });
+    expect((screen.getByRole("button", { name: "New Channel" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.queryAllByRole("switch")).toHaveLength(0);
+    expect(rowOf("lab-results").textContent).toContain("Enabled");
+    expect(rowOf("idle").textContent).toContain("Disabled");
+    expect(screen.queryByText("Edit")).toBeNull();
+    expect(screen.queryByText("Delete")).toBeNull();
+  });
+
+  it("opens the new channel form through its route", () => {
+    const { router } = renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "New Channel" }));
+    expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/new");
+  });
+
+  it("saves what was entered in the new channel form, then closes it", async () => {
+    const { router, onSave } = renderPage({ form: options });
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "new-channel" } });
+    fireEvent.change(screen.getByLabelText("Destination URL"), { target: { value: "https://example.com/destination" } });
+    fireEvent.change(screen.getByLabelText(/Destination Credential/), { target: { value: "pc1" } });
+    fireEvent.click(screen.getByLabelText("API Key Auth"));
+    fireEvent.submit(document.getElementById("channel-form-new")!);
+
+    await waitFor(() =>
+      expect(onSave).toHaveBeenCalledWith({
+        name: "new-channel",
+        enabled: true,
+        destinationUrl: "https://example.com/destination",
+        destinationCredentialId: "pc1",
+        clientAuthMethodIds: ["wam1"],
+      })
+    );
+    await waitFor(() => expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels"));
+  });
+
+  it("keeps the form open with the host's field errors", async () => {
+    const onSave = vi
+      .fn()
+      .mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors: { name: ["A channel with this name already exists in this project"] } }));
+    renderPage({ form: options, onSave });
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "existing" } });
+    fireEvent.change(screen.getByLabelText("Destination URL"), { target: { value: "https://example.com" } });
+    fireEvent.submit(document.getElementById("channel-form-new")!);
+
+    expect(await screen.findByText("A channel with this name already exists in this project")).toBeTruthy();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
+  it("asks for a name and a destination before saving", async () => {
+    const { onSave } = renderPage({ form: options });
+    fireEvent.submit(document.getElementById("channel-form-new")!);
+    expect(await screen.findAllByText("can't be blank")).toHaveLength(2);
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("edits a channel with its current settings and proxy URL", () => {
+    const form: ChannelForm = {
+      ...options,
+      channel: {
+        id: "c1",
+        proxyUrl: "https://lightning.example.com/channels/c1",
+        name: "lab-results",
+        enabled: true,
+        destinationUrl: "https://destination.example.com/data",
+        destinationCredentialId: "pc1",
+        clientAuthMethodIds: ["wam1"],
+      },
+    };
+    renderPage({ form });
+    expect(screen.getByRole("dialog").textContent).toContain("Edit Channel");
+    expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("lab-results");
+    expect((screen.getByLabelText(/Destination Credential/) as HTMLSelectElement).value).toBe("pc1");
+    expect((screen.getByLabelText("API Key Auth") as HTMLInputElement).checked).toBe(true);
+    expect(document.getElementById("channel-form-c1")).toBeTruthy();
+    expect(screen.getByRole("dialog").textContent).toContain("lightning.example.com/channels/c1");
+  });
+});

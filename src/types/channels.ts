@@ -16,6 +16,40 @@ export interface Channel {
   lockVersion: number;
 }
 
+/** One row of the channels index table: what it shows, with the links the host builds. */
+export interface ChannelRow {
+  id: string;
+  name: string;
+  enabled: boolean;
+  destinationUrl: string;
+  /** The URL client systems call; the host knows its own address. */
+  proxyUrl: string;
+  requestCount: number;
+  lastActivityAt: string | null;
+  /** The channel logs, filtered to this channel. */
+  logsHref: string;
+}
+
+/** What the New / Edit Channel form edits and saves. */
+export interface ChannelFormValues {
+  name: string;
+  enabled: boolean;
+  destinationUrl: string;
+  /** A project credential id, or "" for none. */
+  destinationCredentialId: string;
+  /** Webhook auth method ids. */
+  clientAuthMethodIds: string[];
+}
+
+/** What the form needs from the host: the options, and the channel when editing. */
+export interface ChannelForm {
+  channel?: (ChannelFormValues & { id: string; proxyUrl: string }) | undefined;
+  /** The project's credentials (Destination Credential). */
+  credentialOptions: { id: string; name: string }[];
+  /** The project's webhook auth methods (Client Credentials). */
+  authMethodOptions: { id: string; name: string }[];
+}
+
 export type ChannelRequestState = "pending" | "success" | "failed" | "timeout" | "error";
 
 export interface ChannelEvent {

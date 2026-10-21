@@ -1,39 +1,45 @@
-import { useState } from "react";
-import type { Channel } from "../../../types/channels";
+import type { ChannelForm, ChannelFormValues } from "../../../types/channels";
 import FormModal from "../../FormModal";
 import { Checkbox, Field, Select, TextInput } from "../../Inputs";
 import Toggle from "../../Toggle";
 import TextLink from "../../TextLink";
-import { useToast } from "../../Toast";
+import { useForm } from "../../../utils/useForm";
+import { blank } from "../../../utils/validate";
 import ProxyUrlCopy from "./ProxyUrlCopy";
 
 /**
  * New / Edit Channel (ChannelLive.FormComponent): the proxy URL when editing,
  * then Name, Enabled, Destination URL, Destination Credential and Client
- * Credentials. Save just closes.
+ * Credentials. Save calls `onSave`; a rejection with field errors (`name`,
+ * `destinationUrl`) shows them on the fields, any other keeps the form open
+ * with the message. The host announces success.
  */
 export default function ChannelFormModal({
-  channel,
-  projectId,
-  credentialOptions,
-  authMethodOptions,
+  form,
+  settingsHref,
   onClose,
+  onSave,
 }: {
-  /** The channel being edited; omit for New Channel. */
-  channel?: Channel | undefined;
-  projectId: string;
-  /** Project credentials (Destination Credential select). */
-  credentialOptions: { id: string; name: string }[];
-  /** The project's webhook auth methods (Client Credentials checkboxes). */
-  authMethodOptions: { id: string; name: string }[];
+  form: ChannelForm;
+  /** The project settings page; "Add New" opens its credentials and webhook security tabs. */
+  settingsHref: string;
   onClose: () => void;
+  onSave: (values: ChannelFormValues) => Promise<void>;
 }) {
-  const [name, setName] = useState(channel?.name ?? "");
-  const [enabled, setEnabled] = useState(channel?.enabled ?? true);
-  const [destinationUrl, setDestinationUrl] = useState(channel?.destinationUrl ?? "");
-  const [credentialId, setCredentialId] = useState(channel?.destinationCredentialId ?? "");
-  const [clients, setClients] = useState<string[]>(channel?.clientAuthMethodIds ?? []);
-  const toast = useToast();
+  const { channel, credentialOptions, authMethodOptions } = form;
+  const f = useForm<ChannelFormValues>({
+    initial: {
+      name: channel?.name ?? "",
+      enabled: channel?.enabled ?? true,
+      destinationUrl: channel?.destinationUrl ?? "",
+      destinationCredentialId: channel?.destinationCredentialId ?? "",
+      clientAuthMethodIds: channel?.clientAuthMethodIds ?? [],
+    },
+    validate: ({ name, destinationUrl }) => ({ name: blank(name), destinationUrl: blank(destinationUrl) }),
+  });
+  const clients = f.values.clientAuthMethodIds;
+  const setClient = (id: string, on: boolean) =>
+    f.set("clientAuthMethodIds", on ? [...clients, id] : clients.filter((x) => x !== id));
 
   return (
     <FormModal
@@ -41,38 +47,36 @@ export default function ChannelFormModal({
       onClose={onClose}
       size="md"
       title={channel ? "Edit Channel" : "New Channel"}
-      formId="channel-form"
-      onSubmit={() => {
+      formId={`channel-form-${channel?.id ?? "new"}`}
+      onSubmit={f.modalSubmit(async (values) => {
+        await onSave(values);
         onClose();
-        toast(channel ? "Channel updated successfully." : "Channel created successfully.");
-      }}
+      })}
       submitLabel="Save"
     >
       {channel && (
         <Field label="Proxy URL">
-          <ProxyUrlCopy channelId={channel.id} />
+          <ProxyUrlCopy url={channel.proxyUrl} />
         </Field>
       )}
-      <TextInput id="channel_name" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-      <Toggle checked={enabled} onChange={setEnabled} label="Enabled" />
+      <TextInput id="channel_name" label="Name" {...f.fieldProps("name")} />
+      <Toggle checked={f.values.enabled} onChange={(v) => f.set("enabled", v)} label="Enabled" />
       <TextInput
         id="channel_destination_url"
         label="Destination URL"
         hint="The service OpenFn will forward requests to"
         placeholder="https://"
-        value={destinationUrl}
-        onChange={(e) => setDestinationUrl(e.target.value)}
+        {...f.fieldProps("destinationUrl")}
       />
       <Select
         id="channel_destination_credential"
-        label={<LabelWithLink to={`/projects/${projectId}/settings#credentials`}>Destination Credential</LabelWithLink>}
+        label={<LabelWithLink href={`${settingsHref}#credentials`}>Destination Credential</LabelWithLink>}
         hint="How OpenFn authenticates with the destination service"
         options={[["None", ""], ...credentialOptions.map((pc): [string, string] => [pc.name, pc.id])]}
-        value={credentialId}
-        onChange={(e) => setCredentialId(e.target.value)}
+        {...f.fieldProps("destinationCredentialId")}
       />
       <Field
-        label={<LabelWithLink to={`/projects/${projectId}/settings#webhook_security`}>Client Credentials</LabelWithLink>}
+        label={<LabelWithLink href={`${settingsHref}#webhook_security`}>Client Credentials</LabelWithLink>}
         hint="Credentials that you can use to access this channel"
       >
         {authMethodOptions.length === 0 ? (
@@ -85,9 +89,7 @@ export default function ChannelFormModal({
                 id={`client_auth_${wam.id}`}
                 label={wam.name}
                 checked={clients.includes(wam.id)}
-                onChange={(e) =>
-                  setClients((ids) => (e.target.checked ? [...ids, wam.id] : ids.filter((id) => id !== wam.id)))
-                }
+                onChange={(e) => setClient(wam.id, e.target.checked)}
               />
             ))}
           </div>
@@ -97,12 +99,12 @@ export default function ChannelFormModal({
   );
 }
 
-/** A field label with an "Add New" link beside it. */
-function LabelWithLink({ to, children }: { to: string; children: string }) {
+/** A field label with an "Add New" link beside it, opening settings in a new tab as Lightning does. */
+function LabelWithLink({ href, children }: { href: string; children: string }) {
   return (
     <span className="flex items-baseline gap-2">
       {children}
-      <TextLink to={to} className="text-xs font-normal">
+      <TextLink href={href} target="_blank" className="text-xs font-normal">
         Add New
       </TextLink>
     </span>
