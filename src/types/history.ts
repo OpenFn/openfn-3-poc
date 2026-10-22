@@ -106,6 +106,15 @@ export interface RunStep extends Omit<Step, "runId"> {
   snapshotLockVersion: number;
 }
 
+/** The dataclip page's record (DataclipLive.Show): metadata only, the body arrives separately. */
+export interface DataclipDetail {
+  id: string;
+  type: DataclipType;
+  insertedAt: string;
+  updatedAt: string;
+  wipedAt: string | null;
+}
+
 /** A selected step's input or output: the body arrives separately and may still be loading. */
 export interface StepDataclip {
   id: string;
