@@ -6,7 +6,7 @@ import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
 import AuthResetPasswordPage from "./pages/auth/AuthResetPasswordPage";
 import AuthTwoFactorPage from "./pages/auth/AuthTwoFactorPage";
 import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
-import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage";
+import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage.replica";
 import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage.replica";
 import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
 
