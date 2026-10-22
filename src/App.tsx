@@ -31,8 +31,8 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import TokensPage from "./pages/profile/TokensPage.replica";
 import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 
-import AdminUsersPage from "./pages/admin/AdminUsersPage";
-import AdminUserEditPage from "./pages/admin/AdminUserEditPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
+import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/AdminProjectsPage";
 import AdminAuditPage from "./pages/admin/AdminAuditPage.replica";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
