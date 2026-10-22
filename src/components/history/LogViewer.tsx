@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { LogLine } from "../../types/history";
 import { logsAtLevel } from "../../utils/history";
 import { cn } from "../../utils/cn";
@@ -62,6 +62,7 @@ export default function LogViewer({
   selectedStepId,
   waitingMessage = "Nothing yet",
   defaultLevel = "info",
+  onLevelChange,
   className,
 }: {
   logs: LogLine[];
@@ -70,9 +71,27 @@ export default function LogViewer({
   selectedStepId?: string | null;
   waitingMessage?: string;
   defaultLevel?: LogLevel;
+  /** The viewer picked a level; the host may remember it. */
+  onLevelChange?: (level: LogLevel) => void;
   className?: string;
 }) {
   const [level, setLevel] = useState<LogLevel>(defaultLevel);
+  const changeLevel = (next: LogLevel) => {
+    setLevel(next);
+    onLevelChange?.(next);
+  };
+
+  const { lines, highlighted } = useMemo(() => {
+    const lines: string[] = [];
+    const highlighted = new Set<number>();
+    for (const log of logsAtLevel(logs, level)) {
+      for (const part of `${log.source} ${prettify(log.message)}`.split("\n")) {
+        lines.push(part);
+        if (selectedStepId && log.stepId === selectedStepId) highlighted.add(lines.length);
+      }
+    }
+    return { lines, highlighted };
+  }, [logs, level, selectedStepId]);
 
   if (finished && logs.length === 0) {
     return (
@@ -80,20 +99,10 @@ export default function LogViewer({
     );
   }
 
-  const visible = logsAtLevel(logs, level);
-  const lines: string[] = [];
-  const highlighted = new Set<number>();
-  for (const log of visible) {
-    for (const part of `${log.source} ${prettify(log.message)}`.split("\n")) {
-      lines.push(part);
-      if (selectedStepId && log.stepId === selectedStepId) highlighted.add(lines.length);
-    }
-  }
-
   return (
     <div className="flex flex-col grow rounded-md bg-gray-700 font-mono text-gray-200 @container overflow-hidden">
       <div className="flex h-6 flex-row-reverse items-center border-b border-gray-500 px-2 @md:h-8">
-        <LogLevelFilter selected={level} onChange={setLevel} />
+        <LogLevelFilter selected={level} onChange={changeLevel} />
       </div>
       <div className={cn("flex grow", className)}>
         <div className="relative grow">
