@@ -33,7 +33,7 @@ import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
-import AdminProjectsPage from "./pages/admin/AdminProjectsPage";
+import AdminProjectsPage from "./pages/admin/AdminProjectsPage.replica";
 import AdminAuditPage from "./pages/admin/AdminAuditPage.replica";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
 import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage";

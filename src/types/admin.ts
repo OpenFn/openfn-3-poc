@@ -1,6 +1,6 @@
 /** Superuser admin views: audit trail and auth provider. Types only: no data, no behaviour. */
 import type { Collection } from "./project-settings";
-import type { Project } from "./projects";
+import type { Project, ProjectRole } from "./projects";
 import type { UserRole } from "./users";
 
 /** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
@@ -70,11 +70,39 @@ export interface AuthProvider {
   allowUnverifiedEmail: boolean;
 }
 
-/** A row of /settings/projects: the project with its owner and deletion date joined in. */
-export interface AdminProjectRow extends Project {
+/** A row of /settings/projects: what the table shows, with the owner's name joined in. */
+export interface AdminProjectRow extends Pick<Project, "id" | "name" | "description" | "insertedAt"> {
   /** The owner's full name; "" when the project has no owner. */
   ownerName: string;
   scheduledDeletion: string | null;
+}
+
+/** Someone the admin project form can give a role to. */
+export interface AdminProjectUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+/** The admin project form while the route has it open (/settings/projects/new, /settings/projects/:id). */
+export interface AdminProjectForm {
+  /** The project being edited, with its members' roles; null for a new project. */
+  project: { id: string; name: string; members: { userId: string; role: ProjectRole }[] } | null;
+  /** Every account on the instance, one row each. */
+  users: AdminProjectUser[];
+}
+
+/** What the admin project form saves: the name as typed (the host derives the URL-safe name) and a role, or "" for none, per user id. */
+export interface AdminProjectFormValues {
+  rawName: string;
+  roles: Record<string, ProjectRole | "">;
+}
+
+/** The project whose deletion dialog is open (/settings/projects/:id/delete). The host knows whether confirming schedules or purges. */
+export interface AdminDeleteProject {
+  id: string;
+  name: string;
 }
 
 /** A row of /settings/collections: the collection with its project's name. */
