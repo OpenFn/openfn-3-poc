@@ -97,6 +97,27 @@ export interface ChannelRequest {
   events: ChannelEvent[];
 }
 
+/** One row of History's Channel Logs table: what it shows, with the path and error already picked from the events. */
+export interface ChannelLogRow {
+  id: string;
+  /** The client-facing request id, shown short with the full one as the title. */
+  requestId: string;
+  channelId: string;
+  channelName: string;
+  startedAt: string;
+  state: ChannelRequestState;
+  /** The path of the request the destination answered; null when there was none or it was wiped. */
+  requestPath: string | null;
+  errorMessage: string | null;
+}
+
+/** One page of a server-paginated list. */
+export interface PageInfo {
+  number: number;
+  size: number;
+  totalEntries: number;
+}
+
 /** What the channel request page shows of a request: the host sends no other id, and only the primary event. */
 export type ChannelRequestDetail = Omit<ChannelRequest, "requestId" | "channelId" | "projectId">;
 

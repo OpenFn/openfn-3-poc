@@ -19,7 +19,7 @@ import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage.replica";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
 import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage";
-import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage";
+import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
 import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
 import RunShowPage from "./pages/history/RunShowPage";
 import DataclipShowPage from "./pages/history/DataclipShowPage";
