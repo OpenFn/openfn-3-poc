@@ -15,7 +15,7 @@ export function logsAtLevel<T extends { level: string }>(logs: T[], level: LogLi
 }
 
 /** Prefers the destination response event, falls back to the error event. */
-export function primaryEvent(cr: ChannelRequest): ChannelEvent | undefined {
+export function primaryEvent(cr: Pick<ChannelRequest, "events">): ChannelEvent | undefined {
   return cr.events.find((e) => e.type === "destination_response") ?? cr.events.find((e) => e.type === "error");
 }
 

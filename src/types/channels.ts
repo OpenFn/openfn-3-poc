@@ -55,8 +55,9 @@ export type ChannelRequestState = "pending" | "success" | "failed" | "timeout" |
 
 export interface ChannelEvent {
   type: "destination_response" | "error";
-  requestMethod: string;
-  requestPath: string;
+  /** Null on a wiped request. */
+  requestMethod: string | null;
+  requestPath: string | null;
   requestQueryString: string | null;
   requestHeaders: [string, string][] | null;
   requestBodyPreview: string | null;
@@ -95,3 +96,9 @@ export interface ChannelRequest {
   snapshot: { name: string; destinationUrl: string; lockVersion: number };
   events: ChannelEvent[];
 }
+
+/** What the channel request page shows of a request: the host sends no other id, and only the primary event. */
+export type ChannelRequestDetail = Omit<ChannelRequest, "requestId" | "channelId" | "projectId">;
+
+/** The channel a request ran through, as the request page shows it: its current name, destination and version. */
+export type ChannelRequestChannel = Pick<Channel, "id" | "projectId" | "name" | "destinationUrl" | "lockVersion">;
