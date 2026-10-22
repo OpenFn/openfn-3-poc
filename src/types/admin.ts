@@ -60,8 +60,20 @@ export interface AuditEvent {
   credentialBodies?: Record<string, string>;
 }
 
+/** The configured OpenID Connect provider, as the admin form shows it: the secret itself never leaves the host. */
 export interface AuthProvider {
   id: string | null;
+  name: string;
+  discoveryUrl: string;
+  clientId: string;
+  /** A secret is stored; the form may leave the field blank to keep it. */
+  hasClientSecret: boolean;
+  redirectHost: string;
+  allowUnverifiedEmail: boolean;
+}
+
+/** What the auth provider form saves or tests. A blank secret keeps the stored one. */
+export interface AuthProviderValues {
   name: string;
   discoveryUrl: string;
   clientId: string;

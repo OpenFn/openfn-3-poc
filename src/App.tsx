@@ -36,7 +36,7 @@ import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/AdminProjectsPage.replica";
 import AdminAuditPage from "./pages/admin/AdminAuditPage.replica";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
-import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage";
+import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage.replica";
 import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage.replica";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
 
