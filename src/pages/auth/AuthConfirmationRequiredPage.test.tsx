@@ -79,15 +79,28 @@ describe("AuthConfirmationRequiredPage", () => {
     expect(passwordField().value).toBe("");
   });
 
-  it("puts a wrong password on its field", async () => {
+  it("puts a wrong password on its field, and drops an earlier answer", async () => {
     const onChangeEmail = vi
       .fn()
-      .mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors: { currentPassword: ["Your passwords do not match."] } }));
+      .mockResolvedValueOnce({ status: "requested", email: "first@example.com" })
+      .mockRejectedValueOnce(new RequestError("Please fix the errors below.", { fieldErrors: { currentPassword: ["Your passwords do not match."] } }));
     renderPage({ onChangeEmail });
+    fill("first@example.com", "hello world!");
+    fireEvent.submit(document.getElementById("email-form")!);
+    await screen.findByText(/We have sent confirmation instructions/);
+
     fill("typo-fixed@example.com", "wrong");
     fireEvent.submit(document.getElementById("email-form")!);
     expect(await screen.findByText("Your passwords do not match.")).toBeTruthy();
     expect(screen.queryByText(/We have sent confirmation instructions/)).toBeNull();
+  });
+
+  it("tells a request that never answered apart from one the host could not send", async () => {
+    const onResend = vi.fn().mockRejectedValue(new RequestError("Connection lost. Please try again."));
+    renderPage({ onResend });
+    fireEvent.click(resend());
+    expect(await screen.findByText("Connection lost. Please try again.")).toBeTruthy();
+    expect(screen.queryByText(/We could not send that email just now/)).toBeNull();
   });
 
   it("says when corrections are throttled, keeping the typed address", async () => {

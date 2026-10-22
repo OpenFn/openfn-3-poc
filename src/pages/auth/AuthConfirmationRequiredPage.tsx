@@ -43,7 +43,11 @@ export interface AuthConfirmationRequiredPageProps {
 export default function AuthConfirmationRequiredPage({ email, onResend, onChangeEmail, logoutTo }: AuthConfirmationRequiredPageProps) {
   const [resent, setResent] = useState<ResendResult | null>(null);
   const [changed, setChanged] = useState<ChangeEmailResult | null>(null);
-  const resend = useAction(async () => setResent(await onResend()));
+  // Each answer replaces the last; a request that never answered shows as its own error.
+  const resend = useAction(async () => {
+    setResent(null);
+    setResent(await onResend());
+  });
   const form = useForm<ChangeEmailValues>({
     initial: { email: "", currentPassword: "" },
     validate: ({ email: next, currentPassword }) => ({
@@ -54,6 +58,7 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
   // Sent: the form empties, as the HEEx's did, and the password with it.
   // Throttled: nothing was sent, so the typed address stays.
   const changeEmail = async (values: ChangeEmailValues) => {
+    setChanged(null);
     const result = await onChangeEmail(values);
     setChanged(result);
     if (result.status === "requested") form.reset();
@@ -86,12 +91,13 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
             We have sent confirmation instructions to {changed.email}.
           </Alert>
         )}
-        {(resent?.status === "failed" || resend.error) && (
+        {resent?.status === "failed" && (
           <Alert type="danger" id="confirmation-email-failed">
             We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance
             administrator.
           </Alert>
         )}
+        {resend.error && <Alert type="danger">{errorMessage(resend.error)}</Alert>}
         <Button id="resend-confirmation-email-button" onClick={() => void resend.run()} pending={resend.pending}>
           Resend confirmation email
         </Button>
