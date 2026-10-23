@@ -5,6 +5,7 @@ import IconButton from "../IconButton";
 import RoleSelect from "./RoleSelect";
 import type { CollaboratorValues, InviteValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";
+import { RequestError } from "../../utils/errors";
 
 interface InviteDraft {
   firstName: string;
@@ -17,7 +18,10 @@ interface Props {
   /** Prefilled from the emails that had no OpenFn account. */
   initial: CollaboratorValues[];
   onCancel: () => void;
-  /** May be async: the modal shows pending and stays open with the error if it rejects. */
+  /**
+   * May be async: the modal shows pending and stays open with the error if it rejects. Field errors
+   * keyed by row and field (`"1.email"`) show on that field; any other key fails with the message.
+   */
   onInvite: (invites: InviteValues[]) => void | Promise<void>;
 }
 
@@ -26,8 +30,11 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
   const [rows, setRows] = useState<InviteDraft[]>(
     (initial.length ? initial : [{ email: "", role: "" as const }]).map((r) => ({ firstName: "", lastName: "", ...r }))
   );
-  const update = (i: number, patch: Partial<InviteDraft>) =>
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const update = (i: number, patch: Partial<InviteDraft>) => {
     setRows(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+    if ("email" in patch) setErrors({ ...errors, [`${i}.email`]: [] });
+  };
   const valid = rows.every((r) => r.firstName && r.lastName && r.email && r.role);
 
   return (
@@ -40,7 +47,15 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
       formId="invite_collaborators_modal_form"
       formClassName="space-y-5"
       // Submit is only enabled once every row has a role.
-      onSubmit={() => onInvite(rows as InviteValues[])}
+      onSubmit={async () => {
+        try {
+          await onInvite(rows as InviteValues[]);
+        } catch (e) {
+          if (!(e instanceof RequestError && e.hasFieldErrors)) throw e;
+          setErrors(e.fieldErrors);
+          if (!Object.keys(e.fieldErrors).every((k) => /^\d+\.email$/.test(k))) throw e;
+        }
+      }}
       submitLabel={<>Invite new user{rows.length > 1 ? "s" : ""}</>}
       submitDisabled={!valid}
     >
@@ -68,11 +83,19 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
             aria-label="Email"
             required
             value={r.email}
+            errors={errors[`${i}.email`] ?? []}
             onChange={(e) => update(i, { email: e.target.value })}
           />
           <RoleSelect value={r.role} onChange={(role) => update(i, { role })} />
           {rows.length > 1 && (
-            <IconButton icon="hero-minus-circle" label="Remove row" onClick={() => setRows(rows.filter((_, j) => j !== i))} />
+            <IconButton
+              icon="hero-minus-circle"
+              label="Remove row"
+              onClick={() => {
+                setRows(rows.filter((_, j) => j !== i));
+                setErrors({});
+              }}
+            />
           )}
         </div>
       ))}

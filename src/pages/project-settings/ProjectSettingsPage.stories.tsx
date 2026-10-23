@@ -52,3 +52,6 @@ export const Setup: Story = {};
 export const Deleting: Story = { args: { deleting: true } };
 export const Sandbox: Story = { args: { ...sample(2) } };
 export const SandboxDeleting: Story = { args: { ...sample(2), deleting: true } };
+export const DeletingScheduled: Story = {
+  args: { deleting: true, setup: { ...sample(0).setup, scheduledDeletion: "2026-10-30T00:00:00Z" } },
+};

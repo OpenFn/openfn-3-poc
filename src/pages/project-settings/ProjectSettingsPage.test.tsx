@@ -54,6 +54,7 @@ const data = (): Omit<ProjectSettingsPageProps, `on${string}`> => ({
     exportHref: "/download/yaml?id=p1",
     deleteHref: "/projects/p1/settings/delete",
     gracePeriodDays: 7,
+    scheduledDeletion: null,
     sandboxDeletion: null,
     canEditProject: true,
     canDeleteProject: true,
@@ -184,13 +185,19 @@ describe("ProjectSettingsPage", () => {
     const { onDeleteProject, onCloseDelete } = renderPage({ deleting: true });
     fireEvent.change(within(dialog()).getByLabelText(/Project name/), { target: { value: "openhie" } });
     fireEvent.click(within(dialog()).getByRole("button", { name: "Delete project" }));
-    await waitFor(() => expect(onDeleteProject).toHaveBeenCalled());
+    await waitFor(() => expect(onDeleteProject).toHaveBeenCalledWith("openhie"));
     fireEvent.click(within(dialog()).getByRole("button", { name: "Cancel" }));
     expect(onCloseDelete).toHaveBeenCalled();
   });
 
-  it("deletes a sandbox through the sandbox dialog, which names where the user lands", () => {
-    renderPage({
+  it("says a project already scheduled for deletion is deleted today", () => {
+    renderPage({ deleting: true, setup: { ...data().setup, scheduledDeletion: "2026-10-30T00:00:00Z" } });
+    expect(dialog().textContent).toContain("along with all workflows and work order history, today.");
+    expect(dialog().textContent).not.toContain("day(s) from today");
+  });
+
+  it("deletes a sandbox through the sandbox dialog, which names where the user lands", async () => {
+    const { onDeleteProject } = renderPage({
       deleting: true,
       parent: { name: "openhie", settingsHref: "/projects/p0/settings" },
       setup: { ...data().setup, name: "sandbox-a", sandboxDeletion: { rootName: "openhie", descendantCount: 2 } },
@@ -198,6 +205,9 @@ describe("ProjectSettingsPage", () => {
     expect(within(dialog()).getByRole("heading", { name: "Delete sandbox" })).toBeTruthy();
     expect(dialog().textContent).toContain("Its 2 child sandboxes will also be deleted.");
     expect(dialog().textContent).toContain("you'll be redirected to openhie");
+    fireEvent.change(within(dialog()).getByLabelText(/Sandbox name/), { target: { value: "sandbox-a" } });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Delete sandbox" }));
+    await waitFor(() => expect(onDeleteProject).toHaveBeenCalledWith("sandbox-a"));
   });
 
   it("creates a collection from the name as typed, then closes the form", async () => {
@@ -285,6 +295,33 @@ describe("ProjectSettingsPage", () => {
     await waitFor(() => expect(onAddCollaborators).toHaveBeenCalledWith([{ email: "new@example.org", role: "viewer" }]));
     expect(await screen.findByText("Invite new user(s) to join OpenFn")).toBeTruthy();
     expect((within(dialog()).getByLabelText("Email") as HTMLInputElement).value).toBe("new@example.org");
+  });
+
+  it("shows the host's error on the invite row it belongs to", async () => {
+    const onAddCollaborators = vi.fn().mockResolvedValue({
+      toInvite: [
+        { email: "new@example.org", role: "viewer" },
+        { email: "taken@example.org", role: "viewer" },
+      ],
+    });
+    const onInviteCollaborators = vi
+      .fn()
+      .mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors: { "1.email": ["This email is already taken"] } }));
+    renderPage({ onAddCollaborators, onInviteCollaborators }, "#collaboration");
+    fireEvent.click(screen.getByRole("button", { name: "Add Collaborator(s)" }));
+    fireEvent.change(within(dialog()).getByLabelText("Email"), { target: { value: "new@example.org" } });
+    fireEvent.change(within(dialog()).getByLabelText("Role"), { target: { value: "viewer" } });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Collaborator" }));
+    await screen.findByText("Invite new user(s) to join OpenFn");
+    for (const label of ["First Name", "Last Name"]) {
+      for (const input of within(dialog()).getAllByLabelText(label)) fireEvent.change(input, { target: { value: "Ann" } });
+    }
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Invite new users" }));
+    await waitFor(() => expect(onInviteCollaborators).toHaveBeenCalled());
+    const [first, second] = within(dialog()).getAllByLabelText("Email").map((e) => e.closest<HTMLElement>('[data-ui="form-group"]')!);
+    expect(await within(second!).findByText("This email is already taken")).toBeTruthy();
+    expect(first!.textContent).not.toContain("This email is already taken");
+    expect(within(dialog()).queryByText("Please fix the errors below.")).toBeNull();
   });
 
   it("removes a collaborator after confirming, naming their credentials, and says why others can't be", async () => {

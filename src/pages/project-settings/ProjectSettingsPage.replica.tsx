@@ -78,8 +78,12 @@ function Replica({ project: initial }: { project: Project }) {
       deleting={pathname.endsWith("/settings/delete")}
       onSaveIdentity={({ rawName, description }) => updateProject({ name: urlSafeName(rawName), description })}
       onSaveConcurrency={(concurrency) => updateProject({ concurrency })}
-      onDeleteProject={async () => {
+      onDeleteProject={async (nameConfirmation) => {
         await simulateRequest();
+        // Lightning checks the typed name again on the server (project_deletion_modal.ex, settings.ex).
+        if (nameConfirmation !== project.name) {
+          throw new RequestError(project.parentId ? "does not match the sandbox name" : "doesn't match the project name");
+        }
         if (project.parentId) {
           toast(`Sandbox ${project.name} and all its associated descendants deleted`);
           navigate(`/projects/${rootOf(project).id}/w`);
@@ -149,6 +153,13 @@ function Replica({ project: initial }: { project: Project }) {
       }}
       onInviteCollaborators={async (values) => {
         await simulateRequest();
+        // invited_collaborators.ex: an email that already has an account is refused on its row.
+        const taken = Object.fromEntries(
+          values.flatMap((v, i) =>
+            users.some((u) => u.email.toLowerCase() === v.email.toLowerCase()) ? [[`${i}.email`, ["This email is already taken"]]] : []
+          )
+        );
+        if (Object.keys(taken).length) throw new RequestError("This email is already taken", { fieldErrors: taken });
         toast(`Invite${values.length > 1 ? "s" : ""} sent successfully`);
       }}
       onRemoveCollaborator={async (id) => {

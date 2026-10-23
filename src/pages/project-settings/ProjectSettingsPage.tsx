@@ -70,8 +70,8 @@ export interface ProjectSettingsPageProps {
   onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
   /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */
   onSaveConcurrency: (concurrency: number | null) => Promise<void>;
-  /** Deletes the project (or sandbox), once the user has typed its name. The host moves the user on. */
-  onDeleteProject: () => Promise<void>;
+  /** Deletes the project (or sandbox) with the name the user typed, which the host checks. The host moves the user on. */
+  onDeleteProject: (nameConfirmation: string) => Promise<void>;
   /** Closes the deletion modal (Cancel). */
   onCloseDelete: () => void;
 
@@ -93,6 +93,7 @@ export interface ProjectSettingsPageProps {
 
   /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. */
   onAddCollaborators: (values: CollaboratorValues[]) => Promise<AddCollaboratorsResult>;
+  /** Rejects with field errors keyed by row and field (`"1.email"`), which show on that row, or a message. */
   onInviteCollaborators: (values: InviteValues[]) => Promise<void>;
   onRemoveCollaborator: (id: string) => Promise<void>;
   onSetSupportAccess: (on: boolean) => Promise<void>;
@@ -230,7 +231,8 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
           <ProjectDeletionModal
             key={project.id}
             project={{ name: setup.name }}
-            gracePeriodDays={setup.gracePeriodDays}
+            // Lightning deletes an already scheduled project at once, so it goes "today".
+            gracePeriodDays={setup.scheduledDeletion ? 0 : setup.gracePeriodDays}
             onCancel={props.onCloseDelete}
             onDelete={props.onDeleteProject}
           />

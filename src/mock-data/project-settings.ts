@@ -284,6 +284,7 @@ export function projectSettingsPropsFor(
       exportHref: `/download/yaml?id=${project.id}`,
       deleteHref: `${settingsHref}/delete`,
       gracePeriodDays: purgeDeletedAfterDays,
+      scheduledDeletion: null,
       sandboxDeletion: parent ? { rootName: rootOf(project).name, descendantCount: descendantCount(project.id) } : null,
       canEditProject: perms.canEditProject,
       canDeleteProject: perms.canDeleteProject,

@@ -81,6 +81,8 @@ export interface SetupSettings {
   deleteHref: string;
   /** Days a deleted project (or sandbox) is kept before it's purged. */
   gracePeriodDays: number;
+  /** When the project was scheduled for deletion, or null. Deleting a scheduled project deletes it at once. */
+  scheduledDeletion: string | null;
   /** For a sandbox: where the user lands after deleting it, and how many child sandboxes go with it. */
   sandboxDeletion: { rootName: string; descendantCount: number } | null;
   canEditProject: boolean;
