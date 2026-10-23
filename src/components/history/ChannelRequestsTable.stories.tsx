@@ -20,7 +20,7 @@ const meta = {
   title: "History/ChannelRequestsTable",
   component: ChannelRequestsTable,
   decorators: [withRouter],
-  args: { pageHref: (n: number) => `?page=${n}`, projectId: "p" },
+  args: { projectId: "p" },
 } satisfies Meta<typeof ChannelRequestsTable>;
 export default meta;
 type Story = StoryObj<typeof meta>;

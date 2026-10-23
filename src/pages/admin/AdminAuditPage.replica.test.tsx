@@ -30,15 +30,9 @@ describe("AdminAuditPageReplica", () => {
     expect(summary()).toContain("Showing 11 to 14 of 14");
   });
 
-  it("writes the chosen page to the URL", () => {
+  it("goes to the chosen page through the URL", () => {
     const router = renderAt("?page=2");
     fireEvent.click(screen.getByRole("link", { name: "1" }));
-    expect(router.navigate).toHaveBeenCalledWith("/settings/audit?page=1");
-  });
-
-  it("leaves the URL alone when the current page is chosen", () => {
-    const router = renderAt("?page=2");
-    fireEvent.click(screen.getByRole("link", { name: "2" }));
-    expect(router.navigate).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith("/settings/audit", { replace: false });
   });
 });

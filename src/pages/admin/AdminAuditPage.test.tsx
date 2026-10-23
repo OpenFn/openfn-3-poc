@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import type { AuditEvent } from "../../types/admin";
 import AdminAuditPage from "./AdminAuditPage";
 
@@ -16,12 +16,10 @@ const event: AuditEvent = {
 };
 
 describe("AdminAuditPage", () => {
-  it("renders the events it is given and asks for another page", () => {
-    const onPage = vi.fn();
-    render(<AdminAuditPage events={[event]} pageNumber={1} pageSize={10} totalEntries={14} onPage={onPage} />);
+  it("renders the events it is given and links to the next page", () => {
+    render(<AdminAuditPage events={[event]} page={{ number: 1, size: 10, totalEntries: 14 }} />);
 
     expect(screen.getByText("Amy Admin")).toBeTruthy();
-    fireEvent.click(screen.getByRole("link", { name: "2" }));
-    expect(onPage).toHaveBeenCalledWith(2);
+    expect(screen.getByRole("link", { name: "2" }).getAttribute("href")).toMatch(/\?page=2$/);
   });
 });

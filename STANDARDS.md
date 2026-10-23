@@ -102,15 +102,23 @@ query, not the rows.
 - Query state (filters, sort, page, search) lives in the URL via
   `useUrlParams`, using Lightning's own param names (`filters[workflow_id]`,
   `sort_by`, `page`). Reloading the page reproduces the view.
+- The host sends the result as plain data: the rows, `page: PageInfo` and,
+  for a sorted list, `sort: SortState`. No callbacks for paging or sorting,
+  and no browser fallback when they are missing.
+- The page links to its own query string only (`useUrlParams().href`),
+  never a path, so it knows no routes. A link to another page is an `…Href`
+  prop from the host.
 - The page turns the URL into a query (today: a mock-data function that
   filters fixtures; later: a request) and gets back `{ rows, total, page,
   pageSize }`.
 - `Table` takes rows and a `state: "loading" | "error" | "ready"`, and shows
   the loading and error treatments itself. `EmptyState` stays for "no rows".
-- `Pagination` takes `page`, `total`, `pageSize`, `onPage`. No component
-  hardcodes `pageNumber={1}`.
-- `useTableSort` becomes sort *state* only; nothing sorts rows in the browser
-  except small, fully loaded lists (project members, tabs).
+- `Pagination` takes `page` and links each page to this URL with `?page=`
+  changed, showing five pages either side as Lightning does. No component
+  hardcodes `number: 1`.
+- A server-sorted header is `<Th sortHref>`, a plain link. `onSort` and
+  `useTableSort` are only for small, fully loaded lists (project members,
+  tabs).
 
 Build it on History first (`HistoryWorkOrdersPage`): nine filters move from
 `useState` into the URL, `matchesSearch` and friends move behind one
@@ -212,6 +220,17 @@ is rewritten.
   so new props arrive the same way they do in the replica.
 - **Shapes are Lightning's**, not the convenient ones: a token arrives
   `masked`, and its secret only once, as `newToken`.
+- **The contract is written by hand.** `XPageProps` and the shapes it names
+  never build on the replica's model types (`User`, `Project`, `WorkOrder`);
+  the replica maps fixtures onto them. Every one is exported from `index.ts`,
+  camelCase, and plain JSON apart from the `on*` callbacks.
+- **Names say what a shape is**: `…Row` for a table row, `…Ref` for a
+  pointer to another record, `…Values` for what a form saves, `…Detail` for
+  one record's page, `…Result` for an event's answer. No two exported types
+  share a name.
+- **Required unless the host may not support it.** Data the host always knows
+  is required, `T | null` for none. `?:` hides a feature; it never falls back
+  to a route or wording the design system makes up.
 - **The page keeps UI state only**: which modal is open, a draft not yet
   saved. Never its own copy of the records.
 - **The page gets a story** with plain props: `withRouter`,

@@ -4,8 +4,9 @@ import Tabs from "../../components/Tabs";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelRequestsTable from "../../components/history/ChannelRequestsTable";
 import FilterChip, { FilterMenu } from "../../components/history/FilterChip";
-import { useRouter } from "../../routing/router";
-import type { ChannelLogRow, PageInfo } from "../../types/channels";
+import { useUrlParams } from "../../utils/useUrlParams";
+import type { ChannelLogRow } from "../../types/channels";
+import type { PageInfo } from "../../types/lists";
 import type { CurrentProject } from "../../types/projects";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -31,17 +32,11 @@ export interface HistoryChannelLogsPageProps {
  * in Lightning; the replica's data lives in HistoryChannelLogsPage.replica.tsx.
  */
 export default function HistoryChannelLogsPage({ project, projectLabel, channelsEnabled, channels, channelId, rows, page }: HistoryChannelLogsPageProps) {
-  const { navigate } = useRouter();
+  const { update } = useUrlParams();
   const base = `/projects/${project.id}/history/channels`;
   const selected = channels.find((c) => c.id === channelId);
-  // The filter and the page live in the URL, as the HEEx kept them.
-  const href = (channel: string | null, pageNumber = 1) => {
-    const params = new URLSearchParams();
-    if (channel) params.set("filters[channel_id]", channel);
-    if (pageNumber > 1) params.set("page", String(pageNumber));
-    const query = String(params);
-    return `${base}${query && `?${query}`}`;
-  };
+  // The filter and the page live in the URL, as the HEEx kept them; a new filter starts at page 1.
+  const filter = (channel: string | null) => update({ "filters[channel_id]": channel, page: null });
 
   return (
     <PageContent
@@ -66,19 +61,19 @@ export default function HistoryChannelLogsPage({ project, projectLabel, channels
           <FilterChip
             id="channel-filter-chip"
             active={selected !== undefined}
-            onClear={() => navigate(href(null))}
+            onClear={() => filter(null)}
             menu={
               <FilterMenu
                 options={[{ value: null, label: "All Channels" }, ...channels.map((c) => ({ value: c.id, label: c.name }))]}
                 selected={selected?.id ?? null}
-                onSelect={(id) => navigate(href(id))}
+                onSelect={(id) => filter(id)}
               />
             }
           >
             Channel is {selected ? selected.name : "any"}
           </FilterChip>
         </div>
-        <ChannelRequestsTable rows={rows} page={page} pageHref={(n) => href(selected?.id ?? null, n)} projectId={project.id} />
+        <ChannelRequestsTable rows={rows} page={page} projectId={project.id} />
       </Centered>
     </PageContent>
   );

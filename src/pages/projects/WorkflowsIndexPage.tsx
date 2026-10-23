@@ -6,7 +6,8 @@ import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
 import { useToast } from "../../components/Toast";
 import type { CurrentProject } from "../../types/projects";
-import type { ProjectMetrics as Metrics, WorkflowRow, WorkflowsSort } from "../../types/workflows";
+import type { SortState } from "../../types/lists";
+import type { ProjectMetrics as Metrics, WorkflowRow } from "../../types/workflows";
 import { errorMessage } from "../../utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -25,8 +26,8 @@ export interface WorkflowsIndexPageProps {
   failedHref?: string | undefined;
   /** The current search (`?q`). */
   searchTerm: string;
-  /** The current order (`?sort`, `?dir`); undefined sorts in the browser. */
-  sort?: WorkflowsSort | undefined;
+  /** The order the server listed `stats` in (`?sort`, `?dir`). */
+  sort: SortState;
   canCreateWorkflow: boolean;
   canDeleteWorkflow: boolean;
   /** The experimental workflow lifecycle: state badges instead of switches outside a sandbox. */

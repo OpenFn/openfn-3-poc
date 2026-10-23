@@ -8,7 +8,7 @@ import AdminAuditPage from "./AdminAuditPage";
  * with a LiveView wrapper; AdminAuditPage stays as it is.
  */
 export default function AdminAuditPageReplica() {
-  const { params, update } = useUrlParams<"page">();
+  const { params } = useUrlParams<"page">();
   // As Scrivener does: a whole page number, and an overflow page moved back to the last.
   const lastPage = Math.max(1, Math.ceil(auditEvents.length / auditPageSize));
   const page = Math.min(lastPage, Math.max(1, Math.trunc(Number(params.page)) || 1));
@@ -16,10 +16,7 @@ export default function AdminAuditPageReplica() {
   return (
     <AdminAuditPage
       events={auditEvents.slice((page - 1) * auditPageSize, page * auditPageSize)}
-      pageNumber={page}
-      pageSize={auditPageSize}
-      totalEntries={auditEvents.length}
-      onPage={(n) => n !== page && update({ page: String(n) })}
+      page={{ number: page, size: auditPageSize, totalEntries: auditEvents.length }}
     />
   );
 }

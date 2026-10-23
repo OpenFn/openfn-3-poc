@@ -1,65 +1,46 @@
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "../routing/router";
+import type { PageInfo } from "../types/lists";
 import { cn } from "../utils/cn";
+import { useUrlParams } from "../utils/useUrlParams";
 
 interface Props {
-  pageNumber: number;
-  pageSize: number;
-  totalEntries: number;
-  onPage?: ((page: number) => void) | undefined;
-  /**
-   * The href of a page, e.g. `(n) => \`?page=${n}\``. With it, pages are
-   * links (Lightning's pagination bar patches `page=`); without, buttons.
-   * A left click still goes through `onPage` when there is one.
-   */
-  pageHref?: ((page: number) => string) | undefined;
+  /** The page shown, as the server paged it. Each page links to this URL with `?page=` changed. */
+  page: PageInfo;
   /** Extra controls after the count, e.g. the export button on History. */
   actions?: ReactNode;
 }
 
 const edge =
   "relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50";
+const box = "relative inline-flex items-center px-4 py-2 border text-sm font-medium";
 
-function PageControl({
-  n,
-  onPage,
-  pageHref,
-  className,
-  children,
-  ...rest
-}: Pick<Props, "onPage" | "pageHref"> & {
-  n: number;
-  className: string;
-  children: ReactNode;
-  "aria-current"?: "page" | undefined;
-  "data-ui"?: string | undefined;
-}) {
-  if (!pageHref) {
-    return (
-      <button type="button" onClick={() => onPage?.(n)} className={className} {...rest}>
-        {children}
-      </button>
-    );
-  }
-  const onClick = (e: MouseEvent) => {
-    if (!onPage || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    e.preventDefault();
-    onPage(n);
-  };
-  return (
-    <Link to={pageHref(n)} onClick={onClick} className={className} {...rest}>
-      {children}
-    </Link>
-  );
+/**
+ * The page numbers to show, as Lightning's `raw_pagination_links` picks them:
+ * up to `distance` either side of the current page, then the first and last
+ * page, with an ellipsis where pages are skipped.
+ */
+function pageWindow(current: number, totalPages: number, distance = 5): (number | "…")[] {
+  const from = Math.max(1, current - distance);
+  const to = Math.min(totalPages, current + distance);
+  const numbers = Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  return [
+    ...(from > 1 ? [1] : []),
+    ...(from > 2 ? ["…" as const] : []),
+    ...numbers,
+    ...(to < totalPages - 1 ? ["…" as const] : []),
+    ...(to < totalPages ? [totalPages] : []),
+  ];
 }
 
 /** Footer bar for paginated tables (Lightning's `Pagination.pagination_bar`). */
-export default function Pagination({ pageNumber, pageSize, totalEntries, onPage, pageHref, actions }: Props) {
-  const totalPages = Math.max(1, Math.ceil(totalEntries / pageSize));
-  const from = pageNumber * pageSize - pageSize + 1;
-  const to = Math.min(pageNumber * pageSize, totalEntries);
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  const control = { onPage, pageHref };
+export default function Pagination({ page, actions }: Props) {
+  const { href } = useUrlParams();
+  const { number, size, totalEntries } = page;
+  const totalPages = Math.max(1, Math.ceil(totalEntries / size));
+  const from = number * size - size + 1;
+  const to = Math.min(number * size, totalEntries);
+  const pageHref = (n: number) => href({ page: n > 1 ? String(n) : null });
 
   return (
     <div data-ui="pagination" className="bg-white px-4 py-3 flex items-center justify-between sm:px-6 rounded-b-lg">
@@ -77,34 +58,39 @@ export default function Pagination({ pageNumber, pageSize, totalEntries, onPage,
         {actions && <div className="flex items-center">{actions}</div>}
       </div>
       <nav className="relative z-0 inline-flex rounded-md shadow-xs -space-x-px" aria-label="Pagination">
-        {pageNumber > 1 && (
-          <PageControl n={pageNumber - 1} {...control} className={cn(edge, "rounded-l-md")}>
+        {number > 1 && (
+          <Link to={pageHref(number - 1)} className={cn(edge, "rounded-l-md")}>
             <span className="sr-only">Previous</span>
             <span className="hero-chevron-left h-5 w-5" />
-          </PageControl>
+          </Link>
         )}
-        {pages.map((n) => (
-          <PageControl
-            key={n}
-            n={n}
-            {...control}
-            aria-current={n === pageNumber ? "page" : undefined}
-            data-ui="pagination-page"
-            className={cn(
-              "relative inline-flex items-center px-4 py-2 border text-sm font-medium",
-              n === pageNumber
-                ? "z-10 bg-primary-50 border-primary-500 text-primary-600"
-                : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-            )}
-          >
-            {n}
-          </PageControl>
-        ))}
-        {pageNumber < totalPages && (
-          <PageControl n={pageNumber + 1} {...control} className={cn(edge, "rounded-r-md")}>
+        {pageWindow(number, totalPages).map((n, i) =>
+          n === "…" ? (
+            <span key={`gap-${i}`} className={cn(box, "bg-white border-gray-300 text-gray-500")}>
+              …
+            </span>
+          ) : (
+            <Link
+              key={n}
+              to={pageHref(n)}
+              aria-current={n === number ? "page" : undefined}
+              data-ui="pagination-page"
+              className={cn(
+                box,
+                n === number
+                  ? "z-10 bg-primary-50 border-primary-500 text-primary-600"
+                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+              )}
+            >
+              {n}
+            </Link>
+          )
+        )}
+        {number < totalPages && (
+          <Link to={pageHref(number + 1)} className={cn(edge, "rounded-r-md")}>
             <span className="sr-only">Next</span>
             <span className="hero-chevron-right h-5 w-5" />
-          </PageControl>
+          </Link>
         )}
       </nav>
     </div>

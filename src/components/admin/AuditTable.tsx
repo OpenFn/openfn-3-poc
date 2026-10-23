@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import type { AuditEvent } from "../../types/admin";
+import type { PageInfo } from "../../types/lists";
 import { shortUuid } from "../../utils/format";
 import Pagination from "../Pagination";
 import Pill from "../Pill";
@@ -23,17 +24,11 @@ function TwoLine({ label, sub }: { label: string; sub: string }) {
  */
 export default function AuditTable({
   events,
-  pageNumber,
-  pageSize,
-  totalEntries,
-  onPage,
+  page,
 }: {
   /** The events on this page. */
   events: AuditEvent[];
-  pageNumber: number;
-  pageSize: number;
-  totalEntries: number;
-  onPage?: ((page: number) => void) | undefined;
+  page: PageInfo;
 }) {
   return (
     <Table
@@ -46,15 +41,7 @@ export default function AuditTable({
           <Th>Subject</Th>
         </Tr>
       }
-      footer={
-        <Pagination
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          totalEntries={totalEntries}
-          onPage={onPage}
-          pageHref={(n) => `?page=${n}`}
-        />
-      }
+      footer={<Pagination page={page} />}
     >
       {events.map((audit) => (
         <Fragment key={audit.id}>
