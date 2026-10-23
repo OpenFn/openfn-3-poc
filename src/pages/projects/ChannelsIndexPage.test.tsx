@@ -78,7 +78,7 @@ describe("ChannelsIndexPage", () => {
     expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe("/projects/p1/history/channels");
   });
 
-  it("switches, opens the editor and deletes after asking", () => {
+  it("switches, opens the editor and deletes after asking", async () => {
     const { onToggle, onDelete, router } = renderPage();
     fireEvent.click(rowOf("idle").querySelector("[role=switch]")!);
     expect(onToggle).toHaveBeenCalledWith("c2", true);
@@ -86,11 +86,19 @@ describe("ChannelsIndexPage", () => {
     fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Edit" }));
     expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/c2/edit");
 
-    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
     fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete" }));
-    expect(confirm).toHaveBeenCalledWith('Delete "idle"? This cannot be undone.');
-    expect(onDelete).toHaveBeenCalledWith("c2");
-    confirm.mockRestore();
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.textContent).toContain("Delete idle? This cannot be undone.");
+    expect(onDelete).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(onDelete).toHaveBeenCalledWith("c2"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("closes the form by replacing the history entry, so Back doesn't reopen it", () => {
+    const { router } = renderPage({ form: options });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels", { replace: true });
   });
 
   it("is read-only for someone who cannot edit", () => {

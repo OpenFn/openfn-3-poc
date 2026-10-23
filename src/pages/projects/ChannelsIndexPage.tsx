@@ -84,7 +84,7 @@ export default function ChannelsIndexPage({
             canDelete={canDeleteChannel}
             onToggle={(id, v) => void onToggle(id, v).catch(failed)}
             onEdit={(id) => navigate(`${base}/${id}/edit`)}
-            onDelete={(id) => void onDelete(id).catch(failed)}
+            onDelete={(id) => onDelete(id).catch(failed)}
           />
         </Centered>
       </PageContent>
@@ -93,7 +93,8 @@ export default function ChannelsIndexPage({
           key={form.channel?.id ?? "new"}
           form={form}
           settingsHref={`/projects/${project.id}/settings`}
-          onClose={() => navigate(base)}
+          // Replace, so Back doesn't reopen the form.
+          onClose={() => navigate(base, { replace: true })}
           onSave={onSave}
         />
       )}
