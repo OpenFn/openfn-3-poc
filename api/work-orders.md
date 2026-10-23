@@ -239,7 +239,7 @@ Status: **Private**
 POST /api/projects/:project_id/history_exports
 ```
 
-Tokens: personal access token of a project owner or admin.
+Tokens: personal access token of a project owner, admin or editor.
 
 Body: `{"filter": {…}}`, the filters of the list endpoint. Answers 202 with
 the export, `state` `enqueued`. Lightning also emails you when it is ready.
@@ -253,7 +253,7 @@ the export, `state` `enqueued`. Lightning also emails you when it is ready.
 > - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
 >   list endpoint's filters.
 > - It does no authorisation. The event needs the `:run_workflow` policy
->   action, which also allows editors, not only owners and admins.
+>   action (owner, admin, editor).
 > - A failed export is marked `failed` but sends no email.
 
 ### List history exports
@@ -264,12 +264,13 @@ Status: **Private**
 GET /api/projects/:project_id/history_exports
 ```
 
-Tokens: personal access token of a project owner or admin. Paged, newest first.
+Tokens: personal access token. Any project member, viewers included. Paged,
+newest first.
 
 > Implementation note: `Lightning.Projects.list_project_files/2`, shown on the
 > project settings History Exports tab. Differences: it isn't paged and
-> doesn't filter on `type` (`:export` is the only type today). The tab is
-> shown to every project member, viewers included.
+> doesn't filter on `type` (`:export` is the only type today). It does no
+> authorisation; the tab is shown to every project member.
 
 ### Get a history export
 
@@ -279,7 +280,8 @@ Status: **Private**
 GET /api/projects/:project_id/history_exports/:id
 ```
 
-Tokens: personal access token of a project owner or admin.
+Tokens: personal access token. Any project member, viewers included, can get
+an export and download it.
 
 > Implementation note: no function gets one export; the settings tab reads
 > it from `Lightning.Projects.list_project_files/2`. The download is the
@@ -288,6 +290,5 @@ Tokens: personal access token of a project owner or admin.
 > `Lightning.Policies.Exports` `:download`. Differences:
 >
 > - That route takes the file id alone, with no project in the URL.
-> - It allows any project member, viewers included.
 > - With cloud storage it redirects to a signed storage URL instead of
 >   serving the file.
