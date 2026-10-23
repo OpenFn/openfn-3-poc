@@ -12,14 +12,13 @@ import TransferCredentialModal from "./TransferCredentialModal";
 import CredentialDeletionModal from "./CredentialDeletionModal";
 import { deleteKeychainMessage, deleteOauthClientMessage } from "./messages";
 import { useCredentialModalRequests, type NewCredentialTarget } from "./credentialModalEvents";
-import type { Project } from "../../types/projects";
 import type { Credential, KeychainCredential, OauthClient } from "../../types/credentials";
 import { canEditCredential } from "../../permissions";
 import { useCurrentUser } from "../../session/session";
 
 interface Props {
   /** Project scope (project settings › Credentials). Omit for the user's /credentials page. */
-  project?: Project | undefined;
+  project?: { id: string } | undefined;
   /** The user's own (on /credentials) or the project's credentials and clients. */
   credentials: Credential[];
   oauthClients: OauthClient[];

@@ -4,69 +4,64 @@ import InfoTooltip from "../InfoTooltip";
 import SectionHeader from "../SectionHeader";
 import { useToast } from "../Toast";
 import Toggle from "../Toggle";
-import AddCollaboratorsModal, { type CollaboratorDraft } from "./AddCollaboratorsModal";
+import AddCollaboratorsModal from "./AddCollaboratorsModal";
 import CollaboratorsTable from "./CollaboratorsTable";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
 import RemoveCollaboratorModal from "./RemoveCollaboratorModal";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { ProjectMember, ProjectRole } from "../../types/projects";
-import type { User } from "../../types/users";
+import type {
+  AddCollaboratorsResult,
+  CollaborationSettings,
+  CollaboratorRow,
+  CollaboratorValues,
+  Digest,
+  InviteValues,
+} from "../../types/project-settings";
+import { errorMessage } from "../../utils/errors";
+import { useChosenValue } from "../../utils/useChosenValue";
 
 interface Props {
-  initialMembers: ProjectMember[];
-  /** The instance's users: members' details, and who "Add" can find by email. */
-  users: User[];
-  currentUserId: string;
-  initialSupportAccess: boolean;
-  canEditProject: boolean;
-  canAddProjectUser: boolean;
-  canRemoveProjectUser: boolean;
-  sandbox?: boolean;
+  collaboration: CollaborationSettings;
+  sandbox: boolean;
+  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. */
+  onAdd: (values: CollaboratorValues[]) => Promise<AddCollaboratorsResult>;
+  onInvite: (values: InviteValues[]) => Promise<void>;
+  /** Removes a member, after the user has confirmed. */
+  onRemove: (id: string) => Promise<void>;
+  /** The switch and the viewer's alert selects show the choice at once, and go back if these reject. */
+  onSetSupportAccess: (on: boolean) => Promise<void>;
+  onSetFailureAlert: (id: string, on: boolean) => Promise<void>;
+  onSetDigest: (id: string, digest: Digest) => Promise<void>;
 }
 
 type Modal =
   | { kind: "add" }
-  | { kind: "invite"; drafts: { email: string; role: ProjectRole | "" }[] }
-  | { kind: "remove"; member: ProjectMember }
+  | { kind: "invite"; drafts: CollaboratorValues[] }
+  | { kind: "remove"; collaborator: CollaboratorRow }
   | null;
 
 /**
  * The Collaboration tab (`#collaboration`, settings.html.heex:570-679).
- * Adding someone with an existing account adds them to the table; unknown
- * emails go on to the invite modal, as in Lightning. Nothing is persisted.
+ * Adding someone with an existing account adds them to the table; the host
+ * answers with the emails that have no account, which go on to the invite
+ * modal, as in Lightning.
  */
 export default function CollaborationPanel({
-  initialMembers,
-  users,
-  currentUserId,
-  initialSupportAccess,
-  canEditProject,
-  canAddProjectUser,
-  canRemoveProjectUser,
-  sandbox = false,
+  collaboration,
+  sandbox,
+  onAdd,
+  onInvite,
+  onRemove,
+  onSetSupportAccess,
+  onSetFailureAlert,
+  onSetDigest,
 }: Props) {
-  const [members, setMembers] = useState(initialMembers);
-  const [supportAccess, setSupportAccess] = useState(initialSupportAccess);
+  const { collaborators, supportAccess, canEditProject, canAddProjectUser, addBlockedReason, canReceiveFailureAlerts } = collaboration;
   const [modal, setModal] = useState<Modal>(null);
   const close = () => setModal(null);
+  const canAdd = canAddProjectUser && addBlockedReason === null;
   const toast = useToast();
-  const findUser = (id: string) => users.find((u) => u.id === id);
-  const memberEmails = members.map((m) => findUser(m.userId)?.email.toLowerCase() ?? "");
-
-  const addCollaborators = (drafts: CollaboratorDraft[]) => {
-    const known: ProjectMember[] = [];
-    const unknown: CollaboratorDraft[] = [];
-    for (const d of drafts) {
-      const user = users.find((u) => u.email.toLowerCase() === d.email.toLowerCase());
-      if (user) known.push({ userId: user.id, role: d.role as ProjectRole, failureAlert: true, digest: "weekly" });
-      else unknown.push(d);
-    }
-    setMembers([...members, ...known]);
-    setModal(unknown.length ? { kind: "invite", drafts: unknown } : null);
-    toast(addedMessage(known.length, unknown.length));
-  };
-
-  const removing = modal?.kind === "remove" ? findUser(modal.member.userId) : undefined;
+  const supportAccessSwitch = useChosenValue(supportAccess, onSetSupportAccess, (e) => toast(errorMessage(e), "error"));
 
   return (
     <>
@@ -80,8 +75,8 @@ export default function CollaborationPanel({
           <Button
             id="show_collaborators_modal_button"
             size="lg"
-            disabled={!canAddProjectUser}
-            tooltip={canAddProjectUser ? undefined : "You are not authorized to perform this action"}
+            disabled={!canAdd}
+            tooltip={canAddProjectUser ? (addBlockedReason ?? undefined) : "You are not authorized to perform this action"}
             onClick={() => setModal({ kind: "add" })}
           >
             Add Collaborator(s)
@@ -92,71 +87,51 @@ export default function CollaborationPanel({
       {/* settings.ex `support_access_toggle`: only people who can edit the project see it. */}
       {canEditProject && (
         <div className="flex items-center">
-          <Toggle
-            checked={supportAccess}
-            onChange={(on) => {
-              setSupportAccess(on);
-              toast(
-                on ? "Granted access to support users successfully" : "Revoked access to support users successfully"
-              );
-            }}
-            label="Grant support access"
-          />
+          <Toggle checked={supportAccessSwitch.value} onChange={supportAccessSwitch.choose} label="Grant support access" />
           <InfoTooltip title="Granting support access will allow all designated support users for this Lightning instance to access this project with editor permissions." />
         </div>
       )}
 
-      {modal?.kind === "add" && (
-        <AddCollaboratorsModal existingEmails={memberEmails} onCancel={close} onSave={addCollaborators} />
-      )}
-      {modal?.kind === "invite" && (
-        <InviteCollaboratorsModal
-          initial={modal.drafts}
+      {modal?.kind === "add" && canAddProjectUser && (
+        <AddCollaboratorsModal
+          existingEmails={collaborators.map((c) => c.email.toLowerCase())}
           onCancel={close}
-          onInvite={(invites) => {
-            close();
-            toast(`Invite${invites.length > 1 ? "s" : ""} sent successfully`);
+          onSave={async (values) => {
+            const { toInvite } = await onAdd(values);
+            setModal(toInvite.length ? { kind: "invite", drafts: toInvite } : null);
           }}
         />
       )}
-      {modal?.kind === "remove" && removing && (
-        <RemoveCollaboratorModal
-          user={removing}
+      {modal?.kind === "invite" && canAddProjectUser && (
+        <InviteCollaboratorsModal
+          initial={modal.drafts}
           onCancel={close}
-          onConfirm={() => {
-            setMembers(members.filter((m) => m.userId !== modal.member.userId));
+          onInvite={async (values) => {
+            await onInvite(values);
             close();
-            toast("Collaborator removed");
+          }}
+        />
+      )}
+      {modal?.kind === "remove" && (
+        <RemoveCollaboratorModal
+          collaborator={modal.collaborator}
+          onCancel={close}
+          onConfirm={async () => {
+            await onRemove(modal.collaborator.id);
+            close();
           }}
         />
       )}
 
       <CollaboratorsTable
-        members={members}
-        users={users}
-        currentUserId={currentUserId}
-        canRemoveProjectUser={canRemoveProjectUser}
+        collaborators={collaborators}
+        canReceiveFailureAlerts={canReceiveFailureAlerts}
         canAdd={canEditProject}
         onAdd={() => setModal({ kind: "add" })}
-        onChange={(updated) => {
-          setMembers(members.map((m) => (m.userId === updated.userId ? updated : m)));
-          // Lightning's own spelling (project_live/settings.ex).
-          toast("Project user updated successfuly");
-        }}
-        onRemove={(member) => setModal({ kind: "remove", member })}
+        onSetFailureAlert={onSetFailureAlert}
+        onSetDigest={onSetDigest}
+        onRemove={(collaborator) => setModal({ kind: "remove", collaborator })}
       />
     </>
   );
-}
-
-/** new_collaborator_component.ex `generate_flash_message`: existing accounts are added, the rest are invited. */
-function addedMessage(existing: number, unknown: number) {
-  if (unknown === 0) return `Collaborator${existing === 1 ? "" : "s"} added successfully`;
-  if (existing === 0) {
-    return unknown === 1
-      ? "This collaborator does not have an OpenFn account. Invite them to join OpenFn and grant access to the project."
-      : "These collaborators do not have OpenFn accounts. Invite them to join OpenFn and grant them access to the project.";
-  }
-  const total = existing + unknown;
-  return `${existing} out of ${total} collaborator${total === 1 ? "" : "s"} have OpenFn accounts and have been added to your project. You can invite others to join OpenFn and grant them access to this project.`;
 }

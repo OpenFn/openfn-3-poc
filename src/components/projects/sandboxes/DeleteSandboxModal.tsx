@@ -22,7 +22,7 @@ export default function DeleteSandboxModal({
   /** Lightning's `purge_deleted_after_days`. */
   gracePeriodDays: number;
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
 }) {
   return (
     <ConfirmModal

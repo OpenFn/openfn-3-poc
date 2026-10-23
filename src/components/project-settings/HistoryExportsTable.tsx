@@ -1,14 +1,7 @@
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import Button from "../Button";
-import type { ExportStatus, ProjectFile } from "../../types/project-settings";
-import type { User } from "../../types/users";
-import { capitalize, formatAgo, fullName } from "../../utils/format";
-
-interface Props {
-  files: ProjectFile[];
-  /** Users to show who requested each export. */
-  users: User[];
-}
+import type { ExportStatus, HistoryExportRow } from "../../types/project-settings";
+import { capitalize, formatAgo } from "../../utils/format";
 
 /** data_tables.ex `format_export_status/1`: "in_progress" -> "In progress". */
 function formatStatus(status: ExportStatus): string {
@@ -20,8 +13,8 @@ function formatStatus(status: ExportStatus): string {
  * Export Requested By, Status and a Download action (disabled until the
  * export completes).
  */
-export default function HistoryExportsTable({ files, users }: Props) {
-  if (files.length === 0) {
+export default function HistoryExportsTable({ exports }: { exports: HistoryExportRow[] }) {
+  if (exports.length === 0) {
     return <EmptyState icon="hero-folder-arrow-down" message="No history exports found for this project." />;
   }
   return (
@@ -37,29 +30,33 @@ export default function HistoryExportsTable({ files, users }: Props) {
         </Tr>
       }
     >
-      {files.map((f) => {
-        const user = users.find((u) => u.id === f.createdByUserId);
-        return (
-          <Tr key={f.id}>
-            <Td>
-              <span title={f.insertedAt}>{formatAgo(f.insertedAt)}</span>
-            </Td>
-            <Td>{f.path ? f.path.split("/").pop() : <em>Pending</em>}</Td>
-            <Td>{user ? fullName(user) : ""}</Td>
-            <Td>{formatStatus(f.status)}</Td>
-            <Td actions>
+      {exports.map((f) => (
+        <Tr key={f.id}>
+          <Td>
+            <span title={f.insertedAt}>{formatAgo(f.insertedAt)}</span>
+          </Td>
+          <Td>{f.fileName ?? <em>Pending</em>}</Td>
+          <Td>{f.requestedBy}</Td>
+          <Td>{formatStatus(f.status)}</Td>
+          <Td actions>
+            {f.downloadHref ? (
+              <Button id={`download-export-file-${f.id}-button`} theme="secondary" size="xs" href={f.downloadHref} target="_blank">
+                Download
+              </Button>
+            ) : (
               <Button
+                id={`download-export-file-${f.id}-button`}
                 theme="secondary"
                 size="xs"
-                disabled={f.status !== "completed"}
-                tooltip={f.status === "completed" ? undefined : "Export is not yet ready for download"}
+                disabled
+                tooltip="Export is not yet ready for download"
               >
                 Download
               </Button>
-            </Td>
-          </Tr>
-        );
-      })}
+            )}
+          </Td>
+        </Tr>
+      ))}
     </Table>
   );
 }

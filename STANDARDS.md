@@ -13,14 +13,14 @@ Status of each pattern, as of this commit:
 | 1 | Async action | **Done** | `useAction`, `Button pending`, `FormModal`, `ConfirmModal`, `Spinner` |
 | 2 | Form with server errors | **Done** | `useForm` (`submit`, `modalSubmit`); render-time validation remains in 3 files (see below) |
 | 3 | Server-driven list | Todo | History first |
-| 4 | Data down, mutations up | Convention; 5 panels break it | see list below |
+| 4 | Data down, mutations up | Convention; `CredentialIndex` breaks it | see list below |
 | 5 | Resource loading states | Todo | needs `AsyncBoundary`, 404, error page |
-| 6 | Confirm then act | Done in `ConfirmModal`; 3 other ways remain | retire `window.confirm`, custom modals |
+| 6 | Confirm then act | Done in `ConfirmModal`; one other way remains | rebuild `CredentialDeletionModal` |
 | 7 | Feedback | Convention; mixed today | page toasts, component never does |
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 19 pages and the Sidebar | History work orders, Sandboxes, project settings, the workflow editor, profile, credentials, the remaining auth pages |
+| 11 | Page and wrapper | 20 pages and the Sidebar | History work orders, Sandboxes, project settings' Credentials tab, the workflow editor, profile, credentials, the remaining auth pages |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
 `TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
@@ -88,9 +88,10 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   compare tooling and the annotations still line up. An input without an
   `id` gets a generated one, so every label is linked to its control.
 
-Converted: `CreateProjectModal`, `ProjectSetupPanel`, `ProfileForms`. Still
+Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
+`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`. Still
 computing `errors={cond ? ["can't be blank"] : []}` in render:
-`DataStoragePanel`, `CredentialFormModal`, `AuthResetPasswordPage`. Other
+`CredentialFormModal`, `AuthResetPasswordPage`. Other
 page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`, `MfaCard`,
 the auth pages) move to `useForm` when next touched.
 
@@ -133,10 +134,9 @@ A component never copies a record list into local state and mutates it.
   query layer) applies the change and re-renders with new props.
 - Local state in a component is for *UI* only: which modal is open, which
   row is expanded, draft text not yet submitted.
-- `initialX` props are a smell: `CollaborationPanel.initialMembers`,
-  `CollectionsPanel`, `WebhookSecurityPanel`, `SecurityPanel`,
-  `CredentialIndex`. Each needs its list lifted to its page and `on*`
-  callbacks added.
+- `initialX` props are a smell. `CredentialIndex` still has them
+  (`initialCredentials`, `initialClients`, `initialKeychains`); its lists
+  need lifting to its page and `on*` callbacks added.
 
 ## 5. Resource loading states
 
@@ -158,9 +158,8 @@ Type-to-confirm keeps the confirm button disabled until the text matches,
 and the dialog says what to type ("To confirm, type alice@example.org
 below"). This is the one exception to pattern 2's rule.
 
-Retire: `window.confirm` (`CredentialFormModal`, `WorkflowsTable`), the
-bespoke `CredentialDeletionModal` (rebuild on `ConfirmModal` with
-`confirmation`, as `UserDeletionModal` is).
+Retire: the bespoke `CredentialDeletionModal` (rebuild on `ConfirmModal`
+with `confirmation`, as `UserDeletionModal` is).
 The `/…/delete` routes stay, because Lightning has them; they open a
 `ConfirmModal`.
 

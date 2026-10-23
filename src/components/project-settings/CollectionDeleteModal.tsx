@@ -1,8 +1,7 @@
 import ConfirmModal from "../ConfirmModal";
-import type { Collection } from "../../types/project-settings";
 
 interface Props {
-  collection: Pick<Collection, "name">;
+  collection: { name: string };
   onCancel: () => void;
   /** May be async: the modal shows pending and stays open with the error if it throws. */
   onDelete: () => void | Promise<void>;

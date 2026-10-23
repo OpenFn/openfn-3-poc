@@ -2,15 +2,15 @@ import TextLink from "../TextLink";
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import Button from "../Button";
 import { linkedUsageSummary } from "../../utils/format";
-import type { WebhookAuthMethod } from "../../types/project-settings";
+import type { WebhookAuthMethodRow } from "../../types/project-settings";
 
 interface Props {
-  authMethods: WebhookAuthMethod[];
+  authMethods: WebhookAuthMethodRow[];
   canWrite: boolean;
   onCreate: () => void;
-  onView: (m: WebhookAuthMethod) => void;
-  onDelete: (m: WebhookAuthMethod) => void;
-  onShowUsage: (m: WebhookAuthMethod) => void;
+  onView: (m: WebhookAuthMethodRow) => void;
+  onDelete: (m: WebhookAuthMethodRow) => void;
+  onShowUsage: (m: WebhookAuthMethodRow) => void;
 }
 
 const typeLabel = { api: "API", basic: "Basic" } as const;

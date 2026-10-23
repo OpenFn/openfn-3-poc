@@ -24,7 +24,7 @@ import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.repli
 import RunShowPage from "./pages/history/RunShowPage.replica";
 import DataclipShowPage from "./pages/history/DataclipShowPage.replica";
 
-import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage";
+import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.replica";
 
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage";
 import ProfilePage from "./pages/profile/ProfilePage";

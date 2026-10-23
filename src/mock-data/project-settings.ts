@@ -6,7 +6,24 @@
  * backend.
  */
 
-import type { Collection, ProjectFile, ProjectSettings, VcsFixture, WebhookAuthMethod } from "../types/project-settings";
+import { credentials, credentialsFor, keychainCredentialsIn, oauthClientsFor } from "./credentials";
+import { findProject, projects } from "./projects";
+import { findUser } from "./users";
+import { permissionsFor } from "../permissions";
+import type { ProjectSettingsPageProps } from "../pages/project-settings/ProjectSettingsPage";
+import type {
+  Collection,
+  CollaboratorRow,
+  ProjectFile,
+  ProjectSettings,
+  GithubRepoConnection,
+  VcsFixture,
+  WebhookAuthMethod,
+  WebhookAuthMethodRow,
+} from "../types/project-settings";
+import type { Project, ProjectMember } from "../types/projects";
+import type { User } from "../types/users";
+import { fullName } from "../utils/format";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const DHIS2 = "1f0b7c2e-9d3a-4a4b-8f5e-2c6d7e8f9a01";
@@ -162,3 +179,176 @@ export function vcsFor(projectId: string): VcsFixture {
 
 /** Days before a deleted project is purged (Lightning.Config.purge_deleted_after_days). */
 export const purgeDeletedAfterDays = 7;
+
+// ---------------------------------------------------------------------------
+// The page's props, from the fixtures
+
+/** What the replica holds for one project, as the server would: the parts the settings page changes. */
+export interface SettingsFixture {
+  project: Project;
+  supportAccess: boolean;
+  collections: Collection[];
+  authMethods: WebhookAuthMethod[];
+  connection: GithubRepoConnection | null;
+}
+
+export function settingsFixtureFor(project: Project): SettingsFixture {
+  return {
+    project,
+    supportAccess: projectSettingsFor(project.id).allowSupportAccess,
+    collections: collectionsIn(project.id),
+    authMethods: webhookAuthMethodsIn(project.id),
+    connection: vcsFor(project.id).connection,
+  };
+}
+
+/** A new API key, as WebhookAuthMethods.build makes one. */
+export function generateApiKey(): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(36).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
+}
+
+// webhook_auth_method_form_component.ex `mask_password` / `mask_api_key`.
+const maskPassword = (v = "") => "*".repeat(v.length);
+const maskApiKey = (v = "") => "*".repeat(Math.min(15, Math.max(0, v.length - 5))) + v.slice(-5);
+
+function authMethodRow(projectId: string, m: WebhookAuthMethod): WebhookAuthMethodRow {
+  return {
+    id: m.id,
+    name: m.name,
+    authType: m.authType,
+    username: m.username ?? null,
+    maskedSecret: m.authType === "basic" ? maskPassword(m.password) : maskApiKey(m.apiKey),
+    triggers: m.triggers.map((t) => ({ id: t.triggerId, name: t.workflowName, href: `/projects/${projectId}/w/${t.workflowId}?s=${t.triggerId}` })),
+    channels: m.channels.map((c) => ({ id: c.id, name: c.name, href: `/projects/${projectId}/channels/${c.id}/edit` })),
+  };
+}
+
+/** settings.ex `remove_user_tooltip/5`: why a member can't be removed, or null. */
+function removeBlockedReason(member: ProjectMember, viewer: User, canRemove: boolean, parent: Project | undefined): string | null {
+  if (!canRemove) return "You do not have permission to remove a user";
+  if (member.userId === viewer.id) return "You cannot remove yourself";
+  if (member.role === "owner") return "You cannot remove an owner";
+  const parentRole = parent?.members.find((m) => m.userId === member.userId)?.role;
+  if (parentRole === "owner" || parentRole === "admin") return "Cannot remove a user who is admin or owner on the parent project";
+  return null;
+}
+
+function collaboratorRow(project: Project, member: ProjectMember, viewer: User, canRemove: boolean): CollaboratorRow {
+  const user = findUser(member.userId);
+  return {
+    id: member.userId,
+    firstName: user?.firstName ?? "",
+    lastName: user?.lastName ?? member.userId,
+    email: user?.email ?? "",
+    role: member.role,
+    failureAlert: member.failureAlert,
+    digest: member.digest,
+    isCurrentUser: member.userId === viewer.id,
+    removeBlockedReason: removeBlockedReason(member, viewer, canRemove, findProject(project.parentId ?? undefined)),
+    ownedCredentialNames: credentials
+      .filter((c) => c.ownerId === member.userId && c.projectIds.includes(project.id))
+      .map((c) => c.name),
+  };
+}
+
+/** The top of a sandbox's tree, where Lightning sends the user after deleting it. */
+export function rootOf(project: Project): Project {
+  const parent = findProject(project.parentId ?? undefined);
+  return parent ? rootOf(parent) : project;
+}
+
+function descendantCount(projectId: string): number {
+  return projects.filter((p) => p.parentId === projectId).reduce((n, p) => n + 1 + descendantCount(p.id), 0);
+}
+
+/** Everything ProjectSettingsPage shows, as Lightning's settings.ex would send it. */
+export function projectSettingsPropsFor(
+  { project, supportAccess, collections, authMethods, connection }: SettingsFixture,
+  viewer: User
+): Omit<ProjectSettingsPageProps, "projectLabel" | "deleting" | `on${string}`> {
+  const perms = permissionsFor(project, viewer);
+  const parent = findProject(project.parentId ?? undefined);
+  const settingsHref = `/projects/${project.id}/settings`;
+  return {
+    project: { id: project.id, parentId: project.parentId, color: project.color },
+    parent: parent ? { name: parent.name, settingsHref: `/projects/${parent.id}/settings` } : null,
+    setup: {
+      name: project.name,
+      description: project.description,
+      env: projectSettingsFor(project.id).env,
+      concurrency: project.concurrency,
+      exportHref: `/download/yaml?id=${project.id}`,
+      deleteHref: `${settingsHref}/delete`,
+      gracePeriodDays: purgeDeletedAfterDays,
+      sandboxDeletion: parent ? { rootName: rootOf(project).name, descendantCount: descendantCount(project.id) } : null,
+      canEditProject: perms.canEditProject,
+      canDeleteProject: perms.canDeleteProject,
+    },
+    credentials: {
+      credentials: credentialsFor(project, viewer),
+      oauthClients: oauthClientsFor(project, viewer),
+      keychainCredentials: keychainCredentialsIn(project),
+      canCreateProjectCredential: perms.canCreateProjectCredential,
+      canCreateKeychainCredential: perms.canCreateKeychainCredential,
+      canEditKeychainCredential: perms.canEditKeychainCredential,
+      canCreateGlobalOauthClient: perms.canCreateGlobalOauthClient,
+    },
+    collections: {
+      collections: collections.map((c) => ({
+        id: c.id,
+        name: c.name,
+        byteSizeSum: c.byteSizeSum,
+        downloadHref: `/download/collections/${project.id}/${c.name}`,
+      })),
+      canManage: perms.canCreateCollection,
+    },
+    webhookSecurity: {
+      authMethods: authMethods.map((m) => authMethodRow(project.id, m)),
+      canWrite: perms.canWriteWebhookAuthMethod,
+    },
+    collaboration: {
+      collaborators: project.members.map((m) => collaboratorRow(project, m, viewer, perms.canRemoveProjectUser)),
+      supportAccess,
+      canEditProject: perms.canEditProject,
+      canAddProjectUser: perms.canAddProjectUser,
+      addBlockedReason: null,
+      canReceiveFailureAlerts: true,
+    },
+    security: {
+      requiresMfa: project.requiresMfa,
+      canEditProject: perms.canEditProject,
+      canRequireMfa: perms.canRequireMfa,
+    },
+    githubSync: {
+      enabled: vcsFor(project.id).githubEnabled,
+      connection,
+      userConnected: viewer.githubConnected,
+      connectAccountHref: "https://github.com/login/oauth/authorize",
+      canInstall: perms.canInstallGithub,
+      canInitiateSync: perms.canInitiateGithubSync,
+    },
+    dataStorage: {
+      historyRetentionPeriod: project.historyRetentionPeriod,
+      dataclipRetentionPeriod: project.dataclipRetentionPeriod,
+      retentionPolicy: project.retentionPolicy,
+      periods: dataRetentionPeriods,
+      limitMessage: null,
+      canEdit: perms.canEditDataRetention,
+    },
+    historyExports: projectFilesIn(project.id).map((f) => {
+      const user = findUser(f.createdByUserId);
+      return {
+        id: f.id,
+        insertedAt: f.insertedAt,
+        fileName: f.path ? (f.path.split("/").pop() ?? f.path) : null,
+        requestedBy: user ? fullName(user) : "",
+        status: f.status,
+        downloadHref: f.status === "completed" ? `/project_files/${f.id}/download` : null,
+      };
+    }),
+  };
+}

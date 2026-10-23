@@ -3,9 +3,10 @@ import FormModal from "../FormModal";
 import { TextInput } from "../Inputs";
 import IconButton from "../IconButton";
 import RoleSelect from "./RoleSelect";
+import type { CollaboratorValues, InviteValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";
 
-export interface InviteDraft {
+interface InviteDraft {
   firstName: string;
   lastName: string;
   email: string;
@@ -14,9 +15,10 @@ export interface InviteDraft {
 
 interface Props {
   /** Prefilled from the emails that had no OpenFn account. */
-  initial: { email: string; role: ProjectRole | "" }[];
+  initial: CollaboratorValues[];
   onCancel: () => void;
-  onInvite: (invites: InviteDraft[]) => void;
+  /** May be async: the modal shows pending and stays open with the error if it rejects. */
+  onInvite: (invites: InviteValues[]) => void | Promise<void>;
 }
 
 /** InviteCollaboratorComponent (project_live/invite_collaborator_component.html.heex). */
@@ -37,7 +39,8 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
       description="The following users don't have OpenFn accounts, you can invite them to join and grant access to this project"
       formId="invite_collaborators_modal_form"
       formClassName="space-y-5"
-      onSubmit={() => onInvite(rows)}
+      // Submit is only enabled once every row has a role.
+      onSubmit={() => onInvite(rows as InviteValues[])}
       submitLabel={<>Invite new user{rows.length > 1 ? "s" : ""}</>}
       submitDisabled={!valid}
     >

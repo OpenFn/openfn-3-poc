@@ -1,24 +1,26 @@
-import { useState } from "react";
 import Card from "../Card";
 import SectionHeader from "../SectionHeader";
 import { useToast } from "../Toast";
 import Toggle from "../Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { Project } from "../../types/projects";
+import type { ParentProjectRef, SecuritySettings } from "../../types/project-settings";
+import { errorMessage } from "../../utils/errors";
+import { useChosenValue } from "../../utils/useChosenValue";
 
 interface Props {
-  initialRequiresMfa: boolean;
-  canEditProject: boolean;
-  canRequireMfa: boolean;
+  security: SecuritySettings;
   /** Set for a sandbox: MFA is inherited from the parent and read-only. */
-  parentProject?: Project | undefined;
+  parent: ParentProjectRef | null;
+  /** Switches "Require MFA?". The switch shows the choice at once, and goes back if this rejects. */
+  onSetRequiresMfa: (on: boolean) => Promise<void>;
 }
 
 /** The Security tab (`#security`, settings.html.heex:681-756): the "Require MFA?" switch. */
-export default function SecurityPanel({ initialRequiresMfa, canEditProject, canRequireMfa, parentProject }: Props) {
-  const [requiresMfa, setRequiresMfa] = useState(initialRequiresMfa);
+export default function SecurityPanel({ security, parent, onSetRequiresMfa }: Props) {
+  const { requiresMfa, canEditProject, canRequireMfa } = security;
+  const sandbox = parent !== null;
   const toast = useToast();
-  const sandbox = !!parentProject;
+  const mfa = useChosenValue(requiresMfa, onSetRequiresMfa, (e) => toast(errorMessage(e), "error"));
   return (
     <>
       <SectionHeader
@@ -26,7 +28,7 @@ export default function SecurityPanel({ initialRequiresMfa, canEditProject, canR
         subtitle="View and manage security settings for this project."
         permissionsSection={canEditProject || sandbox ? undefined : "multi-factor authentication settings."}
       />
-      {sandbox && <SandboxSettingsBanner variant="inherited" parentProject={parentProject} />}
+      {sandbox && <SandboxSettingsBanner variant="inherited" parent={parent} />}
       <Card
         title={<span id="mfa-label">Multi-Factor Authentication</span>}
         description={
@@ -38,15 +40,12 @@ export default function SecurityPanel({ initialRequiresMfa, canEditProject, canR
       >
         <Toggle
           id="toggle-mfa-switch"
-          checked={requiresMfa}
-          onChange={(on) => {
-            setRequiresMfa(on);
-            toast("Project MFA requirement updated successfully");
-          }}
-          disabled={!canRequireMfa || sandbox}
+          checked={mfa.value}
+          onChange={mfa.choose}
+          disabled={!canRequireMfa || !canEditProject || sandbox}
           tooltip={canEditProject ? undefined : "You do not have permission to perform this action"}
           label="Require MFA?"
-          note={requiresMfa ? "(currently required for this project)" : "(currently optional for this project)"}
+          note={mfa.value ? "(currently required for this project)" : "(currently optional for this project)"}
         />
       </Card>
     </>
