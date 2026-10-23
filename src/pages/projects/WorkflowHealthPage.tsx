@@ -21,6 +21,7 @@ export default function WorkflowHealthPage() {
   const [days, setDays] = useState<HealthRange["days"]>(DEFAULT_HEALTH_DAYS);
   if (!project) return <Navigate to="/projects" replace />;
   if (!workflow) return <Navigate to={`/projects/${project.id}/w`} replace />;
+  const health = healthFor(workflow.id, days);
 
   return (
     <PageContent
@@ -43,10 +44,13 @@ export default function WorkflowHealthPage() {
         <div id="workflow-health">
           <WorkflowHealth
             projectId={project.id}
+            workflowId={workflow.id}
             workflowName={workflow.name}
             days={days}
             onDaysChange={setDays}
-            data={healthFor(workflow.id, days)}
+            outcomes={{ data: health.outcomes, error: null }}
+            failures={{ data: health.failures, error: null }}
+            runs={{ data: health.runs, error: null }}
             historyRetentionPeriod={project.historyRetentionPeriod}
           />
         </div>

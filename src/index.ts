@@ -53,5 +53,6 @@ export { RouterProvider } from "./routing/router";
 export type { NavigateOptions, Router } from "./routing/router";
 export { ToastProvider, useToast } from "./components/Toast";
 export { RequestError } from "./utils/errors";
+export { setUpMonaco } from "./components/monacoTheme";
 export { default as Sidebar } from "./components/shell/Sidebar";
 export type { SidebarProps } from "./components/shell/Sidebar";
