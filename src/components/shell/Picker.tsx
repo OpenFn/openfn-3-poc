@@ -77,7 +77,8 @@ const iconClasses = (active: boolean) => cn("shrink-0 group-hover:text-white/70"
  * dispatches `openEvent`; search, arrow keys (wrapping) and Enter navigate.
  */
 export default function Picker({ items: allItems, currentId, placeholder, emptyMessage, viewAllLabel, viewAllHref, openEvent, defaultOpen = false }: PickerProps) {
-  const { navigate } = useRouter();
+  const { navigate, useLocation } = useRouter();
+  const { hash } = useLocation();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -114,7 +115,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
   const go = (row: Row) => {
     setIsOpen(false);
     if (isViewAll(row)) navigate(viewAllHref);
-    else navigate(row.href + (row.sameSection ? window.location.hash : ""));
+    else navigate(row.href + (row.sameSection ? hash : ""));
   };
 
   // Modal brings the backdrop, Escape, click-outside and the focus trap;
