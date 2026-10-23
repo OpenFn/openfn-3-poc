@@ -53,7 +53,7 @@ function tickLabel(at: string, hours: number, tz: string) {
  * "Runs over time": run volume per bucket, stacked Failed / Cancelled /
  * Success from the axis up (VolumeBars.tsx). Plain SVG in place of Recharts.
  * Hovering a bar names its slot and counts; clicking a band opens the runs it
- * counts in History, in a new tab. The chart is mouse-only and hidden from
+ * counts in History. The chart is mouse-only and hidden from
  * assistive tech; the window totals below are its accessible version.
  */
 export default function VolumeBars({
@@ -126,7 +126,7 @@ export default function VolumeBars({
                       if (r[key] === 0) return null;
                       base -= r[key];
                       return (
-                        <Link key={key} to={bucketUrl(projectId, workflowId, buckets, i, states)} target="_blank" tabIndex={-1}>
+                        <Link key={key} to={bucketUrl(projectId, workflowId, buckets, i, states)} tabIndex={-1}>
                           <path d={`M0 ${base}H1V${base + r[key]}H0Z`} fill={color} className="cursor-pointer" />
                         </Link>
                       );

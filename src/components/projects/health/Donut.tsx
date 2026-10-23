@@ -36,7 +36,7 @@ const arc = (from: number, to: number) => {
  * A part-to-whole ring with a headline figure in the middle and an always-on
  * legend (assets/js/health/charts/Donut.tsx). Drawn as plain SVG here in place
  * of Recharts; hovering a wedge shows its count and share. A wedge and its
- * legend row open the work orders it counts in a new tab.
+ * legend row open the work orders it counts.
  */
 export default function Donut({
   slices,
@@ -60,7 +60,7 @@ export default function Donut({
       <div className={`${FRAME} relative`}>
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full" aria-hidden="true">
           {only ? (
-            <Link to={only.href} target="_blank" tabIndex={-1}>
+            <Link to={only.href} tabIndex={-1}>
               <circle cx={C} cy={C} r={(OUTER + INNER) / 2} fill="none" stroke={only.color} strokeWidth={OUTER - INNER} className="cursor-pointer">
                 <title>{`${only.label}: ${formatNumber(only.value)} (${percent(only.value, total)})`}</title>
               </circle>
@@ -70,7 +70,7 @@ export default function Donut({
               const from = angle;
               angle += (s.value / total) * 360;
               return (
-                <Link key={s.key} to={s.href} target="_blank" tabIndex={-1}>
+                <Link key={s.key} to={s.href} tabIndex={-1}>
                   <path d={arc(from, angle)} fill={s.color} stroke="#fff" strokeWidth={2} className="cursor-pointer">
                     <title>{`${s.label}: ${formatNumber(s.value)} (${percent(s.value, total)})`}</title>
                   </path>
@@ -87,11 +87,11 @@ export default function Donut({
       <ul className={LEGEND}>
         {slices.map(({ key, label, color, value, href }) => (
           <li key={key}>
-            <TextLink to={href} target="_blank" variant="plain" className="flex items-center gap-1.5">
+            <TextLink to={href} variant="plain" className="flex items-center gap-1.5">
               <span aria-hidden="true" className={DOT} style={{ backgroundColor: color }} />
               <span className="capitalize">{label}</span>{" "}
               <span className="font-medium tabular-nums text-gray-900">{formatNumber(value)}</span>{" "}
-              <span className="sr-only">({percent(value, total)}) (opens in a new tab)</span>
+              <span className="sr-only">({percent(value, total)})</span>
             </TextLink>
           </li>
         ))}

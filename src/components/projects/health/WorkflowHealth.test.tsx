@@ -99,10 +99,10 @@ describe("WorkflowHealth panels", () => {
 });
 
 describe("WorkflowHealth links", () => {
-  it("opens a legend row's states from the window's start, in a new tab", () => {
+  it("opens a legend row's states from the window's start, in the same tab", () => {
     renderHealth();
     const link = within(card("Outcomes")).getByRole("link", { name: /^Failed 2\b/ });
-    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("target")).toBeNull();
     const p = params(link.getAttribute("href"));
     expect(p.get("filters[workflow_id]")).toBe("wf-1");
     expect(p.get("filters[date_after]")).toBe(range.from);
@@ -110,10 +110,10 @@ describe("WorkflowHealth links", () => {
     expect(p.get("filters[success]")).toBeNull();
   });
 
-  it("opens a triage row's signature in a new tab, and a rejected row's state", () => {
+  it("opens a triage row's signature in the same tab, and a rejected row's state", () => {
     renderHealth();
     const [fail, rejected] = screen.getAllByRole("link", { name: /View history/ });
-    expect(fail!.getAttribute("target")).toBe("_blank");
+    expect(fail!.getAttribute("target")).toBeNull();
     const p = params(fail!.getAttribute("href"));
     expect(p.get("filters[date_after]")).toBe(range.from);
     expect(p.get("filters[error_signature_exit_reason]")).toBe("fail");
@@ -126,7 +126,7 @@ describe("WorkflowHealth links", () => {
     renderHealth();
     const outcomesCard = card("Outcomes");
     const wedge = outcomesCard.querySelector(`path[fill="${FAILED}"]`)!.closest("a")!;
-    expect(wedge.getAttribute("target")).toBe("_blank");
+    expect(wedge.getAttribute("target")).toBeNull();
     expect(wedge.getAttribute("href")).toBe(within(outcomesCard).getByRole("link", { name: /^Failed 2\b/ }).getAttribute("href"));
 
     const p = params(within(card("Failure breakdown")).getByRole("link", { name: /^crashed 1\b/ }).getAttribute("href"));
@@ -152,12 +152,12 @@ describe("WorkflowHealth runs over time", () => {
     expect(within(openRuns()).getByText("2-hour buckets · Africa/Nairobi")).toBeTruthy();
   });
 
-  it("draws a red SVG band per bar with failures, opening that bar's failed runs in a new tab", () => {
+  it("draws a red SVG band per bar with failures, opening that bar's failed runs in the same tab", () => {
     const chart = openRuns();
     const red = chart.querySelectorAll(`path[fill="${FAILED}"]`);
     expect(red).toHaveLength(2);
     const link = red[1]!.closest("a")!;
-    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("target")).toBeNull();
     const p = params(link.getAttribute("href"));
     expect(p.get("filters[run_date_after]")).toBe("2026-10-14T13:00:00.000Z");
     expect(p.get("filters[run_date_before]")).toBeNull();

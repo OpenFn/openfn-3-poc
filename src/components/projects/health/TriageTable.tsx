@@ -80,7 +80,7 @@ function Signature({ signature }: { signature: ErrorSignature }) {
 /**
  * "Triage - grouped by failure type": failed work orders grouped by error
  * signature, largest first, each with a suggestion and a link to History
- * in a new tab (TriageTable.tsx). With no failures it's a card with the
+ * (TriageTable.tsx). With no failures it's a card with the
  * empty message.
  */
 export default function TriageTable({
@@ -127,8 +127,8 @@ export default function TriageTable({
             <Td>{(s.error_type && TIPS[s.error_type]) || TIPS["default"]}</Td>
             <Td actions>
               {s.exit_reason && (
-                <Button theme="secondary" to={signatureUrl(projectId, workflowId, from, s)} target="_blank" className="whitespace-nowrap">
-                  View history <span className="sr-only">(opens in a new tab)</span>
+                <Button theme="secondary" to={signatureUrl(projectId, workflowId, from, s)} className="whitespace-nowrap">
+                  View history
                 </Button>
               )}
             </Td>
