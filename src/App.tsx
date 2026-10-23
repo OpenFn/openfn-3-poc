@@ -18,7 +18,7 @@ import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage";
 import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage.replica";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
-import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage";
+import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
 import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
 import RunShowPage from "./pages/history/RunShowPage.replica";

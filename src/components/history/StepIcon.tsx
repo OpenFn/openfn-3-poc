@@ -1,7 +1,7 @@
-import type { Step } from "../../types/history";
+import type { StepExitReason } from "../../types/history";
 import { cn } from "../../utils/cn";
 
-const icons: Record<NonNullable<Step["exitReason"]> | "pending", [string, string]> = {
+const icons: Record<StepExitReason | "pending", [string, string]> = {
   pending: ["hero-ellipsis-horizontal-circle-solid", "text-gray-400"],
   success: ["hero-check-circle-solid", "text-green-500"],
   fail: ["hero-x-circle-solid", "text-red-500"],
@@ -20,7 +20,7 @@ const killIcons: Record<string, string> = {
 };
 
 /** A step's exit-reason icon (run_live/components.ex `step_icon`). */
-export default function StepIcon({ reason, errorType }: { reason: Step["exitReason"]; errorType?: string | null }) {
+export default function StepIcon({ reason, errorType }: { reason: StepExitReason | null; errorType?: string | null }) {
   const [base, color] = icons[reason ?? "pending"] ?? icons.pending;
   const icon = (reason === "kill" && errorType && killIcons[errorType]) || base;
   return <span className={cn(icon, "mr-1.5 h-5 w-5 flex-shrink-0 inline-block", color)} />;

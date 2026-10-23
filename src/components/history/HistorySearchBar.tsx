@@ -22,6 +22,12 @@ export default function HistorySearchBar({
   onSearch: (term: string) => void;
 }) {
   const [value, setValue] = useState(term);
+  // The term lives in the URL, so Back or a link can change it under the box: follow it.
+  const [shown, setShown] = useState(term);
+  if (shown !== term) {
+    setShown(term);
+    setValue(term);
+  }
 
   return (
     <div className="mt-2 flex items-center gap-2">
