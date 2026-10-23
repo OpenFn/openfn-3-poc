@@ -18,6 +18,9 @@ with `collections:write`.
 { "data": { "id": "…", "project_id": "…", "name": "patients" } }
 ```
 
+Planned additional scope: `byte_size_sum`, the bytes the collection's keys and
+values take up, which is what counts against the plan's storage limit.
+
 ## Create or rename a collection
 
 Status: **Public**
@@ -62,8 +65,25 @@ with `collections:write`. Paged.
 }
 ```
 
+Planned additional scope: `byte_size_sum` on each collection, as for getting
+one, and `sort`: `name` or `byte_size_sum`, with a `-` prefix for descending.
+
 > Implementation note: `Lightning.Collections.list_project_collections/2`.
 > Differences: it isn't paged.
+
+## List every collection
+
+Status: **Planned**
+
+```
+GET /api/collections
+```
+
+Tokens: personal access token of a superuser, or service account with
+`collections:write`. Paged.
+
+Lists the collections of every project on the instance, in the same shape as
+the project list, with `project_name` added. Takes the same `sort`.
 
 ## Delete a collection
 

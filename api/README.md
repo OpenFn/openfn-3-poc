@@ -23,7 +23,16 @@ says otherwise.
 - [Dataclips](./dataclips.md)
 - [Log lines](./log-lines.md)
 - [Provisioning](./provisioning.md): deploying and exporting a whole project
-- [Webhooks](./webhooks.md)
+- [GitHub sync](./github-sync.md): connecting a project to a repository
+- [Webhooks](./webhooks.md): triggering workflows and webhook auth methods
+- [Channels](./channels.md): proxying requests and their history
+- [Audit events](./audit-events.md)
+
+Two pages track this reference against the
+[decoupling design](https://github.com/OpenFn/context/tree/main/lightning/brandon/decoupling-experiment-v2):
+
+- [Register](./register.md): every method in that design and where it stands here
+- [Misfits](./misfits.md): the methods that don't belong in this API, and why
 
 ## Status
 
@@ -33,11 +42,10 @@ Every endpoint carries a status:
 | --- | --- |
 | **Public** | Available now. Any client with the right token can call it. |
 | **Private** | Lightning can already do this inside the app, but there is no API route for it yet. The spec here is how the route should look, following the same patterns as the public routes. Each one has an implementation note naming the function that does the work today and how it differs from the spec. |
-| **Planned** | Lightning can't do this yet. No endpoints are planned yet, but some sections note token kinds that are planned for an existing endpoint. |
+| **Planned** | Not in the API yet. The spec here is how the route should look, following the same patterns. Most planned endpoints come from the decoupling design. Some cover things the app can already do; they become Private once someone checks them against Lightning and writes their implementation note. |
 
-Some things the app can do have no route and aren't specified here yet:
-channel management, webhook authentication methods, credential transfers,
-keychain credentials, GitHub sync setup, and project file and history exports.
+A Public or Private endpoint can also list **planned additional scope**: things
+it should do that it doesn't yet, such as a filter, a field or a token kind.
 
 ## All endpoints
 
@@ -50,11 +58,17 @@ keychain credentials, GitHub sync setup, and project file and history exports.
 | `PUT` | [`/api/projects/:id`](./projects.md) | Public |
 | `DELETE` | [`/api/projects/:id`](./projects.md) | Private |
 | `DELETE` | [`/api/projects/:id/scheduled_deletion`](./projects.md) | Private |
+| `PUT` | [`/api/projects/:id/data_retention`](./projects.md) | Planned |
+| `PUT` | [`/api/projects/:id/mfa_requirement`](./projects.md) | Planned |
+| `PUT` | [`/api/projects/:id/support_access`](./projects.md) | Planned |
 | `GET` | [`/api/projects/:project_id/members`](./projects.md) | Private |
 | `PUT` | [`/api/projects/:project_id/members/:user_id`](./projects.md) | Private |
 | `DELETE` | [`/api/projects/:project_id/members/:user_id`](./projects.md) | Private |
+| `PUT` | [`/api/projects/:project_id/members/:user_id/notifications`](./projects.md) | Planned |
+| `POST` | [`/api/projects/:project_id/invitations`](./projects.md) | Planned |
 | `GET` | [`/api/projects/:project_id/sandboxes`](./projects.md) | Private |
 | `PUT` | [`/api/projects/:project_id/sandboxes/:id`](./projects.md) | Private |
+| `POST` | [`/api/projects/:project_id/sandboxes/:id/merge_previews`](./projects.md) | Planned |
 | `POST` | [`/api/projects/:project_id/sandboxes/:id/merges`](./projects.md) | Private |
 | `GET` | [`/api/credentials`](./credentials.md) | Public |
 | `GET` | [`/api/projects/:project_id/credentials`](./credentials.md) | Public |
@@ -62,7 +76,24 @@ keychain credentials, GitHub sync setup, and project file and history exports.
 | `GET` | [`/api/credentials/:id`](./credentials.md) | Public |
 | `PUT` | [`/api/credentials/:id`](./credentials.md) | Public |
 | `DELETE` | [`/api/credentials/:id`](./credentials.md) | Public |
+| `PUT` | [`/api/credentials/:id/scheduled_deletion`](./credentials.md) | Planned |
+| `DELETE` | [`/api/credentials/:id/scheduled_deletion`](./credentials.md) | Planned |
+| `PUT` | [`/api/projects/:project_id/credentials/:id`](./credentials.md) | Planned |
+| `DELETE` | [`/api/projects/:project_id/credentials/:id`](./credentials.md) | Planned |
+| `GET` | [`/api/credentials/:id/environments`](./credentials.md) | Planned |
+| `PUT` | [`/api/credentials/:id/environments/:name`](./credentials.md) | Planned |
+| `DELETE` | [`/api/credentials/:id/environments/:name`](./credentials.md) | Planned |
+| `PUT` | [`/api/credentials/:id/transfer`](./credentials.md) | Planned |
+| `DELETE` | [`/api/credentials/:id/transfer`](./credentials.md) | Planned |
+| `GET` | [`/api/oauth_clients`, `/api/projects/:project_id/oauth_clients`](./credentials.md) | Planned |
+| `PUT` | [`/api/oauth_clients/:id`](./credentials.md) | Planned |
+| `DELETE` | [`/api/oauth_clients/:id`](./credentials.md) | Planned |
+| `GET` | [`/api/projects/:project_id/keychain_credentials`](./credentials.md) | Planned |
+| `PUT` | [`/api/projects/:project_id/keychain_credentials/:id`](./credentials.md) | Planned |
+| `DELETE` | [`/api/projects/:project_id/keychain_credentials/:id`](./credentials.md) | Planned |
+| `GET` | [`/api/credential_schemas`, `/api/credential_schemas/:name`](./credentials.md) | Planned |
 | `GET` | [`/api/projects/:project_id/collections`](./collections.md) | Private |
+| `GET` | [`/api/collections`](./collections.md) | Planned |
 | `GET` | [`/api/projects/:project_id/collections/:id`](./collections.md) | Public |
 | `PUT` | [`/api/projects/:project_id/collections/:id`](./collections.md) | Public |
 | `DELETE` | [`/api/projects/:project_id/collections/:id`](./collections.md) | Private |
@@ -78,6 +109,9 @@ keychain credentials, GitHub sync setup, and project file and history exports.
 | `PATCH` | [`/api/users/:id`](./users.md) | Public |
 | `DELETE` | [`/api/users/:id`](./users.md) | Private |
 | `DELETE` | [`/api/users/:id/scheduled_deletion`](./users.md) | Private |
+| `GET` | [`/api/me`](./users.md) | Planned |
+| `GET` | [`/api/me/tokens`](./users.md) | Planned |
+| `DELETE` | [`/api/me/tokens/:id`](./users.md) | Planned |
 | `GET` | [`/api/workflows`](./workflows.md) | Public |
 | `GET` | [`/api/workflows/:id`](./workflows.md) | Public |
 | `GET` | [`/api/projects/:project_id/workflows`](./workflows.md) | Public |
@@ -85,18 +119,43 @@ keychain credentials, GitHub sync setup, and project file and history exports.
 | `GET` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Public |
 | `PATCH`, `PUT` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Public |
 | `DELETE` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Private |
+| `POST` | [`/api/projects/:project_id/workflows/validations`](./workflows.md) | Planned |
+| `GET` | [`/api/workflows/:id/snapshots`, `/api/workflows/:id/snapshots/:snapshot_id`](./workflows.md) | Planned |
+| `GET` | [`/api/workflows/:id/versions`](./workflows.md) | Planned |
+| `GET` | [`/api/workflow_templates`](./workflows.md) | Planned |
+| `PUT` | [`/api/workflows/:id/template`](./workflows.md) | Planned |
 | `GET` | [`/api/jobs`, `/api/jobs/:id`, `/api/projects/:project_id/jobs`, `/api/projects/:project_id/jobs/:id`](./jobs.md) | Public |
 | `GET` | [`/api/work_orders`, `/api/work_orders/:id`, `/api/projects/:project_id/work_orders`, `/api/projects/:project_id/work_orders/:id`](./work-orders.md) | Public |
 | `POST` | [`/api/projects/:project_id/workflows/:workflow_id/work_orders`](./work-orders.md) | Private |
+| `POST` | [`/api/projects/:project_id/work_orders/retries`](./work-orders.md) | Planned |
+| `PATCH` | [`/api/work_orders/:id`](./work-orders.md) | Planned |
+| `POST` | [`/api/projects/:project_id/work_orders/cancellations`](./work-orders.md) | Planned |
+| `POST` | [`/api/projects/:project_id/history_exports`](./work-orders.md) | Planned |
+| `GET` | [`/api/projects/:project_id/history_exports`, `/api/projects/:project_id/history_exports/:id`](./work-orders.md) | Planned |
 | `GET` | [`/api/runs`, `/api/runs/:id`, `/api/projects/:project_id/runs`, `/api/projects/:project_id/runs/:id`](./runs.md) | Public |
 | `PATCH` | [`/api/runs/:id`](./runs.md) | Private |
 | `POST` | [`/api/runs/:id/retries`](./runs.md) | Private |
 | `GET` | [`/api/runs/:id/steps`](./runs.md) | Private |
 | `GET` | [`/api/dataclips/:id`](./dataclips.md) | Private |
 | `PATCH` | [`/api/dataclips/:id`](./dataclips.md) | Private |
+| `GET` | [`/api/projects/:project_id/dataclips`](./dataclips.md) | Planned |
 | `GET` | [`/api/log_lines`](./log-lines.md) | Public |
 | `POST` | [`/api/provision`](./provisioning.md) | Public |
 | `GET` | [`/api/provision/:id`](./provisioning.md) | Public |
 | `GET` | [`/api/provision/yaml`](./provisioning.md) | Public |
+| `GET` | [`/api/projects/:project_id/repo_connection`](./github-sync.md) | Planned |
+| `PUT` | [`/api/projects/:project_id/repo_connection`](./github-sync.md) | Planned |
+| `DELETE` | [`/api/projects/:project_id/repo_connection`](./github-sync.md) | Planned |
+| `POST` | [`/api/projects/:project_id/repo_connection/syncs`](./github-sync.md) | Planned |
 | `POST` | [`/i/:trigger_id`, `/i/:project_id/:custom_path`](./webhooks.md) | Public |
 | `GET` | [`/i/:trigger_id`, `/i/:project_id/:custom_path`](./webhooks.md) | Public |
+| `GET` | [`/api/projects/:project_id/webhook_auth_methods`, `/api/projects/:project_id/webhook_auth_methods/:id`](./webhooks.md) | Planned |
+| `PUT` | [`/api/projects/:project_id/webhook_auth_methods/:id`](./webhooks.md) | Planned |
+| `DELETE` | [`/api/projects/:project_id/webhook_auth_methods/:id`](./webhooks.md) | Planned |
+| Any | [`/channels/:id`, `/channels/:id/*path`](./channels.md) | Public |
+| `GET` | [`/api/projects/:project_id/channels`, `/api/projects/:project_id/channels/:id`](./channels.md) | Planned |
+| `PUT` | [`/api/projects/:project_id/channels/:id`](./channels.md) | Planned |
+| `DELETE` | [`/api/projects/:project_id/channels/:id`](./channels.md) | Planned |
+| `GET` | [`/api/projects/:project_id/channel_requests`, `/api/channel_requests/:id`](./channels.md) | Planned |
+| `GET` | [`/api/audit_events`](./audit-events.md) | Planned |
+| `GET`, `PUT`, `DELETE` | [`/api/auth_provider`](./authentication.md) | Planned |

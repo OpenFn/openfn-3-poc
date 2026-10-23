@@ -140,3 +140,74 @@ as a project member.
 
 Projects, credentials and collections have no read scopes. Their `GET` routes
 need the same `:write` scope as their `PUT` routes.
+
+Planned: an `audit:read` scope, for [audit events](./audit-events.md). Planned
+endpoints on projects, credentials and collections use the scopes above.
+
+## Single sign-on provider
+
+An instance can let people sign in through one OpenID Connect provider, as well
+as with a password. These routes set it up. The client secret is never
+returned.
+
+```json
+{
+  "data": {
+    "name": "keycloak",
+    "discovery_url": "https://sso.example.org/realms/main/.well-known/openid-configuration",
+    "client_id": "lightning",
+    "redirect_uri": "https://lightning.example.org/authenticate/keycloak/callback",
+    "inserted_at": "…",
+    "updated_at": "…"
+  }
+}
+```
+
+`redirect_uri` is where the provider sends people back, worked out from the
+`name`. Register it with the provider.
+
+### Get the sign-in provider
+
+Status: **Planned**
+
+```
+GET /api/auth_provider
+```
+
+Tokens: personal access token of a superuser. Answers 404 `not_found` when
+none is set up.
+
+### Set the sign-in provider
+
+Status: **Planned**
+
+```
+PUT /api/auth_provider
+```
+
+Tokens: personal access token of a superuser.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Required. Lowercase letters, digits and hyphens. Part of `redirect_uri`. |
+| `discovery_url` | string | Required. An HTTP or HTTPS URL. |
+| `client_id` | string | Required. |
+| `client_secret` | string | Required when setting up. Leave it out to keep the stored one. |
+
+Lightning fetches the discovery document before it saves, and the new settings
+apply to the next sign-in. Answers 201 when it sets one up and 200 when it
+replaces one. A discovery document that can't be fetched, or has no
+authorization or token endpoint, answers 422 `invalid` with a
+`discovery_failed` entry at `#/discovery_url`.
+
+### Remove the sign-in provider
+
+Status: **Planned**
+
+```
+DELETE /api/auth_provider
+```
+
+Tokens: personal access token of a superuser.
+
+Turns off single sign-on at once. Answers 204 with no body.

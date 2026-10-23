@@ -38,6 +38,17 @@ Each work order:
 }
 ```
 
+Planned additional scope:
+
+- `search`: text to find in work orders, with `search_fields`, a
+  comma-separated choice of `id`, `dataclip_name`, `body` (the input) and `log`.
+  Defaults to all four. A search counts at most 50 matches, and `meta` says
+  when it stopped counting.
+- `sort`: `inserted_at` or `last_activity`, with a `-` prefix for descending.
+  Defaults to `-last_activity`.
+- `include=runs`: adds each work order's runs, in the same shape as
+  `GET /api/runs/:id`, newest first.
+
 ## Run a workflow
 
 Status: **Private**
@@ -84,3 +95,127 @@ Notable errors:
 > - The spec's input checks are new: today `job_id` wins if both ids are sent,
 >   a trigger starts its first edge's job, `dataclip_id` silently wins over a
 >   body, and a wiped dataclip isn't refused.
+
+## Retry many work orders
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/work_orders/retries
+```
+
+Tokens: personal access token of a project owner, admin or editor.
+
+Send one of:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `filter` | object | The filters of the list endpoint. Retries every work order that matches when Lightning receives the request. |
+| `work_order_ids` | array of UUIDs | At most 100. |
+
+and optionally:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `job_id` | UUID | Retry from this job instead of each work order's start. All the work orders must be from the job's workflow. |
+
+Each work order gets a new run, as for
+[retrying a run](./runs.md#retry-a-run). Work orders whose input has been
+wiped, or whose workflow has been deleted, are skipped. Answers 202 with
+`{"enqueued": 40, "discarded": 2}`. Large sets are retried in the background.
+
+Notable errors:
+
+- 422 `invalid` with an `exclusive` entry when both `filter` and
+  `work_order_ids` are sent, or a `required` entry when neither is.
+- 422 `invalid` with a `mismatch` entry at `#/job_id` when the work orders
+  are from more than one workflow.
+- 429 `too_many_runs` or 402 `exceeds_limit` for run limits, counted on the
+  work orders that can be retried.
+
+## Cancel a work order
+
+Status: **Planned**
+
+```
+PATCH /api/work_orders/:id
+```
+
+Tokens: personal access token of a project owner, admin or editor.
+
+Body: `{"state": "cancelled"}`. Cancels every run of the work order that no
+worker has claimed yet. Answers 200 with the work order. A work order with no
+such run answers 422 `invalid` with a `not_allowed` entry at `#/state`, as for
+[cancelling a run](./runs.md#cancel-a-run).
+
+## Cancel many work orders
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/work_orders/cancellations
+```
+
+Tokens: personal access token of a project owner, admin or editor.
+
+Takes `filter` or `work_order_ids`, as for retrying many. Cancels the runs no
+worker has claimed yet. Answers 202 with `{"cancelled": 12}`. Large sets are
+cancelled in the background.
+
+## History exports
+
+An export is a zip of work orders, with their inputs, outputs and logs.
+Lightning builds it in the background.
+
+```json
+{
+  "data": {
+    "type": "history_exports",
+    "id": "…",
+    "attributes": {
+      "state": "completed",
+      "download_url": "https://.../api/projects/…/history_exports/…/download",
+      "inserted_at": "…",
+      "updated_at": "…"
+    },
+    "relationships": {},
+    "links": { "self": "https://.../api/projects/…/history_exports/…" }
+  }
+}
+```
+
+`state` is `enqueued`, `in_progress`, `completed` or `failed`. `download_url`
+is `null` until the export is `completed`. Fetch it with the same token.
+
+### Export history
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/history_exports
+```
+
+Tokens: personal access token of a project owner or admin.
+
+Body: `{"filter": {…}}`, the filters of the list endpoint. Answers 202 with
+the export, `state` `enqueued`. Lightning also emails you when it is ready.
+
+### List history exports
+
+Status: **Planned**
+
+```
+GET /api/projects/:project_id/history_exports
+```
+
+Tokens: personal access token of a project owner or admin. Paged, newest first.
+
+### Get a history export
+
+Status: **Planned**
+
+```
+GET /api/projects/:project_id/history_exports/:id
+```
+
+Tokens: personal access token of a project owner or admin.

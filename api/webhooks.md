@@ -2,7 +2,8 @@
 
 Webhook triggers start a workflow from an HTTP request. They don't use bearer
 tokens. If the trigger has an authentication method set, send its API key in
-the `x-api-key` header or use HTTP Basic, as configured.
+the `x-api-key` header or use HTTP Basic, as configured. Managing those methods
+is [below](#webhook-auth-methods).
 
 ## Trigger a workflow
 
@@ -50,3 +51,89 @@ if it is disabled:
 ```json
 { "message": "OpenFn webhook trigger found. Make a POST request to execute this workflow." }
 ```
+
+## Webhook auth methods
+
+A webhook auth method is a username and password, or an API key, that a
+project's webhook triggers and channels can require. It belongs to the project.
+Attach it to a trigger with the trigger's `webhook_auth_method_ids` (see
+[Workflows](./workflows.md#the-workflow-object)). Passwords are never returned,
+and an API key only once.
+
+```json
+{
+  "data": {
+    "type": "webhook_auth_methods",
+    "id": "…",
+    "attributes": {
+      "name": "partner-api",
+      "auth_type": "api",
+      "username": null,
+      "api_key_last_characters": "f00d1",
+      "triggers": [{ "id": "…", "workflow_id": "…" }],
+      "inserted_at": "…",
+      "updated_at": "…"
+    },
+    "relationships": {},
+    "links": { "self": "https://.../api/projects/…/webhook_auth_methods/…" }
+  }
+}
+```
+
+`auth_type` is `basic` or `api`. `username` is set for `basic`.
+
+### List a project's webhook auth methods
+
+Status: **Planned**
+
+```
+GET /api/projects/:project_id/webhook_auth_methods
+```
+
+Tokens: personal access token. Paged. Methods scheduled for deletion are left
+out.
+
+### Get a webhook auth method
+
+Status: **Planned**
+
+```
+GET /api/projects/:project_id/webhook_auth_methods/:id
+```
+
+Tokens: personal access token of a project owner or admin.
+
+### Create or replace a webhook auth method
+
+Status: **Planned**
+
+```
+PUT /api/projects/:project_id/webhook_auth_methods/:id
+```
+
+Tokens: personal access token of a project owner or admin.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Required. Unique within the project. |
+| `auth_type` | string | Required on create, and can't change. `basic` or `api`. |
+| `username` | string | Required for `basic` on create, and can't change. |
+| `password` | string | Required for `basic` on create. 8 to 72 characters. Leave it out of a replace to keep it. |
+
+For `api`, Lightning generates the key. Answers 201 on create and 200 on
+replace. The 201 for an `api` method is the only response that carries the
+whole key, as `api_key`. Store it then.
+
+### Delete a webhook auth method
+
+Status: **Planned**
+
+```
+DELETE /api/projects/:project_id/webhook_auth_methods/:id
+```
+
+Tokens: personal access token of a project owner or admin.
+
+Schedules the method for deletion. Lightning detaches it from its triggers and
+deletes it after the instance's retention period. Answers 204 with no body.
+Deleting one that is already scheduled answers 409 `scheduled_for_deletion`.

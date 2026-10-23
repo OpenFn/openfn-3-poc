@@ -31,6 +31,15 @@ Tokens: personal access token, or service account with `projects:write`.
 }
 ```
 
+Planned additional scope:
+
+- The project's settings as attributes: `color`, `env`, `concurrency`,
+  `retention_policy`, `history_retention_period`, `dataclip_retention_period`,
+  `requires_mfa`, `allow_support_access`, `parent_id` and
+  `scheduled_deletion`. Each is set through its own route, below.
+- `allowed_retention_periods`: the retention periods the project's plan
+  allows, so a client can offer only those.
+
 ## Create or replace a project
 
 Status: **Public**
@@ -83,6 +92,15 @@ Notable errors:
   for a member.
 - 409 `scheduled_for_deletion` when the project is being deleted.
 
+Planned additional scope:
+
+- Any user can create a project with a personal access token, and becomes its
+  owner. They send no `members`.
+- `color` (a hex colour such as `#336699`), `env` (an environment name such as
+  `staging`) and `concurrency` (a positive integer, or `null` for no limit; `1`
+  runs one at a time across the whole project). Changing them needs owner or
+  admin, as for the name.
+
 ## List projects
 
 Status: **Public**
@@ -95,6 +113,80 @@ Tokens: personal access token. Paged. Service account support is planned.
 
 Lists the projects you are a member of, not including sandboxes. Each entry has
 the same shape as `GET /api/projects/:id`, without `members`.
+
+Planned additional scope:
+
+- With a service account or a superuser's token, every project on the
+  instance, including sandboxes, and a `q` filter on name and description.
+- `sort`: `name` or `last_activity`, with a `-` prefix for descending.
+- `include=stats`: adds `workflows_count`, `collaborators_count`,
+  `last_activity`, and the last 30 days' `failed_work_orders_count` to each
+  entry.
+
+## Set a project's data retention
+
+Status: **Planned**
+
+```
+PUT /api/projects/:id/data_retention
+```
+
+Tokens: personal access token of a project owner or admin, or service account
+with `projects:write`.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `retention_policy` | string | Required. `retain_all`, `retain_with_errors` or `erase_all`: which inputs and outputs of steps are saved. |
+| `history_retention_period` | integer | Days to keep work orders, runs and logs. `null` keeps them. |
+| `dataclip_retention_period` | integer | Days to keep step inputs and outputs. At most `history_retention_period`. Needs a history period, and is cleared when the policy is `erase_all`. |
+
+Answers 200 with the project. Every owner and admin of the project gets an
+email about the change. Sending the same body twice changes nothing and sends
+no email.
+
+Notable errors:
+
+- 422 `invalid` with an `out_of_range` entry at `#/dataclip_retention_period`
+  when it is longer than the history period.
+- 422 `invalid` with a `not_allowed` entry when the plan doesn't allow a
+  period. The periods allowed are in `allowed_retention_periods` on the
+  project.
+
+## Require MFA on a project
+
+Status: **Planned**
+
+```
+PUT /api/projects/:id/mfa_requirement
+```
+
+Tokens: personal access token of a project owner or admin, or service account
+with `projects:write`.
+
+Body: `{"requires_mfa": true}` or `false`. When it is on, members who haven't
+set up MFA get 403 `forbidden` from every route on the project. Answers 200
+with the project.
+
+Notable errors:
+
+- 402 `exceeds_limit` when the plan doesn't include requiring MFA.
+- 422 `invalid` with a `not_allowed` entry at `#/requires_mfa` for a sandbox.
+  A sandbox follows the project it was created from.
+
+## Allow support access to a project
+
+Status: **Planned**
+
+```
+PUT /api/projects/:id/support_access
+```
+
+Tokens: personal access token of a project owner or admin, or service account
+with `projects:write`.
+
+Body: `{"allow_support_access": true}` or `false`. When it is on, the
+instance's support users can open the project as editors without being
+members. They don't appear in the member list. Answers 200 with the project.
 
 ## Delete a project
 
@@ -177,6 +269,10 @@ Tokens: personal access token, or service account with `projects:write`. Paged.
 
 A member's `id` is their user id.
 
+Planned additional scope: `failure_alert` and `digest` attributes on each
+member, the notifications they get for this project (see
+[Set your notifications for a project](#set-your-notifications-for-a-project)).
+
 > Implementation note: `Lightning.Projects.get_project_with_users!/1` loads the
 > members, which is how `GET /api/projects/:id` lists them today. Differences:
 > it isn't paged, and it raises for a missing project rather than returning an
@@ -217,6 +313,53 @@ Notable errors:
 > inherited admins being demoted. The policy action is `:add_project_user`
 > (owners and admins).
 
+## Invite someone new to a project
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/invitations
+```
+
+Tokens: personal access token of a project owner or admin, or service account
+with `projects:write`.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `email` | string | Required. Must not belong to an existing user. |
+| `first_name` | string | Required. |
+| `last_name` | string | Required. |
+| `role` | string | Required. `admin`, `editor` or `viewer`. |
+
+Creates a user and adds them to the project. Lightning emails them a link to set
+their password. Answers 201 with the member, in the same shape as one entry of
+the member list. To add someone who already has an account, use
+`PUT /api/projects/:project_id/members/:user_id`.
+
+Notable errors:
+
+- 409 `taken` with an entry at `#/email` when the email already has an account,
+  with `existing` carrying their id, as for `POST /api/users`. A retry is safe.
+- 402 `exceeds_limit` when the plan has no seat for a new member.
+
+## Set your notifications for a project
+
+Status: **Planned**
+
+```
+PUT /api/projects/:project_id/members/:user_id/notifications
+```
+
+Tokens: personal access token. Only the member themself can change these.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `failure_alert` | boolean | Required. Email when a run fails. Only sent if the plan includes alerts. |
+| `digest` | string | Required. `never`, `daily`, `weekly` or `monthly`: a summary of the project's work orders. |
+
+Answers 200 with the member. Anyone else, whatever their role, gets 403
+`forbidden`.
+
 ## Remove a member
 
 Status: **Private**
@@ -250,6 +393,13 @@ Tokens: personal access token, or service account with `projects:write`. Paged.
 
 Returns the project's direct sandboxes, each in the same shape as an entry of
 `GET /api/projects`. Sandboxes scheduled for deletion are left out.
+
+Planned additional scope:
+
+- `depth=all`: every sandbox below the project, not just direct ones. Each
+  carries `parent_id` so the client can build the tree.
+- `include=scheduled`: sandboxes scheduled for deletion too, with
+  `scheduled_deletion` set.
 
 > Implementation note: `Lightning.Projects.list_sandboxes/1` takes a parent id.
 > Differences: it isn't paged, and it deliberately includes sandboxes
@@ -300,6 +450,40 @@ Notable errors:
 >   atoms rather than changesets, so the route has to map them.
 > - It doesn't check the plan's sandbox limit; only the app's form does.
 
+## Preview a sandbox merge
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/sandboxes/:id/merge_previews
+```
+
+Tokens: as for merging the sandbox.
+
+Body: `{"target_project_id": "…"}`, optional, defaulting to the sandbox's
+parent. Nothing is written. Answers 200 with what a merge would do:
+
+```json
+{
+  "target_project_id": "…",
+  "workflows": [
+    { "name": "intake", "source_workflow_id": "…", "target_workflow_id": "…", "change": "changed", "diverged": false },
+    { "name": "reporting", "source_workflow_id": null, "target_workflow_id": "…", "change": "deleted", "diverged": false }
+  ],
+  "credentials": [{ "credential_id": "…", "name": "Acme DHIS2" }]
+}
+```
+
+Workflows are paired by name. `change` is `new` (only in the sandbox),
+`changed`, `unchanged`, or `deleted` (only in the target, and created before the
+sandbox). `diverged` is `true` when the target's workflow has changed since the
+sandbox was created, so merging would overwrite someone else's work.
+`credentials` are the sandbox's credentials the target doesn't have.
+
+Notable errors: 422 `invalid` with an entry at `#/target_project_id` when the
+target is the sandbox itself, one of its own sandboxes, or scheduled for
+deletion.
+
 ## Merge a sandbox
 
 Status: **Private**
@@ -323,6 +507,15 @@ and a merge never deletes collections. Answers 201 with the target project in
 the same shape as `GET /api/projects/:id`.
 
 A plan limit answers 402 `exceeds_limit`.
+
+Planned additional scope:
+
+- `deleted_target_workflow_ids`: workflows only the target has, to delete as
+  part of the merge. Nothing is deleted unless it is listed.
+- `credential_ids`: the sandbox's credentials to link to the target. Only
+  credentials linked to the sandbox are taken.
+- The sandbox is scheduled for deletion once it has merged, and the response
+  says whether that worked.
 
 > Implementation note: `Lightning.Projects.Sandboxes.merge/4` takes the
 > sandbox, the target, the actor and an options map (`:selected_workflow_ids`,

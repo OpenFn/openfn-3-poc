@@ -22,6 +22,10 @@ the user's instance role: today, only superusers can manage users.
 }
 ```
 
+Planned additional scope: `support_user` (whether they can open projects that
+allow support access), `disabled`, and `scheduled_deletion` (a timestamp, or
+`null`).
+
 ## List users
 
 Status: **Public**
@@ -33,6 +37,10 @@ GET /api/users?email=ada@example.com
 
 Paged. `email` matches without regard to case. An `email` that isn't a single
 string answers 400 `invalid_parameter`.
+
+Planned additional scope: `q`, matching the start of a first name, last name
+or email, and `sort`: `email`, `first_name`, `last_name`, `role` or
+`scheduled_deletion`, with a `-` prefix for descending.
 
 ## Get a user
 
@@ -90,6 +98,14 @@ The email can't be changed: sending `email` or any other key answers 422 with
 an `unknown_key` entry. `confirmed` only ever confirms. A new role or password
 signs the user out of every browser session. Answers 200 with the user.
 
+Planned additional scope:
+
+- `support_user` and `disabled`. Disabling a user signs them out and revokes
+  their access tokens, as deleting does.
+- A person can update their own `first_name`, `last_name` and
+  `contact_preference` (`critical` or `any`: which emails they get) with a
+  personal access token. Nothing else; see [Misfits](./misfits.md#account-security).
+
 ## Delete a user
 
 Status: **Private**
@@ -129,3 +145,53 @@ A user who isn't scheduled answers 404 `not_found`.
 > Implementation note: `Lightning.Accounts.cancel_scheduled_deletion/1` takes a
 > user id. Differences: it takes no actor and records no audit event, raises
 > for a missing user, and succeeds for one who isn't scheduled.
+
+## Get the current user
+
+Status: **Planned**
+
+```
+GET /api/me
+```
+
+Tokens: personal access token.
+
+Returns the user the token belongs to, in the same shape as
+`GET /api/users/:id`. Use it to check which account a token is for. A service
+account token answers 404 `not_found`, since a service account isn't a user.
+The projects you are a member of are `GET /api/projects`.
+
+## List your personal access tokens
+
+Status: **Planned**
+
+```
+GET /api/me/tokens
+```
+
+Tokens: personal access token.
+
+```json
+{
+  "data": [
+    { "id": "…", "token": "eyJhb…xyz12", "inserted_at": "…", "last_used_at": "…" }
+  ]
+}
+```
+
+`token` is masked: only its first and last few characters. The full token is
+shown once, when it is created in the app. Not paged.
+
+## Revoke a personal access token
+
+Status: **Planned**
+
+```
+DELETE /api/me/tokens/:id
+```
+
+Tokens: personal access token.
+
+Revokes one of your tokens straight away, on every route. A token can revoke
+itself, for rotation. Answers 204 with no body. A token that isn't yours
+answers 404 `not_found`.
