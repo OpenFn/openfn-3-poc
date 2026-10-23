@@ -33,7 +33,11 @@ Links to projects you can't see are left out. A service account token without
 
 Planned additional scope: `scheduled_deletion` (a timestamp, or `null`),
 `transfer_status` (`pending`, `completed` or `null`) and `environments` (the
-names of its environments, such as `[{"name": "main"}]`).
+names of its environments, such as `[{"name": "main"}]`). For an `oauth`
+credential, `oauth`: `oauth_client_id`, the `scopes` granted, `expires_at`, and
+`reauthorization_required` when the provider has refused its refresh token and
+the owner must connect it again in the app. Reading it never refreshes the
+token.
 
 ## Get a credential
 

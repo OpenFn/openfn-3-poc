@@ -1,7 +1,7 @@
 # Authentication
 
-Apart from the token endpoints and webhooks, every endpoint takes a bearer token
-in the `Authorization` header:
+Apart from the token endpoints, webhooks and a few account routes, every
+endpoint takes a token. Most take a bearer token in the `Authorization` header:
 
 ```
 Authorization: Bearer <token>
@@ -16,6 +16,34 @@ it takes.
 | Service account access token | Automation | Trade a signed assertion at `POST /api/oauth/token` (see below). It lasts five minutes and carries scopes. |
 | Run token | A running job | Issued by Lightning to a run. Only used by the collections item API. |
 | GitHub sync token | Lightning's GitHub integration | Created when a project is connected to a repository. Only used by provisioning, for that project. |
+| Session token (planned) | A person using Lightning's own app | Sign in with `POST /api/session` (see below). Sent as a cookie, not a header. |
+
+## Session tokens
+
+Planned. A session token is how Lightning's own app calls the API for the
+person using it. The other tokens are for clients outside Lightning, and a
+script holding one may not have a person behind it. A session token always
+does, so it is the only kind that can sign a person in, change how they prove
+who they are, or use the AI assistant.
+
+- [`POST /api/session`](./account.md#sign-in) signs in with a password, and an
+  MFA code when the account has MFA. Signing in through a provider ends with
+  Lightning setting the same session.
+- It is a cookie, so the browser sends it on its own, including when the app
+  sends the browser through a provider's sign-in page and back. Lightning only
+  accepts it on requests from its own pages, and writes also need the
+  `x-csrf-token` header, from [`GET /api/session`](./account.md#get-the-session).
+- It acts as the person, with their project roles, like a personal access
+  token. Wherever an endpoint takes a personal access token, it takes a session
+  token too.
+- **Stepped up**: a few routes, such as turning off MFA, need the person to
+  have entered their password or an MFA code in the last five minutes. Post it
+  to `POST /api/session` again. Without it they answer 403
+  `step_up_required`.
+- A project that requires MFA turns away a session whose person hasn't set it
+  up, as it does their other tokens.
+- [`DELETE /api/session`](./account.md#sign-out) signs out. Changing a
+  password, or a superuser disabling the account, ends every session.
 
 ## Service account tokens
 

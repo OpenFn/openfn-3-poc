@@ -57,8 +57,8 @@ if it is disabled:
 A webhook auth method is a username and password, or an API key, that a
 project's webhook triggers and channels can require. It belongs to the project.
 Attach it to a trigger with the trigger's `webhook_auth_method_ids` (see
-[Workflows](./workflows.md#the-workflow-object)). Passwords are never returned,
-and an API key only once.
+[Workflows](./workflows.md#the-workflow-object)). Secrets are returned only when
+an API key is created, and to a stepped-up session token (below).
 
 ```json
 {
@@ -102,6 +102,10 @@ GET /api/projects/:project_id/webhook_auth_methods/:id
 ```
 
 Tokens: personal access token of a project owner or admin.
+
+With a [session token](./authentication.md#session-tokens) stepped up, it also
+returns the secret: `api_key`, or `password` for `basic`, so a person can see
+it again in the app.
 
 ### Create or replace a webhook auth method
 

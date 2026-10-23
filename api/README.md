@@ -1,7 +1,8 @@
 # Lightning API reference
 
-This page covers Lightning's HTTP API for clients outside Lightning: scripts,
-CLIs, infrastructure automation and other services.
+This page covers Lightning's HTTP API for clients outside Lightning (scripts,
+CLIs, infrastructure automation and other services) and, with a planned
+[session token](./authentication.md#session-tokens), for Lightning's own app.
 
 All paths are relative to your instance, for example
 `https://app.openfn.org`. Request and response bodies are JSON unless a section
@@ -9,7 +10,8 @@ says otherwise.
 
 ## Contents
 
-- [Authentication](./authentication.md): tokens, service accounts and scopes
+- [Authentication](./authentication.md): tokens, service accounts, session tokens and scopes
+- [Account](./account.md): signing in, and a person's own account, MFA and tokens
 - [Conventions](./conventions.md): identifiers, content types, idempotent writes, pagination, dates
 - [Errors](./errors.md): problem documents, order of checks, response and entry codes, unknown routes
 - [Projects](./projects.md): projects, members and sandboxes
@@ -27,6 +29,7 @@ says otherwise.
 - [Webhooks](./webhooks.md): triggering workflows and webhook auth methods
 - [Channels](./channels.md): proxying requests and their history
 - [Audit events](./audit-events.md)
+- [AI assistant](./ai-assistant.md)
 
 Two pages track this reference against the
 [decoupling design](https://github.com/OpenFn/context/tree/main/lightning/brandon/decoupling-experiment-v2):
@@ -53,6 +56,20 @@ it should do that it doesn't yet, such as a filter, a field or a token kind.
 | --- | --- | --- |
 | `GET` | [`/.well-known/oauth-authorization-server`](./authentication.md) | Public |
 | `POST` | [`/api/oauth/token`](./authentication.md) | Public |
+| `GET` | [`/api/instance`](./account.md) | Planned |
+| `POST`, `GET`, `DELETE` | [`/api/session`](./account.md) | Planned |
+| `POST` | [`/api/password_resets`](./account.md) | Planned |
+| `PUT` | [`/api/password_resets/:token`](./account.md) | Planned |
+| `POST` | [`/api/confirmations`](./account.md) | Planned |
+| `PUT` | [`/api/confirmations/:token`](./account.md) | Planned |
+| `GET` | [`/api/me`](./account.md) | Planned |
+| `GET`, `POST` | [`/api/me/tokens`](./account.md) | Planned |
+| `DELETE` | [`/api/me/tokens/:id`](./account.md) | Planned |
+| `GET`, `POST`, `PUT`, `DELETE` | [`/api/me/mfa`](./account.md) | Planned |
+| `POST` | [`/api/me/mfa/backup_codes`](./account.md) | Planned |
+| `DELETE` | [`/api/me/identities/:id`](./account.md) | Planned |
+| `DELETE` | [`/api/me/github_connection`](./account.md) | Planned |
+| `GET` | [`/api/me/github_repos`, `/api/me/github_repos/:owner/:name/branches`](./account.md) | Planned |
 | `GET` | [`/api/projects`](./projects.md) | Public |
 | `GET` | [`/api/projects/:id`](./projects.md) | Public |
 | `PUT` | [`/api/projects/:id`](./projects.md) | Public |
@@ -109,9 +126,6 @@ it should do that it doesn't yet, such as a filter, a field or a token kind.
 | `PATCH` | [`/api/users/:id`](./users.md) | Public |
 | `DELETE` | [`/api/users/:id`](./users.md) | Private |
 | `DELETE` | [`/api/users/:id/scheduled_deletion`](./users.md) | Private |
-| `GET` | [`/api/me`](./users.md) | Planned |
-| `GET` | [`/api/me/tokens`](./users.md) | Planned |
-| `DELETE` | [`/api/me/tokens/:id`](./users.md) | Planned |
 | `GET` | [`/api/workflows`](./workflows.md) | Public |
 | `GET` | [`/api/workflows/:id`](./workflows.md) | Public |
 | `GET` | [`/api/projects/:project_id/workflows`](./workflows.md) | Public |
@@ -159,3 +173,8 @@ it should do that it doesn't yet, such as a filter, a field or a token kind.
 | `GET` | [`/api/projects/:project_id/channel_requests`, `/api/channel_requests/:id`](./channels.md) | Planned |
 | `GET` | [`/api/audit_events`](./audit-events.md) | Planned |
 | `GET`, `PUT`, `DELETE` | [`/api/auth_provider`](./authentication.md) | Planned |
+
+| `GET`, `POST` | [`/api/projects/:project_id/ai_sessions`](./ai-assistant.md) | Planned |
+| `GET` | [`/api/ai_sessions/:id`](./ai-assistant.md) | Planned |
+| `POST` | [`/api/ai_sessions/:id/messages`](./ai-assistant.md) | Planned |
+| `POST` | [`/api/ai_sessions/:id/messages/:message_id/retries`](./ai-assistant.md) | Planned |

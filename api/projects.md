@@ -39,6 +39,12 @@ Planned additional scope:
   `scheduled_deletion`. Each is set through its own route, below.
 - `allowed_retention_periods`: the retention periods the project's plan
   allows, so a client can offer only those.
+- `permissions`: what the caller may do in this project, such as
+  `{"edit_project": true, "delete_project": false, "run_workflow": true}`, so
+  an app can hide what would be refused. The routes still check.
+- `limits`: whether the plan allows more runs, active workflows, sandboxes and
+  AI assistant use right now, each `{"allowed", "message"}`, so an app can warn
+  before a write is refused.
 
 ## Create or replace a project
 
