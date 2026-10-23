@@ -30,6 +30,7 @@ export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
+export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";
 
 export type {
   AdminCollectionRow,

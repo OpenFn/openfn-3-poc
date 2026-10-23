@@ -150,6 +150,10 @@ describe("WorkflowHealth runs over time", () => {
     cleanup();
 
     expect(within(openRuns()).getByText("2-hour buckets · Africa/Nairobi")).toBeTruthy();
+    cleanup();
+    expect(within(openRuns({ runs: ok({ ...runs, bucket_hours: 12 }) })).getByText("12-hour buckets · Africa/Nairobi")).toBeTruthy();
+    cleanup();
+    expect(within(openRuns({ runs: ok({ ...runs, bucket_hours: 24 }) })).getByText("daily buckets · Africa/Nairobi")).toBeTruthy();
   });
 
   it("draws a red SVG band per bar with failures, opening that bar's failed runs in the same tab", () => {
@@ -172,5 +176,78 @@ describe("WorkflowHealth runs over time", () => {
     const day = new Date("2026-10-14T13:00:00.000Z").toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "Africa/Nairobi" });
     const label = within(chart).getByText(`${day}, 16:00 – 18:00`);
     expect(label.parentElement!.textContent).toMatch(/Success\s*1.*Failed\s*2/);
+  });
+});
+
+describe("WorkflowHealth page body", () => {
+  const big: Outcomes = { window: range, counts: { ...zero, success: 1146, failed: 98, crashed: 24, killed: 12, lost: 7 } };
+
+  it("names the workflow and totals its work orders", () => {
+    renderHealth({ outcomes: ok(big) });
+    expect(screen.getByRole("heading", { name: "Daily sync" })).toBeTruthy();
+    expect(screen.getByText("1,287 work orders")).toBeTruthy();
+  });
+
+  it("calls a one-day window 24 hours, not 1 day", () => {
+    renderHealth({ days: "1", outcomes: ok({ window: range, counts: zero }) });
+    expect(screen.getByText("No finished work orders in the last 24 hours")).toBeTruthy();
+  });
+
+  it("opens on the Work orders tab, and shows runs over time on the Runs tab", () => {
+    renderHealth();
+    expect(screen.getByRole("tab", { name: "Work orders" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.queryByRole("heading", { name: "Runs over time" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Runs" }));
+    expect(screen.getByRole("heading", { name: "Runs over time" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Outcomes" })).toBeNull();
+  });
+
+  it("folds the failure states into Outcomes and breaks them down in Failure breakdown", () => {
+    renderHealth({ outcomes: ok(big) });
+    // 98 + 24 + 12 + 7: one reply feeds both donuts, so they can only disagree if the fold drifts.
+    expect(within(card("Outcomes")).getByRole("link", { name: /^Failed 141 / })).toBeTruthy();
+    const breakdown = within(card("Failure breakdown"));
+    expect(breakdown.getByText("failed")).toBeTruthy();
+    expect(breakdown.getByText("(69.5%)")).toBeTruthy();
+    expect(breakdown.queryByText("cancelled")).toBeNull();
+  });
+
+  it("lists the error signatures in the triage table", () => {
+    renderHealth();
+    expect(screen.getByRole("heading", { name: "Triage - grouped by failure type" })).toBeTruthy();
+    expect(screen.getByRole("cell", { name: "2" })).toBeTruthy();
+    expect(screen.getByText("Job code hit a value it didn't expect, often a missing input field.")).toBeTruthy();
+  });
+
+  it("shows a refused request in every panel, on both tabs, without echoing the server", () => {
+    const refused = { data: null, error: HEALTH_LOAD_ERROR };
+    renderHealth({ outcomes: refused, failures: refused, runs: refused });
+    expect(screen.getAllByText(HEALTH_LOAD_ERROR)).toHaveLength(4);
+    // The page stays around its failed panels.
+    for (const name of ["Daily sync", "Outcomes", "Failure breakdown", "Steps with failures", "Triage - grouped by failure type"]) {
+      expect(screen.getByRole("heading", { name })).toBeTruthy();
+    }
+    fireEvent.click(screen.getByRole("tab", { name: "Runs" }));
+    expect(screen.getAllByText(HEALTH_LOAD_ERROR)).toHaveLength(2);
+    expect(screen.getByRole("heading", { name: "Runs over time" })).toBeTruthy();
+  });
+
+  it("degrades both donuts, and only them, when the outcomes request fails", () => {
+    renderHealth({ outcomes: { data: null, error: HEALTH_LOAD_ERROR } });
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
+    expect(within(card("Outcomes")).getByRole("alert")).toBeTruthy();
+    expect(within(card("Failure breakdown")).getByRole("alert")).toBeTruthy();
+    expect(screen.getByText("fail:RuntimeError @ Load")).toBeTruthy();
+  });
+
+  it("leaves every range enabled when retention is unlimited or covers them all", () => {
+    for (const historyRetentionPeriod of [null, 30]) {
+      renderHealth({ historyRetentionPeriod });
+      for (const name of ["Last 24 hours", "Last 7 days", "Last 30 days"]) {
+        expect(screen.getByRole("radio", { name }).hasAttribute("aria-disabled")).toBe(false);
+      }
+      cleanup();
+    }
   });
 });
