@@ -166,6 +166,18 @@ describe("RunShowPage", () => {
     expect(router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-b&v=1#log`);
   });
 
+  it("pins no version for a step on the latest snapshot, and pins with as_run under experimental features", () => {
+    const step = (id: string) => document.querySelector(`[data-step-id='${id}']`) as HTMLElement;
+    const latest = renderPage();
+    fireEvent.click(within(step("step-a")).getByTitle("Inspect Step"));
+    expect(latest.router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-a#log`);
+
+    document.body.innerHTML = "";
+    const experimental = renderPage({ experimentalFeatures: true });
+    fireEvent.click(within(step("step-b")).getByTitle("Inspect Step"));
+    expect(experimental.router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-b&as_run=${RUN_ID}#log`);
+  });
+
   it("shows the log with the step's lines marked, and remembers a new level", () => {
     const { onLogLevelChange } = renderPage({ selectedStepId: "step-a", logLevel: "debug" });
     expect(screen.getByText(/Starting operation 1/)).toBeTruthy();
