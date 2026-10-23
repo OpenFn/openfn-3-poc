@@ -65,7 +65,7 @@ export default function Tooltip({
       </RadixTooltip.Root>
       {copy !== undefined && (
         <span role="status" className="sr-only">
-          {copied ? "Copied!" : ""}
+          {copied ? "Copied to clipboard" : ""}
         </span>
       )}
     </RadixTooltip.Provider>

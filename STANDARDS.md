@@ -20,7 +20,7 @@ Status of each pattern, as of this commit:
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | Pilot: Tokens | one page at a time |
+| 11 | Page and wrapper | 19 pages and the Sidebar | History work orders, Sandboxes, project settings, the workflow editor, profile, credentials, the remaining auth pages |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
 `TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
@@ -77,6 +77,11 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   every error and doesn't save, so the user can always find out why.
   (Lightning disables it, and the reason can sit on a field you haven't
   touched.)
+- The one exception is type-to-confirm (pattern 6): the confirm button stays
+  disabled until the typed text matches, and the dialog always shows the
+  text to type. The typing is a deliberate pause before something that
+  can't be undone, not data entry, and with the text shown there is no
+  hidden reason.
 - Whether Save waits for changes follows Lightning form by form: Project
   Identity's doesn't, Concurrency's and basic info's do.
 - Field ids keep Lightning's (`project-settings-form_raw_name`), so the
@@ -141,18 +146,22 @@ needs the same four treatments: loading, not found, forbidden, error.
 
 `ConfirmModal` is the one way to confirm a destructive action. It supports
 type-to-confirm, async `onConfirm` (pattern 1), and stays open on failure.
+Type-to-confirm keeps the confirm button disabled until the text matches,
+and the dialog says what to type ("To confirm, type alice@example.org
+below"). This is the one exception to pattern 2's rule.
 
-Retire: `window.confirm` (`CredentialFormModal`, `ChannelsTable`,
-`WorkflowsTable`), the bespoke `UserDeletionModal` and
-`CredentialDeletionModal` (rebuild on `ConfirmModal` with `confirmation`).
+Retire: `window.confirm` (`CredentialFormModal`, `WorkflowsTable`), the
+bespoke `CredentialDeletionModal` (rebuild on `ConfirmModal` with
+`confirmation`, as `UserDeletionModal` is).
 The `/…/delete` routes stay, because Lightning has them; they open a
 `ConfirmModal`.
 
 ## 7. Feedback
 
-- Success is a toast, fired by the **page** (or the hook that ran the
-  request), never by a feature component. Components report through
-  callbacks; the page decides what to say. Wording is Lightning's flash text.
+- Success is announced by the **host**, never the page: the replica wrapper
+  toasts it, and Lightning shows its own flash (put by the server) as the
+  same toast. Components report through callbacks. Wording is Lightning's
+  flash text.
 - Failure that needs reading (a form rejected, a conflict) is an inline
   `Alert` next to what failed. Failure of a one-shot button is an error
   toast.
@@ -208,10 +217,6 @@ is rewritten.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
-
-Open: the Generate error toast still lives in `TokensPage.tsx`, and
-Lightning's design system has no toast yet. Move it to the wrapper or give
-Lightning a toast that maps to `put_flash`.
 
 ## How to add a pattern to a component
 

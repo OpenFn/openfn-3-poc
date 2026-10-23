@@ -9,7 +9,8 @@ import { useToast } from "../../components/Toast";
 import DeleteSandboxModal from "../../components/projects/sandboxes/DeleteSandboxModal";
 import SandboxFormModal from "../../components/projects/sandboxes/SandboxFormModal";
 import WorkspaceList from "../../components/projects/sandboxes/WorkspaceList";
-import { findProject } from "../../mock-data/projects";
+import { findProject, projects } from "../../mock-data/projects";
+import { projectLabel } from "../../components/shell/projectPickerItems";
 import { purgeDeletedAfterDays } from "../../mock-data/project-settings";
 import { permissionsFor } from "../../permissions";
 import { findSandboxRow, rootOf, sandboxRowsUnder } from "../../mock-data/sandboxes";
@@ -52,7 +53,7 @@ export default function SandboxesIndexPage() {
 
   return (
     <PageContent
-      header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} current="Sandboxes" />} />}
+      header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel(project, projects)} current="Sandboxes" />} />}
     >
       <Centered>
         <TableTitle title="Sandboxes" className="mb-6">

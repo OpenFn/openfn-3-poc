@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { AIMessage, AISession } from "../../types/ai-assistant";
+import { assetUrl } from "../../utils/assets";
 import { cn } from "../../utils/cn";
 import Button from "../Button";
 import Card from "../Card";
@@ -65,7 +66,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
       aria-label="AI Assistant"
     >
       <div className="flex h-20 flex-none items-center gap-2 border-b border-gray-200 px-6 shadow-xs">
-        <img src={`${import.meta.env.BASE_URL}images/logo.svg`} alt="OpenFn" className="size-6" />
+        <img src={assetUrl("images/logo.svg")} alt="OpenFn" className="size-6" />
         <Heading as="h2" className="flex-1">
           Assistant
         </Heading>

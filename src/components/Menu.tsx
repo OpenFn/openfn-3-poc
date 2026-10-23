@@ -24,6 +24,8 @@ interface MenuProps {
   className?: string | undefined;
   /** Extra attributes for the open panel, e.g. `data-annotation`. The panel is portalled, so it doesn't inherit its trigger's. */
   panelProps?: PanelProps;
+  /** Whether the rest of the page goes inert while the menu is open. Off for chrome such as the account menu, which Lightning left interactive. */
+  modal?: boolean;
   children: ReactNode;
 }
 
@@ -31,12 +33,13 @@ interface MenuProps {
  * A dropdown list of actions or choices, opened from a trigger. Keyboard
  * navigation, typeahead and closing on select or click-away come with it.
  */
-export default function Menu({ trigger, align = "end", className = "w-56", panelProps, children }: MenuProps) {
+export default function Menu({ trigger, align = "end", className = "w-56", panelProps, modal = true, children }: MenuProps) {
   return (
     <HeadlessMenu>
       <MenuButton as={Fragment}>{trigger}</MenuButton>
       <MenuItems
         anchor={{ to: `bottom ${align}`, gap: 8 }}
+        modal={modal}
         transition
         data-ui="menu"
         {...panelProps}
@@ -100,6 +103,23 @@ export function MenuItem({ icon, to, href, onClick, selected, tone = "default", 
   return (
     <HeadlessMenuItem as="button" type="button" disabled={disabled} className={className} onClick={onClick}>
       {content}
+    </HeadlessMenuItem>
+  );
+}
+
+/**
+ * An inline link inside other menu content, e.g. a notice's "Turn off in
+ * your profile". A menu item, so the arrow keys reach it and a click closes
+ * the menu; it takes its colour from the text around it.
+ */
+export function MenuLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <HeadlessMenuItem
+      as={Link}
+      to={to}
+      className="font-medium underline underline-offset-2 data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary-600"
+    >
+      {children}
     </HeadlessMenuItem>
   );
 }

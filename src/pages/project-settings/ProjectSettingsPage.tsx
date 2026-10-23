@@ -21,7 +21,8 @@ import WebhookSecurityPanel from "../../components/project-settings/WebhookSecur
 import { defaultSettingsHash, projectSettingsTabs } from "../../components/project-settings/tabs";
 import { collectionsIn, dataRetentionPeriods, projectFilesIn, projectSettingsFor, purgeDeletedAfterDays, vcsFor, webhookAuthMethodsIn } from "../../mock-data/project-settings";
 import { credentialsFor, keychainCredentialsIn, oauthClientsFor } from "../../mock-data/credentials";
-import { findProject } from "../../mock-data/projects";
+import { findProject, projects } from "../../mock-data/projects";
+import { projectLabel } from "../../components/shell/projectPickerItems";
 import type { Project } from "../../types/projects";
 import { simulateRequest } from "../../mock-data/request";
 import { users } from "../../mock-data/users";
@@ -167,7 +168,7 @@ export default function ProjectSettingsPage() {
   };
 
   return (
-    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} current="Project settings" />} />}>
+    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel(project, projects)} current="Project settings" />} />}>
       <Centered>
         {/* Keyed by project so panel state resets when the project picker switches projects. */}
         <div key={project.id} id="project-settings-container" className="flex h-full">

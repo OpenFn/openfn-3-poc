@@ -130,6 +130,18 @@ export function formatUs(us: number | null) {
 }
 
 /**
+ * channel_request_live/helpers.ex `format_bytes`: binary units (1024) with
+ * one decimal kept, B, KB and MB only. 4096 -> "4.0 KB", 15 -> "15 B".
+ * The channel request page uses it; the rest of the app is decimal (below).
+ */
+export function formatBinaryBytes(bytes: number | null): string {
+  if (bytes === null) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1_048_576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1_048_576).toFixed(1)} MB`;
+}
+
+/**
  * Lightning.Helpers.bytes_to_human/1: decimal units, one decimal place,
  * trailing ".0" dropped. 1500 -> "1.5 KB", 2_000_000 -> "2 MB". "—" for null.
  */
