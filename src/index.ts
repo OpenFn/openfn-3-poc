@@ -19,6 +19,7 @@ export { default as TokensPage } from "./pages/profile/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/ProjectsDashboardPage";
+export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/WorkflowsIndexPage";
 
 export type { ChangeEmailResult, ChangeEmailValues, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
@@ -28,6 +29,7 @@ export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequest
 export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
+export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 
 export type {
   AdminCollectionRow,

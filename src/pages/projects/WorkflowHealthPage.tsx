@@ -1,28 +1,47 @@
-import { useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import WorkflowHealth from "../../components/projects/health/WorkflowHealth";
-import { findProject } from "../../mock-data/projects";
-import { findWorkflow } from "../../mock-data/workflows";
-import { healthFor } from "../../mock-data/workflow-health";
-import { DEFAULT_HEALTH_DAYS } from "../../constants";
-import type { HealthRange } from "../../types/workflow-health";
+import type { Project } from "../../types/projects";
+import type { ErrorSignatures, HealthQuery, HealthRange, Outcomes, RunVolume } from "../../types/workflow-health";
+
+/** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
+export interface WorkflowHealthPageProps {
+  /** `historyRetentionPeriod` disables ranges longer than the history the project keeps. */
+  project: Pick<Project, "id" | "parentId" | "color" | "historyRetentionPeriod">;
+  /** The picker's label, "parent/child" for a sandbox. */
+  projectLabel: string;
+  /** The workflow named in the heading and the crumbs. */
+  workflow: { id: string; name: string };
+  /** The range shown. The host owns it. */
+  days: HealthRange["days"];
+  /** Picks a range; the host stores it and refetches. */
+  onDaysChange: (days: HealthRange["days"]) => void;
+  /**
+   * The host's HealthQuery replies, one per endpoint. Null data with no error
+   * is loading; an error with no data shows the error. The page never fetches
+   * or polls.
+   */
+  outcomes: HealthQuery<Outcomes>;
+  failures: HealthQuery<ErrorSignatures>;
+  runs: HealthQuery<RunVolume>;
+}
 
 /**
  * Inventory view `workflow-health` (WorkflowLive.Health), which mounts the
  * WorkflowHealth React component under Workflows › name › Health crumbs.
+ * Props only: the replica feeds it fixtures, Lightning its health endpoints.
  */
-export default function WorkflowHealthPage() {
-  const { projectId, workflowId } = useParams();
-  const project = findProject(projectId);
-  const workflow = findWorkflow(workflowId);
-  const [days, setDays] = useState<HealthRange["days"]>(DEFAULT_HEALTH_DAYS);
-  if (!project) return <Navigate to="/projects" replace />;
-  if (!workflow) return <Navigate to={`/projects/${project.id}/w`} replace />;
-  const health = healthFor(workflow.id, days);
-
+export default function WorkflowHealthPage({
+  project,
+  projectLabel,
+  workflow,
+  days,
+  onDaysChange,
+  outcomes,
+  failures,
+  runs,
+}: WorkflowHealthPageProps) {
   return (
     <PageContent
       header={
@@ -30,6 +49,7 @@ export default function WorkflowHealthPage() {
           breadcrumbs={
             <ProjectBreadcrumbs
               project={project}
+              label={projectLabel}
               items={[
                 ["Workflows", `/projects/${project.id}/w`],
                 [workflow.name, `/projects/${project.id}/w/${workflow.id}`],
@@ -47,10 +67,10 @@ export default function WorkflowHealthPage() {
             workflowId={workflow.id}
             workflowName={workflow.name}
             days={days}
-            onDaysChange={setDays}
-            outcomes={{ data: health.outcomes, error: null }}
-            failures={{ data: health.failures, error: null }}
-            runs={{ data: health.runs, error: null }}
+            onDaysChange={onDaysChange}
+            outcomes={outcomes}
+            failures={failures}
+            runs={runs}
             historyRetentionPeriod={project.historyRetentionPeriod}
           />
         </div>

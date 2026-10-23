@@ -13,7 +13,7 @@ const failed = { data: null, error: HEALTH_LOAD_ERROR };
 
 type State = "loaded" | "loading" | "failuresError" | "failedRefresh";
 
-/** Holds the range like WorkflowHealthPage does, so the picker switches data. */
+/** Holds the range like WorkflowHealthPage.replica does, so the picker switches data. */
 function WithRange({
   workflowId,
   state = "loaded",
