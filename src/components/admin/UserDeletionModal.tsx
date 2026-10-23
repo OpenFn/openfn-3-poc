@@ -70,8 +70,8 @@ export default function UserDeletionModal({
         id: "scheduled_deletion_email",
         label: "User email",
         ...(email !== undefined && { expected: email }),
-        mismatchError: "This email doesn't match your current email",
-        disabledTooltip: "Type the user's email to confirm",
+        mismatchError: isCurrentUser ? "This email doesn't match your current email" : "This email doesn't match the user's email",
+        disabledTooltip: isCurrentUser ? "Type your email to confirm" : "Type the user's email to confirm",
       }}
     >
       <p>
@@ -82,6 +82,11 @@ export default function UserDeletionModal({
         <p>
           *Note that {isCurrentUser ? "you still have" : "this user still has"} activity related to active projects. We
           may not be able to delete them entirely from the app until those projects are deleted.
+        </p>
+      )}
+      {email !== undefined && (
+        <p>
+          To confirm, type <strong className="font-medium text-gray-900">{email}</strong> below.
         </p>
       )}
     </ConfirmModal>

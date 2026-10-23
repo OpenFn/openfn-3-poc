@@ -119,8 +119,12 @@ describe("AdminUsersPage", () => {
     const { onDelete } = renderPage({ deleteUser: alice });
     const dialog = screen.getByRole("dialog");
     expect(dialog.textContent).toContain("This user's account and credential data will be deleted");
+    expect(dialog.textContent).toContain("To confirm, type alice@example.org below.");
     const confirm = () => within(dialog).getByRole("button", { name: "Delete account" });
     expect(confirm().hasAttribute("disabled")).toBe(true);
+    fireEvent.change(within(dialog).getByLabelText("User email"), { target: { value: "alice@example" } });
+    fireEvent.blur(within(dialog).getByLabelText("User email"));
+    expect(within(dialog).getByText("This email doesn't match the user's email")).toBeTruthy();
     fireEvent.change(within(dialog).getByLabelText("User email"), { target: { value: "alice@example.org" } });
     // Enabled, the button is a new element: the disabled one sat inside its tooltip.
     fireEvent.click(confirm());
