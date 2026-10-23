@@ -13,6 +13,7 @@ export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
 export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
+export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
 export { default as BackupCodesPage } from "./pages/profile/BackupCodesPage";
@@ -36,6 +37,13 @@ export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
+export type {
+  ErrorSignatureFilter,
+  HistoryWorkflowRef,
+  HistoryWorkOrdersPageProps,
+  WorkOrderFilters,
+  WorkOrderTarget,
+} from "./pages/history/HistoryWorkOrdersPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
 export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
@@ -65,7 +73,17 @@ export type {
   UserFormValues,
 } from "./types/admin";
 export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";
-export type { LogLine, StepDataclip } from "./types/history";
+export type {
+  HistoryWorkOrderState,
+  LogLine,
+  RunRow,
+  RunState,
+  SearchFieldId,
+  StepDataclip,
+  StepExitReason,
+  StepRow,
+  WorkOrderRow,
+} from "./types/history";
 export type { PageInfo, SortState } from "./types/lists";
 export type {
   AddCollaboratorsResult,

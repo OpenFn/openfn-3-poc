@@ -41,6 +41,8 @@ function renderPage(props: Partial<React.ComponentProps<typeof HistoryChannelLog
         project={{ id: "p1", parentId: null, color: null }}
         projectLabel="Malawi HIV"
         channelsEnabled
+        workOrdersHref="/projects/p1/history"
+        channelLogsHref="/projects/p1/history/channels"
         channels={channels}
         channelId={null}
         rows={rows}

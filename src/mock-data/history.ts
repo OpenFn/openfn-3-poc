@@ -243,6 +243,51 @@ export const workOrders: WorkOrder[] = [
   },
 ];
 
+/**
+ * Twelve more successful OpenHIE work orders, one every 12 hours back from
+ * now, so History's default 30-day view has a second page (and its bulk
+ * modals their "all matching" choice).
+ */
+for (let i = 1; i <= 12; i++) {
+  const at = new Date(Date.now() - i * 12 * 3600 * 1000);
+  const start = at.toISOString();
+  const end = new Date(at.getTime() + 3000).toISOString();
+  steps.push({
+    id: `step-g${i}`,
+    runId: `run-g${i}`,
+    jobId: "job-transform",
+    jobName: "Transform data to FHIR standard",
+    exitReason: "success",
+    startedAt: start,
+    finishedAt: end,
+    inputDataclipId: "dc-7f3a91",
+    outputDataclipId: null,
+  });
+  runs.push({
+    id: `run-g${i}`,
+    workOrderId: `wo-g${i}`,
+    state: "success",
+    startingTrigger: "Webhook",
+    startingJob: null,
+    createdBy: null,
+    insertedAt: start,
+    startedAt: start,
+    finishedAt: end,
+    stepIds: [`step-g${i}`],
+  });
+  workOrders.push({
+    id: `wo-g${i}`,
+    projectId: OPENHIE,
+    workflowId: "wf-openhie",
+    workflowName: "OpenHIE Workflow",
+    state: "success",
+    dataclipId: "dc-7f3a91",
+    insertedAt: start,
+    lastActivity: end,
+    runIds: [`run-g${i}`],
+  });
+}
+
 export const runLogs: Record<string, LogLine[]> = {
   "run-1": [
     { timestamp: "09:12:01.004", source: "R/T", level: "info", message: "Starting operation 1" },

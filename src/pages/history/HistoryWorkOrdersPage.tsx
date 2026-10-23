@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useUrlParams } from "../../utils/useUrlParams";
+import { useState } from "react";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import Tabs from "../../components/Tabs";
@@ -12,120 +10,299 @@ import {
   BulkRerunModal,
   ExportConfirmationModal,
   RerunFromJobModal,
+  type BulkScope,
+  type BulkSelection,
 } from "../../components/history/HistoryModals";
-import WorkOrdersTable, { type WorkOrderSort } from "../../components/history/WorkOrdersTable";
-import { formatChipDate, shortId, uuidOf } from "../../utils/format";
-import { findDataclip, workOrdersIn } from "../../mock-data/history";
-import type { SearchFieldId, WorkOrder } from "../../types/history";
-import { historyChannelsEnabled, historyWorkOrder, logsOf, runsOfWorkOrder, workflowJobs } from "../../mock-data/history-extra";
+import WorkOrdersTable from "../../components/history/WorkOrdersTable";
+import { useToast } from "../../components/Toast";
 import { historySearchFields, historyStatuses } from "../../constants";
-import { findProject, projects } from "../../mock-data/projects";
-import { projectLabel } from "../../components/shell/projectPickerItems";
-import { workflowsIn } from "../../mock-data/workflows";
-import { usePermissions } from "../../session/session";
+import type { HistoryWorkOrderState, RunState, SearchFieldId, WorkOrderRow } from "../../types/history";
+import type { PageInfo, SortState } from "../../types/lists";
+import type { CurrentProject } from "../../types/projects";
+import { errorMessage } from "../../utils/errors";
+import { capitalize, shortUuid } from "../../utils/format";
+import { useUrlParams, type ParamPatch } from "../../utils/useUrlParams";
 
-/** Lightning's default filter: last activity in the past 30 days. */
-function thirtyDaysAgo() {
-  const d = new Date();
-  d.setDate(d.getDate() - 30);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+/** The error signature the workflow health page's triage row filters History to. */
+export interface ErrorSignatureFilter {
+  exitReason: string;
+  errorType: string | null;
+  /** Set for a step-level signature. */
+  jobId: string | null;
+  /** The job's name, null when it's unset or the job is gone. */
+  jobName: string | null;
 }
 
-function dateRange(after: string, before: string) {
-  const a = after ? formatChipDate(new Date(after)) : null;
-  const b = before ? formatChipDate(new Date(before)) : null;
-  if (a && b) return `${a} to ${b}`;
-  if (a) return `after ${a}`;
-  if (b) return `before ${b}`;
+/**
+ * The search History is showing, read from the URL's `filters[…]`. Dates are
+ * ISO 8601 in UTC; null is unset.
+ */
+export interface WorkOrderFilters {
+  workflowId: string | null;
+  statuses: HistoryWorkOrderState[];
+  /** When the work order arrived (`wo_date_after` / `wo_date_before`). */
+  receivedAfter: string | null;
+  receivedBefore: string | null;
+  /** The work order's last activity (`date_after` / `date_before`). */
+  activityAfter: string | null;
+  activityBefore: string | null;
+  /** Only the health page's runs chart sets these; History can only clear them. */
+  runStatuses: RunState[];
+  runCreatedAfter: string | null;
+  runCreatedBefore: string | null;
+  workorderId: string | null;
+  errorSignature: ErrorSignatureFilter | null;
+  /** "" for no search. */
+  searchTerm: string;
+  searchFields: SearchFieldId[];
+}
+
+/** A workflow in the project: the filter's options, and the jobs "Retry from" offers. */
+export interface HistoryWorkflowRef {
+  id: string;
+  name: string;
+  /** In the order "Retry from" lists them. */
+  jobs: { id: string; name: string }[];
+}
+
+/** The ticked work orders' ids, or "all" for every one matching the filters. */
+export type WorkOrderTarget = string[] | "all";
+
+/** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
+export interface HistoryWorkOrdersPageProps {
+  project: CurrentProject;
+  /** The picker's label, "parent/child" for a sandbox. */
+  projectLabel: string;
+  /** Whether the Work Orders / Channel Logs tab bar shows (the viewer's experimental features). */
+  channelsEnabled: boolean;
+  /** The two tabs' links. */
+  workOrdersHref: string;
+  channelLogsHref: string;
+  workflows: HistoryWorkflowRef[];
+  filters: WorkOrderFilters;
+  /** The page of work orders the search found. */
+  rows: WorkOrderRow[];
+  /** "loading" until the search answers, "error" if it failed. */
+  state: "loading" | "error" | "ready";
+  page: PageInfo;
+  /** `filters[sort_by]` ("inserted_at" or "last_activity") and `filters[sort_direction]`. */
+  sort: SortState;
+  /** A search stops counting here; a count at or over it shows as "N+". */
+  searchLimit: number;
+  canRunWorkflow: boolean;
+  /** The project's data storage settings, linked from a wiped input's tooltip; null when the viewer can't change them. */
+  dataStorageHref: string | null;
+  /**
+   * Resolves when the project may start `runs` more runs; rejects with the
+   * reason it can't. Retry and Retry from ask before opening their modal,
+   * as Lightning checks the usage limit on the click.
+   */
+  onCheckRunLimit: (runs: number) => Promise<void>;
+  /** Cancels a pending work order. */
+  onCancelWorkOrder: (workOrderId: string) => Promise<void>;
+  /** Retries a work order from the start. */
+  onRetryWorkOrder: (workOrderId: string) => Promise<void>;
+  /** Cancels a run still waiting for a worker. */
+  onCancelRun: (runId: string) => Promise<void>;
+  /** Reruns a run from one of its steps, on the latest version of the workflow. */
+  onRetryStep: (runId: string, stepId: string) => Promise<void>;
+  onBulkCancel: (target: WorkOrderTarget) => Promise<void>;
+  /** Retries from the start, or from `jobId` ("Retry from"). */
+  onBulkRetry: (target: WorkOrderTarget, jobId: string | null) => Promise<void>;
+  /** Starts the export of everything matching the filters. */
+  onExport: () => Promise<void>;
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** "14-Oct", with the year when it isn't this one (index.ex `maybe_humanize_date`, in UTC). */
+function chipDate(iso: string) {
+  const d = new Date(iso);
+  const base = `${d.getUTCDate()}-${MONTHS[d.getUTCMonth()]}`;
+  return d.getUTCFullYear() === new Date().getUTCFullYear() ? base : `${base}-${d.getUTCFullYear()}`;
+}
+
+/** index.ex `format_date_range`. */
+function dateRange(after: string | null, before: string | null) {
+  if (after && before) return `${chipDate(after)} to ${chipDate(before)}`;
+  if (after) return `after ${chipDate(after)}`;
+  if (before) return `before ${chipDate(before)}`;
   return "any time";
 }
 
-function inRange(iso: string, after: string, before: string) {
-  const t = new Date(iso).getTime();
-  return (!after || t >= new Date(after).getTime()) && (!before || t <= new Date(before).getTime());
+/** "14-Oct 09:05" (index.ex `run_stamp`); the range says UTC once, at the end. */
+const runStamp = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.getUTCDate()}-${MONTHS[d.getUTCMonth()]} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+};
+
+function runRange(after: string | null, before: string | null) {
+  if (after && before) return `${runStamp(after)} – ${runStamp(before)} UTC`;
+  if (after) return `after ${runStamp(after)} UTC`;
+  return `before ${runStamp(before!)} UTC`;
 }
 
-function matchesStatus(wo: WorkOrder, statuses: string[]) {
-  if (!statuses.length) return true;
-  return statuses.some((s) => {
-    if (s === "running") return wo.state === "started" || wo.state === "claimed";
-    if (s === "pending") return wo.state === "pending" || wo.state === "available";
-    return wo.state === s;
-  });
+/** "3/9/26 at 4:05pm" (components.ex `humanize_datetime`, in UTC). */
+function queryDate(iso: string) {
+  const d = new Date(iso);
+  const h = d.getUTCHours();
+  return `${d.getUTCDate()}/${d.getUTCMonth() + 1}/${String(d.getUTCFullYear()).slice(2)} at ${h % 12 || 12}:${pad(d.getUTCMinutes())}${h < 12 ? "am" : "pm"}`;
 }
 
-function matchesSearch(wo: WorkOrder, term: string, fields: SearchFieldId[]) {
-  if (!term) return true;
-  const t = term.toLowerCase();
-  const runs = runsOfWorkOrder(wo);
-  const dataclip = findDataclip(wo.dataclipId);
-  return fields.some((f) => {
-    switch (f) {
-      case "id":
-        return [wo.id, wo.dataclipId, ...runs.map((r) => r.id)].some((id) => uuidOf(id).includes(t));
-      case "dataclip_name":
-        return (dataclip?.name ?? "").toLowerCase().includes(t);
-      case "body":
-        return JSON.stringify(dataclip?.body ?? "").toLowerCase().includes(t);
-      case "log":
-        return runs.some((r) => logsOf(r).some((l) => l.message.toLowerCase().includes(t)));
-    }
-  });
+const fieldWords: Record<SearchFieldId, string> = { log: "Logs", body: "Input", dataclip_name: "Dataclip Name", id: "Id" };
+
+/**
+ * The search in words, for "Rerun all matching" (components.ex
+ * `humanize_search_params`, word for word, including its "between before
+ * and after").
+ */
+function describeQuery(f: WorkOrderFilters, workflows: HistoryWorkflowRef[]) {
+  const between = (after: string | null, before: string | null, lead: string) =>
+    after && before
+      ? `${lead} between ${queryDate(before)} and ${queryDate(after)}`
+      : after
+        ? `${lead} after ${queryDate(after)}`
+        : before
+          ? `${lead} before ${queryDate(before)}`
+          : "";
+  const workflow = workflows.find((w) => w.id === f.workflowId);
+  const statuses = f.statuses.map((s) => `'${capitalize(s)}'`);
+  return [
+    between(f.receivedAfter, f.receivedBefore, "received"),
+    workflow ? `for ${workflow.name} workflow` : "",
+    between(f.activityAfter, f.activityBefore, "which was last run"),
+    f.searchTerm && f.searchFields.length
+      ? `whose run ${f.searchFields.map((x) => fieldWords[x]).join(" and ")} contain ${f.searchTerm}`
+      : "",
+    statuses.length > 1 ? `having a status of either ${statuses.join(" or ")}` : statuses.length ? `having a status of ${statuses[0]}` : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
 }
 
-/** Inventory view `history-work-orders` (RunLive.Index :index, run_live/index.html.heex). */
-export default function HistoryWorkOrdersPage() {
-  const { projectId = "" } = useParams();
-  const { params, update } = useUrlParams();
-  const project = findProject(projectId);
-  const { canRunWorkflow } = usePermissions(project);
-  const workflows = workflowsIn(projectId);
-  const workorderId = params["filters[workorder_id]"] ?? null;
+/**
+ * Every filter as the URL's `filters[…]` params, so a change keeps the rest
+ * (index.ex "apply_filters" merges into the filters it holds). The run
+ * statuses go as repeated `filters[run_status][]`, which a patch can't set,
+ * so they're left as the URL has them.
+ */
+function filterParams(f: WorkOrderFilters, sort: SortState): ParamPatch {
+  const flag = (on: boolean) => (on ? "true" : null);
+  return {
+    "filters[workflow_id]": f.workflowId,
+    ...Object.fromEntries(historyStatuses.map((s) => [`filters[${s.id}]`, flag(f.statuses.includes(s.id))])),
+    "filters[wo_date_after]": f.receivedAfter,
+    "filters[wo_date_before]": f.receivedBefore,
+    "filters[date_after]": f.activityAfter,
+    "filters[date_before]": f.activityBefore,
+    "filters[run_date_after]": f.runCreatedAfter,
+    "filters[run_date_before]": f.runCreatedBefore,
+    "filters[workorder_id]": f.workorderId,
+    "filters[error_signature_exit_reason]": f.errorSignature?.exitReason ?? null,
+    "filters[error_signature_error_type]": f.errorSignature?.errorType ?? null,
+    "filters[error_signature_job_id]": f.errorSignature?.jobId ?? null,
+    "filters[search_term]": f.searchTerm || null,
+    ...Object.fromEntries(historySearchFields.map((s) => [`filters[${s.id}]`, flag(f.searchFields.includes(s.id))])),
+    "filters[sort_by]": sort.key,
+    "filters[sort_direction]": sort.direction,
+  };
+}
 
-  const [workflowId, setWorkflowId] = useState<string | null>(null);
-  const [statuses, setStatuses] = useState<string[]>([]);
-  const [received, setReceived] = useState({ after: "", before: "" });
-  const [activity, setActivity] = useState(() => ({ after: thirtyDaysAgo(), before: "" }));
-  const [searchFields, setSearchFields] = useState<SearchFieldId[]>(["log"]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sort, setSort] = useState<WorkOrderSort>({ by: "last_activity", direction: "desc" });
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+/** A datetime-local input's value: the UTC minutes, as Lightning reads it back. */
+const inputDate = (iso: string | null) => (iso ? iso.slice(0, 16) : "");
+
+const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
+
+/**
+ * Inventory view `history-work-orders` (RunLive.Index :index,
+ * run_live/index.html.heex): the filter chips, the search, and the work
+ * orders table with its bulk actions. The search lives in the URL, as
+ * Lightning keeps it; props only, so it can run unchanged in Lightning. The
+ * replica's data lives in HistoryWorkOrdersPage.replica.tsx.
+ */
+export default function HistoryWorkOrdersPage({
+  project,
+  projectLabel,
+  channelsEnabled,
+  workOrdersHref,
+  channelLogsHref,
+  workflows,
+  filters,
+  rows,
+  state,
+  page,
+  sort,
+  searchLimit,
+  canRunWorkflow,
+  dataStorageHref,
+  onCheckRunLimit,
+  onCancelWorkOrder,
+  onRetryWorkOrder,
+  onCancelRun,
+  onRetryStep,
+  onBulkCancel,
+  onBulkRetry,
+  onExport,
+}: HistoryWorkOrdersPageProps) {
+  const { update, href } = useUrlParams();
+  const toast = useToast();
+  // The host announces success (its flash); a refusal or a lost connection is said here.
+  const failed = (error: unknown) => toast(errorMessage(error), "error");
+  const [ticked, setTicked] = useState<string[]>([]);
   const [modal, setModal] = useState<null | "cancel" | "retry" | "retry-from" | "export">(null);
-
-  const entries = useMemo(() => {
-    const key = sort.by === "inserted_at" ? "insertedAt" : "lastActivity";
-    return workOrdersIn(projectId)
-      .filter((wo) => !workorderId || wo.id === workorderId)
-      .filter((wo) => !workflowId || wo.workflowId === workflowId)
-      .filter((wo) => matchesStatus(wo, statuses))
-      .filter((wo) => inRange(wo.insertedAt, received.after, received.before))
-      .filter((wo) => inRange(wo.lastActivity, activity.after, activity.before))
-      .filter((wo) => matchesSearch(wo, searchTerm, searchFields))
-      .sort((a, b) => (sort.direction === "asc" ? 1 : -1) * a[key].localeCompare(b[key]))
-      .map(historyWorkOrder);
-  }, [projectId, workorderId, workflowId, statuses, received, activity, searchTerm, searchFields, sort]);
-
-  const selectedWorkflow = entries.find((w) => selectedIds.includes(w.id))?.workflowId;
-  const selectedStatuses = historyStatuses.filter((s) => statuses.includes(s.id));
-  const hasReceived = Boolean(received.after || received.before);
-  const hasActivity = Boolean(activity.after || activity.before);
-  const closeModal = () => setModal(null);
   // Remounts "Run from a specific step" on each open, so its job choice starts fresh.
   const [retryFromKey, setRetryFromKey] = useState(0);
+
+  // A new search starts at page 1.
+  const apply = (change: Partial<WorkOrderFilters>, extra: ParamPatch = {}) =>
+    update({ ...filterParams({ ...filters, ...change }, sort), ...extra, page: null });
+  const sortHref = (key: string, direction: SortState["direction"]) =>
+    href({ ...filterParams(filters, { key, direction }), page: null });
+
+  // Only rows still on the page stay ticked.
+  const selectedIds = ticked.filter((id) => rows.some((r) => r.id === id));
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const selection: BulkSelection = {
+    selectedCount: selectedIds.length,
+    allSelected: rows.length > 0 && selectedIds.length === rows.length,
+    pageNumber: page.number,
+    pages: Math.max(1, Math.ceil(page.totalEntries / page.size)),
+    totalEntries: page.totalEntries,
+  };
+  const target = (scope: BulkScope): WorkOrderTarget => (scope === "all" ? "all" : selectedIds);
+  // A refused check is said as Lightning flashes it, and no modal opens.
+  const afterLimitCheck = (open: () => void) => void onCheckRunLimit(selectedIds.length).then(open, failed);
+  const done = () => {
+    setModal(null);
+    setTicked([]);
+  };
+
+  // "Retry from" counts, per job, the selected work orders whose last run has a stored input for it.
+  const selectedWorkflow = workflows.find((w) => w.id === selectedRows[0]?.workflowId);
+  const retryFromJobs = (selectedWorkflow?.jobs ?? []).map((job) => ({
+    ...job,
+    retriableCount: selectedRows.filter((r) => r.runs[0]?.steps.some((s) => s.jobId === job.id && !s.inputWiped)).length,
+  }));
+
+  const selectedStatuses = historyStatuses.filter((s) => filters.statuses.includes(s.id));
+  const hasReceived = Boolean(filters.receivedAfter || filters.receivedBefore);
+  const hasActivity = Boolean(filters.activityAfter || filters.activityBefore);
+  const sig = filters.errorSignature;
+  const capped = page.totalEntries >= searchLimit;
 
   return (
     <PageContent
       header={
-        <Header breadcrumbs={project && <ProjectBreadcrumbs project={project} label={projectLabel(project, projects)} current="History" />}>
-          {historyChannelsEnabled && (
+        <Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="History" />}>
+          {channelsEnabled && (
             <Tabs
               variant="pill"
               label="History"
               active="work-orders"
               tabs={[
-                { id: "work-orders", label: "Work Orders", to: `/projects/${projectId}/history` },
-                { id: "channel-logs", label: "Channel Logs", to: `/projects/${projectId}/history/channels` },
+                { id: "work-orders", label: "Work Orders", to: workOrdersHref },
+                { id: "channel-logs", label: "Channel Logs", to: channelLogsHref },
               ]}
             />
           )}
@@ -136,29 +313,29 @@ export default function HistoryWorkOrdersPage() {
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <FilterChip
             id="workflow-filter-chip"
-            active={workflowId !== null}
-            onClear={() => setWorkflowId(null)}
+            active={filters.workflowId !== null}
+            onClear={() => apply({ workflowId: null })}
             menu={
               <FilterMenu
                 options={[{ value: null, label: "Any" }, ...workflows.map((w) => ({ value: w.id, label: w.name }))]}
-                selected={workflowId}
-                onSelect={setWorkflowId}
+                selected={filters.workflowId}
+                onSelect={(workflowId) => apply({ workflowId })}
               />
             }
           >
-            Workflow is {workflowId ? workflows.find((w) => w.id === workflowId)?.name : "any"}
+            Workflow is {workflows.find((w) => w.id === filters.workflowId)?.name ?? "any"}
           </FilterChip>
 
           <FilterChip
             id="status-filter-chip"
-            active={statuses.length > 0}
-            onClear={() => setStatuses([])}
+            active={selectedStatuses.length > 0}
+            onClear={() => apply({ statuses: [] })}
             dropdownClassName="w-44"
             dropdown={() => (
               <FilterCheckboxes
                 options={historyStatuses}
-                checked={statuses}
-                onToggle={(id) => setStatuses((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))}
+                checked={filters.statuses}
+                onToggle={(id) => apply({ statuses: toggle(filters.statuses, id as HistoryWorkOrderState) })}
               />
             )}
           >
@@ -169,97 +346,161 @@ export default function HistoryWorkOrdersPage() {
           <FilterChip
             id="received-filter-chip"
             active={hasReceived}
-            onClear={() => setReceived({ after: "", before: "" })}
+            onClear={() => apply({ receivedAfter: null, receivedBefore: null })}
             dropdownClassName=""
             dropdown={() => (
               <FilterDateRange
                 title="Filter by Date Received"
                 afterLabel="Received After"
                 beforeLabel="Received Before"
-                after={received.after}
-                before={received.before}
-                onChange={(after, before) => setReceived({ after, before })}
+                after={inputDate(filters.receivedAfter)}
+                before={inputDate(filters.receivedBefore)}
+                onChange={(after, before) => apply({ receivedAfter: after || null, receivedBefore: before || null })}
               />
             )}
           >
-            Received {dateRange(received.after, received.before)}
+            Received {dateRange(filters.receivedAfter, filters.receivedBefore)}
           </FilterChip>
 
           <FilterChip
             id="activity-filter-chip"
             active={hasActivity}
-            onClear={() => setActivity({ after: "", before: "" })}
+            onClear={() => apply({ activityAfter: null, activityBefore: null })}
             dropdownClassName=""
             dropdown={() => (
               <FilterDateRange
                 title="Filter by Last Activity"
                 afterLabel="Activity After"
                 beforeLabel="Activity Before"
-                after={activity.after}
-                before={activity.before}
-                onChange={(after, before) => setActivity({ after, before })}
+                after={inputDate(filters.activityAfter)}
+                before={inputDate(filters.activityBefore)}
+                onChange={(after, before) => apply({ activityAfter: after || null, activityBefore: before || null })}
               />
             )}
           >
-            Last activity {dateRange(activity.after, activity.before)}
+            Last activity {dateRange(filters.activityAfter, filters.activityBefore)}
           </FilterChip>
 
-          {workorderId && (
+          {filters.runStatuses.length > 0 && (
             <FilterChip
-              id="workorder-id-filter-chip"
+              id="run-status-filter-chip"
               active
-              onClear={() => update({ "filters[workorder_id]": null })}
+              onClear={() => apply({ runStatuses: [] }, { "filters[run_status][]": null })}
             >
-              Work order: {shortId(workorderId)}
+              Run status: {filters.runStatuses.map(capitalize).join(", ")}
+            </FilterChip>
+          )}
+
+          {(filters.runCreatedAfter || filters.runCreatedBefore) && (
+            <FilterChip
+              id="run-dates-filter-chip"
+              active
+              onClear={() => apply({ runCreatedAfter: null, runCreatedBefore: null })}
+            >
+              Run created {runRange(filters.runCreatedAfter, filters.runCreatedBefore)}
+            </FilterChip>
+          )}
+
+          {filters.workorderId && (
+            <FilterChip id="workorder-id-filter-chip" active onClear={() => apply({ workorderId: null })}>
+              Work order: {shortUuid(filters.workorderId)}
+            </FilterChip>
+          )}
+
+          {sig && (
+            <FilterChip id="error-signature-filter-chip" active onClear={() => apply({ errorSignature: null })}>
+              {sig.exitReason}
+              {sig.errorType && `:${sig.errorType}`}
+              {sig.jobId && ` @ ${sig.jobName ?? shortUuid(sig.jobId)}`}
             </FilterChip>
           )}
         </div>
 
         <HistorySearchBar
           fields={historySearchFields}
-          selected={searchFields}
-          onToggle={(id) => setSearchFields((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))}
-          term={searchTerm}
-          onSearch={setSearchTerm}
+          selected={filters.searchFields}
+          onToggle={(id) => apply({ searchFields: toggle(filters.searchFields, id) })}
+          term={filters.searchTerm}
+          onSearch={(searchTerm) => apply({ searchTerm })}
         />
 
-        {searchTerm && (
+        {filters.searchTerm && (
           <div className="m-2 truncate text-sm text-gray-500">
-            {entries.length} work orders with runs matching "{searchTerm}"
+            {page.totalEntries}
+            {capped && "+"} work orders with runs matching "{filters.searchTerm}"
+            {capped && <span className="text-xs"> (try more specific filters)</span>}
           </div>
         )}
 
         <div className="mt-2">
           <WorkOrdersTable
-            workOrders={entries}
-            projectId={projectId}
+            rows={rows}
+            state={state}
+            page={page}
             sort={sort}
-            onSort={(by) => setSort((s) => ({ by, direction: s.by === by && s.direction === "desc" ? "asc" : "desc" }))}
+            sortHref={sortHref}
+            expandedId={filters.workorderId}
             selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
+            onSelectionChange={setTicked}
             canRunWorkflow={canRunWorkflow}
+            dataStorageHref={dataStorageHref}
             onBulkCancel={() => setModal("cancel")}
-            onBulkRetry={() => setModal("retry")}
-            onBulkRetryFrom={() => {
-              setRetryFromKey((k) => k + 1);
-              setModal("retry-from");
-            }}
+            onBulkRetry={() => afterLimitCheck(() => setModal("retry"))}
+            onBulkRetryFrom={() =>
+              afterLimitCheck(() => {
+                setRetryFromKey((k) => k + 1);
+                setModal("retry-from");
+              })
+            }
             onExport={() => setModal("export")}
+            onCancel={(id) => void onCancelWorkOrder(id).catch(failed)}
+            onRetry={(id) => void onRetryWorkOrder(id).catch(failed)}
+            onCancelRun={(id) => void onCancelRun(id).catch(failed)}
+            onRetryStep={(runId, stepId) => void onRetryStep(runId, stepId).catch(failed)}
           />
         </div>
 
-        <BulkCancelModal open={modal === "cancel"} onClose={closeModal} selectedCount={selectedIds.length} />
-        <BulkRerunModal open={modal === "retry"} onClose={closeModal} selectedCount={selectedIds.length} />
+        <BulkCancelModal
+          open={modal === "cancel"}
+          onClose={() => setModal(null)}
+          selection={selection}
+          onConfirm={async (scope) => {
+            await onBulkCancel(target(scope));
+            done();
+          }}
+        />
+        <BulkRerunModal
+          open={modal === "retry"}
+          onClose={() => setModal(null)}
+          selection={selection}
+          query={describeQuery(filters, workflows)}
+          onConfirm={async (scope) => {
+            await onBulkRetry(target(scope), null);
+            done();
+          }}
+        />
         {selectedWorkflow && (
           <RerunFromJobModal
             key={retryFromKey}
             open={modal === "retry-from"}
-            onClose={closeModal}
-            jobs={workflowJobs(selectedWorkflow)}
-            selectedCount={selectedIds.length}
+            onClose={() => setModal(null)}
+            jobs={retryFromJobs}
+            selection={selection}
+            onConfirm={async (scope, jobId) => {
+              await onBulkRetry(target(scope), jobId);
+              done();
+            }}
           />
         )}
-        <ExportConfirmationModal open={modal === "export"} onClose={closeModal} count={entries.length} />
+        <ExportConfirmationModal
+          open={modal === "export"}
+          onClose={() => setModal(null)}
+          count={page.totalEntries}
+          onConfirm={async () => {
+            await onExport();
+            setModal(null);
+          }}
+        />
       </Centered>
     </PageContent>
   );

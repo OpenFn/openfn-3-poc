@@ -4,7 +4,7 @@
  * Static data only.
  */
 import { dataclips, findDataclip, runLogs, runs, steps, stepsOf, workOrders } from "./history";
-import type { HistoryRun, HistoryWorkOrder, LogLine, Run, Step, WorkOrder } from "../types/history";
+import type { HistoryWorkOrderState, LogLine, Run, RunRow, Step, WorkOrder, WorkOrderRow, WorkOrderState } from "../types/history";
 
 /**
  * The Work Orders / Channel Logs pill tabs only show when the current user
@@ -21,18 +21,58 @@ export function runsOfWorkOrder(wo: WorkOrder): Run[] {
     .sort((a, b) => b.insertedAt.localeCompare(a.insertedAt));
 }
 
-function workOrderDataclipAvailable(wo: WorkOrder): boolean {
-  return !findDataclip(wo.dataclipId)?.wiped;
+/** A run as History's expanded work order shows it, with the links Lightning builds. */
+export function runRow(run: Run, workflowId: string, projectId: string): RunRow {
+  return {
+    id: run.id,
+    state: run.state,
+    insertedAt: run.insertedAt,
+    claimedAt: run.startedAt ?? run.insertedAt,
+    startedAt: run.startedAt,
+    finishedAt: run.finishedAt,
+    updatedAt: run.finishedAt ?? run.insertedAt,
+    href: `/projects/${projectId}/runs/${run.id}`,
+    steps: stepsOf(run).map((s) => ({
+      id: s.id,
+      jobId: s.jobId,
+      jobName: s.jobName,
+      exitReason: s.exitReason,
+      errorType: s.errorType ?? null,
+      startedAt: s.startedAt,
+      finishedAt: s.finishedAt,
+      cloned: (s.insertedAt ?? s.startedAt) < run.insertedAt,
+      inputWiped: !!findDataclip(s.inputDataclipId)?.wiped,
+      jobDeleted: false,
+      href: `/projects/${projectId}/runs/${run.id}?step=${s.id}`,
+      inspectHref: `/projects/${projectId}/w/${workflowId}?run=${run.id}&panel=editor&job=${s.jobId}#log`,
+    })),
+  };
 }
 
-/** A run with its steps, and whether each step's input was wiped. */
-export function historyRun(run: Run): HistoryRun {
-  return { ...run, steps: stepsOf(run).map((s) => ({ ...s, inputWiped: !!findDataclip(s.inputDataclipId)?.wiped })) };
+/** The replica's finer work order states, as Lightning names them. */
+function rowState(state: WorkOrderState): HistoryWorkOrderState {
+  if (state === "available") return "pending";
+  if (state === "claimed" || state === "started") return "running";
+  return state;
 }
 
-/** A work order with its runs and steps preloaded, as History lists it. */
-export function historyWorkOrder(wo: WorkOrder): HistoryWorkOrder {
-  return { ...wo, runs: runsOfWorkOrder(wo).map(historyRun), dataclipWiped: !workOrderDataclipAvailable(wo) };
+/** A work order as History lists it: runs newest first, with their steps. */
+export function workOrderRow(wo: WorkOrder): WorkOrderRow {
+  const runs = runsOfWorkOrder(wo);
+  return {
+    id: wo.id,
+    workflowId: wo.workflowId,
+    workflowName: wo.workflowName,
+    state: rowState(wo.state),
+    dataclipId: wo.dataclipId,
+    dataclipWiped: !!findDataclip(wo.dataclipId)?.wiped,
+    insertedAt: wo.insertedAt,
+    lastActivity: wo.lastActivity,
+    runs: runs.map((r) => runRow(r, wo.workflowId, wo.projectId)),
+    href: `/projects/${wo.projectId}/history?filters[workorder_id]=${wo.id}`,
+    workflowHref: runs[0] ? `/projects/${wo.projectId}/w/${wo.workflowId}?run=${runs[0].id}` : null,
+    dataclipHref: `/projects/${wo.projectId}/dataclips/${wo.dataclipId}/show`,
+  };
 }
 
 export function findStep(id: string | undefined): Step | undefined {

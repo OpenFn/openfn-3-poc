@@ -2,7 +2,7 @@
  * Lightning's fixed vocabulary: option lists, labels and copy that are hard-coded
  * in its source rather than read from the database. Safe to import anywhere.
  */
-import type { RunState, SearchFieldId, WorkOrderState } from "./types/history";
+import type { HistoryWorkOrderState, RunState, SearchFieldId } from "./types/history";
 import type { HealthRange } from "./types/workflow-health";
 
 /** Role options for the user form (User.RolesEnum, capitalised, sorted). */
@@ -26,7 +26,7 @@ export const collaboratorRoles = ["viewer", "editor", "admin"] as const;
 export const digestOptions = ["never", "daily", "weekly", "monthly"] as const;
 
 /** Status filter options (run_live/index.ex `statuses`). */
-export const historyStatuses: { id: WorkOrderState | "running"; label: string }[] = [
+export const historyStatuses: { id: HistoryWorkOrderState; label: string }[] = [
   { id: "pending", label: "Enqueued" },
   { id: "running", label: "Running" },
   { id: "success", label: "Success" },
@@ -52,8 +52,8 @@ export const historySearchFields: { id: SearchFieldId; icon: string; label: stri
   { id: "log", icon: "hero-bars-arrow-down-mini", label: "Include run logs" },
 ];
 
-/** States in which a work order is still in flight (no retry button). */
-export const activeStates: WorkOrderState[] = ["pending", "available", "claimed", "started"];
+/** States in which a work order is still in flight, so it can't be retried (WorkOrder `active_states`). */
+export const activeStates: HistoryWorkOrderState[] = ["pending", "running"];
 
 /** Lightning's `Run.final_states`. */
 export const finalRunStates: RunState[] = ["success", "failed", "crashed", "cancelled", "killed", "exception", "lost"];
