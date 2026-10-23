@@ -22,8 +22,8 @@ export interface WorkflowsIndexPageProps {
   /** The four cards' numbers, aggregated by the server. */
   metrics: Metrics;
   /** History links behind the Work Orders card's "pending" and the failed card's "View all". */
-  pendingHref?: string | undefined;
-  failedHref?: string | undefined;
+  pendingHref: string;
+  failedHref: string;
   /** The current search (`?q`). */
   searchTerm: string;
   /** The order the server listed `stats` in (`?sort`, `?dir`). */
@@ -31,7 +31,7 @@ export interface WorkflowsIndexPageProps {
   canCreateWorkflow: boolean;
   canDeleteWorkflow: boolean;
   /** The experimental workflow lifecycle: state badges instead of switches outside a sandbox. */
-  lifecycle?: boolean;
+  lifecycle: boolean;
   /** Searches; the host narrows the list and the URL. */
   onSearch: (term: string) => void;
   /** Clears the search. */
@@ -60,7 +60,7 @@ export default function WorkflowsIndexPage({
   sort,
   canCreateWorkflow,
   canDeleteWorkflow,
-  lifecycle = false,
+  lifecycle,
   onSearch,
   onClear,
   onToggle,
@@ -80,7 +80,7 @@ export default function WorkflowsIndexPage({
           onSearch={onSearch}
           onClear={onClear}
         />
-        <ProjectMetrics metrics={metrics} projectId={project.id} pendingHref={pendingHref} failedHref={failedHref} />
+        <ProjectMetrics metrics={metrics} pendingHref={pendingHref} failedHref={failedHref} />
         <div className="mt-8">
           <WorkflowsTable
             stats={stats}
