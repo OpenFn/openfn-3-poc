@@ -48,3 +48,22 @@ with `total_entries`, `total_pages`, `page_number` and `page_size`.
 
 Timestamps are ISO 8601 in UTC, for example `2026-01-01T00:00:00Z`. Date
 filters take the same format.
+
+## Sorting, search and includes
+
+Planned. Several endpoints have these as planned additional scope, and they
+work the same way wherever they appear:
+
+- `sort` takes one field name from the endpoint's list. A `-` prefix sorts
+  descending, for example `sort=-last_activity`.
+- `q` is a case-insensitive text search over the fields the endpoint names.
+- `include` adds related data to each entry, for example `include=stats`.
+
+An unknown `sort` field or `include` value answers 400 `invalid_parameter`.
+
+## Bulk actions
+
+Planned. Routes that act on many work orders at once take either `filter`, the
+same filters as the list endpoint, or a list of ids, never both. With `filter`,
+Lightning works out the set when it receives the request, so it acts on what
+matches then, not on what a client listed earlier.

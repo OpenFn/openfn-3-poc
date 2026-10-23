@@ -18,6 +18,9 @@ with `collections:write`.
 { "data": { "id": "…", "project_id": "…", "name": "patients" } }
 ```
 
+Planned additional scope: `byte_size_sum`, the bytes the collection's keys and
+values take up, which is what counts against the plan's storage limit.
+
 ## Create or rename a collection
 
 Status: **Public**
@@ -62,8 +65,36 @@ with `collections:write`. Paged.
 }
 ```
 
+Planned additional scope: `byte_size_sum` on each collection, as for getting
+one, and `sort`: `name` or `byte_size_sum`, with a `-` prefix for descending.
+
 > Implementation note: `Lightning.Collections.list_project_collections/2`.
 > Differences: it isn't paged.
+
+## List every collection
+
+Status: **Private**
+
+```
+GET /api/collections
+```
+
+Tokens: personal access token of a superuser, or service account with
+`collections:write`. Paged.
+
+Lists the collections of every project on the instance, in the same shape as
+the project list, with `project_name` added. Takes the same `sort`.
+
+> Implementation note: `Lightning.Collections.list_collections/1`, which the
+> superuser page at `/settings/collections` (`LightningWeb.CollectionLive.Index`)
+> calls on mount and on its `sort` event. It preloads `:project`, so the
+> project name is there, and takes `order_by`, which the page sets to `name`
+> or `byte_size_sum` in either direction. Differences:
+>
+> - it isn't paged.
+> - it does no authorisation check. The page is limited to superusers by the
+>   `:ensure_admin` hook (`:access_admin_space` in `Lightning.Policies.Users`),
+>   so the route has to check the token itself.
 
 ## Delete a collection
 

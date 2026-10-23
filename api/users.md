@@ -2,7 +2,9 @@
 
 Tokens: service account only. `users:read` for `GET`, `users:write` for `POST`
 and `PATCH`. Personal access token support is planned. Access will depend on
-the user's instance role: today, only superusers can manage users.
+the user's instance role: today, only superusers can manage users. Planned
+additional scope on some sections lets people create and change their own
+account.
 
 ## The user object
 
@@ -22,6 +24,10 @@ the user's instance role: today, only superusers can manage users.
 }
 ```
 
+Planned additional scope: `support_user` (whether they can open projects that
+allow support access), `disabled`, and `scheduled_deletion` (a timestamp, or
+`null`).
+
 ## List users
 
 Status: **Public**
@@ -33,6 +39,10 @@ GET /api/users?email=ada@example.com
 
 Paged. `email` matches without regard to case. An `email` that isn't a single
 string answers 400 `invalid_parameter`.
+
+Planned additional scope: `q`, matching the start of a first name, last name
+or email, and `sort`: `email`, `first_name`, `last_name`, `role` or
+`scheduled_deletion`, with a `-` prefix for descending.
 
 ## Get a user
 
@@ -77,6 +87,18 @@ wrong, it answers 409 `taken` with the existing user's id, so a retry is safe:
 }
 ```
 
+Planned additional scope:
+
+- Without a token, on an instance that allows sign-up, anyone can create an
+  account for themselves. They send `email`, `password`, `first_name`,
+  `last_name` and `terms_accepted: true`, and get role `user`. Lightning emails
+  them a confirmation link. On an instance with no superuser yet (`needs_setup`
+  on [`GET /api/instance`](./account.md#get-the-instance)), the account made
+  this way is the superuser.
+- With a session whose `state` is `signup_pending`, `{"from_sign_in": true}`
+  creates the account from what the provider gave, already confirmed and
+  linked to the provider, and signs the person in.
+
 ## Update a user
 
 Status: **Public**
@@ -89,6 +111,26 @@ Takes any of `first_name`, `last_name`, `role`, `password` and `confirmed`.
 The email can't be changed: sending `email` or any other key answers 422 with
 an `unknown_key` entry. `confirmed` only ever confirms. A new role or password
 signs the user out of every browser session. Answers 200 with the user.
+
+Planned additional scope:
+
+- `support_user` and `disabled`. Disabling a user signs them out and revokes
+  their access tokens, as deleting does.
+- A person can update their own account, with a personal access token or a
+  session token:
+  - `first_name`, `last_name` and `contact_preference` (`critical` or `any`:
+    which emails they get), with either token.
+  - `email`, with a session token stepped up. It isn't changed until the person
+    follows the link sent to the new address; until then it is
+    `pending_email` on `GET /api/me`. The old address is told.
+  - `password`, with a session token stepped up. It ends every other session
+    and revokes their personal access tokens. An account that only signs in
+    through a provider can set its first password this way.
+  - `consent` and `ai_disclaimer_accepted` (`true`), with a session token. On
+    instances with a consent extension, `consent` holds the person's choices.
+
+  A person can't change their own `role`, `confirmed`, `support_user` or
+  `disabled`.
 
 ## Delete a user
 
@@ -104,6 +146,10 @@ Schedules the user for deletion. The user is disabled, signed out of every
 session and their access tokens revoked straight away. They are removed after
 the instance's retention period, unless they have created runs, in which case
 they stay disabled. Answers 204 with no body.
+
+Planned additional scope: a person can schedule their own deletion with a
+session token stepped up. They are signed out straight away, so only a
+superuser or the service account can cancel it.
 
 > Implementation note: `Lightning.Accounts.schedule_user_deletion/2` takes the
 > user and their email, which the app asks for as a confirmation. Differences:
@@ -129,3 +175,5 @@ A user who isn't scheduled answers 404 `not_found`.
 > Implementation note: `Lightning.Accounts.cancel_scheduled_deletion/1` takes a
 > user id. Differences: it takes no actor and records no audit event, raises
 > for a missing user, and succeeds for one who isn't scheduled.
+
+The current user and their own tokens are in [Account](./account.md#the-current-user).

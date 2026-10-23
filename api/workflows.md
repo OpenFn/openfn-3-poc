@@ -58,6 +58,11 @@ above. Service account support is planned.
 - Edge `condition_type`: `always`, `on_job_success`, `on_job_failure` or
   `js_expression`.
 
+Planned additional scope: `webhook_auth_method_ids` on webhook triggers, the
+[webhook auth methods](./webhooks.md#webhook-auth-methods) a request must pass.
+Sending it in an update replaces the trigger's set. Each id must belong to the
+workflow's project.
+
 ## List workflows
 
 Status: **Public**
@@ -70,6 +75,14 @@ GET /api/projects/:project_id/workflows
 
 Returns `{"workflows": [<workflow>, …]}` for every project you can access, or
 for one project. Not paged.
+
+Planned additional scope:
+
+- `credential_id`: only workflows with a job that uses this credential. Use it
+  before unlinking or deleting a credential to see what would lose it.
+- `q` (a name search), `sort` (`name` or `updated_at`), and paging.
+- `include=stats`: adds the last 30 days' `work_orders_count`,
+  `failed_work_orders_count` and `last_work_order_at` to each workflow.
 
 ## Get a workflow
 
@@ -113,6 +126,25 @@ from a trigger must be `always` or `js_expression`. Answers 201
 `{"workflow": <workflow>}`. Enabling a trigger beyond the plan's limit answers
 402 `exceeds_limit`.
 
+Planned additional scope: `template_id`, to start from a
+[workflow template](#list-workflow-templates) instead of sending `jobs`,
+`triggers` and `edges`. Lightning gives the copy new ids.
+
+## Validate a workflow
+
+Status: **Planned**
+
+```
+POST /api/projects/:project_id/workflows/validations
+```
+
+Tokens: as for creating a workflow.
+
+Send a workflow as you would to create one, or with an `id` as you would to
+update one. Lightning checks it with the same rules and saves nothing. Answers
+204 with no body if it would be accepted, and the same 422 `invalid` the write
+would give if not. Plan limits aren't checked, since nothing is enabled.
+
 ## Update a workflow
 
 Status: **Public**
@@ -152,3 +184,157 @@ open in the editor answers 409 `being_edited`.
 > works once the workflow has no history. Neither checks whether the workflow
 > is open in the editor; the route has to. The project's workflow list doesn't
 > filter out soft-deleted workflows yet.
+
+## Workflow snapshots
+
+Every save that changes a workflow keeps a snapshot of it, numbered by
+`lock_version`. A run records the snapshot it ran, so an old run can be read
+against the workflow as it was.
+
+### List a workflow's snapshots
+
+Status: **Private**
+
+```
+GET /api/workflows/:id/snapshots
+```
+
+Tokens: personal access token. Paged, newest first.
+
+```json
+{
+  "data": [{ "id": "…", "lock_version": 7, "inserted_at": "…", "latest": true }],
+  "links": { "self": "…", "first": "…", "last": "…", "next": "…", "prev": null }
+}
+```
+
+These are the ids `GET /api/provision/:id?snapshots[]=` takes.
+
+> Implementation note: `Lightning.Workflows.Snapshot.get_all_for/1`, reached
+> through the workflow channel's `request_versions` event, which adds the
+> `latest` flag by comparing each `lock_version` with the workflow's.
+> Differences:
+>
+> - it takes a loaded workflow and checks nothing; the channel relies on the
+>   join's `:access_read` check, so the route has to check project access.
+> - it returns every full snapshot, unpaged, ordered by `inserted_at`. The
+>   channel reply leaves out the snapshot `id`, which the route must return.
+
+### Get a snapshot
+
+Status: **Private**
+
+```
+GET /api/workflows/:id/snapshots/:snapshot_id
+```
+
+Tokens: personal access token.
+
+Returns `{"snapshot": <workflow>}`: the workflow object as it was, with its
+`lock_version`. A snapshot can't be changed.
+
+> Implementation note: `Lightning.Collaboration.WorkflowResolver.resolve/3`
+> with a `version:` option (`resolve_version/3`) builds the workflow from a
+> snapshot when the editor joins a pinned version. The channel checks
+> `:access_read` first. Differences:
+>
+> - it looks the snapshot up by `lock_version`, not by id.
+>   `Lightning.Workflows.Snapshot.get_all_by_ids/2` reads by id but scopes to
+>   the project only, so the route has to check the snapshot's `workflow_id`.
+> - the built workflow drops `positions` and has no `concurrency` or
+>   `enable_job_logs`, since a snapshot doesn't store them.
+
+## List a workflow's versions
+
+Status: **Private**
+
+```
+GET /api/workflows/:id/versions
+```
+
+Tokens: personal access token. Paged, newest first.
+
+```json
+{ "data": [{ "hash": "a1b2c3d4e5f6", "source": "cli", "inserted_at": "…" }] }
+```
+
+Each save records a hash of the workflow and where the save came from: `app`
+or `cli`. Comparing hashes tells a CLI whether the app and its local copy have
+moved apart. Consecutive saves from the same source keep one entry.
+
+> Implementation note: `Lightning.WorkflowVersions.history_for/1`, which the
+> provisioning API already returns as a workflow's `version_history`.
+> Differences:
+>
+> - it returns `"source:hash"` strings oldest first, with no `inserted_at`,
+>   and isn't paged. The route has to query `workflow_versions` itself.
+> - it does no authorisation check.
+> - `record_version/3` never squashes the first entry, so the first two
+>   entries can share a source.
+
+## Workflow templates
+
+A template is a workflow published for anyone on the instance to start from.
+
+### List workflow templates
+
+Status: **Private**
+
+```
+GET /api/workflow_templates
+```
+
+Tokens: personal access token. Paged. Takes `q` (name and description) and
+`tags` (comma-separated).
+
+```json
+{
+  "data": [
+    {
+      "id": "…",
+      "name": "DHIS2 to FHIR",
+      "description": "…",
+      "tags": ["dhis2", "fhir"],
+      "workflow_id": "…",
+      "code": "<the workflow as YAML>"
+    }
+  ]
+}
+```
+
+> Implementation note: `Lightning.WorkflowTemplates.list_templates/0`, through
+> the workflow channel's `list_templates` event. Differences: it returns every
+> template ordered by name, unpaged, and takes no filters. The editor searches
+> on the client, so the route has to add `q`, `tags` and paging.
+
+### Publish a workflow as a template
+
+Status: **Private**
+
+```
+PUT /api/workflows/:id/template
+```
+
+Tokens: personal access token of a support user who can open the project.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Required. At most 255 characters. |
+| `description` | string | Optional. At most 1000 characters. |
+| `tags` | array of strings | Optional. |
+
+Publishes the workflow as it is now. A workflow has at most one template, so
+publishing again updates it. Answers 201 when it creates and 200 when it
+updates.
+
+> Implementation note: `Lightning.WorkflowTemplates.create_template/1`, through
+> the workflow channel's `publish_template` event. The channel checks
+> `:publish_template` (support users who are members, or whose project allows
+> support access). Differences:
+>
+> - the client builds `code` (v2 YAML) and `positions` and sends them, so
+>   nothing on the server publishes "the workflow as it is now". The route can
+>   use `Lightning.Workflows.YamlFormat.V2.serialize_workflow/1`.
+> - it returns `{:ok, template}` either way and doesn't say whether it created
+>   or updated, so the route can't pick 201 or 200 from it alone.
+> - it reads `workflow_id` from a string key only.

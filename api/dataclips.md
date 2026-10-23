@@ -2,6 +2,29 @@
 
 A dataclip is the input or output of a step, or a saved input.
 
+## List a project's dataclips
+
+Status: **Planned**
+
+```
+GET /api/projects/:project_id/dataclips
+```
+
+Tokens: personal access token. Paged, newest first.
+
+Lists dataclips without their bodies. Each entry is the dataclip object with
+`body` left out. Filters:
+
+| Parameter | Notes |
+| --- | --- |
+| `q` | A name, an id, or the start of an id. |
+| `type` | One of the types below. |
+| `named` | `true` for saved inputs only. |
+| `job_id` | Only dataclips that can be the input to this job. Leaves out wiped ones. |
+| `inserted_after`, `inserted_before` | ISO 8601. |
+
+A `job_id` from another project answers 400 `invalid_parameter`.
+
 ## Get a dataclip
 
 Status: **Private**

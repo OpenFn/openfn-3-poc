@@ -92,6 +92,9 @@ Notable errors:
 - 409 `scheduled_for_deletion` when the workflow has been deleted.
 - 429 `too_many_runs` or 402 `exceeds_limit` for run limits.
 
+Planned additional scope: `step_id` becomes optional. Without it, the run is
+retried from the start of its workflow, with the same input.
+
 > Implementation note: the app calls `Lightning.WorkOrders.retry/3` (run id,
 > step id, `created_by:` actor) through a session-cookie route,
 > `POST /projects/:project_id/runs/:run_id/retry`

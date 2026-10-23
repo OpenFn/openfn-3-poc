@@ -55,9 +55,12 @@ refused before any of these.
 | 400 | `invalid_header` | A request header is not valid. |
 | 401 | `unauthenticated` | No `Authorization` header. |
 | 401 | `invalid_token` | The token is expired or bad, or this route doesn't accept its kind. |
+| 401 | `invalid_credentials` | Planned. Signing in failed. The same for every reason, so it can't be used to find accounts. |
+| 401 | `mfa_required` | Planned. Signing in needs an MFA code too. |
 | 402 | `exceeds_limit` | This would exceed a limit of your plan. |
 | 403 | `forbidden` | You may see this but not do this, or the project requires MFA you haven't set up. |
 | 403 | `insufficient_scope` | The token lacks the scope this route needs. |
+| 403 | `step_up_required` | Planned. The person must enter their password or an MFA code again first. See [session tokens](./authentication.md#session-tokens). |
 | 403 | `trigger_disabled` | The webhook's trigger is disabled. |
 | 404 | `not_found` | Not found, or you don't have access to it. |
 | 406 | `not_acceptable` | The resource can't be returned in the format you asked for. |
