@@ -38,7 +38,7 @@ export interface WorkflowsIndexPageProps {
   onClear: () => void;
   /** Switches a workflow on or off. Resolves when the host has answered; the host announces the result. */
   onToggle: (workflowId: string, enabled: boolean) => Promise<void>;
-  /** Deletes a workflow, after the page has asked the user to confirm. */
+  /** Deletes a workflow, after the page has asked the user to confirm. A rejection keeps the confirm open with its message. */
   onDelete: (workflowId: string) => Promise<void>;
 }
 
@@ -92,7 +92,7 @@ export default function WorkflowsIndexPage({
             isSandbox={project.parentId !== null}
             sort={sort}
             onToggle={(id, v) => void onToggle(id, v).catch(failed)}
-            onDelete={(id) => void onDelete(id).catch(failed)}
+            onDelete={onDelete}
           />
         </div>
       </Centered>
