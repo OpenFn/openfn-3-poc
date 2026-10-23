@@ -41,7 +41,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
     const d = clip(id);
     if (!id || !d) return empty(emptyFinished);
     if (d.wiped) return empty("This dataclip has been wiped by the project's data retention policy.");
-    return <CodeEditor value={JSON.stringify(d.body, null, 2)} readOnly ariaLabel={`${activeTab} dataclip`} />;
+    return <CodeEditor value={JSON.stringify(d.body, null, 2)} language="json" readOnly ariaLabel={`${activeTab} dataclip`} />;
   };
 
   return (

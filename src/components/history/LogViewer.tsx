@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import type { LogLine } from "../../types/history";
 import { logsAtLevel } from "../../utils/history";
 import { cn } from "../../utils/cn";
+import CodeViewer, { type LineRange } from "../CodeViewer";
 import Menu, { MenuItem } from "../Menu";
-import CodeLines from "./CodeLines";
 import TextPingLoader from "./TextPingLoader";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
@@ -51,10 +51,11 @@ export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onC
 
 /**
  * A run's log (viewers.ex `log_viewer` + assets/js/log-viewer): a dark
- * slate panel with the level filter on top and Monaco-style numbered lines
- * below, each `SOURCE message`. Lines from the selected step get a yellow
- * bar. Shows "No logs were received for this run." for a finished run with
- * no logs, and a pinging "Nothing yet" while it's still going.
+ * slate panel with the level filter on top and the lines in Monaco below,
+ * each `SOURCE message`. Lines from the selected step get a yellow bar and
+ * the first of them is scrolled near the top; new lines are appended.
+ * Shows "No logs were received for this run." for a finished run with no
+ * logs, and a pinging "Nothing yet" while it's still going.
  */
 export default function LogViewer({
   logs,
@@ -81,17 +82,31 @@ export default function LogViewer({
     onLevelChange?.(next);
   };
 
-  const { lines, highlighted } = useMemo(() => {
-    const lines: string[] = [];
-    const highlighted = new Set<number>();
+  // One pass: the text, and the selected step's lines as merged ranges.
+  const { text, highlighted } = useMemo(() => {
+    const entries: string[] = [];
+    const highlighted: LineRange[] = [];
+    let lineCount = 0;
     for (const log of logsAtLevel(logs, level)) {
-      for (const part of `${log.source} ${prettify(log.message)}`.split("\n")) {
-        lines.push(part);
-        if (selectedStepId && log.stepId === selectedStepId) highlighted.add(lines.length);
-      }
+      const entry = `${log.source} ${prettify(log.message)}`;
+      const start = lineCount + 1;
+      lineCount += entry.split("\n").length;
+      entries.push(entry);
+      if (!selectedStepId || log.stepId !== selectedStepId) continue;
+      const last = highlighted.at(-1);
+      if (last && last.end === start - 1) last.end = lineCount;
+      else highlighted.push({ start, end: lineCount });
     }
-    return { lines, highlighted };
+    return { text: entries.join("\n"), highlighted };
   }, [logs, level, selectedStepId]);
+
+  // Jump to the step only when it changes, or when its lines first arrive; a
+  // level change leaves the reader where they are, as Lightning does.
+  const firstLine = highlighted[0]?.start;
+  const [reveal, setReveal] = useState({ step: selectedStepId, line: firstLine });
+  if (reveal.step !== selectedStepId || (reveal.line === undefined && firstLine !== undefined)) {
+    setReveal({ step: selectedStepId, line: firstLine });
+  }
 
   if (finished && logs.length === 0) {
     return (
@@ -106,25 +121,18 @@ export default function LogViewer({
       </div>
       <div className={cn("flex grow", className)}>
         <div className="relative grow">
-          {lines.length === 0 ? (
+          {text === "" ? (
             <div className="p-12 text-center text-xs @md:text-base">
               <TextPingLoader>{waitingMessage}</TextPingLoader>
             </div>
           ) : (
             <div className="absolute inset-0">
-              <CodeLines
+              <CodeViewer
+                value={text}
+                language="openFnLogs"
+                ariaLabel="Run log"
                 highlighted={highlighted}
-                lines={lines.map((line, i) => {
-                  const m = line.match(/^([A-Z/]{2,4})( .*)?$/);
-                  if (!m) return <span key={i}>{line}</span>;
-                  return (
-                    <span key={i}>
-                      {/* Monaco theme's `logSource` token: gray italic. */}
-                      <span className="italic text-gray-400">{m[1]}</span>
-                      {m[2]}
-                    </span>
-                  );
-                })}
+                revealLine={reveal.line}
               />
             </div>
           )}

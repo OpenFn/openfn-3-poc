@@ -49,8 +49,11 @@ export default function StepDataclipViewer({
     );
   }
   return (
-    <div className="h-full min-h-96 grow">
-      <JsonViewer value={dataclip.body ?? ""} />
+    // Monaco fills a sized box; a min-height alone doesn't give it one.
+    <div className="relative h-full min-h-96 grow">
+      <div className="absolute inset-0">
+        <JsonViewer value={dataclip.body ?? ""} ariaLabel={inputOrOutput === "input" ? "Input" : "Output"} />
+      </div>
     </div>
   );
 }

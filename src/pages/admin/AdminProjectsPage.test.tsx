@@ -7,13 +7,6 @@ import type { AdminProjectRow, AdminProjectUser } from "../../types/admin";
 import { RequestError } from "../../utils/errors";
 import AdminProjectsPage from "./AdminProjectsPage";
 
-// Headless UI's Menu watches its trigger's size; jsdom has no ResizeObserver.
-globalThis.ResizeObserver ??= class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
-
 const rows: AdminProjectRow[] = [
   { id: "p1", name: "alpha-project", description: "First project", insertedAt: "2023-12-01T00:00:00Z", ownerName: "John Owner", scheduledDeletion: null },
   { id: "p2", name: "beta-project", description: "Second project", insertedAt: "2023-01-01T00:00:00Z", ownerName: "", scheduledDeletion: "2026-10-21T09:30:00Z" },

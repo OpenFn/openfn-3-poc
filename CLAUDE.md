@@ -153,6 +153,7 @@ everywhere. Reach for these first:
 | A short work order, run or dataclip id | `UuidChip` (`to` links it, `length={7}` in the workflow editor) |
 | An on/off switch | `Toggle` (`note` adds gray text after the label) |
 | An inline link | `TextLink` (`variant="danger"` for destructive ones) |
+| Read-only code, a log or a dataclip | `CodeViewer` (Monaco; `ariaLabel`, `language`, `highlighted`, `revealLine`) |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (dashed box, or `variant="plain"` for centred text inside a card or list; `title`, `children` below the message) (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`; `<Th actions />` and `<Td actions>` for the row-actions column, `align` for right/centre) |
 | Sorting and filtering a table in the browser | `useTableSort` (or `useSort` for state only, when rows are sorted elsewhere) from `useTableSort.ts` |
 | "Projects (3)" above a table, with its buttons | `TableTitle` |

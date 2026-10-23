@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { ReactRouterAdapter } from "./routing/ReactRouterAdapter";
 import { HashRouter } from "react-router-dom";
 import "./index.css";
+import "./monacoSetup";
 import App from "./App.tsx";
 import { ToastProvider } from "./components/Toast";
 import { ThemeProvider } from "./theme/ThemeProvider";
