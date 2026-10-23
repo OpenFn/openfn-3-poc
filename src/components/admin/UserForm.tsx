@@ -22,8 +22,8 @@ interface Props {
  * Lightning's admin user form (user_live/form_component.html.heex): name,
  * email, password, role, the Support User toggle (with its heads-up), and on
  * edit the scheduled deletion (for the `user` role only) and disabled
- * fields. Save stays disabled until the required fields are filled, as the
- * HEEx form's was; the host checks everything again on save.
+ * fields. Save is always enabled: pressing it shows what's missing on each
+ * field, and the host checks everything again on save.
  */
 export default function UserForm({ user, onSave, cancelTo = "/settings/users" }: Props) {
   const isEdit = !!user;
@@ -46,12 +46,6 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
     }),
   });
   const { values, set } = form;
-
-  const valid =
-    values.firstName.trim() !== "" &&
-    values.lastName.trim() !== "" &&
-    values.email.trim() !== "" &&
-    (isEdit || values.password.length >= 12);
 
   return (
     <div id={`user-${user?.id ?? "new"}`}>
@@ -98,7 +92,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
         )}
 
         <div className="flex gap-1">
-          <Button id="save-user" type="submit" disabled={!valid} pending={form.pending} tooltip="All fields are required">
+          <Button id="save-user" type="submit" pending={form.pending}>
             Save
           </Button>
           <Button theme="secondary" to={cancelTo}>

@@ -49,16 +49,16 @@ interface Props {
 /**
  * The superuser project form (project_live/form_component.html.heex): a
  * name (with the slug it will get) and a role radio grid for every user in
- * the instance. Save stays disabled until there is a name and exactly one
- * owner, as the HEEx form's was; the host checks both again and replies
- * its own owner error.
+ * the instance. Save is always enabled: pressing it without a name or
+ * exactly one owner shows why and sends nothing. The host checks both again
+ * and replies its own owner error.
  */
 export default function AdminProjectForm({ project, users, onSave, cancelTo = "/settings/projects" }: Props) {
   const [rawName, setRawName] = useState(project?.name ?? "");
   const [roles, setRoles] = useState<Record<string, Role>>(() =>
     Object.fromEntries(users.map((u) => [u.id, project?.members.find((m) => m.userId === u.id)?.role ?? ""]))
   );
-  // The HEEx form said why Save was disabled only once something had changed.
+  // Errors show once something has changed or Save was pressed.
   const [touched, setTouched] = useState(false);
   const rows: Row[] = users.map((user) => ({ user, role: roles[user.id] ?? "" }));
   const sort = useTableSort({ rows, initialKey: "name", sortMap, searchFields });
@@ -90,6 +90,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
         aria-busy={save.pending || undefined}
         onSubmit={(e) => {
           e.preventDefault();
+          setTouched(true);
           if (valid) void save.run();
         }}
       >
@@ -157,7 +158,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
           <Button theme="secondary" to={cancelTo}>
             Cancel
           </Button>
-          <Button type="submit" disabled={!valid} pending={save.pending}>
+          <Button type="submit" pending={save.pending}>
             Save
           </Button>
         </div>

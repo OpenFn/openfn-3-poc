@@ -10,6 +10,7 @@ import TextLink from "../TextLink";
 import { cn } from "../../utils/cn";
 import { RequestError, errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
+import { blank } from "../../utils/validate";
 
 type TestState = "unknown" | "success" | "failed";
 
@@ -59,9 +60,10 @@ const fieldErrorsOf = (error: Error | null) => (error instanceof RequestError ? 
 /**
  * The OpenID Connect provider form (auth_providers/form_component.ex): the
  * fields on the left, the explanation and redirect URI preview on the right.
- * An existing provider also gets Remove. Save and Test wait for the required
- * fields, as the HEEx form's did; a stored secret may be left blank to keep
- * it. The host's field errors land on their fields, and a failed Test says
+ * An existing provider also gets Remove. Save is always enabled: pressing
+ * it with a required field blank says so on the field. Test waits for the
+ * required fields; a stored secret may be left blank to keep it. The
+ * host's field errors land on their fields, and a failed Test says
  * why under the discovery URL.
  */
 export default function AuthProviderForm({ provider, onSave, onTest, onRemove, initialTestState = "unknown" }: Props) {
@@ -74,6 +76,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
     allowUnverifiedEmail: provider.allowUnverifiedEmail,
   });
   const [testState, setTestState] = useState<TestState>(initialTestState);
+  const [submitted, setSubmitted] = useState(false);
   const save = useAction(() => onSave(values));
   const test = useAction(async () => {
     try {
@@ -112,6 +115,8 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
   const saveErrors = { ...fieldErrorsOf(save.error), ...fieldErrorsOf(test.error) };
   const testError = test.error && Object.keys(fieldErrorsOf(test.error)).length === 0 ? errorMessage(test.error) : null;
   const generalError = save.error && Object.keys(saveErrors).length === 0 ? errorMessage(save.error) : null;
+  // Blank required fields are said only once Save was pressed.
+  const required = (value: string, keep = false) => (submitted && !keep ? blank(value) : []);
 
   return (
     <div id={`auth-provider-form-${provider.id ?? "new"}`}>
@@ -120,6 +125,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
         aria-busy={save.pending || undefined}
         onSubmit={(e) => {
           e.preventDefault();
+          setSubmitted(true);
           if (valid) void save.run();
         }}
       >
@@ -131,7 +137,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               label="Name"
               hint="The name of the provider, used in the redirect URI."
               value={values.name}
-              errors={[...nameError, ...(saveErrors["name"] ?? [])]}
+              errors={[...required(values.name), ...nameError, ...(saveErrors["name"] ?? [])]}
               onChange={(e) => set("name", e.target.value)}
             />
             <TextInput
@@ -144,7 +150,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
                 </>
               }
               value={values.discoveryUrl}
-              errors={[...urlError, ...(saveErrors["discoveryUrl"] ?? []), ...(testError ? [testError] : [])]}
+              errors={[...required(values.discoveryUrl), ...urlError, ...(saveErrors["discoveryUrl"] ?? []), ...(testError ? [testError] : [])]}
               onChange={(e) => set("discoveryUrl", e.target.value)}
             />
             <TextInput
@@ -152,7 +158,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               name="client_id"
               label="Client ID"
               value={values.clientId}
-              errors={saveErrors["clientId"] ?? []}
+              errors={[...required(values.clientId), ...(saveErrors["clientId"] ?? [])]}
               onChange={(e) => set("clientId", e.target.value)}
             />
             <PasswordInput
@@ -162,7 +168,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               autoComplete="off"
               placeholder={provider.hasClientSecret ? "Leave blank to keep the current secret" : undefined}
               value={values.clientSecret}
-              errors={saveErrors["clientSecret"] ?? []}
+              errors={[...required(values.clientSecret, provider.hasClientSecret), ...(saveErrors["clientSecret"] ?? [])]}
               onChange={(e) => set("clientSecret", e.target.value)}
             />
             <TextInput
@@ -170,7 +176,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               name="redirect_host"
               label="Redirect Host"
               value={values.redirectHost}
-              errors={saveErrors["redirectHost"] ?? []}
+              errors={[...required(values.redirectHost), ...(saveErrors["redirectHost"] ?? [])]}
               onChange={(e) => set("redirectHost", e.target.value)}
             />
             <Checkbox
@@ -187,7 +193,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
             />
             {generalError && <Alert type="danger">{generalError}</Alert>}
             <div className="flex justify-between sm:border-t sm:border-gray-200 sm:pt-4">
-              <Button type="submit" disabled={!valid} pending={save.pending}>
+              <Button type="submit" pending={save.pending}>
                 Save
               </Button>
               {valid && <TestButton state={testState} pending={test.pending} onTest={() => void test.run()} />}

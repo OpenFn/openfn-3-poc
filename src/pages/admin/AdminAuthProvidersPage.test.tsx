@@ -46,20 +46,26 @@ const fillAll = () => {
 };
 
 describe("AdminAuthProvidersPage", () => {
-  it("starts blank with Save disabled, no Test and no Remove, and previews the host", () => {
+  it("starts blank with no Test and no Remove, and previews the host", () => {
     renderPage();
     expect(screen.getByRole("heading", { name: "Authentication" })).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
     expect(screen.queryByRole("button", { name: "Test" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Remove" })).toBeNull();
     expect(document.getElementById("redirect-uri-preview")!.textContent).toBe("http://localhost:4000…");
     expect(field("Trust unverified emails from this provider").checked).toBe(false);
   });
 
-  it("enables Save and Test once every field is filled, and previews the redirect URI", async () => {
+  it("keeps Save enabled, and pressing it on a blank form says what is missing without saving", () => {
+    const { onSave } = renderPage();
+    expect(save().hasAttribute("disabled")).toBe(false);
+    fireEvent.click(save());
+    expect(screen.getAllByText("can't be blank")).toHaveLength(4);
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("offers Test once every field is filled, and previews the redirect URI", async () => {
     const { onSave } = renderPage();
     fillAll();
-    expect(save().hasAttribute("disabled")).toBe(false);
     expect(screen.getByRole("button", { name: "Test" })).toBeTruthy();
     expect(document.getElementById("redirect-uri-preview")!.textContent).toBe("http://localhost:4000/authenticate/google/callback");
 
@@ -112,12 +118,13 @@ describe("AdminAuthProvidersPage", () => {
     await waitFor(() => expect(onRemove).toHaveBeenCalled());
   });
 
-  it("says what the host would refuse before Save is enabled", () => {
-    renderPage();
+  it("says what the host would refuse, and Save sends nothing until it is fixed", () => {
+    const { onSave } = renderPage();
     fillAll();
     type("Name", "Not Lower");
     expect(screen.getByText(/must be lower-case/)).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
+    fireEvent.click(save());
+    expect(onSave).not.toHaveBeenCalled();
     type("Name", "google");
     type("Discovery URL", "acme");
     expect(screen.getByText("must be a valid HTTP/s URL")).toBeTruthy();

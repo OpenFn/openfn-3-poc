@@ -22,17 +22,13 @@ describe("AdminUserEditPage", () => {
     const { onSave } = renderPage();
     expect(screen.getByRole("heading", { name: "New User" })).toBeTruthy();
     expect(screen.queryByLabelText("Scheduled Deletion")).toBeNull();
-    expect(save().hasAttribute("disabled")).toBe(true);
 
     type("First Name", "Amara");
     type("Last Name", "Okafor");
     type("Email", "amara@example.org");
-    type("Password", "short");
-    expect(save().hasAttribute("disabled")).toBe(true);
     type("Password", "a long enough password");
-    expect(save().hasAttribute("disabled")).toBe(false);
 
-    fireEvent.submit(document.getElementById("user-form")!);
+    fireEvent.click(save());
     await waitFor(() =>
       expect(onSave).toHaveBeenCalledWith({
         firstName: "Amara",
@@ -57,12 +53,16 @@ describe("AdminUserEditPage", () => {
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ lastName: "Okafor-Bello", password: "", disabled: false })));
   });
 
-  it("says a cleared field can't be blank and disables Save", () => {
-    renderPage({ user: amara });
-    type("First Name", "");
-    fireEvent.blur(field("First Name"));
-    expect(screen.getByText("can't be blank")).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
+  it("keeps Save enabled while fields are invalid, and pressing it shows each error without saving", async () => {
+    const { onSave } = renderPage();
+    type("Password", "short");
+    expect(save().hasAttribute("disabled")).toBe(false);
+
+    fireEvent.click(save());
+
+    expect(await screen.findAllByText("can't be blank")).toHaveLength(3);
+    expect(screen.getByText("Password minimum length is 12 characters.")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
   });
 
   it("puts the host's field errors on their fields", async () => {

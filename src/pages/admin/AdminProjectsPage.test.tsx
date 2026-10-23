@@ -112,8 +112,12 @@ describe("AdminProjectsPage form", () => {
   it("creates a project once it has a name and exactly one owner, sending a role per user", async () => {
     const { onSave } = renderPage({ form: { project: null, users } });
     expect(screen.getByRole("heading", { name: "New Project" })).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
     expect(screen.queryByText(/exactly one owner/)).toBeNull();
+    expect(save().hasAttribute("disabled")).toBe(false);
+    fireEvent.click(save());
+    expect(screen.getByText("can't be blank")).toBeTruthy();
+    expect(screen.getByText("Every project must have exactly one owner. Please specify one below.")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
 
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "some name" } });
     expect(screen.getByText("some-name")).toBeTruthy();
@@ -122,10 +126,10 @@ describe("AdminProjectsPage form", () => {
     fireEvent.click(radio("u1", "owner"));
     fireEvent.click(radio("u2", "owner"));
     expect(screen.getByText("A project can have only one owner.")).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
+    fireEvent.click(save());
+    expect(onSave).not.toHaveBeenCalled();
 
     fireEvent.click(radio("u2", "editor"));
-    expect(save().hasAttribute("disabled")).toBe(false);
     fireEvent.submit(document.getElementById("project-form")!);
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ rawName: "some name", roles: { u1: "owner", u2: "editor", u3: "" } }));
   });
@@ -157,7 +161,8 @@ describe("AdminProjectsPage form", () => {
     renderPage({ form: { project: { id: "p1", name: "alpha-project", members: [{ userId: "u1", role: "owner" }] }, users }, onSave });
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "!!!" } });
     expect(screen.getByText("can't be blank")).toBeTruthy();
-    expect(save().hasAttribute("disabled")).toBe(true);
+    fireEvent.click(save());
+    expect(onSave).not.toHaveBeenCalled();
 
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "alpha-project" } });
     fireEvent.submit(document.getElementById("project-form")!);
