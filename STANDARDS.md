@@ -209,9 +209,8 @@ is rewritten.
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
 
-Open: the Generate error toast still lives in `TokensPage.tsx`, and
-Lightning's design system has no toast yet. Move it to the wrapper or give
-Lightning a toast that maps to `put_flash`.
+Open: the Generate error toast still lives in `TokensPage.tsx`. Move it to
+the wrapper.
 
 ## How to add a pattern to a component
 
