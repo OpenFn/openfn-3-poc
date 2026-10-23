@@ -15,14 +15,14 @@ import TextLink from "../../components/TextLink";
 import { useToast } from "../../components/Toast";
 import { useRouter } from "../../routing/router";
 import { finalRunStates } from "../../constants";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import type { LogLine, RunDetail, RunStep, RunWorkflow, StepDataclip } from "../../types/history";
 import { errorMessage } from "../../utils/errors";
 import { shortUuid } from "../../utils/format";
 import { useAction } from "../../utils/useAction";
 
 export interface RunShowPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   projectLabel: string;
   /** The run in the URL; known before the run itself loads. */
   runId: string;

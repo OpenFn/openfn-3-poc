@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import { Breadcrumb, BreadcrumbPicker, Breadcrumbs } from "../Breadcrumbs";
 import PickerButton from "./PickerButton";
 
 interface Props {
-  project: Pick<Project, "id" | "parentId" | "color"> & Partial<Pick<Project, "name">>;
+  project: CurrentProject;
   /** The picker's label ("parent/child" for a sandbox). */
   label: string;
   /** Crumbs between the project and the page, e.g. [["History", "/projects/x/history"]]. */

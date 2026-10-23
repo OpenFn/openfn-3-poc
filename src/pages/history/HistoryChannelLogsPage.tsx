@@ -6,11 +6,11 @@ import ChannelRequestsTable from "../../components/history/ChannelRequestsTable"
 import FilterChip, { FilterMenu } from "../../components/history/FilterChip";
 import { useRouter } from "../../routing/router";
 import type { ChannelLogRow, PageInfo } from "../../types/channels";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface HistoryChannelLogsPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
   /** Whether the Work Orders / Channel Logs tab bar shows (the viewer's experimental features). */

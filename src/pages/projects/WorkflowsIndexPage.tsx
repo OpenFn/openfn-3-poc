@@ -5,13 +5,13 @@ import ProjectMetrics from "../../components/projects/ProjectMetrics";
 import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
 import { useToast } from "../../components/Toast";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import type { ProjectMetrics as Metrics, WorkflowRow, WorkflowsSort } from "../../types/workflows";
 import { errorMessage } from "../../utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface WorkflowsIndexPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
   /** The window the numbers cover, e.g. "last 30 days". */

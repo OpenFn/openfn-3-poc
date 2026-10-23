@@ -9,12 +9,12 @@ import TableTitle from "../../components/TableTitle";
 import { useToast } from "../../components/Toast";
 import { useRouter } from "../../routing/router";
 import type { ChannelForm, ChannelFormValues, ChannelRow } from "../../types/channels";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import { errorMessage } from "../../utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface ChannelsIndexPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
   channels: ChannelRow[];

@@ -4,11 +4,11 @@ import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import DataclipDetailsCard, { DataclipBodyCard } from "../../components/history/DataclipDetailsCard";
 import JsonViewer from "../../components/history/JsonViewer";
 import type { DataclipDetail } from "../../types/history";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import { shortUuid } from "../../utils/format";
 
 export interface DataclipShowPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   projectLabel: string;
   dataclip: DataclipDetail;
   /** The body, pretty-printed; undefined while the host fetches it. Never shown for a wiped dataclip. */

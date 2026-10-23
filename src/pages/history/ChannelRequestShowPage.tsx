@@ -16,7 +16,7 @@ import ChannelTiming from "../../components/history/ChannelTiming";
 import WipedDataViewer from "../../components/history/WipedDataViewer";
 import { errorCategory, humanizeError } from "../../components/history/channelHelpers";
 import type { ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import { shortUuid } from "../../utils/format";
 import { primaryEvent } from "../../utils/history";
 
@@ -24,7 +24,7 @@ const sizeNote = (size: number | null) => (size ? <SectionSizeBadge size={size} 
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface ChannelRequestShowPageProps {
-  project: Pick<Project, "id" | "parentId" | "color">;
+  project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
   /** The request, with its primary event; the host has already checked it belongs to the project. */

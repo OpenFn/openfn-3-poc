@@ -2,13 +2,13 @@ import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import WorkflowHealth from "../../components/projects/health/WorkflowHealth";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import type { ErrorSignatures, HealthQuery, HealthRange, Outcomes, RunVolume } from "../../types/workflow-health";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface WorkflowHealthPageProps {
   /** `historyRetentionPeriod` disables ranges longer than the history the project keeps. */
-  project: Pick<Project, "id" | "parentId" | "color" | "historyRetentionPeriod">;
+  project: CurrentProject & { historyRetentionPeriod: number | null };
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
   /** The workflow named in the heading and the crumbs. */

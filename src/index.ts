@@ -22,14 +22,30 @@ export { default as ProjectsDashboardPage } from "./pages/projects/ProjectsDashb
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/WorkflowsIndexPage";
 
-export type { ChangeEmailResult, ChangeEmailValues, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
-export type { ConfirmAccessValues } from "./pages/auth/AuthConfirmAccessPage";
-export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
+export type { AdminAuditPageProps } from "./pages/admin/AdminAuditPage";
+export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
+export type { AdminCollectionsPageProps } from "./pages/admin/AdminCollectionsPage";
+export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
+export type { AdminProjectsPageProps } from "./pages/admin/AdminProjectsPage";
+export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
+export type { AdminUsersPageProps } from "./pages/admin/AdminUsersPage";
+export type { AuthConfirmAccessPageProps } from "./pages/auth/AuthConfirmAccessPage";
+export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
+export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
+export type { TokensPageProps } from "./pages/profile/TokensPage";
+export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
+export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
+export type { WorkflowsIndexPageProps } from "./pages/projects/WorkflowsIndexPage";
+
+export type { ChangeEmailResult, ChangeEmailValues, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { ConfirmAccessValues } from "./pages/auth/AuthConfirmAccessPage";
+export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
 export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";
 
 export type {
@@ -48,7 +64,7 @@ export type {
 } from "./types/admin";
 export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";
 export type { LogLine, StepDataclip } from "./types/history";
-export type { Project } from "./types/projects";
+export type { CurrentProject } from "./types/projects";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectMetrics, ProjectOverview, WorkflowRow } from "./types/workflows";
 
