@@ -337,7 +337,7 @@ Feature: Workflow health
     Given the triage row "fail:RuntimeError @ Load" shows 2
     When I click "View history" on that row
     Then the flow "flow-workflow-health-drilldown" has started (its S01)
-    And this page stays open in this tab
+    And History opens in this tab, not a new one (changed on purpose; Lightning opened a new tab)
     # TriageTable.tsx:130-137, :154-196; historyUrl.ts:13-36
 
   @S15 @pending
@@ -346,7 +346,7 @@ Feature: Workflow health
     Given "Outcomes" shows "Failed 6"
     When I click "Failed" in the "Outcomes" legend
     Then the flow "flow-workflow-health-drilldown" has started
-    And this page stays open in this tab
+    And History opens in this tab, not a new one (changed on purpose; Lightning opened a new tab)
     # Donut.tsx:87-91, :128-152; OutcomesDonut.tsx:57-76; FailureBreakdownDonut.tsx:66; historyUrl.ts:47-56
     # OutcomesDonut.test.tsx:154-195; FailureBreakdownDonut.test.tsx:133-150
 
