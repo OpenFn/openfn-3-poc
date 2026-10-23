@@ -25,8 +25,9 @@ account.
 ```
 
 Planned additional scope: `support_user` (whether they can open projects that
-allow support access), `disabled`, and `scheduled_deletion` (a timestamp, or
-`null`).
+allow support access), `disabled`, `scheduled_deletion` (a timestamp, or
+`null`), and `has_activity_in_projects` (whether they have created runs, which
+keeps them from ever being removed; superusers and the service account only).
 
 ## List users
 
@@ -40,9 +41,10 @@ GET /api/users?email=ada@example.com
 Paged. `email` matches without regard to case. An `email` that isn't a single
 string answers 400 `invalid_parameter`.
 
-Planned additional scope: `q`, matching the start of a first name, last name
-or email, and `sort`: `email`, `first_name`, `last_name`, `role` or
-`scheduled_deletion`, with a `-` prefix for descending.
+Planned additional scope: `q`, matching any part of a first name, last name,
+email or role without regard to case, and `sort`: `email`, `first_name`,
+`last_name`, `role`, `support_user`, `disabled` or `scheduled_deletion`, with a
+`-` prefix for descending. Users with no `scheduled_deletion` sort last.
 
 ## Get a user
 
@@ -94,7 +96,8 @@ Planned additional scope:
   `last_name` and `terms_accepted: true`, and get role `user`. Lightning emails
   them a confirmation link. On an instance with no superuser yet (`needs_setup`
   on [`GET /api/instance`](./account.md#get-the-instance)), the account made
-  this way is the superuser.
+  this way is the superuser. Either way the response also signs the person
+  in, as Lightning's sign-up and first setup forms do.
 - With a session whose `state` is `signup_pending`, `{"from_sign_in": true}`
   creates the account from what the provider gave, already confirmed and
   linked to the provider, and signs the person in.
@@ -114,8 +117,13 @@ signs the user out of every browser session. Answers 200 with the user.
 
 Planned additional scope:
 
-- `support_user` and `disabled`. Disabling a user signs them out and revokes
-  their access tokens, as deleting does.
+- `support_user` and `disabled`. Disabling a user signs them out of every
+  browser session. Their access tokens are kept but refused while they are
+  disabled.
+- `email`, changed at once with no confirmation, and `scheduled_deletion` (a
+  timestamp, or `null`), as Lightning's user form lets a superuser do. Setting
+  `scheduled_deletion` revokes the user's access tokens. A superuser's
+  `scheduled_deletion` is always `null`.
 - A person can update their own account, with a personal access token or a
   session token:
   - `first_name`, `last_name` and `contact_preference` (`critical` or `any`:
@@ -128,6 +136,8 @@ Planned additional scope:
     through a provider can set its first password this way.
   - `consent` and `ai_disclaimer_accepted` (`true`), with a session token. On
     instances with a consent extension, `consent` holds the person's choices.
+  - `experimental_features` (`true` or `false`), with either token. It is the
+    profile page's experimental features switch, read back on `GET /api/me`.
 
   A person can't change their own `role`, `confirmed`, `support_user` or
   `disabled`.
@@ -144,8 +154,10 @@ Tokens: service account with `users:write`.
 
 Schedules the user for deletion. The user is disabled, signed out of every
 session and their access tokens revoked straight away. They are removed after
-the instance's retention period, unless they have created runs, in which case
-they stay disabled. Answers 204 with no body.
+the instance's retention period, unless they have created runs, project files
+or keychain credentials, in which case they stay disabled. Answers 204 with no
+body. A user who is already scheduled answers 409 `scheduled_for_deletion`
+(see [Immediate purges](./misfits.md#immediate-purges)).
 
 Planned additional scope: a person can schedule their own deletion with a
 session token stepped up. They are signed out straight away, so only a
@@ -156,8 +168,9 @@ superuser or the service account can cancel it.
 > it takes no actor, so it records no audit event, it refuses superusers, and
 > it emails the user. The route should pass the user's own email and the
 > caller as actor.
-> `Lightning.Accounts.delete_user/1` deletes at once, but refuses a user who
-> has created runs, so it doesn't suit the API.
+> `Lightning.Accounts.purge_user/1` deletes at once (the users list's "Delete
+> now" on a scheduled user), but refuses a user who has created runs, so it
+> doesn't suit the API.
 
 ## Cancel a user's deletion
 

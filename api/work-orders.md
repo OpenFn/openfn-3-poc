@@ -19,12 +19,13 @@ Lists are paged and take these filters:
 | --- | --- |
 | `id` | Comma-separated work order ids. |
 | `workflow_id` | UUID. |
-| `state` | Comma-separated: `rejected`, `pending`, `running`, `success`, `failed`, `crashed`, `cancelled`, `killed`, `exception`, `lost`. |
+| `state` | Comma-separated: `rejected`, `pending`, `running`, `success`, `failed`, `crashed`, `cancelled`, `killed`, `exception`, `lost`. These are work order states, not run states: the History page labels `pending` "Enqueued". |
 | `inserted_after`, `inserted_before` | ISO 8601. |
-| `updated_after`, `updated_before` | ISO 8601. |
+| `updated_after`, `updated_before` | ISO 8601, on `updated_at`. A run changing state moves the work order's `last_activity` but not its `updated_at`, so these don't filter by activity. |
 
 Every bad filter is reported together in one 400 `invalid_parameter`. An
-unknown `project_id` answers 404.
+unknown `project_id` answers 404. Lists are ordered by `last_activity`, newest
+first.
 
 Each work order:
 
@@ -40,10 +41,17 @@ Each work order:
 
 Planned additional scope:
 
+- `workflow_id`, `dataclip_id` (the input) and `dataclip_wiped` (`true` once
+  the input's body has been wiped) in each work order's attributes.
+- `last_activity_after`, `last_activity_before`: ISO 8601, on `last_activity`.
+  The History page's default is the last 30 days.
 - `search`: text to find in work orders, with `search_fields`, a
   comma-separated choice of `id`, `dataclip_name`, `body` (the input) and `log`.
-  Defaults to all four. A search counts at most 50 matches, and `meta` says
-  when it stopped counting.
+  Defaults to all four. `id` matches part of the work order's, its runs' or
+  their steps' ids, not dataclip ids. `dataclip_name` matches part of the
+  input's name. `body` and `log` match words starting with the text in the
+  steps' inputs and the runs' log lines. A search counts at most 50 matches,
+  and `meta` says when it stopped counting.
 - `sort`: `inserted_at` or `last_activity`, with a `-` prefix for descending.
   Defaults to `-last_activity`.
 - `include=runs`: adds each work order's runs, in the same shape as
@@ -218,6 +226,9 @@ Lightning builds it in the background.
     "id": "…",
     "attributes": {
       "state": "completed",
+      "filename": "….zip",
+      "created_by_id": "…",
+      "created_by_name": "Ada Lovelace",
       "download_url": "https://.../api/projects/…/history_exports/…/download",
       "inserted_at": "…",
       "updated_at": "…"
@@ -228,8 +239,10 @@ Lightning builds it in the background.
 }
 ```
 
-`state` is `enqueued`, `in_progress`, `completed` or `failed`. `download_url`
-is `null` until the export is `completed`. Fetch it with the same token.
+`state` is `enqueued`, `in_progress`, `completed` or `failed`. `filename` and
+`download_url` are `null` until the export is `completed`. `created_by_id` and
+`created_by_name` are the user who asked for it. Fetch `download_url` with the
+same token.
 
 ### Export history
 
@@ -268,7 +281,8 @@ Tokens: personal access token. Any project member, viewers included. Paged,
 newest first.
 
 > Implementation note: `Lightning.Projects.list_project_files/2`, shown on the
-> project settings History Exports tab. Differences: it isn't paged and
+> project settings History Exports tab. It preloads `created_by`, and the tab
+> shows the basename of each file's `path` as the filename. Differences: it isn't paged and
 > doesn't filter on `type` (`:export` is the only type today). It does no
 > authorisation; the tab is shown to every project member.
 

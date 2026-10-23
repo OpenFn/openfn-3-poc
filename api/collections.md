@@ -47,6 +47,12 @@ Notable errors:
 - 409 `taken` when the name is already used in the project.
 - 402 `exceeds_limit` when creating would go over the plan's limit.
 
+Planned additional scope: a superuser's personal access token, and moving a
+collection to another project by sending its `id` under the new project's
+path, instead of answering 409 `id_taken`. The superuser page at
+`/settings/collections` can already do this: its edit form has a project
+picker, and `Lightning.Collections.update_collection/2` casts `project_id`.
+
 ## List a project's collections
 
 Status: **Private**
@@ -58,18 +64,25 @@ GET /api/projects/:project_id/collections
 Tokens: personal access token of a project owner or admin, or service account
 with `collections:write`. Paged.
 
+| Parameter | Notes |
+| --- | --- |
+| `sort` | `name` (the default) or `byte_size_sum`, with a `-` prefix for descending. |
+
+Each collection has `byte_size_sum`, the bytes its keys and values take up.
+
 ```json
 {
-  "data": [{ "id": "…", "project_id": "…", "name": "patients" }],
+  "data": [{ "id": "…", "project_id": "…", "name": "patients", "byte_size_sum": 20480 }],
   "links": { "self": "…", "first": "…", "last": "…", "next": null, "prev": null }
 }
 ```
 
-Planned additional scope: `byte_size_sum` on each collection, as for getting
-one, and `sort`: `name` or `byte_size_sum`, with a `-` prefix for descending.
-
-> Implementation note: `Lightning.Collections.list_project_collections/2`.
-> Differences: it isn't paged.
+> Implementation note: `Lightning.Collections.list_project_collections/2`,
+> which the project settings Collections tab
+> (`LightningWeb.ProjectLive.CollectionsComponent`) calls on load and on its
+> `sort` event. It returns whole collection records, `byte_size_sum`
+> included, and takes `order_by`, which the tab sets to `name` or
+> `byte_size_sum` in either direction. Differences: it isn't paged.
 
 ## List every collection
 
@@ -169,6 +182,14 @@ entry.
 ```
 
 `cursor` is `null` when there are no more items.
+
+> Implementation note: the Download button on the project settings
+> Collections tab uses the session-cookie route
+> `GET /download/collections/:project_id/:name`
+> (`LightningWeb.CollectionsController.download/2`), authorised by
+> `:access_collection` like this one. It sends every item as one JSON array,
+> as a file named `<name>.json`. There is no API route for that; page through
+> this route with `cursor` and build the file instead.
 
 ### Put one item
 

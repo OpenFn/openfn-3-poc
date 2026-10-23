@@ -33,8 +33,12 @@ Links to projects you can't see are left out. A service account token without
 
 Planned additional scope: `scheduled_deletion` (a timestamp, or `null`),
 `transfer_status` (`pending`, `completed` or `null`) and `environments` (the
-names of its environments, such as `[{"name": "main"}]`). For an `oauth`
-credential, `oauth`: `oauth_client_id`, the `scopes` granted, `expires_at`, and
+names of its environments, such as `[{"name": "main"}]`), `owner` (`id` and
+`email`, which the credentials lists show), and `has_activity_in_projects`
+(`true` once any run step has used it, which decides whether it can still be
+deleted outright). For an `oauth` credential, `oauth`: `oauth_client_id` and
+the client's `name` (the type the lists show), the `scopes` granted,
+`expires_at`, and
 `reauthorization_required` when the provider has refused its refresh token and
 the owner must connect it again in the app. Reading it never refreshes the
 token.
@@ -162,8 +166,15 @@ DELETE /api/credentials/:id
 Tokens: personal access token. Only the owner can delete. Service account
 support is planned.
 
-Answers 204 with no body. A credential that has been used by runs answers 409
-`in_use`. Someone who can see the credential but doesn't own it gets 403.
+Answers 204 with no body. Someone who can see the credential but doesn't own it
+gets 403; anyone else gets 404. This also deletes a credential that is
+scheduled for deletion, which is the app's "Delete now".
+
+A credential that has been used by runs (`has_activity_in_projects`) can't be
+deleted, and should answer 409 `in_use`. Today the route doesn't check first,
+so the delete fails on the foreign key from run steps instead. The app asks
+`Lightning.Credentials.has_activity_in_projects?/1` before offering "Delete
+now".
 
 To delete a credential that has been used, schedule its deletion instead
 (below).
@@ -183,7 +194,8 @@ No body. Unlinks the credential from every project straight away, so jobs using
 it stop getting it, and revokes any OAuth tokens at the provider. Lightning
 empties its bodies after the instance's retention period, and deletes it then
 unless runs have used it. Until then every other route on the credential
-answers 409 `scheduled_for_deletion`. Answers 200 with the credential.
+answers 409 `scheduled_for_deletion`, except deleting it at once and
+cancelling the deletion. Answers 200 with the credential.
 Scheduling one that is already scheduled changes nothing.
 
 This differs from projects, where `DELETE` schedules, because
@@ -435,7 +447,10 @@ Answers 200 with the credential. A credential with no pending transfer answers
 An OAuth client holds the app registration (client id and secret, endpoints and
 scopes) that `oauth` credentials use to get tokens. Its owner can link it to
 projects, and a superuser can make it global, which lists it in every project.
-`client_secret` is never returned.
+`client_secret` is never returned. `mandatory_scopes` and `optional_scopes` are
+comma-separated strings, as Lightning stores them; the credential form splits
+them on commas into the scope checkboxes, with the mandatory ones always
+selected.
 
 ```json
 {
@@ -546,6 +561,8 @@ project, not to a person.
   "name": "Per-district DHIS2",
   "path": "$.district",
   "default_credential_id": "…",
+  "default_credential_name": "Acme DHIS2",
+  "created_by": { "id": "…", "email": "ada@example.com" },
   "inserted_at": "…",
   "updated_at": "…"
 }
@@ -559,14 +576,15 @@ Status: **Private**
 GET /api/projects/:project_id/keychain_credentials
 ```
 
-Tokens: personal access token of a project owner or admin, or service account
-with `credentials:write`. Paged.
+Tokens: personal access token of any project member, as the app shows the
+list to every member, or service account with `credentials:write`. Paged.
 
 > Implementation note:
 > `Lightning.Credentials.list_keychain_credentials_for_project/1`, which the
-> project's credentials tab and the workflow editor call. Differences: it
-> isn't paged and does no authorisation check. The app shows the list to
-> every project member. `:view_keychain_credential` in
+> project's credentials tab and the workflow editor call. It preloads
+> `created_by` and `default_credential`, which give `created_by` and
+> `default_credential_name`. Differences: it isn't paged and does no
+> authorisation check. `:view_keychain_credential` in
 > `Lightning.Policies.Credentials` (owners, admins, and support users where
 > the project allows support, subject to the project's MFA rule) exists, but
 > nothing asks it for the list.
@@ -579,7 +597,8 @@ Status: **Private**
 PUT /api/projects/:project_id/keychain_credentials/:id
 ```
 
-Tokens: as for listing.
+Tokens: personal access token of a project owner or admin, or service account
+with `credentials:write`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -607,7 +626,7 @@ Status: **Private**
 DELETE /api/projects/:project_id/keychain_credentials/:id
 ```
 
-Tokens: as for listing.
+Tokens: as for creating.
 
 Answers 204 with no body. Jobs that used it are left without a credential.
 

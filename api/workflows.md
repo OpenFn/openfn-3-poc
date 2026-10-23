@@ -63,6 +63,10 @@ Planned additional scope: `webhook_auth_method_ids` on webhook triggers, the
 Sending it in an update replaces the trigger's set. Each id must belong to the
 workflow's project.
 
+Planned additional scope: `lock_version`, the version of the workflow's latest
+[snapshot](#workflow-snapshots). A snapshot with the same `lock_version` is the
+current one.
+
 ## List workflows
 
 Status: **Public**
@@ -81,8 +85,28 @@ Planned additional scope:
 - `credential_id`: only workflows with a job that uses this credential. Use it
   before unlinking or deleting a credential to see what would lose it.
 - `q` (a name search), `sort` (`name` or `updated_at`), and paging.
-- `include=stats`: adds the last 30 days' `work_orders_count`,
-  `failed_work_orders_count` and `last_work_order_at` to each workflow.
+- `include=stats`: adds a `stats` object to each workflow, covering the last
+  30 days:
+  - `last_work_order` and `last_failed_work_order`: `{state, updated_at}` of
+    the latest work order, and of the latest one in a failure state, or `null`.
+  - `work_orders`: counts by outcome, `success`, `failed`, `pending` and
+    `cancelled`. `work_orders_count` (their sum) and
+    `failed_work_orders_count` sit beside it in `stats`.
+  - `runs`: counts `success`, `failed` and `pending`.
+  - `step_count` and `step_success_rate` (a percentage to two decimals, of
+    finished steps).
+
+  Work orders are in the window by last activity, runs and steps by when they
+  were created. With it, `sort` also takes `last_work_order_updated_at`,
+  `work_orders_count` and `failed_work_orders_count`. The project's metric
+  cards are sums of `work_orders` and `runs` across its workflows.
+
+> Implementation note: `Lightning.DashboardStats.get_workflows_stats/1`
+> computes `include=stats` for a list of workflows in batched queries, and
+> `sort_workflow_stats/3` and `aggregate_project_metrics/1` do the sorting and
+> the project totals. They name the fields `workorders_count`,
+> `failed_workorders_count`, `grouped_workorders_count` and
+> `grouped_runs_count`.
 
 ## Get a workflow
 
