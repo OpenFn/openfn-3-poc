@@ -5,13 +5,6 @@ import { RouterProvider, type Router } from "../../routing/router";
 import type { ChannelLogRow } from "../../types/channels";
 import HistoryChannelLogsPage from "./HistoryChannelLogsPage";
 
-// Headless UI's menus watch their trigger's size; jsdom has no ResizeObserver.
-globalThis.ResizeObserver ??= class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
-
 const channels = [
   { id: "c1", name: "channel-one" },
   { id: "c2", name: "channel-two" },

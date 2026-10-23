@@ -6,13 +6,6 @@ import { RequestError } from "../../utils/errors";
 import { ToastProvider } from "../../components/Toast";
 import RunShowPage from "./RunShowPage";
 
-// Headless UI's menus watch their trigger's size; jsdom has no ResizeObserver.
-globalThis.ResizeObserver ??= class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
-
 const RUN_ID = "5e9a1c2b-1111-4a4a-8b8b-0123456789ab";
 const WO_ID = "7c1d2e3f-2222-4a4a-8b8b-0123456789ab";
 const DC_IN = "9a8b7c6d-3333-4a4a-8b8b-0123456789ab";
@@ -172,7 +165,7 @@ describe("RunShowPage", () => {
     const { onLogLevelChange } = renderPage({ selectedStepId: "step-a", logLevel: "debug" });
     expect(screen.getByText(/Starting operation 1/)).toBeTruthy();
     expect(screen.getByText(/mapping/)).toBeTruthy();
-    expect(document.querySelector(".bg-yellow-400")).not.toBeNull();
+    expect(document.querySelector("[data-highlighted]")?.textContent).toBe("JOB mapping");
 
     fireEvent.click(screen.getByRole("button", { name: "Log level" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "error" }));

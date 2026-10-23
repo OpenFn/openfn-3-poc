@@ -7,13 +7,6 @@ import type { AdminDeleteUser, AdminUserRow } from "../../types/admin";
 import { RequestError } from "../../utils/errors";
 import AdminUsersPage from "./AdminUsersPage";
 
-// Headless UI's Menu watches its trigger's size; jsdom has no ResizeObserver.
-globalThis.ResizeObserver ??= class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
-
 const rows: AdminUserRow[] = [
   { id: "u1", firstName: "Alice", lastName: "Smith", email: "alice@example.org", role: "user", supportUser: false, disabled: false, scheduledDeletion: null },
   { id: "u2", firstName: "Bob", lastName: "Johnson", email: "bob@example.org", role: "superuser", supportUser: false, disabled: false, scheduledDeletion: "2026-10-21T09:30:00Z" },
