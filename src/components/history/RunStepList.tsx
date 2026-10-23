@@ -53,18 +53,21 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
                   <span role="img" aria-label={clonedStepMessage} title={clonedStepMessage} className="hero-paper-clip-mini mr-1 h-3 w-3" />
                 )}
                 {step.jobName}
-                {/* A link inside the step's link in Lightning; a focusable span here so the DOM stays valid. */}
+                {/* A link inside the step's link in Lightning; a focusable span here so the DOM stays valid.
+                    The icon sits inside it because the icon's mask would clip the focus ring. */}
                 <span
                   role="link"
                   tabIndex={0}
                   aria-label="Inspect Step"
-                  className="hero-document-magnifying-glass-mini ml-1 h-5 w-5 cursor-pointer"
+                  className="ml-1 inline-flex cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                   title="Inspect Step"
                   onClick={open}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") open(e);
                   }}
-                />
+                >
+                  <span className="hero-document-magnifying-glass-mini h-5 w-5" aria-hidden="true" />
+                </span>
                 <span className="grow whitespace-nowrap text-right text-gray-500">
                   <ElapsedTime startedAt={step.startedAt} finishedAt={step.finishedAt} />
                 </span>

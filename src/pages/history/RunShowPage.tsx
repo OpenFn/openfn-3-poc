@@ -245,7 +245,7 @@ export default function RunShowPage({
               }
             />
           </div>
-          <div className="@5xl/main:basis-2/3 flex flex-col gap-4 h-full min-h-0">
+          <div className="@5xl/main:basis-2/3 flex flex-col gap-1 h-full min-h-0">
             <Tabs
               label="Run details"
               active={activeTab}
