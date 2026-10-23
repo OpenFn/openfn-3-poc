@@ -193,7 +193,7 @@ against the workflow as it was.
 
 ### List a workflow's snapshots
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/workflows/:id/snapshots
@@ -210,9 +210,19 @@ Tokens: personal access token. Paged, newest first.
 
 These are the ids `GET /api/provision/:id?snapshots[]=` takes.
 
+> Implementation note: `Lightning.Workflows.Snapshot.get_all_for/1`, reached
+> through the workflow channel's `request_versions` event, which adds the
+> `latest` flag by comparing each `lock_version` with the workflow's.
+> Differences:
+>
+> - it takes a loaded workflow and checks nothing; the channel relies on the
+>   join's `:access_read` check, so the route has to check project access.
+> - it returns every full snapshot, unpaged, ordered by `inserted_at`. The
+>   channel reply leaves out the snapshot `id`, which the route must return.
+
 ### Get a snapshot
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/workflows/:id/snapshots/:snapshot_id
@@ -223,9 +233,20 @@ Tokens: personal access token.
 Returns `{"snapshot": <workflow>}`: the workflow object as it was, with its
 `lock_version`. A snapshot can't be changed.
 
+> Implementation note: `Lightning.Collaboration.WorkflowResolver.resolve/3`
+> with a `version:` option (`resolve_version/3`) builds the workflow from a
+> snapshot when the editor joins a pinned version. The channel checks
+> `:access_read` first. Differences:
+>
+> - it looks the snapshot up by `lock_version`, not by id.
+>   `Lightning.Workflows.Snapshot.get_all_by_ids/2` reads by id but scopes to
+>   the project only, so the route has to check the snapshot's `workflow_id`.
+> - the built workflow drops `positions` and has no `concurrency` or
+>   `enable_job_logs`, since a snapshot doesn't store them.
+
 ## List a workflow's versions
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/workflows/:id/versions
@@ -241,13 +262,23 @@ Each save records a hash of the workflow and where the save came from: `app`
 or `cli`. Comparing hashes tells a CLI whether the app and its local copy have
 moved apart. Consecutive saves from the same source keep one entry.
 
+> Implementation note: `Lightning.WorkflowVersions.history_for/1`, which the
+> provisioning API already returns as a workflow's `version_history`.
+> Differences:
+>
+> - it returns `"source:hash"` strings oldest first, with no `inserted_at`,
+>   and isn't paged. The route has to query `workflow_versions` itself.
+> - it does no authorisation check.
+> - `record_version/3` never squashes the first entry, so the first two
+>   entries can share a source.
+
 ## Workflow templates
 
 A template is a workflow published for anyone on the instance to start from.
 
 ### List workflow templates
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/workflow_templates
@@ -271,9 +302,14 @@ Tokens: personal access token. Paged. Takes `q` (name and description) and
 }
 ```
 
+> Implementation note: `Lightning.WorkflowTemplates.list_templates/0`, through
+> the workflow channel's `list_templates` event. Differences: it returns every
+> template ordered by name, unpaged, and takes no filters. The editor searches
+> on the client, so the route has to add `q`, `tags` and paging.
+
 ### Publish a workflow as a template
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/workflows/:id/template
@@ -290,3 +326,15 @@ Tokens: personal access token of a support user who can open the project.
 Publishes the workflow as it is now. A workflow has at most one template, so
 publishing again updates it. Answers 201 when it creates and 200 when it
 updates.
+
+> Implementation note: `Lightning.WorkflowTemplates.create_template/1`, through
+> the workflow channel's `publish_template` event. The channel checks
+> `:publish_template` (support users who are members, or whose project allows
+> support access). Differences:
+>
+> - the client builds `code` (v2 YAML) and `positions` and sends them, so
+>   nothing on the server publishes "the workflow as it is now". The route can
+>   use `Lightning.Workflows.YamlFormat.V2.serialize_workflow/1`.
+> - it returns `{:ok, template}` either way and doesn't say whether it created
+>   or updated, so the route can't pick 201 or 200 from it alone.
+> - it reads `workflow_id` from a string key only.

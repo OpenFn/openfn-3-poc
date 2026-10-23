@@ -98,7 +98,7 @@ Notable errors:
 
 ## Retry many work orders
 
-Status: **Planned**
+Status: **Private**
 
 ```
 POST /api/projects/:project_id/work_orders/retries
@@ -133,9 +133,26 @@ Notable errors:
 - 429 `too_many_runs` or 402 `exceeds_limit` for run limits, counted on the
   work orders that can be retried.
 
+> Implementation note: the History page's `bulk-rerun` event calls
+> `Lightning.WorkOrders.retry_many/2`, or `retry_many/3` with a job. For a
+> filter it first calls `Lightning.Invocation.search_workorders_for_retry/2`.
+> Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - `retry_many` doesn't check the work orders belong to the project. The app
+>   only passes ids from its own page or search; the route must scope them.
+> - Without a job, every set goes to the background in Oban jobs of 100, and
+>   a later failure is only logged. With a job, it retries one by one, in the
+>   request.
+> - With a job, nothing checks the work orders share its workflow. A work
+>   order whose last run never reached the job is dropped from both counts.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
+
 ## Cancel a work order
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PATCH /api/work_orders/:id
@@ -148,9 +165,21 @@ worker has claimed yet. Answers 200 with the work order. A work order with no
 such run answers 422 `invalid` with a `not_allowed` entry at `#/state`, as for
 [cancelling a run](./runs.md#cancel-a-run).
 
+> Implementation note: the History page's `cancel` event calls
+> `Lightning.WorkOrders.cancel_many/2` with one work order and the project id,
+> which calls `Lightning.Runs.cancel_available_for_work_orders/3`. Differences:
+>
+> - It answers `{:ok, count}` of runs cancelled, not the work order. `0` is
+>   the spec's `not_allowed` case.
+> - It cancels at most 100 runs per call.
+> - It takes the project id and ignores runs outside it, so the route must
+>   look up the work order's project first.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
+
 ## Cancel many work orders
 
-Status: **Planned**
+Status: **Private**
 
 ```
 POST /api/projects/:project_id/work_orders/cancellations
@@ -161,6 +190,21 @@ Tokens: personal access token of a project owner, admin or editor.
 Takes `filter` or `work_order_ids`, as for retrying many. Cancels the runs no
 worker has claimed yet. Answers 202 with `{"cancelled": 12}`. Large sets are
 cancelled in the background.
+
+> Implementation note: the History page's `bulk-cancel` event. Selected work
+> orders go to `Lightning.WorkOrders.cancel_many/2`, in the request. For a
+> filter it calls `Lightning.Invocation.search_workorders_for_cancel/2`, then
+> `Lightning.WorkOrders.cancel_many_async/2`, which queues one
+> `CancelManyWorkOrdersJob` that cancels 100 runs at a time until none are
+> left. Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - The synchronous path cancels at most 100 runs and ignores the rest.
+> - The background path can only count work orders, not runs, so the app
+>   says how many work orders it is cancelling.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
 
 ## History exports
 
@@ -189,7 +233,7 @@ is `null` until the export is `completed`. Fetch it with the same token.
 
 ### Export history
 
-Status: **Planned**
+Status: **Private**
 
 ```
 POST /api/projects/:project_id/history_exports
@@ -200,9 +244,21 @@ Tokens: personal access token of a project owner or admin.
 Body: `{"filter": {…}}`, the filters of the list endpoint. Answers 202 with
 the export, `state` `enqueued`. Lightning also emails you when it is ready.
 
+> Implementation note: the History page's `confirm-export` event calls
+> `Lightning.Invocation.export_workorders/3`. In one transaction it records a
+> `requested` audit event, inserts a `Lightning.Projects.File` and queues
+> `Lightning.WorkOrders.ExportWorker` (one attempt), which emails the user
+> when it completes. Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - It does no authorisation. The event needs the `:run_workflow` policy
+>   action, which also allows editors, not only owners and admins.
+> - A failed export is marked `failed` but sends no email.
+
 ### List history exports
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/projects/:project_id/history_exports
@@ -210,12 +266,28 @@ GET /api/projects/:project_id/history_exports
 
 Tokens: personal access token of a project owner or admin. Paged, newest first.
 
+> Implementation note: `Lightning.Projects.list_project_files/2`, shown on the
+> project settings History Exports tab. Differences: it isn't paged and
+> doesn't filter on `type` (`:export` is the only type today). The tab is
+> shown to every project member, viewers included.
+
 ### Get a history export
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/projects/:project_id/history_exports/:id
 ```
 
 Tokens: personal access token of a project owner or admin.
+
+> Implementation note: no function gets one export; the settings tab reads
+> it from `Lightning.Projects.list_project_files/2`. The download is the
+> session-cookie route `GET /project_files/:id/download`
+> (`LightningWeb.ProjectFileController.download/2`), authorised by
+> `Lightning.Policies.Exports` `:download`. Differences:
+>
+> - That route takes the file id alone, with no project in the URL.
+> - It allows any project member, viewers included.
+> - With cloud storage it redirects to a signed storage URL instead of
+>   serving the file.

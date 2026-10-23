@@ -5,7 +5,7 @@ credential, user and some other records. Events are never changed or deleted.
 
 ## List audit events
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/audit_events
@@ -53,3 +53,19 @@ Each event:
 - `changes` holds only the fields that changed. A `created` event has no
   `before`.
 - Credential bodies recorded in an event's `metadata` are left out.
+
+> Implementation note: `Lightning.Auditing.list_all/1`, which the superuser
+> page at `/settings/audit` (`LightningWeb.AuditLive.Index`) calls with the
+> URL's paging params. It is paged with `Repo.paginate/2`, newest first, and
+> joins users, triggers and repo connections to name the actor. Differences:
+>
+> - it takes no filters. The route has to add `item_type`, `item_id`,
+>   `actor_id`, `event` and the date range.
+> - it does no authorisation check. The page is limited to superusers by the
+>   `:ensure_admin` hook.
+> - `actor_display` is a map of `identifier` (an email, or the service
+>   account's id from `metadata`) and `label` (a name, "GitHub", the trigger
+>   type, "Service account" or "(User deleted)"), not one string.
+> - credential events keep their bodies, encrypted and base64 encoded, in
+>   `metadata.credential_bodies`, and the page shows them. The route has to
+>   drop them.

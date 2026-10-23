@@ -84,7 +84,7 @@ an API key is created, and to a stepped-up session token (below).
 
 ### List a project's webhook auth methods
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/projects/:project_id/webhook_auth_methods
@@ -93,9 +93,16 @@ GET /api/projects/:project_id/webhook_auth_methods
 Tokens: personal access token. Paged. Methods scheduled for deletion are left
 out.
 
+> Implementation note: `Lightning.WebhookAuthMethods.list_for_project/1`, which
+> the project settings page (`LightningWeb.ProjectLive.Settings`, Webhook
+> security panel) shows to any project member. Differences: it returns every
+> method in one list ordered by name, with no paging, and doesn't preload
+> `triggers`. It takes a project struct and checks nothing, so the route has
+> to check membership.
+
 ### Get a webhook auth method
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/projects/:project_id/webhook_auth_methods/:id
@@ -107,9 +114,22 @@ With a [session token](./authentication.md#session-tokens) stepped up, it also
 returns the secret: `api_key`, or `password` for `basic`, so a person can see
 it again in the app.
 
+> Implementation note: `Lightning.WebhookAuthMethods.find_for_project/3`, with
+> `include: [:triggers]`, behind the settings page's `show_modal` event.
+> Differences:
+>
+> - It returns the secrets decrypted on the struct; the route has to drop
+>   them unless the token is stepped up.
+> - Step-up today is `sudo_mode?` in `WebhookAuthMethodFormComponent`: the
+>   `reauthenticate-user` event checks the password or a TOTP code, keeps the
+>   result only in that component's state, and records no audit event.
+> - It doesn't leave out methods scheduled for deletion, and checks nothing.
+>   The page gates it on `:write_webhook_auth_method` (owner or admin) in
+>   `Lightning.Policies.ProjectUsers`.
+
 ### Create or replace a webhook auth method
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/projects/:project_id/webhook_auth_methods/:id
@@ -128,9 +148,27 @@ For `api`, Lightning generates the key. Answers 201 on create and 200 on
 replace. The 201 for an `api` method is the only response that carries the
 whole key, as `api_key`. Store it then.
 
+> Implementation note: `Lightning.WebhookAuthMethods.create_auth_method/2` and
+> `update_auth_method/3`, both with `actor:`, which record a `created` or
+> `updated` audit event. The app reaches them through the `save` event of
+> `LightningWeb.WorkflowLive.WebhookAuthMethodFormComponent`. Differences:
+>
+> - Lightning picks the id on create, so PUT can't be idempotent yet.
+> - The create changeset casts `project_id`, `api_key` and
+>   `scheduled_deletion` from the attributes. The route has to set the
+>   project from the path and drop the others, or a caller can choose its
+>   own key.
+> - A replace only changes `name` (`WebhookAuthMethod.update_changeset/2`),
+>   so a `password` can't be changed at all, not just kept.
+> - The update changeset has no unique constraint on `name`, so a duplicate
+>   name raises `Ecto.ConstraintError` instead of returning an error.
+> - Neither function checks authorisation. The page checks
+>   `:write_webhook_auth_method` (owner or admin) only when it opens the
+>   form, and hides the panel's actions in a sandbox; the functions don't.
+
 ### Delete a webhook auth method
 
-Status: **Planned**
+Status: **Private**
 
 ```
 DELETE /api/projects/:project_id/webhook_auth_methods/:id
@@ -139,5 +177,16 @@ DELETE /api/projects/:project_id/webhook_auth_methods/:id
 Tokens: personal access token of a project owner or admin.
 
 Schedules the method for deletion. Lightning detaches it from its triggers and
-deletes it after the instance's retention period. Answers 204 with no body.
-Deleting one that is already scheduled answers 409 `scheduled_for_deletion`.
+channels straight away, and deletes it after the instance's retention period.
+Answers 204 with no body. Deleting one that is already scheduled answers 409
+`scheduled_for_deletion`.
+
+> Implementation note: `Lightning.WebhookAuthMethods.schedule_for_deletion/2`,
+> from the `perform_deletion` event of
+> `LightningWeb.WorkflowLive.WebhookAuthMethodDeleteModal`. It records a
+> `deleted` audit event and one for each trigger and channel it detaches; the
+> Oban `purge_deleted` job removes the row later. Differences: it checks no
+> authorisation (the page checks `:write_webhook_auth_method`, owner or
+> admin, when it opens the modal), and an already scheduled method comes back
+> as a changeset error on `scheduled_deletion` that the route has to turn
+> into the 409.

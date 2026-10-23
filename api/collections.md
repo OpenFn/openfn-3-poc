@@ -73,7 +73,7 @@ one, and `sort`: `name` or `byte_size_sum`, with a `-` prefix for descending.
 
 ## List every collection
 
-Status: **Planned**
+Status: **Private**
 
 ```
 GET /api/collections
@@ -84,6 +84,17 @@ Tokens: personal access token of a superuser, or service account with
 
 Lists the collections of every project on the instance, in the same shape as
 the project list, with `project_name` added. Takes the same `sort`.
+
+> Implementation note: `Lightning.Collections.list_collections/1`, which the
+> superuser page at `/settings/collections` (`LightningWeb.CollectionLive.Index`)
+> calls on mount and on its `sort` event. It preloads `:project`, so the
+> project name is there, and takes `order_by`, which the page sets to `name`
+> or `byte_size_sum` in either direction. Differences:
+>
+> - it isn't paged.
+> - it does no authorisation check. The page is limited to superusers by the
+>   `:ensure_admin` hook (`:access_admin_space` in `Lightning.Policies.Users`),
+>   so the route has to check the token itself.
 
 ## Delete a collection
 

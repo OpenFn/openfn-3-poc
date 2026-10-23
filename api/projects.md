@@ -131,7 +131,7 @@ Planned additional scope:
 
 ## Set a project's data retention
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/projects/:id/data_retention
@@ -158,9 +158,25 @@ Notable errors:
   period. The periods allowed are in `allowed_retention_periods` on the
   project.
 
+> Implementation note: `Lightning.Projects.update_project/3`, reached through
+> the `save_retention_settings` event in `LightningWeb.ProjectLive.Settings`,
+> which keeps only the three retention fields. Differences:
+>
+> - The policy action is `:edit_data_retention` (owners and admins), checked
+>   by the LiveView. `update_project/3` checks nothing itself.
+> - It checks periods against the fixed list in
+>   `Project.data_retention_options/0` (7, 14, 30, 90, 180 and 365), not the
+>   plan. The plan's periods come from
+>   `Lightning.Projects.ProjectLimiter.get_data_retention_periods/1`, which only
+>   the form uses to build its options.
+> - The email and the audit events follow the two periods only. Changing just
+>   `retention_policy` sends no email and records no event.
+> - `dataclip_retention_period` is cleared for `erase_all` only when a period
+>   is in the same change.
+
 ## Require MFA on a project
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/projects/:id/mfa_requirement
@@ -177,11 +193,25 @@ Notable errors:
 
 - 402 `exceeds_limit` when the plan doesn't include requiring MFA.
 - 422 `invalid` with a `not_allowed` entry at `#/requires_mfa` for a sandbox.
-  A sandbox follows the project it was created from.
+  A sandbox copies the setting from the project it was created from.
+
+> Implementation note: `Lightning.Projects.update_project/3` with
+> `%{requires_mfa: value}` and the caller as actor, which records a
+> `requires_mfa_updated` audit event. The app reaches it through the
+> `toggle-mfa` event in `LightningWeb.ProjectLive.Settings`. Differences:
+>
+> - The policy action is `:edit_project` (owners and admins), checked by the
+>   LiveView, not by `update_project/3`.
+> - The plan check is `UsageLimiter.limit_action/2` with a `:require_mfa`
+>   action, run in the `:limit_mfa` mount hook. `update_project/3` doesn't run
+>   it.
+> - Nothing refuses a sandbox. Only the form disables the switch. A sandbox
+>   copies the flag when it is provisioned and keeps its own copy after that,
+>   and `Lightning.Projects.Scope` reads the sandbox's own flag.
 
 ## Allow support access to a project
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/projects/:id/support_access
@@ -193,6 +223,15 @@ with `projects:write`.
 Body: `{"allow_support_access": true}` or `false`. When it is on, the
 instance's support users can open the project as editors without being
 members. They don't appear in the member list. Answers 200 with the project.
+
+> Implementation note: `Lightning.Projects.update_project/3` with
+> `%{allow_support_access: value}`, through the `toggle_support_access` event
+> in `LightningWeb.ProjectLive.Settings`. With an actor it records an
+> `allow_support_access_updated` audit event, and it broadcasts the change so
+> open sessions update. Differences: the policy action is `:edit_project`
+> (owners and admins), checked by the LiveView, not by `update_project/3`. A
+> support user who also has a membership gets that role, not editor, and the
+> project's MFA requirement applies to support users too.
 
 ## Delete a project
 
@@ -321,7 +360,7 @@ Notable errors:
 
 ## Invite someone new to a project
 
-Status: **Planned**
+Status: **Private**
 
 ```
 POST /api/projects/:project_id/invitations
@@ -348,9 +387,24 @@ Notable errors:
   with `existing` carrying their id, as for `POST /api/users`. A retry is safe.
 - 402 `exceeds_limit` when the plan has no seat for a new member.
 
+> Implementation note: `Lightning.Projects.invite_collaborators/3` takes the
+> project, a list of `%{email, first_name, last_name, role}` and the inviter,
+> creates the users, adds them, and emails each a password reset link. The app
+> reaches it through the `add_collaborators` event in
+> `LightningWeb.ProjectLive.InviteCollaboratorComponent`. Differences:
+>
+> - It takes a list, and the inviter must be a `User`.
+> - The policy action `:add_project_user` (owners and admins), the seat check
+>   (`ProjectLimiter.request_new_user/2`) and the role list (`admin`, `editor`,
+>   `viewer`) are all in the LiveView, not the function.
+> - It doesn't look for an existing account. The LiveView does
+>   (`InvitedCollaborators.validate_collaborators/2`). In the function a taken
+>   email fails registration and returns `{:error, :user_registration_failed}`,
+>   with no id for `existing`.
+
 ## Set your notifications for a project
 
-Status: **Planned**
+Status: **Private**
 
 ```
 PUT /api/projects/:project_id/members/:user_id/notifications
@@ -365,6 +419,18 @@ Tokens: personal access token. Only the member themself can change these.
 
 Answers 200 with the member. Anyone else, whatever their role, gets 403
 `forbidden`.
+
+> Implementation note: `Lightning.Projects.set_notification_pref/3` sets one
+> field on a membership row, through the `set_failure_alert` and `set_digest`
+> events in `LightningWeb.ProjectLive.Settings`. Differences:
+>
+> - One field per call, so setting both isn't atomic.
+> - It takes the membership row, not a user id, and no actor, so it checks
+>   nothing and records no audit event. The policy actions are
+>   `:edit_failure_alerts` and `:edit_digest_alerts` in
+>   `Lightning.Policies.ProjectUsers`, which pass only for the member themself,
+>   and only when the project's MFA requirement is met.
+> - It returns `:unchanged` when nothing changes.
 
 ## Remove a member
 
@@ -458,7 +524,7 @@ Notable errors:
 
 ## Preview a sandbox merge
 
-Status: **Planned**
+Status: **Private**
 
 ```
 POST /api/projects/:project_id/sandboxes/:id/merge_previews
@@ -489,6 +555,24 @@ sandbox was created, so merging would overwrite someone else's work.
 Notable errors: 422 `invalid` with an entry at `#/target_project_id` when the
 target is the sandbox itself, one of its own sandboxes, or scheduled for
 deletion.
+
+> Implementation note: the `open-merge-modal` event in
+> `LightningWeb.SandboxLive.Index` builds this preview, using
+> `Lightning.Projects.MergeProjects.diverged_workflows/2` both ways round
+> (target against sandbox for `diverged`, sandbox against target for
+> `changed`). Differences:
+>
+> - The pairing, the credential list and the target checks are private
+>   LiveView helpers (`build_merge_workflow_list/4`,
+>   `sandbox_only_credentials/2`, `mergeable_target?/3`). They have to move
+>   into `Lightning.Projects.Sandboxes` first.
+> - Each row has one id: the sandbox workflow's, or the target's for a deleted
+>   one. The route has to add the other side.
+> - Credentials are listed by the sandbox's project credential id, not the
+>   credential id, and that is also what `Sandboxes.merge/4` takes.
+> - The app only offers targets where the caller is owner, admin or editor.
+> - It also previews the collections a merge would create
+>   (`Sandboxes.preview_collections/2`).
 
 ## Merge a sandbox
 
