@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useRouter } from "../../routing/router";
-import type { WorkflowRow, WorkflowsSort } from "../../types/workflows";
+import type { SortState } from "../../types/lists";
+import type { WorkflowRow } from "../../types/workflows";
 import { cn } from "../../utils/cn";
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import Toggle from "../Toggle";
@@ -10,24 +11,14 @@ import Button from "../Button";
 import Pill from "../Pill";
 import TextLink from "../TextLink";
 import WorkOrderStatus from "./WorkOrderStatus";
-import { useTableSort, type SortValue } from "../useTableSort";
-
-type SortKey = "name" | "last_workorder_updated_at" | "workorders_count" | "failed_workorders_count" | "enabled";
-
-const sortMap: Record<SortKey, (s: WorkflowRow) => SortValue> = {
-  name: (s) => s.workflow.name,
-  last_workorder_updated_at: (s) => s.lastWorkOrder?.updatedAt ?? null,
-  workorders_count: (s) => s.workordersCount,
-  failed_workorders_count: (s) => s.failedWorkordersCount,
-  enabled: (s) => s.workflow.enabled,
-};
+import { useUrlParams } from "../../utils/useUrlParams";
 
 /**
  * The workflows index table (DashboardComponents.workflows_table): name and
  * last update, latest work order, work order counts (linking to History),
- * failures, the Enabled toggle, and Health / Delete. Every column but Actions
- * sorts, in the browser unless the host passes `sort` and keeps the order in
- * the URL. A row opens the workflow editor. With the lifecycle on (an
+ * failures, the Enabled toggle, and Health / Delete. The server sorts: every
+ * column but Actions links to this URL with `?sort` and `?dir` changed
+ * (the current column flips, another starts ascending). A row opens the workflow editor. With the lifecycle on (an
  * experimental feature) an ordinary project shows the state instead of the
  * switch, and a sandbox's column reads "Turn on".
  */
@@ -50,17 +41,18 @@ export default function WorkflowsTable({
   period?: string;
   lifecycle?: boolean;
   isSandbox?: boolean;
-  sort?: WorkflowsSort | undefined;
+  /** The order the server listed `stats` in. */
+  sort: SortState;
   onToggle?: (workflowId: string, enabled: boolean) => void;
   onDelete?: (workflowId: string) => void;
 }) {
   const { navigate } = useRouter();
-  const local = useTableSort({ rows: stats, sortMap, initialKey: "name" });
-  const rows = sort ? stats : local.rows;
-  const thProps = (key: SortKey) =>
-    sort
-      ? { sortDirection: sort.key === key ? sort.direction : null, onSort: () => sort.onSort(key), sortHref: sort.hrefFor(key) }
-      : local.thProps(key);
+  const { href } = useUrlParams();
+  const thProps = (key: string) => {
+    const current = sort.key === key;
+    const dir = current && sort.direction === "asc" ? "desc" : "asc";
+    return { sortDirection: current ? sort.direction : null, sortHref: href({ sort: key, dir }) };
+  };
   const history = `/projects/${projectId}/history`;
   const stateColumn = lifecycle ? (isSandbox ? "Turn on" : "State") : "Enabled";
 
@@ -97,7 +89,7 @@ export default function WorkflowsTable({
         </Tr>
       }
     >
-      {rows.map((s) => {
+      {stats.map((s) => {
         const wf = s.workflow;
         const on = s.triggerEnabled ?? wf.enabled;
         return (

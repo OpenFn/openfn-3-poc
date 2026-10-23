@@ -33,8 +33,8 @@ const rows: ChannelLogRow[] = [
   },
 ];
 
-function renderPage(props: Partial<React.ComponentProps<typeof HistoryChannelLogsPage>> = {}) {
-  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/history/channels", search: "", hash: "" }) };
+function renderPage(props: Partial<React.ComponentProps<typeof HistoryChannelLogsPage>> = {}, search = "") {
+  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/history/channels", search, hash: "" }) };
   render(
     <RouterProvider value={router}>
       <HistoryChannelLogsPage
@@ -102,7 +102,7 @@ describe("HistoryChannelLogsPage", () => {
   });
 
   it("pages through the URL, keeping the filter", () => {
-    renderPage({ channelId: "c1", page: { number: 1, size: 10, totalEntries: 25 } });
+    renderPage({ channelId: "c1", page: { number: 1, size: 10, totalEntries: 25 } }, "?filters[channel_id]=c1");
     expect(screen.getByRole("link", { name: "2" }).getAttribute("href")).toBe("/projects/p1/history/channels?filters%5Bchannel_id%5D=c1&page=2");
   });
 });

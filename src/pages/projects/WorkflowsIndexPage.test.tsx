@@ -39,8 +39,8 @@ const metrics = {
   runs: { total: 10, pending: 6, success: 2, successRate: 50 },
 };
 
-function renderPage(props: Partial<React.ComponentProps<typeof WorkflowsIndexPage>> = {}) {
-  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/w", search: "", hash: "" }) };
+function renderPage(props: Partial<React.ComponentProps<typeof WorkflowsIndexPage>> = {}, search = "") {
+  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/w", search, hash: "" }) };
   const handlers = {
     onSearch: vi.fn(),
     onClear: vi.fn(),
@@ -59,6 +59,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof WorkflowsIndexPag
           pendingHref="/projects/p1/history?filters[pending]=true"
           failedHref="/projects/p1/history?filters[failed]=true"
           searchTerm=""
+          sort={{ key: "name", direction: "asc" }}
           canCreateWorkflow
           canDeleteWorkflow
           {...handlers}
@@ -129,13 +130,12 @@ describe("WorkflowsIndexPage", () => {
     expect((screen.getByRole("button", { name: "Create new workflow" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it("puts the host's sort in the column links and reports a click", () => {
-    const sort = { key: "name", direction: "asc" as const, hrefFor: (key: string) => `/projects/p1/w?sort=${key}`, onSort: vi.fn() };
-    renderPage({ sort });
-    const name = screen.getByRole("link", { name: "Name" });
-    expect(name.getAttribute("href")).toBe("/projects/p1/w?sort=name");
-    fireEvent.click(name);
-    expect(sort.onSort).toHaveBeenCalledWith("name");
+  it("links each column to the URL that re-sorts it: the current one flips, another starts ascending", () => {
+    renderPage({ searchTerm: "intake" }, "?q=intake&sort=name&dir=asc");
+    expect(screen.getByRole("link", { name: "Name" }).getAttribute("href")).toBe("/projects/p1/w?q=intake&sort=name&dir=desc");
+    expect(screen.getByRole("link", { name: "Work Orders" }).getAttribute("href")).toBe(
+      "/projects/p1/w?q=intake&sort=workorders_count&dir=asc"
+    );
   });
 
   it("says so when the host refuses a switch", async () => {

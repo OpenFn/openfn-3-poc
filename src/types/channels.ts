@@ -111,13 +111,6 @@ export interface ChannelLogRow {
   errorMessage: string | null;
 }
 
-/** One page of a server-paginated list. */
-export interface PageInfo {
-  number: number;
-  size: number;
-  totalEntries: number;
-}
-
 /** What the channel request page shows of a request: the host sends no other id, and only the primary event. */
 export type ChannelRequestDetail = Omit<ChannelRequest, "requestId" | "channelId" | "projectId">;
 

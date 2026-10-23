@@ -1,6 +1,7 @@
 import Pagination from "../Pagination";
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import type { ChannelLogRow, PageInfo } from "../../types/channels";
+import type { ChannelLogRow } from "../../types/channels";
+import type { PageInfo } from "../../types/lists";
 import DateTime from "../DateTime";
 import TextLink from "../TextLink";
 import { ChannelStatePill } from "./StatePill";
@@ -10,13 +11,10 @@ import { shortUuid } from "../../utils/format";
 export default function ChannelRequestsTable({
   rows,
   page,
-  pageHref,
   projectId,
 }: {
   rows: ChannelLogRow[];
   page: PageInfo;
-  /** The URL of a page, keeping the channel filter. */
-  pageHref: (page: number) => string;
   projectId: string;
 }) {
   return (
@@ -32,7 +30,7 @@ export default function ChannelRequestsTable({
           <Th>Error Message</Th>
         </Tr>
       }
-      footer={<Pagination pageNumber={page.number} pageSize={page.size} totalEntries={page.totalEntries} pageHref={pageHref} />}
+      footer={<Pagination page={page} />}
     >
       {rows.length === 0 ? (
         <Tr>
