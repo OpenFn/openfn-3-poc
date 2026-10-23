@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
@@ -14,6 +13,7 @@ import StepDataclipViewer from "../../components/history/StepDataclipViewer";
 import Tabs from "../../components/Tabs";
 import TextLink from "../../components/TextLink";
 import { useToast } from "../../components/Toast";
+import { useRouter } from "../../routing/router";
 import { finalRunStates } from "../../constants";
 import type { Project } from "../../types/projects";
 import type { LogLine, RunDetail, RunStep, RunWorkflow, StepDataclip } from "../../types/history";
@@ -54,11 +54,7 @@ export interface RunShowPageProps {
 type TabId = "log" | "input" | "output";
 const tabIds: TabId[] = ["log", "input", "output"];
 
-/** The tab in the URL hash, as Lightning's TabbedContainer reads it. */
-function tabFromHash(): TabId {
-  const hash = window.location.hash.replace("#", "");
-  return (tabIds as string[]).includes(hash) ? (hash as TabId) : "log";
-}
+const isTabId = (id: string): id is TabId => (tabIds as string[]).includes(id);
 
 /** "2026-10-14 at 09:31:12" (Lightning's `format_date(…, "%F at %T")`, in UTC). */
 function snapshotDate(iso: string) {
@@ -101,13 +97,13 @@ export default function RunShowPage({
   onCancel,
   onLogLevelChange,
 }: RunShowPageProps) {
-  const [tab, setTab] = useState<TabId>(tabFromHash);
-  // Back and forward move between tabs, as the old TabbedContainer hook did.
-  useEffect(() => {
-    const onHashChange = () => setTab(tabFromHash());
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, []);
+  const { navigate, useLocation } = useRouter();
+  const { pathname, search, hash } = useLocation();
+  // The tab is in the URL hash, as Lightning's TabbedContainer reads it; no
+  // tab named means Log. Step links carry the hash, so every history entry
+  // names its own tab and Back and Forward move between them.
+  const hashTab = hash.slice(1);
+  const tab: TabId = isTabId(hashTab) ? hashTab : "log";
   const toast = useToast();
   const cancel = useAction(onCancel, { onError: (e) => toast(errorMessage(e), "error") });
   const selectedStep = steps.find((s) => s.id === selectedStepId);
@@ -171,8 +167,9 @@ export default function RunShowPage({
   }
 
   const selectTab = (next: TabId) => {
-    setTab(next);
-    window.location.hash = next;
+    // The full path: a hash-only navigate would drop `?step=`. The open tab
+    // adds no history entry, so Back still leaves it.
+    if (`#${next}` !== hash) navigate(`${pathname}${search}#${next}`);
   };
 
   const waitingMessage =
@@ -219,7 +216,7 @@ export default function RunShowPage({
               </DetailItem>
               {run.state === "available" && canRunWorkflow && (
                 <DetailItem label="Action">
-                  <Button size="sm" theme="secondary" onClick={() => void cancel.run()} disabled={cancel.pending}>
+                  <Button size="sm" theme="secondary" onClick={() => void cancel.run()} pending={cancel.pending}>
                     Cancel
                   </Button>
                 </DetailItem>

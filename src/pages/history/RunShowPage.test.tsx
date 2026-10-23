@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import type { LogLine, RunDetail, RunStep } from "../../types/history";
 import { RequestError } from "../../utils/errors";
@@ -64,15 +64,20 @@ const logs: LogLine[] = [
   { timestamp: "2026-10-14T09:30:01.200Z", source: "JOB", level: "debug", message: "mapping", stepId: "step-a" },
 ];
 
-function renderPage(props: Partial<React.ComponentProps<typeof RunShowPage>> = {}) {
+function renderPage(props: Partial<React.ComponentProps<typeof RunShowPage>> = {}, initialHash = "") {
+  let hash = initialHash;
   const router: Router = {
-    navigate: vi.fn(),
+    // Moves the hash the way a real router would.
+    navigate: vi.fn((to: string) => {
+      const i = to.indexOf("#");
+      goTo(i < 0 ? "" : to.slice(i));
+    }),
     useHref: (to) => to,
-    useLocation: () => ({ pathname: `/projects/p1/runs/${RUN_ID}`, search: "", hash: "" }),
+    useLocation: () => ({ pathname: `/projects/p1/runs/${RUN_ID}`, search: "?step=step-a", hash }),
   };
   const onCancel = vi.fn(() => Promise.resolve());
   const onLogLevelChange = vi.fn();
-  render(
+  const page = () => (
     <RouterProvider value={router}>
       <ToastProvider>
         <RunShowPage
@@ -99,19 +104,18 @@ function renderPage(props: Partial<React.ComponentProps<typeof RunShowPage>> = {
       </ToastProvider>
     </RouterProvider>
   );
-  return { router, onCancel, onLogLevelChange };
+  const { rerender } = render(page());
+  /** Moves to another history entry, as Back or Forward would. */
+  const goTo = (next: string) => {
+    hash = next;
+    rerender(page());
+  };
+  return { router, onCancel, onLogLevelChange, goTo };
 }
 
 const detail = () => document.getElementById(`run-detail-${RUN_ID}`)!;
 
 describe("RunShowPage", () => {
-  beforeEach(() => {
-    window.location.hash = "";
-  });
-  afterEach(() => {
-    window.location.hash = "";
-  });
-
   it("shows the loading rows before the run arrives, and the error when it never does", () => {
     const { unmount } = (() => {
       renderPage({ loading: true, run: null, workflow: null, steps: [] });
@@ -189,11 +193,11 @@ describe("RunShowPage", () => {
   });
 
   it("keeps Input and Output closed until a step is selected, then opens them through the hash", () => {
-    renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } });
+    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } });
     const input = screen.getByRole("tab", { name: "Input" });
     expect(input.getAttribute("aria-disabled")).not.toBe("true");
     fireEvent.click(input);
-    expect(window.location.hash).toBe("#input");
+    expect(router.navigate).toHaveBeenCalledWith(`/projects/p1/runs/${RUN_ID}?step=step-a#input`);
     expect(screen.getByText(/"x"/)).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: "Output" }));
@@ -201,11 +205,26 @@ describe("RunShowPage", () => {
   });
 
   it("starts on the tab in the URL hash", () => {
-    window.location.hash = "#output";
-    renderPage({ selectedStepId: "step-a", outputDataclip: { id: DC_OUT, wiped: true } });
+    renderPage({ selectedStepId: "step-a", outputDataclip: { id: DC_OUT, wiped: true } }, "#output");
     expect(screen.getByRole("tab", { name: "Output" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText("No Output Data here!")).toBeTruthy();
     expect(screen.getByText("project admins").getAttribute("title")).toBe("amy@example.org");
+  });
+
+  it("goes back to Log when the URL names no tab, and step links keep the tab that is open", () => {
+    const { goTo } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } }, "#input");
+    expect(screen.getByRole("tab", { name: "Input" }).getAttribute("aria-selected")).toBe("true");
+    const b = document.querySelector("[data-step-id='step-b']") as HTMLElement;
+    expect(within(b).getByRole("link", { name: /Post to OpenHIM/ }).getAttribute("href")).toBe("?step=step-b#input");
+
+    goTo("");
+    expect(screen.getByRole("tab", { name: "Log" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("adds no history entry when the open tab is clicked again", () => {
+    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } }, "#input");
+    fireEvent.click(screen.getByRole("tab", { name: "Input" }));
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it("disables Input and Output when the URL names a step the run does not have", () => {
@@ -228,5 +247,11 @@ describe("RunShowPage", () => {
     });
     expect(onCancel).toHaveBeenCalled();
     expect(screen.getByText("Run not found.")).toBeTruthy();
+  });
+
+  it("shows Cancel as busy while the cancel runs", () => {
+    renderPage({ run: { ...run, state: "available" }, onCancel: () => new Promise(() => {}) });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByText("Cancel").closest("button")!.getAttribute("aria-busy")).toBe("true");
   });
 });

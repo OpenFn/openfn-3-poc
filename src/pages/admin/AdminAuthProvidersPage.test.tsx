@@ -124,6 +124,20 @@ describe("AdminAuthProvidersPage", () => {
     expect(screen.queryByRole("button", { name: "Test" })).toBeNull();
   });
 
+  it("shows a refused save or remove in a danger alert", async () => {
+    renderPage({
+      provider: existing,
+      onSave: vi.fn().mockRejectedValue(new RequestError("Could not reach the provider.")),
+      onRemove: vi.fn().mockRejectedValue(new RequestError("You are not authorized to perform this action.")),
+    });
+    fireEvent.submit(document.getElementById("auth-provider-form")!);
+    const saveAlert = await screen.findByText("Could not reach the provider.");
+    expect(saveAlert.closest("[data-ui=alert]")!.getAttribute("data-variant")).toBe("danger");
+    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+    const removeAlert = await screen.findByText("You are not authorized to perform this action.");
+    expect(removeAlert.closest("[data-ui=alert]")!.getAttribute("data-variant")).toBe("danger");
+  });
+
   it("puts the host's field errors on their fields", async () => {
     const onSave = vi.fn().mockRejectedValue(
       new RequestError("Please fix the errors below.", {

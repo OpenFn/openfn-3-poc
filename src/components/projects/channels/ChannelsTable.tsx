@@ -88,16 +88,12 @@ export default function ChannelsTable({
             </Td>
             <Td actions>
               {canEdit && (
-                <Button theme="secondary" size="sm" onClick={() => onEdit?.(channel.id)}>
+                <Button theme="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
                   Edit
                 </Button>
               )}
               {canDelete && (
-                <Button
-                  theme="danger"
-                  size="sm"
-                  onClick={() => setDeleting(channel)}
-                >
+                <Button theme="danger" size="xs" onClick={() => setDeleting(channel)}>
                   Delete
                 </Button>
               )}
@@ -117,9 +113,7 @@ export default function ChannelsTable({
           confirmLabel="Delete"
           tone="danger"
         >
-          <p>
-            Delete <span className="font-medium">{deleting.name}</span>? This cannot be undone.
-          </p>
+          <p>{`Delete "${deleting.name}"? This cannot be undone.`}</p>
         </ConfirmModal>
       )}
     </>

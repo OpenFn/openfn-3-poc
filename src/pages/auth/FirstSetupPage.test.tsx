@@ -23,6 +23,14 @@ describe("FirstSetupPage", () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
+  it("flags an email that isn't one before saving", async () => {
+    const onSave = renderPage();
+    fill("email", "admin");
+    submit();
+    expect(await screen.findByText("must be a valid email address")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it("saves the five fields through the host", async () => {
     const onSave = renderPage();
     fill("first_name", "Test");

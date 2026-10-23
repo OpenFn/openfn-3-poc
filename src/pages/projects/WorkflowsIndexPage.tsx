@@ -7,6 +7,7 @@ import WorkflowsTable from "../../components/projects/WorkflowsTable";
 import { useToast } from "../../components/Toast";
 import type { Project } from "../../types/projects";
 import type { ProjectMetrics as Metrics, WorkflowRow, WorkflowsSort } from "../../types/workflows";
+import { errorMessage } from "../../utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface WorkflowsIndexPageProps {
@@ -66,7 +67,7 @@ export default function WorkflowsIndexPage({
 }: WorkflowsIndexPageProps) {
   const toast = useToast();
   // The host announces success (its flash); a refusal or a lost connection is said here.
-  const failed = (error: unknown) => toast(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
+  const failed = (error: unknown) => toast(errorMessage(error), "error");
   return (
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} />} />}>
       <Centered>

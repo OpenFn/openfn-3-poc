@@ -37,6 +37,8 @@ export default function Toggle({ checked, onChange, label, note, description, di
       // An unlabelled switch is named by its tooltip, as Lightning's toggle input is.
       aria-label={label || labelledBy ? undefined : tooltip}
       disabled={disabled}
+      // A disabled button gets no tooltip focus or aria-describedby, so its reason goes in title as well (as Button does). An enabled one has the Tooltip alone.
+      title={disabled ? tooltip : undefined}
       data-ui="toggle"
       onClick={() => onChange?.(!checked)}
       className={cn(
@@ -60,7 +62,12 @@ export default function Toggle({ checked, onChange, label, note, description, di
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-3">
-        {tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button}
+        {/* Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper. */}
+        {tooltip ? (
+          <Tooltip content={tooltip}>{disabled ? <span className="inline-flex">{button}</span> : button}</Tooltip>
+        ) : (
+          button
+        )}
         <input type="checkbox" name={name} checked={checked} readOnly tabIndex={-1} aria-hidden="true" className="hidden" />
         {label && (
           <span id={labelId} className="text-sm text-gray-500">

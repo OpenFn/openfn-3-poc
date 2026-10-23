@@ -107,6 +107,23 @@ export function MenuItem({ icon, to, href, onClick, selected, tone = "default", 
   );
 }
 
+/**
+ * An inline link inside other menu content, e.g. a notice's "Turn off in
+ * your profile". A menu item, so the arrow keys reach it and a click closes
+ * the menu; it takes its colour from the text around it.
+ */
+export function MenuLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <HeadlessMenuItem
+      as={Link}
+      to={to}
+      className="font-medium underline underline-offset-2 data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary-600"
+    >
+      {children}
+    </HeadlessMenuItem>
+  );
+}
+
 /** A labelled group of items. */
 export function MenuSection({ heading, children }: { heading?: ReactNode; children: ReactNode }) {
   return (

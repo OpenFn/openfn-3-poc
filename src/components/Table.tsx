@@ -1,4 +1,5 @@
 import type { MouseEvent, ReactNode, TdHTMLAttributes } from "react";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 
 /**
@@ -118,8 +119,8 @@ export function Th({
       className={cn("text-sm font-semibold text-gray-900 select-none whitespace-nowrap", alignClasses[align], className)}
     >
       {onSort && sortHref ? (
-        <a
-          href={sortHref}
+        <Link
+          to={sortHref}
           onClick={(e) => {
             if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             e.preventDefault();
@@ -128,7 +129,7 @@ export function Th({
           className="group inline-flex items-center"
         >
           {sortContent}
-        </a>
+        </Link>
       ) : onSort ? (
         <button type="button" onClick={onSort} className="group inline-flex items-center">
           {sortContent}

@@ -142,9 +142,9 @@ needs the same four treatments: loading, not found, forbidden, error.
 `ConfirmModal` is the one way to confirm a destructive action. It supports
 type-to-confirm, async `onConfirm` (pattern 1), and stays open on failure.
 
-Retire: `window.confirm` (`CredentialFormModal`, `ChannelsTable`,
-`WorkflowsTable`), the bespoke `UserDeletionModal` and
-`CredentialDeletionModal` (rebuild on `ConfirmModal` with `confirmation`).
+Retire: `window.confirm` (`CredentialFormModal`, `WorkflowsTable`), the
+bespoke `UserDeletionModal` and `CredentialDeletionModal` (rebuild on
+`ConfirmModal` with `confirmation`).
 The `/…/delete` routes stay, because Lightning has them; they open a
 `ConfirmModal`.
 

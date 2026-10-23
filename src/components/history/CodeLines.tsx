@@ -21,18 +21,20 @@ export default function CodeLines({
   className?: string;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
-  const first = highlighted?.size ? Math.min(...highlighted) : null;
+  // A loop, not Math.min(...highlighted), which overflows the stack on a big set.
+  let first: number | null = null;
+  for (const n of highlighted ?? []) if (first === null || n < first) first = n;
   useEffect(() => {
-    if (first === null) return;
-    const row = scroller.current?.querySelector(`[data-line="${first}"]`);
-    // jsdom has no scrollIntoView.
-    if (row && typeof row.scrollIntoView === "function") row.scrollIntoView({ block: "start" });
+    if (first === null || !scroller.current) return;
+    const row = scroller.current.querySelector<HTMLElement>(`[data-line="${first}"]`);
+    // Scroll only this box; scrollIntoView would scroll the page too.
+    if (row) scroller.current.scrollTop = row.offsetTop;
   }, [first]);
 
   return (
     <div
       ref={scroller}
-      className={cn("h-full overflow-auto bg-gray-700 text-sm/5 text-gray-200", className)}
+      className={cn("relative h-full overflow-auto bg-gray-700 text-sm/5 text-gray-200", className)}
       style={{ fontFamily: "'Fira Code', 'Fira Code VF', ui-monospace, monospace", fontVariantLigatures: "normal" }}
     >
       <div className="min-w-full w-max">

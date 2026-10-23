@@ -34,4 +34,10 @@ describe("AdminMaintenancePage", () => {
     fireEvent.click(document.getElementById("refresh-adaptors-button")!);
     await waitFor(() => expect(screen.getByText("You are not authorized to perform this action.")).toBeTruthy());
   });
+
+  it("says something went wrong when the refusal has no message", async () => {
+    renderPage({ onRefreshIcons: vi.fn().mockRejectedValue(new Error("")) });
+    fireEvent.click(document.getElementById("refresh-icons-button")!);
+    expect(await screen.findByText("Something went wrong. Please try again.")).toBeTruthy();
+  });
 });

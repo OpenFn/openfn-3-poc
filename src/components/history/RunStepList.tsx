@@ -26,7 +26,9 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
   /** Where "Inspect Step" goes; defaults to the editor on this run and job. */
   inspectPath?: (step: S) => string;
 }) {
-  const { navigate } = useRouter();
+  const { navigate, useLocation } = useRouter();
+  // Step links keep the open tab (`#input`), so a step click doesn't reset it.
+  const { hash } = useLocation();
   const inspect = inspectPath ?? ((step: S) => inspectStepPath(projectId, workflowId, run, step));
   return (
     <ul role="list" className="-mb-8 flex-1">
@@ -41,7 +43,7 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
         return (
           <li key={step.id} data-step-id={step.id} className="p-2">
             <Link
-              to={`?step=${step.id}`}
+              to={`?step=${step.id}${hash}`}
               className={cn(
                 "flex items-center gap-3 border-r-4 text-sm",
                 selected ? "border-primary-500 font-semibold" : "border-transparent hover:border-gray-300"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { authRedirectUri } from "../../utils/urls";
 import type { AuthProvider, AuthProviderValues } from "../../types/admin";
+import Alert from "../Alert";
 import Button from "../Button";
 import Card from "../Card";
 import Heading from "../Heading";
@@ -184,11 +185,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               checked={values.allowUnverifiedEmail}
               onChange={(e) => set("allowUnverifiedEmail", e.target.checked)}
             />
-            {generalError && (
-              <p role="alert" className="text-sm text-red-600">
-                {generalError}
-              </p>
-            )}
+            {generalError && <Alert type="danger">{generalError}</Alert>}
             <div className="flex justify-between sm:border-t sm:border-gray-200 sm:pt-4">
               <Button type="submit" disabled={!valid} pending={save.pending}>
                 Save
@@ -226,11 +223,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               <div className="mt-auto space-y-2">
                 <Heading size="sm">Remove</Heading>
                 <p>Deletes the Authentication Configuration, and disables external authentication for Lightning.</p>
-                {remove.error && (
-                  <p role="alert" className="text-sm text-red-600">
-                    {errorMessage(remove.error)}
-                  </p>
-                )}
+                {remove.error && <Alert type="danger">{errorMessage(remove.error)}</Alert>}
                 <Button theme="danger" onClick={() => void remove.run()} pending={remove.pending}>
                   <span className="hero-trash h-4 w-4" />
                   Remove

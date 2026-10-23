@@ -87,8 +87,9 @@ export default function ChannelsIndexPageReplica() {
       onSave={async () => {
         await simulateRequest();
         toast(editing ? "Channel updated successfully." : "Channel created successfully.");
-        // The host owns the form's route, so it closes the form.
-        navigate(`/projects/${project.id}/channels`);
+        // The host owns the form's route, so it closes the form. Replace, as
+        // Cancel does, so Back doesn't reopen it.
+        navigate(`/projects/${project.id}/channels`, { replace: true });
       }}
     />
   );

@@ -55,6 +55,7 @@ export default function App() {
     <Routes>
       {/* Auth and onboarding: no side menu. */}
       <Route path="/users/log_in" element={<AuthLoginPage />} /> {/* auth-login */}
+      <Route path="/users/log_out" element={<Navigate to="/users/log_in" replace />} />
       <Route path="/users/register" element={<AuthRegisterPage />} /> {/* auth-register */}
       <Route path="/users/reset_password" element={<AuthResetPasswordPage />} /> {/* auth-reset-password */}
       <Route path="/users/reset_password/:token" element={<AuthResetPasswordPage />} />

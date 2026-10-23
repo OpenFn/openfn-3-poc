@@ -34,8 +34,8 @@ const options = {
   authMethodOptions: [{ id: "wam1", name: "API Key Auth" }],
 };
 
-function renderPage(props: Partial<React.ComponentProps<typeof ChannelsIndexPage>> = {}) {
-  const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/projects/p1/channels", search: "", hash: "" }) };
+function renderPage(props: Partial<React.ComponentProps<typeof ChannelsIndexPage>> = {}, useHref: Router["useHref"] = (to) => to) {
+  const router: Router = { navigate: vi.fn(), useHref, useLocation: () => ({ pathname: "/projects/p1/channels", search: "", hash: "" }) };
   const handlers = {
     onToggle: vi.fn().mockResolvedValue(undefined),
     onDelete: vi.fn().mockResolvedValue(undefined),
@@ -83,16 +83,34 @@ describe("ChannelsIndexPage", () => {
     fireEvent.click(rowOf("idle").querySelector("[role=switch]")!);
     expect(onToggle).toHaveBeenCalledWith("c2", true);
 
+    // Row actions are the small xs buttons.
+    expect(within(rowOf("idle")).getByRole("button", { name: "Edit" }).className.split(" ")).toContain("py-1");
+    expect(within(rowOf("idle")).getByRole("button", { name: "Delete" }).className.split(" ")).toContain("py-1");
     fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Edit" }));
     expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/c2/edit");
 
     fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete" }));
     const dialog = screen.getByRole("dialog");
-    expect(dialog.textContent).toContain("Delete idle? This cannot be undone.");
+    expect(dialog.textContent).toContain('Delete "idle"? This cannot be undone.');
     expect(onDelete).not.toHaveBeenCalled();
     fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
     await waitFor(() => expect(onDelete).toHaveBeenCalledWith("c2"));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the delete dialog open with the reason when the host refuses", async () => {
+    const onDelete = vi.fn().mockRejectedValue(new RequestError("You are not authorized to perform this action."));
+    renderPage({ onDelete });
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete" }));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(onDelete).toHaveBeenCalledWith("c2"));
+    expect(await within(screen.getByRole("dialog")).findByText("You are not authorized to perform this action.")).toBeTruthy();
+  });
+
+  it("says something went wrong when a switch fails without a message", async () => {
+    renderPage({ onToggle: vi.fn().mockRejectedValue(new Error("")) });
+    fireEvent.click(rowOf("idle").querySelector("[role=switch]")!);
+    expect(await screen.findByText("Something went wrong. Please try again.")).toBeTruthy();
   });
 
   it("closes the form by replacing the history entry, so Back doesn't reopen it", () => {
@@ -118,7 +136,8 @@ describe("ChannelsIndexPage", () => {
   });
 
   it("shows the empty state, the stat cards and the form's options and links", () => {
-    renderPage({ channels: [], totalChannels: 0, totalRequests: 0, form: options });
+    // A hash router, so the links must go through it to stay in the app.
+    renderPage({ channels: [], totalChannels: 0, totalRequests: 0, form: options }, (to) => "#" + to);
     expect(screen.getByText("No channels found.")).toBeTruthy();
     expect(screen.getByText("Total Channels")).toBeTruthy();
     expect(screen.getByText("Total Requests")).toBeTruthy();
@@ -130,8 +149,8 @@ describe("ChannelsIndexPage", () => {
     ]);
     const links = screen.getAllByRole("link", { name: "Add New" });
     expect(links.map((a) => [a.getAttribute("href"), a.getAttribute("target")])).toEqual([
-      ["/projects/p1/settings#credentials", "_blank"],
-      ["/projects/p1/settings#webhook_security", "_blank"],
+      ["#/projects/p1/settings#credentials", "_blank"],
+      ["#/projects/p1/settings#webhook_security", "_blank"],
     ]);
   });
 

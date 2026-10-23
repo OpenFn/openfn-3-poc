@@ -117,6 +117,12 @@ describe("WorkflowsIndexPage", () => {
     confirm.mockRestore();
   });
 
+  it("says something went wrong when a switch fails without a message", async () => {
+    renderPage({ onToggle: vi.fn().mockRejectedValue(new Error("")) });
+    fireEvent.click(screen.getByRole("switch", { name: "This workflow is inactive (manual runs only)" }));
+    expect(await screen.findByText("Something went wrong. Please try again.")).toBeTruthy();
+  });
+
   it("hides Delete and disables Create without the permissions", () => {
     renderPage({ canCreateWorkflow: false, canDeleteWorkflow: false });
     expect(screen.queryByText("Delete")).toBeNull();

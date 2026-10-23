@@ -1,4 +1,5 @@
 import type { MouseEvent, ReactNode } from "react";
+import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 
 interface Props {
@@ -46,9 +47,9 @@ function PageControl({
     onPage(n);
   };
   return (
-    <a href={pageHref(n)} onClick={onClick} className={className} {...rest}>
+    <Link to={pageHref(n)} onClick={onClick} className={className} {...rest}>
       {children}
-    </a>
+    </Link>
   );
 }
 

@@ -106,7 +106,7 @@ function HintWithLink({ href, children }: { href: string; children: string }) {
   return (
     <>
       {children}{" "}
-      <TextLink href={href} target="_blank" className="text-xs">
+      <TextLink to={href} target="_blank" className="text-xs">
         Add New
       </TextLink>
     </>

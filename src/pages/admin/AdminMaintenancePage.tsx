@@ -2,6 +2,7 @@ import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import MaintenanceCard from "../../components/admin/MaintenanceCard";
 import { useToast } from "../../components/Toast";
+import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -20,7 +21,7 @@ export interface AdminMaintenancePageProps {
  */
 export default function AdminMaintenancePage({ onRefreshAdaptors, onRefreshIcons }: AdminMaintenancePageProps) {
   const toast = useToast();
-  const failed = (error: unknown) => toast(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
+  const failed = (error: unknown) => toast(errorMessage(error), "error");
   const adaptors = useAction(onRefreshAdaptors, { onError: failed });
   const icons = useAction(onRefreshIcons, { onError: failed });
   return (

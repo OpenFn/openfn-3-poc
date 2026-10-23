@@ -5,7 +5,7 @@ import { PasswordInput, TextInput } from "../../components/Inputs";
 import { Centered, PageContent } from "../../components/PageContent";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
+import { blank, isValidEmail } from "../../utils/validate";
 
 export interface FirstSetupValues {
   firstName: string;
@@ -34,7 +34,7 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
     validate: ({ firstName, lastName, email, password, passwordConfirmation }) => ({
       firstName: blank(firstName),
       lastName: blank(lastName),
-      email: blank(email),
+      email: email.trim() && !isValidEmail(email) ? ["must be a valid email address"] : blank(email),
       password: password.length < 12 ? ["Password minimum length is 12 characters."] : [],
       passwordConfirmation: passwordConfirmation !== password ? ["does not match confirmation"] : [],
     }),

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
 import type { Project } from "../../types/projects";
@@ -150,9 +150,8 @@ export function SidebarLogo({ releaseLabel, collapsed = false }: { releaseLabel:
  * Lightning's side menu (layouts/live.html.heex and settings.html.heex): the
  * user menu in a dark h-20 bar, the menu items for where you are, support or
  * admin links pinned low, then the OpenFn logo, version and collapse toggle.
- * Ctrl+M collapses it, and a collapsed menu expands after resting the
- * pointer on it, as in Lightning. Props only: the host says who is signed
- * in and where we are.
+ * Ctrl+M collapses it. Props only: the host says who is signed in and where
+ * we are.
  */
 export default function Sidebar({
   variant,
@@ -177,19 +176,6 @@ export default function Sidebar({
     return () => window.removeEventListener("keydown", onKey);
   }, [onToggle]);
 
-  // Resting the pointer on a collapsed menu expands it after half a second.
-  const [hoverExpanded, setHoverExpanded] = useState(false);
-  const hoverTimer = useRef<number | null>(null);
-  const onMouseEnter = () => {
-    if (!collapsed) return;
-    hoverTimer.current = window.setTimeout(() => setHoverExpanded(true), 500);
-  };
-  const onMouseLeave = () => {
-    if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
-    hoverTimer.current = null;
-    setHoverExpanded(false);
-  };
-
   return (
     <>
       {/* Placeholder keeps the content column from sliding under the fixed panel. */}
@@ -198,9 +184,7 @@ export default function Sidebar({
         id="sidebar-panel"
         data-ui="sidebar"
         data-collapsed={String(collapsed)}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        className={cn("group fixed z-100 flex h-full flex-col transition-all duration-200", hoverExpanded && "sidebar-hover-expanded")}
+        className="fixed z-100 flex h-full flex-col transition-all duration-200"
       >
         <div className={cn("app-logo-container flex h-20 items-center", theme)}>
           <UserMenu user={user} />

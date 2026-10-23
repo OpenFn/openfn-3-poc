@@ -1,7 +1,6 @@
 import type { User } from "../../types/users";
-import Menu, { MenuDivider, MenuHeader, MenuItem } from "../Menu";
+import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../Menu";
 import UserAvatar from "../UserAvatar";
-import { Link } from "../../routing/router";
 
 /** What the account menu shows of the signed-in user. */
 export type MenuUser = Pick<User, "firstName" | "lastName" | "email" | "experimentalFeatures">;
@@ -56,10 +55,8 @@ export default function UserMenu({ user }: { user: MenuUser }) {
               You're using features that are still being built. Things may work differently for you than for your
               teammates.
             </p>
-            <p className="mt-1.5 text-xs">
-              <Link to="/profile" className="font-medium text-amber-700 underline underline-offset-2">
-                Turn off in your profile
-              </Link>
+            <p className="mt-1.5 text-xs text-amber-700">
+              <MenuLink to="/profile">Turn off in your profile</MenuLink>
             </p>
           </div>
         )}
