@@ -1,19 +1,21 @@
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import { useTableSort, type SortValue } from "../useTableSort";
 import Button from "../Button";
-import type { Collection } from "../../types/project-settings";
+import type { CollectionRow } from "../../types/project-settings";
 import { formatBytes } from "../../utils/format";
 
 interface Props {
-  collections: Collection[];
-  canCreateCollection: boolean;
+  collections: CollectionRow[];
+  canManage: boolean;
   onCreate: () => void;
-  onPreview: (c: Collection) => void;
-  onEdit: (c: Collection) => void;
-  onDelete: (c: Collection) => void;
+  onPreview: (c: CollectionRow) => void;
+  /** The collection whose preview is loading; the other previews wait for it. */
+  previewingId?: string | null;
+  onEdit: (c: CollectionRow) => void;
+  onDelete: (c: CollectionRow) => void;
 }
 
-const sortMap: Record<"name" | "byteSizeSum", (c: Collection) => SortValue> = {
+const sortMap: Record<"name" | "byteSizeSum", (c: CollectionRow) => SortValue> = {
   name: (c) => c.name,
   byteSizeSum: (c) => c.byteSizeSum,
 };
@@ -21,9 +23,10 @@ const sortMap: Record<"name" | "byteSizeSum", (c: Collection) => SortValue> = {
 /**
  * Lightning's `DataTables.collections_table` (live/components/data_tables.ex)
  * with the actions from collections_component.ex: preview, Download, Edit,
- * Delete. Name and Used storage sort client-side.
+ * Delete. Name and Used storage sort client-side: the host sends the whole
+ * list, as Lightning does.
  */
-export default function CollectionsTable({ collections, canCreateCollection, onCreate, onPreview, onEdit, onDelete }: Props) {
+export default function CollectionsTable({ collections, canManage, onCreate, onPreview, previewingId = null, onEdit, onDelete }: Props) {
   const { rows, thProps } = useTableSort({ rows: collections, sortMap, initialKey: "name" });
 
   if (collections.length === 0) {
@@ -33,7 +36,7 @@ export default function CollectionsTable({ collections, canCreateCollection, onC
         message="No collections found."
         buttonText="Create a new collection"
         onClick={onCreate}
-        disabled={!canCreateCollection}
+        disabled={!canManage}
       />
     );
   }
@@ -54,15 +57,36 @@ export default function CollectionsTable({ collections, canCreateCollection, onC
           <Td>{c.name}</Td>
           <Td>{formatBytes(c.byteSizeSum)}</Td>
           <Td actions>
-            <Button theme="secondary" size="xs" onClick={() => onPreview(c)}>
+            <Button
+              id={`preview-collection-${c.id}-button`}
+              theme="secondary"
+              size="xs"
+              pending={previewingId === c.id}
+              disabled={previewingId !== null}
+              onClick={() => onPreview(c)}
+            >
               <span className="hero-eye h-4 w-4" aria-hidden="true" />
               <span className="sr-only">Preview collection</span>
             </Button>
-            <Button theme="secondary" size="xs">Download</Button>
-            <Button theme="secondary" size="xs" disabled={!canCreateCollection} onClick={() => onEdit(c)}>
+            <Button id={`download-collection-${c.id}-button`} theme="secondary" size="xs" href={c.downloadHref}>
+              Download
+            </Button>
+            <Button
+              id={`edit-collection-${c.id}-button`}
+              theme="secondary"
+              size="xs"
+              disabled={!canManage}
+              onClick={() => onEdit(c)}
+            >
               Edit
             </Button>
-            <Button theme="secondary" size="xs" disabled={!canCreateCollection} onClick={() => onDelete(c)}>
+            <Button
+              id={`delete-collection-${c.id}-button`}
+              theme="secondary"
+              size="xs"
+              disabled={!canManage}
+              onClick={() => onDelete(c)}
+            >
               Delete
             </Button>
           </Td>

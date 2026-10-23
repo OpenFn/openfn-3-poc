@@ -3,6 +3,7 @@ import FormModal from "../FormModal";
 import Button from "../Button";
 import Alert from "../Alert";
 import Card from "../Card";
+import ConfirmModal from "../ConfirmModal";
 import Heading from "../Heading";
 import IconButton from "../IconButton";
 import InfoTooltip from "../InfoTooltip";
@@ -71,6 +72,7 @@ export default function CredentialFormModal({
     (credential?.environments ?? ["main"]).map((n) => ({ name: n, body: {} }))
   );
   const [tab, setTab] = useState(0);
+  const [confirmingEnvDelete, setConfirmingEnvDelete] = useState(false);
   const [projectIds, setProjectIds] = useState<string[]>(credential?.projectIds ?? defaultProjectIds);
   const [authorized, setAuthorized] = useState(editing);
 
@@ -259,16 +261,27 @@ export default function CredentialFormModal({
           <Button
             theme="secondary"
             size="sm"
-            onClick={() => {
-              if (!window.confirm(`Are you sure you want to delete the ${env.name} environment?`)) return;
-              setEnvs((list) => list.filter((_, i) => i !== tab));
-              setTab(0);
-            }}
+            onClick={() => setConfirmingEnvDelete(true)}
           >
             <span className="hero-trash h-4 w-4" />
             Delete environment
           </Button>
         )}
+        {/* Lightning's data-confirm on the delete button. */}
+        <ConfirmModal
+          open={confirmingEnvDelete}
+          onClose={() => setConfirmingEnvDelete(false)}
+          onConfirm={() => {
+            setEnvs((list) => list.filter((_, i) => i !== tab));
+            setTab(0);
+            setConfirmingEnvDelete(false);
+          }}
+          title="Delete environment"
+          confirmLabel="Delete"
+          tone="danger"
+        >
+          <p>Are you sure you want to delete the {env.name} environment?</p>
+        </ConfirmModal>
       </Card>
 
       <Card as="section" title="Projects access" description="Select projects that can use this credential">

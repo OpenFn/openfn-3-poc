@@ -5,10 +5,10 @@ import { collections } from "../../mock-data/project-settings";
 const meta: Meta<typeof CollectionPreviewModal> = {
   title: "Project settings/CollectionPreviewModal",
   component: CollectionPreviewModal,
-  args: { collection: collections[0]!, onClose: () => {} },
+  args: { name: collections[0]!.name, json: collections[0]!.previewJson, onClose: () => {} },
 };
 export default meta;
 type Story = StoryObj<typeof CollectionPreviewModal>;
 
 export const WithRecord: Story = {};
-export const Empty: Story = { args: { collection: collections[2]! } };
+export const Empty: Story = { args: { name: collections[2]!.name, json: null } };

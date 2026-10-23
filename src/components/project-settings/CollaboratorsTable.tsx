@@ -1,31 +1,36 @@
 import Button from "../Button";
 import { Select } from "../Inputs";
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import type { ProjectMember } from "../../types/projects";
+import { useToast } from "../Toast";
 import { digestOptions } from "../../constants";
-import type { User } from "../../types/users";
-import { capitalize, fullName } from "../../utils/format";
+import type { CollaboratorRow, Digest } from "../../types/project-settings";
+import { errorMessage } from "../../utils/errors";
+import { capitalize } from "../../utils/format";
+import { useChosenValue } from "../../utils/useChosenValue";
 
 interface Props {
-  members: ProjectMember[];
-  /** Users to show each member's name and email from. */
-  users: User[];
-  currentUserId: string;
-  canRemoveProjectUser: boolean;
-  /** Whether the instance can send failure alerts at all. */
-  canReceiveFailureAlerts?: boolean;
-  onChange: (member: ProjectMember) => void;
-  onRemove: (member: ProjectMember) => void;
+  collaborators: CollaboratorRow[];
+  /** Whether the plan sends failure alerts at all. */
+  canReceiveFailureAlerts: boolean;
+  /** The viewer's own alert settings. Each select shows the choice at once, and goes back if this rejects. */
+  onSetFailureAlert: (id: string, on: boolean) => Promise<void>;
+  onSetDigest: (id: string, digest: Digest) => Promise<void>;
+  onRemove: (collaborator: CollaboratorRow) => void;
   onAdd: () => void;
   canAdd: boolean;
 }
 
-/** settings.ex `remove_user_tooltip/5` (sandbox parent-admin rule omitted). */
-function removeTooltip(member: ProjectMember, currentUserId: string, canRemove: boolean): string {
-  if (!canRemove) return "You do not have permission to remove a user";
-  if (member.userId === currentUserId) return "You cannot remove yourself";
-  if (member.role === "owner") return "You cannot remove an owner";
-  return "";
+const failureAlertOptions: [string, string][] = [
+  ["Disabled", "false"],
+  ["Enabled", "true"],
+];
+const digestSelectOptions = digestOptions.map((d) => [capitalize(d), d] as [string, string]);
+
+/** A select the host saves on every change, showing the choice while it does. */
+function SavedSelect({ id, label, saved, options, onSave }: { id: string; label: string; saved: string; options: [string, string][]; onSave: (value: string) => Promise<void> }) {
+  const toast = useToast();
+  const select = useChosenValue(saved, onSave, (e) => toast(errorMessage(e), "error"));
+  return <Select id={id} aria-label={label} value={select.value} options={options} onChange={(e) => select.choose(e.target.value)} />;
 }
 
 /**
@@ -33,18 +38,8 @@ function removeTooltip(member: ProjectMember, currentUserId: string, canRemove: 
  * Collaborator, Role, Failure Alert, Digest and a Remove Collaborator
  * button. Alert settings are only editable on your own row.
  */
-export default function CollaboratorsTable({
-  members,
-  users,
-  currentUserId,
-  canRemoveProjectUser,
-  canReceiveFailureAlerts = true,
-  onChange,
-  onRemove,
-  onAdd,
-  canAdd,
-}: Props) {
-  if (members.length === 0) {
+export default function CollaboratorsTable({ collaborators, canReceiveFailureAlerts, onSetFailureAlert, onSetDigest, onRemove, onAdd, canAdd }: Props) {
+  if (collaborators.length === 0) {
     return (
       <EmptyState
         icon="hero-plus-circle"
@@ -68,66 +63,60 @@ export default function CollaboratorsTable({
         </Tr>
       }
     >
-      {members.map((m) => {
-        const user = users.find((u) => u.id === m.userId);
-        const self = m.userId === currentUserId;
-        const tooltip = removeTooltip(m, currentUserId, canRemoveProjectUser);
-        return (
-          <Tr key={m.userId} id={`project_user-${m.userId}`}>
-            <Td>
-              <div>{user ? fullName(user) : m.userId}</div>
-              <div className="text-xs">{user?.email}</div>
-              {self && <em className="text-xs text-gray-400">Well hello, you!</em>}
-            </Td>
-            <Td>{capitalize(m.role)}</Td>
-            <Td>
-              {!canReceiveFailureAlerts ? (
-                "Unavailable"
-              ) : self ? (
-                <Select
-                  id={`failure-alert-${m.userId}`}
-                  aria-label="Failure Alert"
-                  value={String(m.failureAlert)}
-                  options={[
-                    ["Disabled", "false"],
-                    ["Enabled", "true"],
-                  ]}
-                  onChange={(e) => onChange({ ...m, failureAlert: e.target.value === "true" })}
-                />
-              ) : m.failureAlert ? (
-                "Enabled"
-              ) : (
-                "Disabled"
-              )}
-            </Td>
-            <Td>
-              {self ? (
-                <Select
-                  id={`digest-${m.userId}`}
-                  aria-label="Digest"
-                  value={m.digest}
-                  options={digestOptions.map((d) => [capitalize(d), d] as [string, string])}
-                  onChange={(e) => onChange({ ...m, digest: e.target.value as ProjectMember["digest"] })}
-                />
-              ) : (
-                capitalize(m.digest)
-              )}
-            </Td>
-            <Td actions>
-              <Button
-                id={`remove_project_user_${m.userId}_button`}
-                theme="secondary"
-                size="lg"
-                tooltip={tooltip || undefined}
-                disabled={tooltip !== ""}
-                onClick={() => onRemove(m)}
-              >
-                <span className="hero-minus-circle h-5 w-5" /> Remove Collaborator
-              </Button>
-            </Td>
-          </Tr>
-        );
-      })}
+      {collaborators.map((c) => (
+        <Tr key={c.id} id={`project_user-${c.id}`}>
+          <Td>
+            <div>
+              {c.firstName} {c.lastName}
+            </div>
+            <div className="text-xs">{c.email}</div>
+            {c.isCurrentUser && <em className="text-xs text-gray-400">Well hello, you!</em>}
+          </Td>
+          <Td>{capitalize(c.role)}</Td>
+          <Td>
+            {!canReceiveFailureAlerts ? (
+              "Unavailable"
+            ) : c.isCurrentUser ? (
+              <SavedSelect
+                id={`failure-alert-${c.id}`}
+                label="Failure Alert"
+                saved={String(c.failureAlert)}
+                options={failureAlertOptions}
+                onSave={(v) => onSetFailureAlert(c.id, v === "true")}
+              />
+            ) : c.failureAlert ? (
+              "Enabled"
+            ) : (
+              "Disabled"
+            )}
+          </Td>
+          <Td>
+            {c.isCurrentUser ? (
+              <SavedSelect
+                id={`digest-${c.id}`}
+                label="Digest"
+                saved={c.digest}
+                options={digestSelectOptions}
+                onSave={(v) => onSetDigest(c.id, v as Digest)}
+              />
+            ) : (
+              capitalize(c.digest)
+            )}
+          </Td>
+          <Td actions>
+            <Button
+              id={`remove_project_user_${c.id}_button`}
+              theme="secondary"
+              size="lg"
+              tooltip={c.removeBlockedReason ?? undefined}
+              disabled={c.removeBlockedReason !== null}
+              onClick={() => onRemove(c)}
+            >
+              <span className="hero-minus-circle h-5 w-5" /> Remove Collaborator
+            </Button>
+          </Td>
+        </Tr>
+      ))}
     </Table>
   );
 }

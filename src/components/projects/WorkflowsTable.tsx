@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useRouter } from "../../routing/router";
 import type { SortState } from "../../types/lists";
 import type { WorkflowRow } from "../../types/workflows";
@@ -8,6 +8,7 @@ import Toggle from "../Toggle";
 import Tooltip from "../Tooltip";
 import DateTime from "../DateTime";
 import Button from "../Button";
+import ConfirmModal from "../ConfirmModal";
 import Pill from "../Pill";
 import TextLink from "../TextLink";
 import WorkOrderStatus from "./WorkOrderStatus";
@@ -44,7 +45,7 @@ export default function WorkflowsTable({
   /** The order the server listed `stats` in. */
   sort: SortState;
   onToggle?: (workflowId: string, enabled: boolean) => void;
-  onDelete?: (workflowId: string) => void;
+  onDelete?: (workflowId: string) => void | Promise<void>;
 }) {
   const { navigate } = useRouter();
   const { href } = useUrlParams();
@@ -55,6 +56,8 @@ export default function WorkflowsTable({
   };
   const history = `/projects/${projectId}/history`;
   const stateColumn = lifecycle ? (isSandbox ? "Turn on" : "State") : "Enabled";
+  // The workflow whose Delete was clicked, while the user confirms (Lightning's data-confirm).
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   if (stats.length === 0) {
     return (
@@ -76,80 +79,93 @@ export default function WorkflowsTable({
   }
 
   return (
-    <Table
-      id="workflows-table"
-      header={
-        <Tr>
-          <Th {...thProps("name")}>Name</Th>
-          <Th {...thProps("last_workorder_updated_at")}>Latest Work Order</Th>
-          <Th {...thProps("workorders_count")}>Work Orders</Th>
-          <Th {...thProps("failed_workorders_count")}>Work Orders in a failed state</Th>
-          <Th {...thProps("enabled")}>{stateColumn}</Th>
-          <Th actions align="right">Actions</Th>
-        </Tr>
-      }
-    >
-      {stats.map((s) => {
-        const wf = s.workflow;
-        const on = s.triggerEnabled ?? wf.enabled;
-        return (
-          <Tr key={wf.id} id={`workflow-${wf.id}`} onClick={() => navigate(`/projects/${projectId}/w/${wf.id}`)}>
-            <Td className="max-w-60">
-              <Tooltip content={on ? wf.name : `${wf.name} (disabled)`}>
-                <p className={cn("workflow-name truncate font-medium", on ? "text-gray-900" : "text-gray-400")}>
-                  {wf.name}
-                </p>
-              </Tooltip>
-              <p className="mt-1 text-xs">
-                Updated <DateTime value={wf.updatedAt} />
-              </p>
-            </Td>
-            <Td>
-              <WorkOrderStatus state={s.lastWorkOrder?.state ?? null} updatedAt={s.lastWorkOrder?.updatedAt} period={period} />
-            </Td>
-            <Td>
-              <Count value={s.workordersCount} to={s.historyHref ?? history}>
-                ({s.stepCount} steps, {s.stepSuccessRate.toFixed(1)}% success)
-              </Count>
-            </Td>
-            <Td>
-              <Count value={s.failedWorkordersCount} to={s.failedHistoryHref ?? history}>
-                Latest failure {s.lastFailedAt && <DateTime value={s.lastFailedAt} />}
-              </Count>
-            </Td>
-            <Td>
-              {lifecycle && !isSandbox ? (
-                <Pill color={s.state === "live" ? "green" : "gray"}>{s.state === "live" ? "Live" : "Draft"}</Pill>
-              ) : (
-                <Toggle
-                  id={wf.id}
-                  name="workflow_state"
-                  checked={wf.enabled}
-                  onChange={(v) => onToggle?.(wf.id, v)}
-                  tooltip={s.toggleTooltip ?? toggleTooltip(wf.triggerType, wf.enabled, lifecycle, s.state)}
-                />
-              )}
-            </Td>
-            <Td actions>
-              <Button theme="secondary" size="xs" to={`/projects/${projectId}/w/${wf.id}/health`}>
-                Health
-              </Button>
-              {canDelete && (
-                <Button
-                  theme="secondary"
-                  size="xs"
-                  onClick={() => {
-                    if (window.confirm("Are you sure you'd like to delete this workflow?")) onDelete?.(wf.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              )}
-            </Td>
+    <>
+      <ConfirmModal
+        open={deletingId !== null}
+        onClose={() => setDeletingId(null)}
+        onConfirm={async () => {
+          if (deletingId) await onDelete?.(deletingId);
+          setDeletingId(null);
+        }}
+        title="Delete workflow"
+        confirmLabel="Delete"
+        tone="danger"
+      >
+        <p>Are you sure you&apos;d like to delete this workflow?</p>
+      </ConfirmModal>
+      <Table
+        id="workflows-table"
+        header={
+          <Tr>
+            <Th {...thProps("name")}>Name</Th>
+            <Th {...thProps("last_workorder_updated_at")}>Latest Work Order</Th>
+            <Th {...thProps("workorders_count")}>Work Orders</Th>
+            <Th {...thProps("failed_workorders_count")}>Work Orders in a failed state</Th>
+            <Th {...thProps("enabled")}>{stateColumn}</Th>
+            <Th actions align="right">Actions</Th>
           </Tr>
-        );
-      })}
-    </Table>
+        }
+      >
+        {stats.map((s) => {
+          const wf = s.workflow;
+          const on = s.triggerEnabled ?? wf.enabled;
+          return (
+            <Tr key={wf.id} id={`workflow-${wf.id}`} onClick={() => navigate(`/projects/${projectId}/w/${wf.id}`)}>
+              <Td className="max-w-60">
+                <Tooltip content={on ? wf.name : `${wf.name} (disabled)`}>
+                  <p className={cn("workflow-name truncate font-medium", on ? "text-gray-900" : "text-gray-400")}>
+                    {wf.name}
+                  </p>
+                </Tooltip>
+                <p className="mt-1 text-xs">
+                  Updated <DateTime value={wf.updatedAt} />
+                </p>
+              </Td>
+              <Td>
+                <WorkOrderStatus state={s.lastWorkOrder?.state ?? null} updatedAt={s.lastWorkOrder?.updatedAt} period={period} />
+              </Td>
+              <Td>
+                <Count value={s.workordersCount} to={s.historyHref ?? history}>
+                  ({s.stepCount} steps, {s.stepSuccessRate.toFixed(1)}% success)
+                </Count>
+              </Td>
+              <Td>
+                <Count value={s.failedWorkordersCount} to={s.failedHistoryHref ?? history}>
+                  Latest failure {s.lastFailedAt && <DateTime value={s.lastFailedAt} />}
+                </Count>
+              </Td>
+              <Td>
+                {lifecycle && !isSandbox ? (
+                  <Pill color={s.state === "live" ? "green" : "gray"}>{s.state === "live" ? "Live" : "Draft"}</Pill>
+                ) : (
+                  <Toggle
+                    id={wf.id}
+                    name="workflow_state"
+                    checked={wf.enabled}
+                    onChange={(v) => onToggle?.(wf.id, v)}
+                    tooltip={s.toggleTooltip ?? toggleTooltip(wf.triggerType, wf.enabled, lifecycle, s.state)}
+                  />
+                )}
+              </Td>
+              <Td actions>
+                <Button theme="secondary" size="xs" to={`/projects/${projectId}/w/${wf.id}/health`}>
+                  Health
+                </Button>
+                {canDelete && (
+                  <Button
+                    theme="secondary"
+                    size="xs"
+                    onClick={() => setDeletingId(wf.id)}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </Td>
+            </Tr>
+          );
+        })}
+      </Table>
+    </>
   );
 }
 

@@ -1,26 +1,31 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import GithubSyncPanel from "./GithubSyncPanel";
-import { vcsFor } from "../../mock-data/project-settings";
+import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
 import { projects } from "../../mock-data/projects";
+import { session } from "../../mock-data/users";
 import { withRouter, withGrayPanel } from "../../stories/decorators";
+
+const notConfigured = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user).githubSync;
+const connected = projectSettingsPropsFor(settingsFixtureFor(projects[1]!), session.user).githubSync;
+const done = async () => {};
 
 const meta: Meta<typeof GithubSyncPanel> = {
   title: "Project settings/GithubSyncPanel",
   component: GithubSyncPanel,
   decorators: [withRouter, withGrayPanel],
   args: {
-    vcs: vcsFor(projects[0]!.id),
-    canInstallGithub: true,
-    canInitiateGithubSync: true,
-    userGithubConnected: false,
+    githubSync: { ...notConfigured, canInstall: true, canInitiateSync: true, userConnected: false },
+    sandbox: false,
+    onInitiateSync: done,
+    onRemoveConnection: done,
   },
 };
 export default meta;
 type Story = StoryObj<typeof GithubSyncPanel>;
 
 export const NotConfigured: Story = {};
-export const Connected: Story = { args: { vcs: vcsFor(projects[1]!.id) } };
-export const ConnectAccount: Story = { args: { vcs: { githubEnabled: true, connection: null } } };
-export const ViewerConnected: Story = {
-  args: { vcs: vcsFor(projects[1]!.id), canInstallGithub: false, canInitiateGithubSync: false },
+export const Connected: Story = { args: { githubSync: { ...connected, canInstall: true, canInitiateSync: true } } };
+export const ConnectAccount: Story = {
+  args: { githubSync: { ...notConfigured, enabled: true, canInstall: true, canInitiateSync: true, userConnected: false } },
 };
+export const ViewerConnected: Story = { args: { githubSync: { ...connected, canInstall: false, canInitiateSync: false } } };

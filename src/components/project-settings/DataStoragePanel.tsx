@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Alert from "../Alert";
 import Button from "../Button";
 import Card from "../Card";
@@ -6,29 +6,32 @@ import Heading from "../Heading";
 import { Radio, Select } from "../Inputs";
 import SectionHeader from "../SectionHeader";
 import TextLink from "../TextLink";
-import { useToast } from "../Toast";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
+import type { DataStorageSettings, DataStorageValues } from "../../types/project-settings";
 import type { RetentionPolicy } from "../../types/projects";
 import { cn } from "../../utils/cn";
-
-interface RetentionSettings {
-  historyRetentionPeriod: number | null;
-  dataclipRetentionPeriod: number | null;
-  retentionPolicy: RetentionPolicy;
-}
+import { errorMessage } from "../../utils/errors";
+import { useForm } from "../../utils/useForm";
 
 interface Props {
-  initial: RetentionSettings;
-  /** Allowed periods in days (the usage limiter can narrow these). */
-  periods: number[];
-  canEditDataRetention: boolean;
-  sandbox?: boolean;
+  dataStorage: DataStorageSettings;
+  sandbox: boolean;
+  /** Saves the form. Rejects with field errors or a message, which the form shows. */
+  onSave: (values: DataStorageValues) => Promise<void>;
 }
 
 const policies: [RetentionPolicy, string][] = [
   ["retain_all", "Retain all input/output data"],
   ["erase_all", "Never retain input/output data (zero-persistence)"],
 ];
+
+/** The selects hold a period as a string, "" for none. */
+const toForm = (v: DataStorageValues) => ({
+  historyRetentionPeriod: v.historyRetentionPeriod === null ? "" : String(v.historyRetentionPeriod),
+  dataclipRetentionPeriod: v.dataclipRetentionPeriod === null ? "" : String(v.dataclipRetentionPeriod),
+  retentionPolicy: v.retentionPolicy,
+});
+const toPeriod = (v: string) => (v === "" ? null : Number(v));
 
 /** One setting: its name, an explanation, then the control. `dimmed` fades the text when it doesn't apply. */
 function Setting({ title, dimmed = false, description, children }: { title: string; dimmed?: boolean; description: ReactNode; children: ReactNode }) {
@@ -48,43 +51,42 @@ function Setting({ title, dimmed = false, description, children }: { title: stri
 /**
  * The Data Storage tab (`#data-storage`, settings.html.heex:862-1053):
  * history retention, the input/output storage policy, and the dataclip
- * retention period. Save keeps the values locally; Cancel resets them.
+ * retention period. Cancel puts back the saved values.
  */
-export default function DataStoragePanel({ initial, periods, canEditDataRetention, sandbox = false }: Props) {
-  const [saved, setSaved] = useState(initial);
-  const [form, setForm] = useState(initial);
-  const toast = useToast();
+export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props) {
+  const { periods, limitMessage, canEdit } = dataStorage;
+  const form = useForm({
+    initial: toForm(dataStorage),
+    validate: ({ historyRetentionPeriod, dataclipRetentionPeriod }) => ({
+      dataclipRetentionPeriod:
+        historyRetentionPeriod !== "" && dataclipRetentionPeriod !== "" && Number(dataclipRetentionPeriod) > Number(historyRetentionPeriod)
+          ? ["dataclip retention period must be less or equal to the history retention period"]
+          : [],
+    }),
+  });
   const options = periods.map((d) => [`${d} Days`, String(d)] as [string, string]);
-  const eraseAll = form.retentionPolicy === "erase_all";
-  const noHistory = form.historyRetentionPeriod === null;
-  const dataclipDisabled = !canEditDataRetention || noHistory || eraseAll;
-  const dataclipError =
-    form.dataclipRetentionPeriod !== null &&
-    form.historyRetentionPeriod !== null &&
-    form.dataclipRetentionPeriod > form.historyRetentionPeriod
-      ? "dataclip retention period must be less or equal to the history retention period"
-      : null;
-  const toNum = (v: string) => (v === "" ? null : Number(v));
+  const eraseAll = form.values.retentionPolicy === "erase_all";
+  const noHistory = form.values.historyRetentionPeriod === "";
 
   return (
     <>
       <SectionHeader
         title="Data storage"
         subtitle="View or modify data storage settings for this project."
-        permissionsSection={canEditDataRetention ? undefined : "data storage settings."}
+        permissionsSection={canEdit ? undefined : "data storage settings."}
       />
       {sandbox && <SandboxSettingsBanner variant="local" />}
       <Card>
         <form
           id="retention-settings-form"
           className="space-y-6"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const next = eraseAll ? { ...form, dataclipRetentionPeriod: null } : form;
-            setSaved(next);
-            setForm(next);
-            toast("Project updated successfully");
-          }}
+          onSubmit={form.submit((v) =>
+            onSave({
+              historyRetentionPeriod: toPeriod(v.historyRetentionPeriod),
+              dataclipRetentionPeriod: toPeriod(v.dataclipRetentionPeriod),
+              retentionPolicy: v.retentionPolicy,
+            })
+          )}
         >
           <Setting
             title="History Retention Period"
@@ -103,10 +105,10 @@ export default function DataStoragePanel({ initial, periods, canEditDataRetentio
               aria-label="History Retention Period"
               prompt="Select Period"
               options={options}
-              disabled={!canEditDataRetention || periods.length === 1}
-              value={form.historyRetentionPeriod === null ? "" : String(form.historyRetentionPeriod)}
-              onChange={(e) => setForm({ ...form, historyRetentionPeriod: toNum(e.target.value) })}
+              disabled={!canEdit || periods.length === 1}
               className="w-auto"
+              hint={limitMessage ?? undefined}
+              {...form.fieldProps("historyRetentionPeriod")}
             />
           </Setting>
           <hr className="border-gray-300" />
@@ -130,13 +132,17 @@ export default function DataStoragePanel({ initial, periods, canEditDataRetentio
                   name="retention_policy"
                   value={value}
                   label={text}
-                  disabled={!canEditDataRetention}
-                  checked={form.retentionPolicy === value}
-                  onChange={() => setForm({ ...form, retentionPolicy: value })}
+                  disabled={!canEdit}
+                  checked={form.values.retentionPolicy === value}
+                  onChange={() => {
+                    form.set("retentionPolicy", value);
+                    // settings.ex `validate`: zero-persistence keeps no input/output data, so no period either.
+                    if (value === "erase_all") form.set("dataclipRetentionPeriod", "");
+                  }}
                 />
               ))}
             </div>
-            {form.retentionPolicy !== "retain_all" && (
+            {form.values.retentionPolicy !== "retain_all" && (
               <Alert type="warning" header="Heads Up!">
                 <p>
                   When enabled, you will no longer be able to retry workflow runs, and channel request/response
@@ -156,22 +162,17 @@ export default function DataStoragePanel({ initial, periods, canEditDataRetentio
               aria-label="Input/Output Data Retention Period"
               prompt="Select Period"
               options={options}
-              disabled={dataclipDisabled}
-              value={form.dataclipRetentionPeriod === null ? "" : String(form.dataclipRetentionPeriod)}
-              onChange={(e) => setForm({ ...form, dataclipRetentionPeriod: toNum(e.target.value) })}
-              errors={dataclipError ? [dataclipError] : []}
+              disabled={!canEdit || noHistory || eraseAll}
               className="w-auto"
+              {...form.fieldProps("dataclipRetentionPeriod")}
             />
           </Setting>
+          {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
           <div className="flex gap-1">
-            <Button theme="secondary" disabled={!canEditDataRetention} onClick={() => setForm(saved)}>
+            <Button theme="secondary" disabled={!canEdit} onClick={() => form.reset()}>
               Cancel
             </Button>
-            <Button
-              id="input-output-retention-period-submit-btn"
-              type="submit"
-              disabled={!!dataclipError || !canEditDataRetention}
-            >
+            <Button id="input-output-retention-period-submit-btn" type="submit" disabled={!canEdit} pending={form.pending}>
               Save
             </Button>
           </div>

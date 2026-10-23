@@ -96,6 +96,8 @@ export default function FormModal({
         aria-busy={submit.pending || undefined}
         onSubmit={(e) => {
           e.preventDefault();
+          // The modal is portalled, but React still bubbles submit to a form around it (a ConfirmModal inside a FormModal).
+          e.stopPropagation();
           if (!submitDisabled) void submit.run();
         }}
       >

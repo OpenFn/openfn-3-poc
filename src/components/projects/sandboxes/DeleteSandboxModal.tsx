@@ -22,13 +22,14 @@ export default function DeleteSandboxModal({
   /** Lightning's `purge_deleted_after_days`. */
   gracePeriodDays: number;
   onClose: () => void;
-  onConfirm?: () => void;
+  /** Called with the typed name. */
+  onConfirm?: (typed: string) => void | Promise<void>;
 }) {
   return (
     <ConfirmModal
       open
       onClose={onClose}
-      onConfirm={() => onConfirm?.()}
+      onConfirm={(typed) => onConfirm?.(typed)}
       title="Delete sandbox"
       confirmLabel="Delete sandbox"
       tone="danger"

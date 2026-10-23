@@ -4,10 +4,11 @@ import { FieldError, TextInput } from "../Inputs";
 import IconButton from "../IconButton";
 import FormModal from "../FormModal";
 import RoleSelect from "./RoleSelect";
+import type { CollaboratorValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";
 import { isValidEmail } from "../../utils/validate";
 
-export interface CollaboratorDraft {
+interface CollaboratorDraft {
   email: string;
   role: ProjectRole | "";
 }
@@ -16,7 +17,8 @@ interface Props {
   /** Emails already on the project ("This account is already part of this project"). */
   existingEmails: string[];
   onCancel: () => void;
-  onSave: (collaborators: CollaboratorDraft[]) => void;
+  /** May be async: the modal shows pending and stays open with the error if it rejects. */
+  onSave: (collaborators: CollaboratorValues[]) => void | Promise<void>;
 }
 
 /**
@@ -43,7 +45,8 @@ export default function AddCollaboratorsModal({ existingEmails, onCancel, onSave
       description="Enter the email address and role of new collaborator(s) to invite them to this project"
       formId="add_collaborators_modal_form"
       formClassName="space-y-5"
-      onSubmit={() => onSave(rows)}
+      // Save is only enabled once every row has a role.
+      onSubmit={() => onSave(rows as CollaboratorValues[])}
       submitLabel={<>Save Collaborator{rows.length > 1 ? "s" : ""}</>}
       submitId="save_collaborators_button"
       submitDisabled={!valid}

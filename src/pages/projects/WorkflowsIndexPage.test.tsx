@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
@@ -102,20 +102,28 @@ describe("WorkflowsIndexPage", () => {
     expect(screen.getByRole("link", { name: "create a new one" }).getAttribute("href")).toBe("/projects/p1/w/new");
   });
 
-  it("switches and deletes through the host, asking before a delete", () => {
+  it("switches and deletes through the host, asking before a delete", async () => {
     const { onToggle, onDelete } = renderPage();
     // The switch is named by its tooltip, as Lightning's toggle was.
     fireEvent.click(screen.getByRole("switch", { name: "This workflow is inactive (manual runs only)" }));
     expect(onToggle).toHaveBeenCalledWith("wf-2", true);
 
-    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
     fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
-    expect(confirm).toHaveBeenCalledWith("Are you sure you'd like to delete this workflow?");
+    expect(screen.getByRole("dialog").textContent).toContain("Are you sure you'd like to delete this workflow?");
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }));
     expect(onDelete).not.toHaveBeenCalled();
-    confirm.mockReturnValue(true);
+
     fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
-    expect(onDelete).toHaveBeenCalledWith("wf-1");
-    confirm.mockRestore();
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(onDelete).toHaveBeenCalledWith("wf-1"));
+    expect(onDelete).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the delete confirm open with the host's refusal", async () => {
+    renderPage({ onDelete: vi.fn().mockRejectedValue(new Error("Workflow has active runs")) });
+    fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(within(screen.getByRole("dialog")).getByRole("alert").textContent).toContain("Workflow has active runs"));
   });
 
   it("says something went wrong when a switch fails without a message", async () => {
