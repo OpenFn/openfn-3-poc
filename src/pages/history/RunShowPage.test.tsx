@@ -133,7 +133,7 @@ describe("RunShowPage", () => {
     );
     expect(d.textContent).toContain("Webhook trigger");
     expect(d.textContent).toContain("Running");
-    expect(screen.getByTitle("This run is based on the latest version of this workflow.")).toBeTruthy();
+    expect(screen.getByLabelText("This run is based on the latest version of this workflow.").textContent).toBe("latest");
   });
 
   it("pins an older snapshot with v=, or as_run= with experimental features, and names the snapshot", () => {
@@ -141,9 +141,10 @@ describe("RunShowPage", () => {
     expect(within(detail()).getByRole("link", { name: "Register patients" }).getAttribute("href")).toBe(
       `/projects/p1/w/wf-1?run=${RUN_ID}&v=1`
     );
-    expect(screen.getByText("abcdef1").getAttribute("title")).toBe(
-      "This run is based on a snapshot of this workflow that was taken on 2026-10-13 at 08:00:00"
-    );
+    expect(
+      screen.getByLabelText("This run is based on a snapshot of this workflow that was taken on 2026-10-13 at 08:00:00")
+        .textContent
+    ).toBe("abcdef1");
     document.body.innerHTML = "";
     renderPage({ run: { ...run, snapshot: { ...run.snapshot, lockVersion: 1 } }, experimentalFeatures: true });
     expect(within(detail()).getByRole("link", { name: "Register patients" }).getAttribute("href")).toBe(
