@@ -31,20 +31,36 @@ Tokens: personal access token, or service account with `projects:write`.
 }
 ```
 
+A sandbox can be read here too, since it is a project.
+
 Planned additional scope:
 
+- `id` on each member, the user id, as in the
+  [member list](#list-a-projects-members).
 - The project's settings as attributes: `color`, `env`, `concurrency`,
   `retention_policy`, `history_retention_period`, `dataclip_retention_period`,
   `requires_mfa`, `allow_support_access`, `parent_id` and
-  `scheduled_deletion`. Each is set through its own route, below.
+  `scheduled_deletion`. Each is set through its own route, below. A sandbox
+  also carries `root_id`, the project at the top of its tree, and
+  `display_name`, the names from the root down joined by `/` (such as
+  `malaria-programme/staging`).
 - `allowed_retention_periods`: the retention periods the project's plan
   allows, so a client can offer only those.
 - `permissions`: what the caller may do in this project, such as
   `{"edit_project": true, "delete_project": false, "run_workflow": true}`, so
-  an app can hide what would be refused. The routes still check.
+  an app can hide what would be refused. The routes still check. One boolean
+  per project action: `access_project`, `delete_project`, `edit_project`,
+  `edit_data_retention`, `edit_run_settings`, `add_project_user`,
+  `remove_project_user`, `write_webhook_auth_method`,
+  `write_github_connection`, `create_workflow`, `edit_workflow`,
+  `delete_workflow`, `run_workflow`, `create_project_credential`,
+  `initiate_github_sync`, `create_channel`, `update_channel`,
+  `delete_channel`, `edit_failure_alerts`, `edit_digest_alerts`,
+  `create_keychain_credential`, `manage_collection` and `provision_sandbox`.
 - `limits`: whether the plan allows more runs, active workflows, sandboxes and
-  AI assistant use right now, each `{"allowed", "message"}`, so an app can warn
-  before a write is refused.
+  AI assistant use right now, and whether it includes failure alert emails
+  (`failure_alerts`) and requiring MFA (`require_mfa`), each
+  `{"allowed", "message"}`, so an app can warn before a write is refused.
 
 ## Create or replace a project
 
@@ -102,10 +118,14 @@ Planned additional scope:
 
 - Any user can create a project with a personal access token, and becomes its
   owner. They send no `members`.
-- `color` (a hex colour such as `#336699`), `env` (an environment name such as
-  `staging`) and `concurrency` (a positive integer, or `null` for no limit; `1`
-  runs one at a time across the whole project). Changing them needs owner or
-  admin, as for the name.
+- `color` (a hex colour such as `#336699`) and `concurrency` (a positive
+  integer, or `null` for no limit; `1` runs one at a time across the whole
+  project). Changing them needs owner or admin, as for the name. `env` is set
+  when a sandbox is created (root projects get `main`) and can't be changed
+  afterwards.
+- Renaming a sandbox, or changing its colour, is also open to the owners and
+  admins of the project at the top of its tree. A name a sibling already has
+  answers 409 `taken` with an entry at `#/name`, as when creating one.
 
 ## List projects
 
@@ -117,17 +137,26 @@ GET /api/projects
 
 Tokens: personal access token. Paged. Service account support is planned.
 
-Lists the projects you are a member of, not including sandboxes. Each entry has
-the same shape as `GET /api/projects/:id`, without `members`.
+Lists the projects you are a member of, not including sandboxes or projects
+scheduled for deletion, sorted by name. Each entry has the same shape as
+`GET /api/projects/:id`, without `members`.
 
 Planned additional scope:
 
 - With a service account or a superuser's token, every project on the
-  instance, including sandboxes, and a `q` filter on name and description.
-- `sort`: `name` or `last_activity`, with a `-` prefix for descending.
-- `include=stats`: adds `workflows_count`, `collaborators_count`,
-  `last_activity`, and the last 30 days' `failed_work_orders_count` to each
-  entry.
+  instance, including sandboxes and projects scheduled for deletion, and a `q`
+  filter on name, description and owner name. Each entry also carries
+  `inserted_at` and `owner` (the owner's `id`, `email`, `first_name` and
+  `last_name`, or `null`).
+- `depth=all`: the sandboxes you can open too, at any depth, each with
+  `parent_id` (the nearest project above it that you can open, or `null`) and
+  `color`, so a client can build the project picker's tree in one call.
+- `sort`: `name`, `inserted_at` or `last_activity`, with a `-` prefix for
+  descending.
+- `include=stats`: adds `role` (yours), `workflows_count`,
+  `collaborators_count`, `last_activity` (when a workflow was last updated, or
+  `null`), and the last 30 days' `failed_work_orders_count` to each entry.
+- A `meta` object with `total_entries`, as for runs.
 
 ## Set a project's data retention
 
@@ -251,8 +280,11 @@ retention period. Until then every route on the project answers 409
 `scheduled_for_deletion`.
 
 The same route deletes a sandbox, since a sandbox is a project. A sandbox's
-admins, and the owners and admins of the project it was created from, may
+admins, and the owners and admins of the project at the top of its tree, may
 delete it too.
+
+Planned additional scope: a superuser's personal access token can delete any
+project, as the instance's project list in the app allows.
 
 > Implementation note: `Lightning.Projects.schedule_project_deletion/1` does
 > the work today, and `Lightning.Projects.Sandboxes.schedule_sandbox_deletion/2`
@@ -302,7 +334,14 @@ Tokens: personal access token, or service account with `projects:write`. Paged.
     {
       "type": "project_members",
       "id": "604f0cd2-37fb-4833-a5e1-821555b5b314",
-      "attributes": { "email": "ada@example.com", "role": "owner" },
+      "attributes": {
+        "email": "ada@example.com",
+        "first_name": "Ada",
+        "last_name": "Lovelace",
+        "role": "owner",
+        "failure_alert": true,
+        "digest": "weekly"
+      },
       "relationships": {},
       "links": { "self": "https://.../api/projects/a1b2c3d4-.../members/604f0cd2-..." }
     }
@@ -312,16 +351,15 @@ Tokens: personal access token, or service account with `projects:write`. Paged.
 }
 ```
 
-A member's `id` is their user id.
-
-Planned additional scope: `failure_alert` and `digest` attributes on each
-member, the notifications they get for this project (see
+A member's `id` is their user id. `failure_alert` and `digest` are the
+notifications they get for this project (see
 [Set your notifications for a project](#set-your-notifications-for-a-project)).
+Members are sorted by first name.
 
-> Implementation note: `Lightning.Projects.get_project_with_users!/1` loads the
-> members, which is how `GET /api/projects/:id` lists them today. Differences:
-> it isn't paged, and it raises for a missing project rather than returning an
-> error.
+> Implementation note: `Lightning.Projects.get_project_users!/1` loads the
+> memberships with their users, which is how the app's Collaboration tab lists
+> them. Differences: it isn't paged, and it returns an empty list for a
+> missing project rather than an error.
 
 ## Add a member or change their role
 
@@ -472,6 +510,9 @@ Planned additional scope:
   carries `parent_id` so the client can build the tree.
 - `include=scheduled`: sandboxes scheduled for deletion too, with
   `scheduled_deletion` set.
+- `include=permissions`: each sandbox's `permissions` for the caller:
+  `update_sandbox`, `delete_sandbox`, `merge_sandbox` and
+  `cancel_scheduled_deletion`.
 
 > Implementation note: `Lightning.Projects.list_sandboxes/1` takes a parent id.
 > Differences: it isn't paged, and it deliberately includes sandboxes

@@ -11,9 +11,13 @@ GET /api/runs
 GET /api/runs?project_id=:project_id
 GET /api/projects/:project_id/runs
 GET /api/runs/:id
+GET /api/projects/:project_id/runs/:id
 ```
 
-Lists are paged and take these filters:
+Getting one run answers for any run in a project the caller can access; the
+nested route doesn't check that the run belongs to `:project_id`.
+
+Lists are paged, newest first by `inserted_at`, and take these filters:
 
 | Parameter | Notes |
 | --- | --- |
@@ -42,6 +46,19 @@ Each run (`priority` is `immediate` or `normal`):
   "links": { "self": "https://.../api/runs/…" }
 }
 ```
+
+Planned additional scope:
+
+- `inserted_at`, when the run was queued. The `inserted_after` and
+  `inserted_before` filters already use it.
+- The ids the run points at: `work_order_id`, `starting_job_id` or
+  `starting_trigger_id` (where it started), `created_by_id` (the user who
+  started or retried it, or `null` for a trigger) and `snapshot_id` (the
+  workflow version it ran).
+- `snapshot_lock_version`, so a client can tell a run on the latest version of
+  its workflow from one on an older version.
+- `created_by_email` and `starting_trigger_type` (`webhook` or `cron`), what
+  the run page shows under "Started by".
 
 ## Cancel a run
 
@@ -140,6 +157,10 @@ Tokens: personal access token.
 ```
 
 Steps are in the order they ran. Not paged.
+
+Planned additional scope: `job_name` and `adaptor` on each step, read from the
+snapshot the step ran on, so a step can be labelled after its job is renamed or
+deleted.
 
 > Implementation note: `Lightning.Runs.get/2` with `include: [steps: []]`
 > loads a run with its steps. The app reads them through a session-cookie

@@ -76,11 +76,19 @@ GET /api/projects/:project_id/channels
 
 Tokens: personal access token. Paged, by name.
 
+The response's `meta` carries the whole project's totals, whatever page you
+asked for: `total_channels` and `total_requests` (every request recorded for
+any of the project's channels). They are what the Channels page shows above
+the table.
+
 > Implementation note:
 > `Lightning.Channels.list_channels_for_project_with_stats/1`, which the
 > Channels page (`LightningWeb.ChannelLive.Index`) calls. Differences:
 >
 > - It isn't paged. It returns every channel, by name.
+> - The totals come from a second call,
+>   `Lightning.Channels.get_channel_stats_for_project/1`, which the page
+>   also makes and which returns `%{total_channels:, total_requests:}`.
 > - Each entry is `%{channel:, request_count:, last_activity:}`, and
 >   `last_activity` is the latest request's `started_at`. The auth methods
 >   aren't preloaded, so the route has to add them for
@@ -242,16 +250,25 @@ Tokens: personal access token.
 
 Adds to the list entry:
 
+- `client_identity`: the caller's IP address, the first `x-forwarded-for`
+  entry or else the connection's address.
+- `client_auth`: `type` (`api`, `basic` or `null` when the channel was open),
+  and the webhook auth method that matched, as `method_id` and `method_name`.
+  `method_name` is `null` when the method has since been deleted.
+- `destination_credential`: `id` (a project credential id) and `name`, or
+  `null` when the channel had no destination credential. `name` is `null` when
+  the credential has since been deleted.
 - `channel_snapshot`: the channel's `name`, `destination_url` and
   `lock_version` when the request was made.
-- `request` and `response`: method, status, headers and body. The
+- `request` and `response`: method, `path` and `query_string` (request),
+  status, headers and body. The
   `authorization`, `x-api-key`, `cookie` and `set-cookie` headers read
   `[REDACTED]`. A body that is large or binary is cut to a preview, with its
   full `body_size`.
 - `error_category`: `credential` (the request wasn't sent, so it is safe to
   retry), `transport` (no response came back), or `null`.
-- `timing`: microseconds spent queuing, connecting, sending, waiting for the
-  first byte and receiving.
+- `timing`: microseconds in total (`latency_us`) and spent queuing,
+  connecting, sending, waiting for the first byte and receiving.
 
 Under the project's retention policy, the caller's address, path, query
 string, headers and bodies are wiped, and `wiped` is `true`.
@@ -266,7 +283,15 @@ string, headers and bodies are wiped, and `wiped` is `true`.
 > - `error_category` is worked out in the web layer, by
 >   `LightningWeb.ChannelRequestLive.Helpers.error_category/1` from the
 >   event's `error_message`. Unknown codes give `nil`.
-> - Request, response and timing fields (`queue_us`, `connect_us`,
->   `request_send_us`, `ttfb_us`, `response_duration_us`) are on the
->   preloaded events, not the request.
+> - Request, response and timing fields (`request_query_string`,
+>   `latency_us`, `queue_us`, `connect_us`, `request_send_us`, `ttfb_us`,
+>   `response_duration_us`) are on the preloaded events, not the request.
+>   The page reads the `destination_response` event, else the `error` one
+>   (`Helpers.primary_event/1`).
+> - `client_identity`, `client_auth_type`, `client_webhook_auth_method_id`
+>   and `destination_credential_id` are columns on the request; the function
+>   preloads `client_webhook_auth_method` and `destination_credential` with
+>   its `credential` for the names. The page's labels ("CommCare key (API
+>   key)", "None", "(deleted)") are built by
+>   `Helpers.format_client_auth/1` and `Helpers.format_destination_auth/1`.
 > - The page shows the request only to users with experimental features on.

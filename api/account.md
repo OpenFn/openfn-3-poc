@@ -23,12 +23,17 @@ What the app needs to know before anyone signs in:
   "data": {
     "needs_setup": false,
     "allow_signup": true,
+    "url": "https://lightning.example.org",
+    "release": { "label": "v2.19.1", "commit": "a1b2c3d", "image_tag": "v2.19.1", "branch": null },
+    "admin_email": "support@example.org",
+    "purge_deleted_after_days": 7,
     "sign_in_providers": [
       { "name": "github", "kind": "social", "start_url": "https://.../authenticate/github" },
       { "name": "keycloak", "kind": "external", "start_url": "https://.../authenticate/keycloak" }
     ],
     "ai_assistant": true,
-    "github_sync": true
+    "github_sync": true,
+    "github_connect_url": "https://github.com/login/oauth/authorize?client_id=…&redirect_uri=…"
   }
 }
 ```
@@ -39,12 +44,27 @@ What the app needs to know before anyone signs in:
   send the browser to its `start_url`. Lightning sends it on to the provider and
   back, sets the session cookie, and returns to the app.
 - `ai_assistant` and `github_sync` say whether the instance has them set up.
+- `url` is the instance's own base URL. A sign-in provider's `redirect_uri` is
+  built from it.
+- `release` is the running build. `label` is the version shown under the logo;
+  on an `edge` image Lightning shows `commit` instead. `commit`, `image_tag`
+  and `branch` are `null` when the build doesn't set them.
+- `admin_email` is the instance's support address, behind the user menu's
+  Support link. It is `null` without a session token.
+- `purge_deleted_after_days` is the retention period: how long a project or
+  user scheduled for deletion is kept before it is removed. Deletion dialogs
+  say "N day(s) from today", or "today" when it is `0`.
+- `github_connect_url` is where to send the browser to connect, or reconnect,
+  the person's GitHub account for [GitHub sync](./github-sync.md). GitHub
+  returns them to Lightning. It is `null` when `github_sync` is `false`.
 
 > Implementation note: no one function builds this, but each field has one:
 > `Lightning.Accounts.has_one_superuser?/0`,
 > `Lightning.Config.check_flag?/1` with `:allow_signup`,
-> `Lightning.AuthProviders.get_handlers/0`, `Lightning.AiAssistant.enabled?/0`
-> and `Lightning.VersionControl.github_enabled?/0`. Differences:
+> `Lightning.AuthProviders.get_handlers/0`, `Lightning.AiAssistant.enabled?/0`,
+> `Lightning.VersionControl.github_enabled?/0`, `LightningWeb.Endpoint.url/0`,
+> `Lightning.release/0`, `Lightning.Config.instance_admin_email/0` and
+> `Lightning.Config.purge_deleted_after_days/0`. Differences:
 >
 > - First setup only happens when the `:allow_first_setup` flag is on, and it
 >   is off when a service account is configured. `needs_setup` must check both.
@@ -54,6 +74,14 @@ What the app needs to know before anyone signs in:
 > - A handler's start page is `/authenticate/:provider`
 >   (`LightningWeb.OidcController.show/2`), and it only signs in. Linking a
 >   provider to a signed-in account doesn't exist.
+> - The version chip (`LightningWeb.Components.Common.version_chip/1`) is in
+>   the sidebar footer, first setup included. The Support link shows only to
+>   signed-in users who aren't superusers.
+> - At `0` days the nightly purge jobs aren't scheduled at all
+>   (`Lightning.Config.Bootstrap`), so "today" means never removed.
+> - The GitHub link is built by a private helper in
+>   `LightningWeb.Components.GithubComponents` from the `:github_app`
+>   `client_id` and the `/oauth/github/callback` URL, and opens in a new tab.
 
 ## Sessions
 
@@ -123,7 +151,12 @@ Tokens: session token.
 }
 ```
 
-`state` is `signed_in`, `mfa_required`, or `signup_pending`. `signup_pending`
+`state` is `signed_in`, `mfa_required`, `confirmation_required` or
+`signup_pending`. `confirmation_required` means the account's email still
+isn't confirmed and the instance requires it. From 48 hours after sign-up,
+every other route answers 401 until the person confirms it. They can still
+resend the link with `POST /api/confirmations`.
+`signup_pending`
 means someone signed in with a provider for the first time; `pending_signup`
 holds the `email`, `first_name` and `last_name` the provider gave. To create the
 account, send `POST /api/users` with `{"from_sign_in": true}`. To decline, sign
@@ -131,13 +164,21 @@ out.
 
 > Implementation note: `LightningWeb.UserAuth.fetch_current_user/2`
 > (through `Lightning.Accounts.get_user_by_session_token/1`) and
-> `UserAuth.totp_pending?/1` give `signed_in` and `mfa_required`, and
+> `UserAuth.totp_pending?/1` give `signed_in` and `mfa_required`,
+> `Lightning.Accounts.locked_out?/1` gives `confirmation_required` (behind the
+> `:require_email_verification` flag), and
 > `Plug.CSRFProtection.get_csrf_token/0` the token. Differences:
 >
 > - `signup_pending` doesn't exist. A provider sign-in for an unknown email
 >   is refused ("Could not find user account") rather than held for sign-up.
 > - Nothing stores when a step-up ends. The sudo token's `inserted_at` plus
 >   five minutes would give `stepped_up_until`.
+> - A locked-out account gets a bare 401 from JSON routes
+>   (`UserAuth.require_authenticated_api_resource/2`), and HTML routes send it
+>   to `/users/confirm-required` (`LightningWeb.ConfirmationLockout`). This
+>   route has to keep answering for it. The page also lets the person correct
+>   a mistyped address (`Accounts.request_email_correction/2`, rate limited),
+>   which no route here covers.
 
 ### Sign out
 
@@ -224,7 +265,10 @@ POST /api/confirmations
 Tokens: none, or a session token.
 
 Body: `{"email": "…"}`, or nothing when signed in. Sends the account
-confirmation email again. Always answers 202 with no body.
+confirmation email again. With an email it always answers 202 with no body.
+Signed in, it answers 202 when the email is sent, 429 `too_many_requests`
+after three in 15 minutes, and 503 `service_unavailable` when it can't be
+sent.
 
 > Implementation note:
 > `Lightning.Accounts.deliver_user_confirmation_instructions/1` for an email
@@ -233,6 +277,8 @@ confirmation email again. Always answers 202 with no body.
 > limited per account (three emails in 15 minutes) and return
 > `{:error, :rate_limited}`, which the signed-in cookie route tells the person
 > about. The by-email version also returns `{:error, :already_confirmed}`.
+> `LightningWeb.UserConfirmationRequiredLive` shows the throttled message for
+> `:rate_limited` and a send-failed message for any other error.
 
 ### Confirm
 
@@ -286,6 +332,14 @@ account isn't a user. The projects you are a member of are `GET /api/projects`.
 With a session token it adds what the account page shows:
 
 - `mfa_enabled` and `has_password`.
+- `inserted_at`, when the account was created, and `confirmed_at`, when its
+  email was confirmed, or `null`.
+- `contact_preference`: `critical` or `any`, which emails they get.
+- `experimental_features`: whether they have turned on experimental features,
+  which shows Channels in the project menu and the Channel Logs tab in
+  History.
+- `has_activity_in_projects`: whether they have started runs, which the
+  account deletion dialog mentions.
 - `pending_email`: a new address waiting to be confirmed, or `null`.
 - `identities`: the sign-in providers linked to the account, each
   `{"id", "provider"}`.
@@ -295,7 +349,8 @@ With a session token it adds what the account page shows:
 - `consent`: their stored choices, on instances with a consent extension.
 
 Changing these is [`PATCH /api/users/:id`](./users.md#update-a-user) on your
-own id.
+own id. Planned additional scope: `experimental_features` there too, with either
+token.
 
 > Implementation note: the token's user is already resolved
 > (`Lightning.Accounts.get_user_by_api_token/1` or
@@ -304,7 +359,10 @@ own id.
 > reads the rest from the `User` record. Differences:
 >
 > - `mfa_enabled` is a field and `has_password` is `hashed_password` not being
->   nil. `github` comes from `github_oauth_token`, with
+>   nil. `experimental_features` is
+>   `Lightning.Accounts.experimental_features_enabled?/1` over `preferences`,
+>   changed with `Accounts.update_user_preferences/2`, and
+>   `has_activity_in_projects` is `Accounts.has_activity_in_projects?/1`. `github` comes from `github_oauth_token`, with
 >   `Lightning.VersionControl.oauth_token_valid?/1` for `connected`.
 > - `pending_email` is only the `sent_to` of an unexpired `change:<email>`
 >   token. No function reads it.
@@ -515,7 +573,8 @@ at `path` `id`: set a password first.
 
 ## GitHub
 
-A person connects their GitHub account in the browser, from the account page.
+A person connects their GitHub account in the browser, from the account page,
+by following `github_connect_url` from [`GET /api/instance`](#get-the-instance).
 Lightning then uses it to set up [GitHub sync](./github-sync.md). Whether it is
 connected is `github` on `GET /api/me`.
 

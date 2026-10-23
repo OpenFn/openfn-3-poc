@@ -245,7 +245,10 @@ authorization or token endpoint, answers 422 `invalid` with a
 >   route has to run the form changeset first.
 > - saving doesn't fetch the discovery document. Only the page's `test` event
 >   does, through `AuthConfigForm.validate_provider/1`, and it also refuses a
->   plain HTTP URL. The route has to call it before saving.
+>   plain HTTP URL. The route has to call it before saving. The page's Test
+>   button checks the unsaved form, new or existing, without saving it, and
+>   saving doesn't wait for a passing test. This route has no way to check
+>   without saving.
 > - the page builds `redirect_uri` from a redirect host the user can edit. The
 >   route should use the instance's own URL.
 > - `update/2` refreshes the cached sign-in handler, but under the new name
