@@ -16,6 +16,7 @@ export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChanne
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
 export { default as BackupCodesPage } from "./pages/profile/BackupCodesPage";
+export { default as CredentialsIndexPage } from "./pages/profile/CredentialsIndexPage";
 export { default as TokensPage } from "./pages/profile/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
@@ -39,6 +40,7 @@ export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannel
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
 export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
+export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
@@ -65,6 +67,34 @@ export type {
   UserFormValues,
 } from "./types/admin";
 export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";
+export type {
+  CredentialActions,
+  CredentialEnvironmentSecrets,
+  CredentialEnvironmentValues,
+  CredentialIndexData,
+  CredentialProjectRef,
+  CredentialRef,
+  CredentialRow,
+  CredentialSchemaResult,
+  CredentialSecretsResult,
+  CredentialTypeOption,
+  CredentialValues,
+  KeychainCredentialActions,
+  KeychainCredentialRow,
+  KeychainCredentialValues,
+  OauthAuthorizeResult,
+  OauthAuthorizeValues,
+  CredentialProjectAccess,
+  CredentialOauthClient,
+  OauthClientRow,
+  OauthClientSecretsResult,
+  OauthClientValues,
+  OauthSignInResult,
+  OauthUserInfo,
+  SchemaField,
+  StoredOauthToken,
+  TransferStatus,
+} from "./types/credentials";
 export type { LogLine, StepDataclip } from "./types/history";
 export type { PageInfo, SortState } from "./types/lists";
 export type {

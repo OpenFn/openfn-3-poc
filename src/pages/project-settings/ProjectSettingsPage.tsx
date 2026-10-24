@@ -39,6 +39,7 @@ import type {
   WebhookAuthMethodValues,
   WebhookSecuritySettings,
 } from "../../types/project-settings";
+import type { CredentialActions, KeychainCredentialActions } from "../../types/credentials";
 import type { CurrentProject } from "../../types/projects";
 import { cn } from "../../utils/cn";
 
@@ -48,7 +49,7 @@ import { cn } from "../../utils/cn";
  * the others. Every action resolves once the host has answered; the host
  * announces success (its flash), and the page says what went wrong.
  */
-export interface ProjectSettingsPageProps {
+export interface ProjectSettingsPageProps extends CredentialActions, KeychainCredentialActions {
   project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
@@ -74,6 +75,8 @@ export interface ProjectSettingsPageProps {
   onDeleteProject: (nameConfirmation: string) => Promise<void>;
   /** Closes the deletion modal (Cancel). */
   onCloseDelete: () => void;
+
+  // The Credentials tab's actions come from CredentialActions and KeychainCredentialActions (types/credentials.ts).
 
   /** Creates a collection from the name as typed. Rejects with field errors (`rawName`) or a message. */
   onCreateCollection: (rawName: string) => Promise<void>;
@@ -145,7 +148,20 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
           }
         />
         {sandbox && <SandboxSettingsBanner variant="editable" />}
-        <CredentialIndex project={project} {...credentials} />
+        {/* The page props carry the credential actions; the tab's data comes after, so its `credentials` list wins. */}
+        <CredentialIndex
+          {...props}
+          {...credentials}
+          project={{
+            id: project.id,
+            keychainCredentials: credentials.keychainCredentials,
+            canCreateKeychainCredential: credentials.canCreateKeychainCredential,
+            canEditKeychainCredential: credentials.canEditKeychainCredential,
+            onCreateKeychainCredential: props.onCreateKeychainCredential,
+            onUpdateKeychainCredential: props.onUpdateKeychainCredential,
+            onDeleteKeychainCredential: props.onDeleteKeychainCredential,
+          }}
+        />
       </>
     ),
     collections: (

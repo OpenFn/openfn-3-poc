@@ -6,7 +6,7 @@
  * backend.
  */
 
-import { credentials, credentialsFor, keychainCredentialsIn, oauthClientsFor } from "./credentials";
+import { credentialIndexDataFor, credentials, credentialsFixture, keychainRowsFor, type CredentialsFixture } from "./credentials";
 import { findProject, projects } from "./projects";
 import { findUser } from "./users";
 import { permissionsFor } from "../permissions";
@@ -190,6 +190,7 @@ export interface SettingsFixture {
   collections: Collection[];
   authMethods: WebhookAuthMethod[];
   connection: GithubRepoConnection | null;
+  credentials: CredentialsFixture;
 }
 
 export function settingsFixtureFor(project: Project): SettingsFixture {
@@ -199,6 +200,7 @@ export function settingsFixtureFor(project: Project): SettingsFixture {
     collections: collectionsIn(project.id),
     authMethods: webhookAuthMethodsIn(project.id),
     connection: vcsFor(project.id).connection,
+    credentials: credentialsFixture(),
   };
 }
 
@@ -267,7 +269,7 @@ function descendantCount(projectId: string): number {
 
 /** Everything ProjectSettingsPage shows, as Lightning's settings.ex would send it. */
 export function projectSettingsPropsFor(
-  { project, supportAccess, collections, authMethods, connection }: SettingsFixture,
+  { project, supportAccess, collections, authMethods, connection, credentials: credentialLists }: SettingsFixture,
   viewer: User
 ): Omit<ProjectSettingsPageProps, "projectLabel" | "deleting" | `on${string}`> {
   const perms = permissionsFor(project, viewer);
@@ -290,9 +292,8 @@ export function projectSettingsPropsFor(
       canDeleteProject: perms.canDeleteProject,
     },
     credentials: {
-      credentials: credentialsFor(project, viewer),
-      oauthClients: oauthClientsFor(project, viewer),
-      keychainCredentials: keychainCredentialsIn(project),
+      ...credentialIndexDataFor(credentialLists, project, viewer),
+      keychainCredentials: keychainRowsFor(credentialLists, project),
       canCreateProjectCredential: perms.canCreateProjectCredential,
       canCreateKeychainCredential: perms.canCreateKeychainCredential,
       canEditKeychainCredential: perms.canEditKeychainCredential,

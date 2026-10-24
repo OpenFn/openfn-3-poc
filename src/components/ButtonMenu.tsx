@@ -10,6 +10,9 @@ interface Props {
   align?: FloatingAlign;
   /** Width class for the menu. */
   className?: string;
+  /** Spins the button while something it started is loading (an Edit fetching its record). */
+  pending?: boolean;
+  disabled?: boolean;
   /** MenuItems. */
   children: ReactNode;
 }
@@ -18,13 +21,13 @@ interface Props {
  * A labelled button with a chevron that opens a Menu: row "Actions" menus,
  * "Add new" menus (Lightning's `simple_dropdown`).
  */
-export default function ButtonMenu({ label, theme = "secondary", align, className, children }: Props) {
+export default function ButtonMenu({ label, theme = "secondary", align, className, pending = false, disabled = false, children }: Props) {
   return (
     <Menu
       align={align}
       className={className}
       trigger={
-        <Button theme={theme}>
+        <Button theme={theme} pending={pending} disabled={disabled}>
           {label} <span className="hero-chevron-down h-4 w-4" />
         </Button>
       }
