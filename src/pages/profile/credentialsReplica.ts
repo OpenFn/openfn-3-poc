@@ -109,10 +109,10 @@ export function credentialReplicaActions(
       return simulateRequest(credentialSecretsFor(fixture, credential));
     },
     onLoadCredentialSchema: (key) => simulateRequest({ fields: fieldsForSchema(key) }),
-    onDeleteCredential: async (id) => {
+    onDeleteCredential: async (id, { now }) => {
       await simulateRequest();
-      // credential_deletion_modal.ex: the first delete schedules it; deleting a scheduled one is final.
-      if (find(id)?.scheduledDeletion) {
+      // credential_deletion_modal.ex: what the dialog showed, even if the row changed since; scheduling again moves the date.
+      if (now) {
         if (withActivity.has(id)) throw new RequestError("Cannot delete a credential that has activities in projects");
         update((f) => ({ credentials: f.credentials.filter((c) => c.id !== id) }));
         toast("Credential deleted successfully");

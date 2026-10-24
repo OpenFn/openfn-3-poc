@@ -202,6 +202,8 @@ export default function CredentialFormModal({
   const nextKey = () => `${formId}:${++counter.current}`;
   const [page, setPage] = useState<"first" | "second">(editing ? "second" : "first");
   const [schema, setSchema] = useState<string | null>(credential?.schema ?? null);
+  // The pick as of the last click, for a schema that answers after the pick changed.
+  const latestSchema = useRef(schema);
   const [fields, setFields] = useState<SchemaField[]>(loadedSchema?.fields ?? []);
   const [oauthClientId, setOauthClientId] = useState<string | null>(credential?.oauthClient?.id ?? null);
   const [tab, setTab] = useState(0);
@@ -320,6 +322,7 @@ export default function CredentialFormModal({
   const pickType = (key: string) => {
     const oauth = oauthClients.some((c) => c.id === key);
     setSchema(oauth ? "oauth" : key);
+    latestSchema.current = oauth ? "oauth" : key;
     setOauthClientId(oauth ? key : null);
     setEnvs([newEnv(nextKey(), "main", oauth ? "oauth" : key)]);
   };
@@ -372,7 +375,14 @@ export default function CredentialFormModal({
         formClassName=""
         onSubmit={async () => {
           // An adaptor's fields come from the host. A failure shows here, and Configure tries again.
-          if (schema && schema !== "raw" && schema !== "oauth") setFields((await onLoadCredentialSchema(schema)).fields);
+          // The latest pick wins: one made while the fields load is loaded in turn.
+          let picked: string | null;
+          let loaded: SchemaField[];
+          do {
+            picked = latestSchema.current;
+            loaded = picked && picked !== "raw" && picked !== "oauth" ? (await onLoadCredentialSchema(picked)).fields : [];
+          } while (picked !== latestSchema.current);
+          setFields(loaded);
           setPage("second");
         }}
         submitLabel="Configure credential"
