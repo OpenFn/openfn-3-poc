@@ -17,6 +17,7 @@ export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrd
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
 export { default as BackupCodesPage } from "./pages/profile/BackupCodesPage";
+export { default as ProfilePage } from "./pages/profile/ProfilePage";
 export { default as TokensPage } from "./pages/profile/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
@@ -47,13 +48,14 @@ export type {
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
 export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
+export type { ProfilePageProps } from "./pages/profile/ProfilePage";
 export type { TokensPageProps } from "./pages/profile/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/WorkflowsIndexPage";
 
-export type { ChangeEmailResult, ChangeEmailValues, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { ChangeEmailResult, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
 export type { ConfirmAccessValues } from "./pages/auth/AuthConfirmAccessPage";
 export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
 export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";
@@ -112,6 +114,17 @@ export type {
   WebhookSecuritySettings,
   WebhookUsageRef,
 } from "./types/project-settings";
+export type {
+  AccountDeletionSettings,
+  BasicInfoValues,
+  ChangeEmailValues,
+  ChangePasswordValues,
+  ContactPreference,
+  GithubAccessSettings,
+  MfaSettings,
+  MfaSetupResult,
+  ProfileDetail,
+} from "./types/profile";
 export type { CurrentProject, ProjectRole, RetentionPolicy } from "./types/projects";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectMetrics, ProjectOverview, WorkflowRow } from "./types/workflows";

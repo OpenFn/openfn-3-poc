@@ -1,9 +1,9 @@
 import DateTime from "../DateTime";
 import Heading from "../Heading";
-import type { User } from "../../types/users";
+import type { ProfileDetail } from "../../types/profile";
 
 /** Left column of /profile (profile_live/components.ex `user_info`). */
-export default function UserInfo({ user }: { user: User }) {
+export default function UserInfo({ user }: { user: ProfileDetail }) {
   return (
     <div className="space-y-1 text-sm leading-6 text-gray-600">
       <Heading as="h2">

@@ -9,17 +9,13 @@ import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";
+import type { ChangeEmailValues } from "../../types/profile";
 
 /** What the host answers a resend with. */
 export type ResendResult = { status: "sent" } | { status: "throttled"; message: string } | { status: "failed" };
 
 /** What the host answers an address change with: sent to the new address, or throttled. */
 export type ChangeEmailResult = { status: "requested"; email: string } | { status: "throttled" };
-
-export interface ChangeEmailValues {
-  email: string;
-  currentPassword: string;
-}
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AuthConfirmationRequiredPageProps {
