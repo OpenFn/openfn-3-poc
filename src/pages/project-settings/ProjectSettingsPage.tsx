@@ -39,6 +39,7 @@ import type {
   WebhookAuthMethodValues,
   WebhookSecuritySettings,
 } from "../../types/project-settings";
+import type { ButtonAction, ChoiceAction, FormAction, ModalAction } from "../../types/actions";
 import type { CredentialActions, KeychainCredentialActions } from "../../types/credentials";
 import type { CurrentProject } from "../../types/projects";
 import { cn } from "../../utils/cn";
@@ -46,8 +47,8 @@ import { cn } from "../../utils/cn";
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,
  * later Lightning): one shape per tab, so a tab can change without touching
- * the others. Every action resolves once the host has answered; the host
- * announces success (its flash), and the page says what went wrong.
+ * the others. Each action's type (types/actions.ts) says where a rejection
+ * shows. The host announces success (its flash).
  */
 export interface ProjectSettingsPageProps extends CredentialActions, KeychainCredentialActions {
   project: CurrentProject;
@@ -67,48 +68,49 @@ export interface ProjectSettingsPageProps extends CredentialActions, KeychainCre
   dataStorage: DataStorageSettings;
   historyExports: HistoryExportRow[];
 
-  /** Saves Project Identity. Rejects with field errors (`rawName`) or a message, which the form shows. */
-  onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
+  onSaveIdentity: FormAction<ProjectIdentityValues>;
   /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */
-  onSaveConcurrency: (concurrency: number | null) => Promise<void>;
+  onSaveConcurrency: FormAction<number | null>;
   /** Deletes the project (or sandbox) with the name the user typed, which the host checks. The host moves the user on. */
-  onDeleteProject: (nameConfirmation: string) => Promise<void>;
+  onDeleteProject: ModalAction<[nameConfirmation: string]>;
   /** Closes the deletion modal (Cancel). */
   onCloseDelete: () => void;
 
   // The Credentials tab's actions come from CredentialActions and KeychainCredentialActions (types/credentials.ts).
 
-  /** Creates a collection from the name as typed. Rejects with field errors (`rawName`) or a message. */
-  onCreateCollection: (rawName: string) => Promise<void>;
-  onRenameCollection: (id: string, rawName: string) => Promise<void>;
-  onDeleteCollection: (id: string) => Promise<void>;
+  /** Creates a collection from the name as typed. Field errors are keyed `rawName`. */
+  onCreateCollection: ModalAction<[rawName: string]>;
+  /** Field errors are keyed `rawName`. */
+  onRenameCollection: ModalAction<[id: string, rawName: string]>;
+  onDeleteCollection: ModalAction<[id: string]>;
   /** The collection's first record, pretty-printed, or null when it's empty. */
-  onPreviewCollection: (id: string) => Promise<string | null>;
+  onPreviewCollection: ButtonAction<[id: string], string | null>;
 
-  /** Creates a webhook auth method; an API key method gets the key `onGenerateApiKey` last handed out. Rejects with field errors (`name`) or a message. */
-  onCreateWebhookAuthMethod: (values: WebhookAuthMethodValues) => Promise<void>;
-  onRenameWebhookAuthMethod: (id: string, name: string) => Promise<void>;
-  onDeleteWebhookAuthMethod: (id: string) => Promise<void>;
+  /** Creates a webhook auth method; an API key method gets the key `onGenerateApiKey` last handed out. */
+  onCreateWebhookAuthMethod: ModalAction<[values: WebhookAuthMethodValues]>;
+  /** Field errors are keyed `name`. */
+  onRenameWebhookAuthMethod: ModalAction<[id: string, name: string]>;
+  onDeleteWebhookAuthMethod: ModalAction<[id: string]>;
   /** A new API key, shown in the form before the method is created. The host keeps it for `onCreateWebhookAuthMethod`. */
-  onGenerateApiKey: () => Promise<string>;
-  /** A method's password or API key, once the user has re-authenticated. Rejects when the password or code is wrong. */
-  onRevealWebhookSecret: (id: string, values: ReauthValues) => Promise<string>;
+  onGenerateApiKey: ModalAction<[], string>;
+  /** A method's password or API key, once the user has re-authenticated. Rejects when the password or code is wrong; only the message shows. */
+  onRevealWebhookSecret: ModalAction<[id: string, values: ReauthValues], string>;
 
-  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. */
-  onAddCollaborators: (values: CollaboratorValues[]) => Promise<AddCollaboratorsResult>;
-  /** Rejects with field errors keyed by row and field (`"1.email"`), which show on that row, or a message. */
-  onInviteCollaborators: (values: InviteValues[]) => Promise<void>;
-  onRemoveCollaborator: (id: string) => Promise<void>;
-  onSetSupportAccess: (on: boolean) => Promise<void>;
-  /** The viewer's own alert settings (`id` is their project user). */
+  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. Only a rejection's message shows. */
+  onAddCollaborators: ModalAction<[values: CollaboratorValues[]], AddCollaboratorsResult>;
+  /** Field errors are keyed by row and field (`"1.email"`), which show on that row. */
+  onInviteCollaborators: ModalAction<[values: InviteValues[]]>;
+  onRemoveCollaborator: ModalAction<[id: string]>;
+  onSetSupportAccess: ChoiceAction<boolean>;
+  /** The viewer's own alert settings (`id` is their project user), saved on change as a `ChoiceAction` is. */
   onSetFailureAlert: (id: string, on: boolean) => Promise<void>;
+  /** Saved on change, as a `ChoiceAction` is. */
   onSetDigest: (id: string, digest: Digest) => Promise<void>;
 
-  onSetRequiresMfa: (on: boolean) => Promise<void>;
-  onInitiateGithubSync: () => Promise<void>;
-  onRemoveGithubConnection: () => Promise<void>;
-  /** Saves the Data Storage form. Rejects with field errors or a message, which the form shows. */
-  onSaveDataStorage: (values: DataStorageValues) => Promise<void>;
+  onSetRequiresMfa: ChoiceAction<boolean>;
+  onInitiateGithubSync: ButtonAction;
+  onRemoveGithubConnection: ModalAction;
+  onSaveDataStorage: FormAction<DataStorageValues>;
 }
 
 /**

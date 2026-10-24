@@ -17,14 +17,13 @@ import type {
   MfaSetupResult,
   ProfileDetail,
 } from "../../types/profile";
+import type { ButtonAction, ChoiceAction, FormAction, ModalAction } from "../../types/actions";
 
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,
- * later Lightning). Every action resolves once the host has answered; the
- * host announces success (its flash) and moves the user on where Lightning
- * does, and the page says what went wrong. Unless an action says otherwise,
- * a rejection's message shows where the user acted (in the form's card, or in
- * the modal, which stays open).
+ * later Lightning). Each action's type (types/actions.ts) says where a
+ * rejection shows. The host announces success (its flash) and moves the user
+ * on where Lightning does.
  */
 export interface ProfilePageProps {
   /**
@@ -47,31 +46,27 @@ export interface ProfilePageProps {
   /** The deletion modal is open (/profile/:id/delete, for the user's own id). */
   deleting: boolean;
 
-  /** Saves "Change basic information". Rejects with field errors (`firstName`, `lastName`, `contactPreference`) or a message. On success the host reloads the page's data. */
-  onSaveBasicInfo: (values: BasicInfoValues) => Promise<void>;
-  /** Asks to change the email address (the host emails a confirmation link). Rejects with field errors (`email`, `currentPassword`) or a message. The form empties on success. */
-  onChangeEmail: (values: ChangeEmailValues) => Promise<void>;
-  /** Changes the password. Rejects with field errors (`password`, `passwordConfirmation`, `currentPassword`) or a message. On success the host signs the user in again, as Lightning does. */
-  onChangePassword: (values: ChangePasswordValues) => Promise<void>;
-  /** Starts MFA setup with a new secret, which comes back only in this reply. The host keeps it for `onConfirmMfa`. A rejection's message shows as an error toast and the switch stays off. */
-  onStartMfaSetup: () => Promise<MfaSetupResult>;
+  /** Saves "Change basic information". On success the host reloads the page's data. */
+  onSaveBasicInfo: FormAction<BasicInfoValues>;
+  /** Asks to change the email address (the host emails a confirmation link). The form empties on success. */
+  onChangeEmail: FormAction<ChangeEmailValues>;
+  /** Changes the password. On success the host signs the user in again, as Lightning does. */
+  onChangePassword: FormAction<ChangePasswordValues>;
+  /** Starts MFA setup with a new secret, which comes back only in this reply. The host keeps it for `onConfirmMfa`. On a rejection the switch stays off. */
+  onStartMfaSetup: ButtonAction<[], MfaSetupResult>;
   /**
-   * Finishes MFA setup with the code from the app. Rejects with field errors (`code`: "invalid code") or a message.
+   * Finishes MFA setup with the code from the app, submitted from the setup form. Field errors are keyed `code` ("invalid code").
    * On success, after a first setup the host moves the user on to the recovery codes (Lightning gives that page a
    * sudo token); after "Setup another device" it reloads the page's data.
    */
-  onConfirmMfa: (code: string) => Promise<void>;
-  /** Removes the authenticator app. On success the host reloads the page's data. */
-  onDisableMfa: () => Promise<void>;
-  /** Removes the GitHub link. On success the host reloads the page's data. */
-  onDisconnectGithub: () => Promise<void>;
-  /** Saves on every flip of the switch. On a rejection the switch goes back and its message shows as an error toast. */
-  onSetExperimentalFeatures: (on: boolean) => Promise<void>;
-  /**
-   * Deletes the account with the email the user typed. The host checks the email and refuses a superuser; the
-   * message shows in the modal. The host moves the user on.
-   */
-  onDeleteAccount: (email: string) => Promise<void>;
+  onConfirmMfa: FormAction<string>;
+  /** Removes the authenticator app, once confirmed. On success the host reloads the page's data. */
+  onDisableMfa: ModalAction;
+  /** Removes the GitHub link, once confirmed. On success the host reloads the page's data. */
+  onDisconnectGithub: ModalAction;
+  onSetExperimentalFeatures: ChoiceAction<boolean>;
+  /** Deletes the account with the email the user typed. The host moves the user on. */
+  onDeleteAccount: ModalAction<[email: string]>;
   /** Closes the deletion modal: Cancel, Escape or the backdrop. */
   onCloseDelete: () => void;
 }
