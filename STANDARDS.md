@@ -278,6 +278,12 @@ is rewritten.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
+- **A new page's tests use `renderPage`** (`src/test/renderPage.tsx`): each
+  `on*` in its `actions` list waits until the test calls `host.resolve` or
+  `host.reject` (list every one the page needs; one left out reaches the page
+  as `undefined`), and `host.sendProps` is its own step, so a test can check
+  the page between Lightning's reply and its new props. Old tests move when
+  next touched; `AdminAuthProvidersPage.test.tsx` is the example.
 
 ## 12. Server checks
 
