@@ -16,8 +16,8 @@ export interface SandboxRow {
   scheduledDeletion: string | null;
   /** Where clicking a live card goes: the project's workflows. */
   workflowsHref: string;
-  /** The route that opens the edit form (Lightning's is under the sandbox's parent). */
-  editHref: string;
+  /** The route that opens the edit form (Lightning's is under the sandbox's parent). Null for a root that isn't a sandbox. */
+  editHref: string | null;
   /** Each false greys its button with Lightning's "not authorized" tooltip. All false once scheduled. */
   canEdit: boolean;
   canDelete: boolean;
@@ -98,11 +98,16 @@ export interface MergePreviewResult {
 export interface MergeValues {
   targetId: string;
   /**
-   * The selected workflows' ids as the preview gave them: a sandbox workflow's id, or for an `isDeleted` row
-   * the target's workflow id. The host splits the list by the preview, as Lightning's
-   * `resolve_selected_workflow_ids` does.
+   * The ticked workflows to carry over: the sandbox workflow ids of the preview's rows that aren't `isDeleted`.
+   * The host keeps only ids its own latest preview for `targetId` lists, as Lightning's
+   * `resolve_selected_workflow_ids` splits against the preview it holds (Sandboxes.merge's `selected_workflow_ids`).
    */
   workflowIds: string[];
+  /**
+   * The ticked `isDeleted` rows: target workflow ids to delete from the target. The host keeps only ids from its
+   * own latest preview's `isDeleted` rows (Sandboxes.merge's `deleted_target_workflow_ids`).
+   */
+  deletedWorkflowIds: string[];
   credentialIds: string[];
   /** Previewed collections the user unticked. Any other sandbox-only collection is still created. */
   skippedCollectionNames: string[];

@@ -24,7 +24,7 @@ const row = (id: string, name: string, more: Partial<SandboxRow> = {}): SandboxR
   ...more,
 });
 
-const root = row("p1", "openhie-project", { editHref: "/projects/p1/sandboxes/p1/edit" });
+const root = row("p1", "openhie-project", { editHref: null });
 const live = row("s1", "fhir-mapping", { env: "staging", activeDescendantCount: 2 });
 const gone = row("s2", "old-import", {
   scheduledDeletion: "2026-10-21T00:00:00Z",
@@ -345,7 +345,8 @@ describe("SandboxesIndexPage", () => {
       fireEvent.submit(document.getElementById("merge-sandbox-form")!);
       expect(onMergeSandbox).toHaveBeenCalledWith("s1", {
         targetId: "p1",
-        workflowIds: ["w1", "t1"],
+        workflowIds: ["w1"],
+        deletedWorkflowIds: ["t1"],
         credentialIds: [],
         skippedCollectionNames: ["cache-b"],
       });
@@ -406,6 +407,54 @@ describe("SandboxesIndexPage", () => {
       await new Promise((r) => setTimeout(r, 0));
       expect(screen.queryByText("Stale one")).toBeNull();
       expect((select as HTMLSelectElement).value).toBe("p1");
+    });
+
+    it("drops a stale preview that fails after a newer one arrived", async () => {
+      let rejectSlow: (e: Error) => void = () => {};
+      const onPreviewMerge = vi
+        .fn()
+        .mockResolvedValueOnce(preview())
+        .mockReturnValueOnce(new Promise<MergePreviewResult>((_, rej) => (rejectSlow = rej)))
+        .mockResolvedValueOnce(preview());
+      await openMerge({ onPreviewMerge });
+      const select = document.getElementById("merge-target-select")!;
+      fireEvent.change(select, { target: { value: "s3" } });
+      fireEvent.change(select, { target: { value: "p1" } });
+      await waitFor(() => expect(submit().disabled).toBe(false));
+      rejectSlow(new RequestError("Target project not found"));
+      await new Promise((r) => setTimeout(r, 0));
+      expect(document.getElementById("merge-preview-error")).toBeNull();
+      expect(submit().disabled).toBe(false);
+    });
+
+    it("keeps collection ticks when the answer is for the same target as the last one", async () => {
+      const onPreviewMerge = vi
+        .fn()
+        .mockResolvedValueOnce(preview())
+        .mockReturnValueOnce(new Promise<MergePreviewResult>(() => {}))
+        .mockResolvedValueOnce(preview());
+      await openMerge({ onPreviewMerge });
+      fireEvent.click(tick("cache-a"));
+      const select = document.getElementById("merge-target-select")!;
+      fireEvent.change(select, { target: { value: "s3" } });
+      fireEvent.change(select, { target: { value: "p1" } });
+      await waitFor(() => expect(submit().disabled).toBe(false));
+      expect(tick("cache-a").checked).toBe(false);
+      expect(tick("cache-b").checked).toBe(true);
+    });
+
+    it("prompts for a target when the preview has no default, so picking the first one asks for its preview", async () => {
+      const onPreviewMerge = vi.fn().mockResolvedValueOnce(preview({ targetId: null })).mockResolvedValueOnce(preview());
+      await openMerge({ onPreviewMerge });
+      const select = document.getElementById("merge-target-select") as HTMLSelectElement;
+      expect(select.value).toBe("");
+      expect(select.selectedOptions[0]?.textContent).toBe("Select a project");
+      expect(submit().getAttribute("title")).toBe("No project to merge into");
+      fireEvent.change(select, { target: { value: "p1" } });
+      expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", "p1");
+      await waitFor(() => expect(submit().disabled).toBe(false));
+      expect(select.value).toBe("p1");
+      expect(screen.getByRole("dialog").textContent).toContain("counterparts in openhie-project.");
     });
 
     it("names the select's target and the row's child count while a preview loads", async () => {

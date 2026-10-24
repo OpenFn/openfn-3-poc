@@ -3,7 +3,9 @@ import { Label } from "../../Inputs";
 
 /**
  * The sandbox colour picker (SandboxLive.Components.color_palette): a grid
- * of 16 swatches; the selected one shows a white check. null ticks none.
+ * of 16 swatches; the selected one shows a white check. null ticks none, on
+ * purpose: Lightning ticks the first swatch, so saving an edit gives a sandbox
+ * with no colour that swatch without the user choosing it. Here it stays null.
  */
 export default function ColorPalette({
   value,

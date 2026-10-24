@@ -103,7 +103,7 @@ export function sandboxRow(f: SandboxFixture, all: SandboxFixture[], canManage =
     env: f.env,
     scheduledDeletion: f.scheduledDeletion,
     workflowsHref: `/projects/${f.id}/w`,
-    editHref: `/projects/${f.parentId ?? f.id}/sandboxes/${f.id}/edit`,
+    editHref: f.parentId ? `/projects/${f.parentId}/sandboxes/${f.id}/edit` : null,
     canEdit: canManage && !scheduledNow,
     canDelete: canManage && !scheduledNow,
     canMerge: canManage && !scheduledNow,

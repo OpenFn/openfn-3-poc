@@ -132,7 +132,8 @@ export default function MergeSandboxModal({
       onSubmit={() =>
         onMerge({
           targetId: preview!.targetId!,
-          workflowIds: preview!.workflows.filter((w) => s.workflows.has(w.id)).map((w) => w.id),
+          workflowIds: preview!.workflows.filter((w) => !w.isDeleted && s.workflows.has(w.id)).map((w) => w.id),
+          deletedWorkflowIds: preview!.workflows.filter((w) => w.isDeleted && s.workflows.has(w.id)).map((w) => w.id),
           credentialIds: preview!.credentials.filter((c) => s.credentials.has(c.id)).map((c) => c.id),
           skippedCollectionNames: preview!.collectionsToAdd.filter((n) => !s.collections.has(n)),
         })
@@ -150,6 +151,8 @@ export default function MergeSandboxModal({
             aria-label="Target project"
             fieldClassName="max-w-64 flex-1"
             options={(preview?.targets ?? []).map((t) => ({ label: t.name, value: t.id }))}
+            // With no target yet, a prompt holds the empty value, so picking any real target is a change.
+            {...(s.shown === null && { prompt: "Select a project" })}
             value={s.shown ?? ""}
             disabled={!preview}
             onChange={(e) => {

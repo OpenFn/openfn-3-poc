@@ -90,7 +90,8 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   `id` gets a generated one, so every label is linked to its control.
 
 Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
-`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, the
+`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`,
+`SandboxFormModal`, the
 credential modals (`CredentialFormModal`, `OauthClientFormModal`,
 `KeychainCredentialFormModal`, `TransferCredentialModal`). Still computing
 `errors={cond ? ["can't be blank"] : []}` in render: `AuthResetPasswordPage`, and

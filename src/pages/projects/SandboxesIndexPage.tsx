@@ -127,7 +127,7 @@ export default function SandboxesIndexPage({
           newHref={newHref}
           createBlockedReason={createBlockedReason}
           onMerge={(s) => setMergingId(s.id)}
-          onEdit={(s) => navigate(s.editHref)}
+          onEdit={(s) => s.editHref && navigate(s.editHref)}
           onDelete={(s) => setDeletingId(s.id)}
           // Each card spins its own Restore and toasts a refusal. The host announces success (its flash).
           onRestore={(s) => onCancelDeletion(s.id)}
