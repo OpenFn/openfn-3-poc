@@ -6,10 +6,8 @@ import { DetailItem, DetailList } from "../DetailList";
 import Pill from "../Pill";
 import SectionHeader from "../SectionHeader";
 import TextLink from "../TextLink";
-import { useToast } from "../Toast";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { GithubSyncSettings } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 interface Props {
@@ -30,8 +28,7 @@ interface Props {
 export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, onRemoveConnection }: Props) {
   const { enabled, connection, userConnected, connectAccountHref, canInstall, canInitiateSync } = githubSync;
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const toast = useToast();
-  const sync = useAction(onInitiateSync, { onError: (e) => toast(errorMessage(e), "error") });
+  const sync = useAction(onInitiateSync, { onError: "toast" });
 
   let body: ReactNode = null;
   if (!enabled) {

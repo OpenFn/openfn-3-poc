@@ -1,9 +1,8 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import ConfirmModal from "../ConfirmModal";
 import ButtonMenu from "../ButtonMenu";
 import { MenuItem } from "../Menu";
 import { EmptyState } from "../Table";
-import { useToast } from "../Toast";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
 import CredentialFormModal from "./CredentialFormModal";
 import OauthClientFormModal from "./OauthClientFormModal";
@@ -21,8 +20,7 @@ import type {
   KeychainCredentialRow,
   OauthClientSecretsResult,
 } from "../../types/credentials";
-import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
+import { useActions } from "../../utils/useAction";
 
 /** Project settings' scope: the project, its keychain credentials and their actions. */
 interface ProjectScope extends KeychainCredentialActions {
@@ -62,14 +60,22 @@ type ActiveModal =
 export default function CredentialIndex(props: Props) {
   const { project, credentials, oauthClients, canCreateProjectCredential: canCreate } = props;
   const [active, setActiveState] = useState<ActiveModal>(null);
-  // Counts modal changes, so an edit form whose secrets come back late opens only if nothing else opened or closed meanwhile.
-  const modalChanges = useRef(0);
-  const setActive = (next: ActiveModal) => {
-    modalChanges.current++;
-    setActiveState(next);
-  };
-  const toast = useToast();
-  const toastError = (e: Error) => toast(errorMessage(e), "error");
+  // Edit forms open once the host has sent the stored secrets (and an adaptor's schema). While that
+  // loads, the row's Actions button spins and the others wait. Opening or closing any modal drops
+  // the answer, so a late edit form never shows over another modal.
+  const loadThenOpen = useActions((_id: string, load: () => Promise<Exclude<ActiveModal, null>>) => load(), {
+    latest: true,
+    onError: "toast",
+    onSuccess: setActiveState,
+  });
+  const { cancel: dropLoad } = loadThenOpen;
+  const setActive = useCallback(
+    (next: ActiveModal) => {
+      dropLoad();
+      setActiveState(next);
+    },
+    [dropLoad]
+  );
 
   const showOwner = !!project;
   const defaultProjectIds = project ? [project.id] : [];
@@ -80,27 +86,10 @@ export default function CredentialIndex(props: Props) {
       if (target === "new_keychain_credential" ? !canCreateKeychain : !canCreate) return;
       setActive({ kind: target });
     },
-    [canCreate, canCreateKeychain]
+    [canCreate, canCreateKeychain, setActive]
   );
   useCredentialModalRequests(open);
 
-  // Edit forms open once the host has sent the stored secrets (and an adaptor's schema). While that
-  // loads, the row's Actions button spins and the others wait; an answer that comes back after
-  // another modal opened is dropped, never shown over it.
-  const [loadingId, setLoadingId] = useState<string | null>(null);
-  const loadThenOpen = useAction(
-    async (id: string, load: () => Promise<Exclude<ActiveModal, null>>) => {
-      setLoadingId(id);
-      const changes = modalChanges.current;
-      try {
-        const modal = await load();
-        if (modalChanges.current === changes) setActive(modal);
-      } finally {
-        setLoadingId(null);
-      }
-    },
-    { onError: toastError }
-  );
   const editCredential = (id: string, schema: string) =>
     loadThenOpen.run(id, async () => {
       const adaptor = schema !== "raw" && schema !== "oauth";
@@ -112,19 +101,10 @@ export default function CredentialIndex(props: Props) {
     });
   const editOauthClient = (id: string) =>
     loadThenOpen.run(id, async () => ({ kind: "edit_oauth_client", id, secrets: await props.onLoadOauthClientSecrets(id) }));
-  const rowMenu = (id: string) => ({ pending: loadingId === id, disabled: loadingId !== null });
-  // Cancelling a deletion spins its row too, so a second row waits instead of being ignored.
-  const cancelDeletion = useAction(
-    async (id: string) => {
-      setLoadingId(id);
-      try {
-        await props.onCancelCredentialDeletion(id);
-      } finally {
-        setLoadingId(null);
-      }
-    },
-    { onError: toastError }
-  );
+  // Cancelling a deletion spins its row too, and the other rows wait for it.
+  const cancelDeletion = useActions(props.onCancelCredentialDeletion, { onError: "toast" });
+  const busy = loadThenOpen.pending() || cancelDeletion.pending();
+  const rowMenu = (id: string) => ({ pending: loadThenOpen.pending(id) || cancelDeletion.pending(id), disabled: busy });
 
   const close = () => setActive(null);
   const activeId = active && "id" in active ? active.id : null;
@@ -202,7 +182,7 @@ export default function CredentialIndex(props: Props) {
           }
           actions={(kc) =>
             project.canEditKeychainCredential && (
-              <ButtonMenu label="Actions" disabled={loadingId !== null}>
+              <ButtonMenu label="Actions" disabled={busy}>
                 <MenuItem onClick={() => setActive({ kind: "edit_keychain_credential", id: kc.id })}>Edit</MenuItem>
                 <MenuItem onClick={() => setActive({ kind: "delete_keychain_credential", id: kc.id })}>Delete</MenuItem>
               </ButtonMenu>

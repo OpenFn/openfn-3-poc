@@ -3,9 +3,7 @@ import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import UserDeletionModal from "../../components/admin/UserDeletionModal";
 import UsersTable from "../../components/admin/UsersTable";
-import { useToast } from "../../components/Toast";
 import type { AdminDeleteUser, AdminUserRow } from "../../types/admin";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -29,8 +27,7 @@ export interface AdminUsersPageProps {
  * routing live in AdminUsersPage.replica.tsx.
  */
 export default function AdminUsersPage({ users, deleteUser, onCancelDeletion, onDelete, onClose }: AdminUsersPageProps) {
-  const toast = useToast();
-  const cancel = useAction(onCancelDeletion, { onError: (e) => toast(errorMessage(e), "error") });
+  const cancel = useAction(onCancelDeletion, { onError: "toast" });
 
   return (
     <PageContent

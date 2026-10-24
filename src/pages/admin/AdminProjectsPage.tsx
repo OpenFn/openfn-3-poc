@@ -4,9 +4,7 @@ import { Centered, PageContent } from "../../components/PageContent";
 import AdminProjectForm from "../../components/admin/AdminProjectForm";
 import AdminProjectsTable from "../../components/admin/AdminProjectsTable";
 import ProjectDeletionModal from "../../components/project-settings/ProjectDeletionModal";
-import { useToast } from "../../components/Toast";
 import type { AdminDeleteProject, AdminProjectForm as FormData, AdminProjectFormValues, AdminProjectRow } from "../../types/admin";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -46,8 +44,7 @@ export default function AdminProjectsPage({
   onCancelDeletion,
   onClose,
 }: AdminProjectsPageProps) {
-  const toast = useToast();
-  const cancel = useAction(onCancelDeletion, { onError: (e) => toast(errorMessage(e), "error") });
+  const cancel = useAction(onCancelDeletion, { onError: "toast" });
   const title = form ? (form.project ? "Edit Project" : "New Project") : "Projects";
 
   return (

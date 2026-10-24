@@ -12,12 +12,10 @@ import StatePill from "../../components/history/StatePill";
 import StepDataclipViewer from "../../components/history/StepDataclipViewer";
 import Tabs from "../../components/Tabs";
 import TextLink from "../../components/TextLink";
-import { useToast } from "../../components/Toast";
 import { useRouter } from "../../routing/router";
 import { finalRunStates } from "../../constants";
 import type { CurrentProject } from "../../types/projects";
 import type { LogLine, RunDetail, RunStep, RunWorkflow, StepDataclip } from "../../types/history";
-import { errorMessage } from "../../utils/errors";
 import { shortUuid } from "../../utils/format";
 import { useAction } from "../../utils/useAction";
 
@@ -104,8 +102,7 @@ export default function RunShowPage({
   // names its own tab and Back and Forward move between them.
   const hashTab = hash.slice(1);
   const tab: TabId = isTabId(hashTab) ? hashTab : "log";
-  const toast = useToast();
-  const cancel = useAction(onCancel, { onError: (e) => toast(errorMessage(e), "error") });
+  const cancel = useAction(onCancel, { onError: "toast" });
   const selectedStep = steps.find((s) => s.id === selectedStepId);
   const finished = run ? finalRunStates.includes(run.state) : false;
   const activeTab = selectedStep ? tab : "log";

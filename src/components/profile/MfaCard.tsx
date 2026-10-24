@@ -9,7 +9,6 @@ import SectionHeader from "../SectionHeader";
 import TextLink from "../TextLink";
 import Toggle from "../Toggle";
 import Card from "../Card";
-import { useToast } from "../Toast";
 import type { MfaSettings, MfaSetupResult } from "../../types/profile";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
@@ -33,7 +32,6 @@ interface Props {
  */
 export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Props) {
   const id = "mfa_section";
-  const toast = useToast();
   const [setup, setSetup] = useState<MfaSetupResult | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
@@ -57,7 +55,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
       setShowSecret(false);
       setSetup(result);
     },
-    { onError: (e) => toast(errorMessage(e), "error") }
+    { onError: "toast" }
   );
   const enabled = mfa.enabled || confirmed;
   const show = enabled || setup !== null;
