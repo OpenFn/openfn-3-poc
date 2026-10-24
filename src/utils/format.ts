@@ -174,6 +174,12 @@ export function urlSafeName(name: string | null | undefined): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** SandboxLive.Components `grace_period_label`: "7 days", "1 day", or Lightning's words when there's no setting. */
+export function formatGracePeriod(days: number | null): string {
+  if (days === null) return "the configured grace period";
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
 /** "failed" → "Failed": upper-cases the first character, leaves the rest. */
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);

@@ -1,5 +1,6 @@
 import Alert from "../../Alert";
 import ConfirmModal from "../../ConfirmModal";
+import { formatGracePeriod } from "../../../utils/format";
 
 /**
  * "Delete sandbox" (SandboxLive.Components.confirm_delete_modal): what gets
@@ -19,8 +20,8 @@ export default function DeleteSandboxModal({
   descendantCount?: number;
   isCurrent?: boolean;
   rootName: string;
-  /** Lightning's `purge_deleted_after_days`. */
-  gracePeriodDays: number;
+  /** Lightning's `purge_deleted_after_days`, or null when it isn't set. */
+  gracePeriodDays: number | null;
   onClose: () => void;
   /** Called with the typed name. */
   onConfirm?: (typed: string) => void | Promise<void>;
@@ -56,7 +57,7 @@ export default function DeleteSandboxModal({
       )}
       <p>To confirm, type the sandbox name below.</p>
       <Alert type="warning">
-        This sandbox will be retained for {gracePeriodDays} days before being permanently removed. You can restore it
+        This sandbox will be retained for {formatGracePeriod(gracePeriodDays)} before being permanently removed. You can restore it
         from the sandbox list during that window.
       </Alert>
     </ConfirmModal>

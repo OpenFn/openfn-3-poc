@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react";
 import { useRouter } from "../../../routing/router";
 import type { SandboxRow } from "../../../types/sandboxes";
 import { cn } from "../../../utils/cn";
@@ -9,7 +10,7 @@ import SandboxActions from "./SandboxActions";
 
 function deletionTooltip(iso: string) {
   const at = new Date(iso);
-  const days = Math.floor((at.getTime() - Date.now()) / 86_400_000);
+  const days = Math.trunc((at.getTime() - Date.now()) / 86_400_000);
   const suffix = days > 1 ? ` (in ${days} days)` : days === 1 ? " (in 1 day)" : days === 0 ? " (today)" : "";
   return `Scheduled for deletion on ${formatUtcDate(iso)}${suffix}. Cancel the deletion to restore it.`;
 }
@@ -37,7 +38,7 @@ export default function WorkspaceCard({
   onMerge?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  onRestore?: () => void;
+  onRestore?: () => Promise<void>;
 }) {
   const { navigate } = useRouter();
   const deleted = workspace.scheduledDeletion;
@@ -49,14 +50,27 @@ export default function WorkspaceCard({
       id={isRoot && !deleted ? undefined : `sandbox-card-${workspace.id}`}
       padding="none"
       muted={!!deleted}
-      className={cn("flex overflow-hidden", deleted ? "opacity-75" : "hover:bg-gray-50")}
+      // The whole card shows the focus outline when its name area is reached by keyboard.
+      className={cn(
+        "flex overflow-hidden has-[[role=button]:focus-visible]:outline-2 has-[[role=button]:focus-visible]:outline-offset-2 has-[[role=button]:focus-visible]:outline-primary-600",
+        deleted ? "opacity-75" : "hover:bg-gray-50"
+      )}
     >
       <div className={cn("w-3 shrink-0", deleted && "opacity-60")} style={{ backgroundColor: color }} />
       <div
-        className={cn("flex min-w-0 flex-1 items-center gap-3 p-4", deleted ? "cursor-not-allowed" : "cursor-pointer")}
+        className={cn("flex min-w-0 flex-1 items-center gap-3 p-4 focus:outline-none", deleted ? "cursor-not-allowed" : "cursor-pointer")}
         {...(deleted
           ? { "aria-disabled": true, title: deletionTooltip(deleted) }
-          : { role: "button", tabIndex: 0, onClick: () => navigate(`/projects/${workspace.id}/w`) })}
+          : {
+              role: "button",
+              tabIndex: 0,
+              onClick: () => navigate(workspace.workflowsHref),
+              onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key !== "Enter" && e.key !== " ") return;
+                e.preventDefault();
+                navigate(workspace.workflowsHref);
+              },
+            })}
       >
         <Heading size="lg" className={cn("truncate", deleted && "text-gray-500 line-through")}>
           {workspace.name}
@@ -66,7 +80,13 @@ export default function WorkspaceCard({
       </div>
       {(!isRoot || deleted) && (
         <div className="flex items-center pr-4">
-          <SandboxActions sandbox={workspace} onMerge={onMerge} onEdit={onEdit} onDelete={onDelete} onRestore={onRestore} />
+          <SandboxActions
+            sandbox={workspace}
+            onMerge={onMerge}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onRestore={onRestore}
+          />
         </div>
       )}
     </Card>

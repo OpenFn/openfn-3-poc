@@ -3,7 +3,7 @@ import { Label } from "../../Inputs";
 
 /**
  * The sandbox colour picker (SandboxLive.Components.color_palette): a grid
- * of 16 swatches; the selected one shows a white check.
+ * of 16 swatches; the selected one shows a white check. null ticks none.
  */
 export default function ColorPalette({
   value,
@@ -18,7 +18,7 @@ export default function ColorPalette({
   palette?: string[];
   disabled?: boolean;
 }) {
-  const current = value ?? palette[0];
+  const current = value;
   return (
     <fieldset disabled={disabled}>
       <Label className="mb-2 block">{label}</Label>
@@ -46,7 +46,7 @@ export default function ColorPalette({
         ))}
       </div>
       <p className="sr-only" aria-live="polite">
-        Selected: {current}
+        Selected: {current ?? "none"}
       </p>
     </fieldset>
   );

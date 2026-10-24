@@ -17,6 +17,8 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "o
   errors?: string[];
   /** Hide the badge while there are errors (Lightning's sandbox form does). */
   hideBadgeOnError?: boolean;
+  /** While the name is empty, show this in grey instead ("... will be named `my-sandbox`."). */
+  exampleName?: string;
   /** Classes for the wrapper, e.g. a width. */
   fieldClassName?: string;
 }
@@ -35,6 +37,7 @@ export default function NameField({
   hint,
   errors = [],
   hideBadgeOnError = false,
+  exampleName,
   fieldClassName,
   ...rest
 }: Props) {
@@ -53,6 +56,12 @@ export default function NameField({
       {!(hideBadgeOnError && errors.length > 0) && name !== "" && (
         <p className="text-xs text-gray-600">
           <NameBadge name={name}>{badgeLabel}</NameBadge>
+        </p>
+      )}
+      {!(hideBadgeOnError && errors.length > 0) && name === "" && exampleName && (
+        <p className="text-xs text-gray-400">
+          {badgeLabel}
+          <span className="ml-1 rounded-md border border-gray-200 bg-gray-50 p-1 font-mono text-xs">{exampleName}</span>.
         </p>
       )}
     </div>

@@ -20,7 +20,7 @@ Status of each pattern, as of this commit:
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 20 pages and the Sidebar | History work orders, Sandboxes, project settings' Credentials tab, the workflow editor, profile, credentials, the remaining auth pages |
+| 11 | Page and wrapper | 21 pages and the Sidebar | History work orders, project settings' Credentials tab, the workflow editor, profile, credentials, the remaining auth pages |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
 `TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
