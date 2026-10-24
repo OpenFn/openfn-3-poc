@@ -1,14 +1,12 @@
 import { useState } from "react";
 import Button from "../Button";
 import SectionHeader from "../SectionHeader";
-import { useToast } from "../Toast";
 import CollectionDeleteModal from "./CollectionDeleteModal";
 import CollectionFormModal from "./CollectionFormModal";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 import CollectionsTable from "./CollectionsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { CollectionRow, CollectionsSettings } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 interface Props {
@@ -33,11 +31,10 @@ type Action =
 export default function CollectionsPanel({ collections: { collections, canManage }, sandbox, onCreate, onRename, onDelete, onPreview }: Props) {
   const [action, setAction] = useState<Action>(null);
   const close = () => setAction(null);
-  const toast = useToast();
   const [previewingId, setPreviewingId] = useState<string | null>(null);
   const preview = useAction(
     async (collection: CollectionRow) => setAction({ kind: "preview", collection, json: await onPreview(collection.id) }),
-    { onError: (e) => toast(errorMessage(e), "error") }
+    { onError: "toast" }
   );
 
   return (
