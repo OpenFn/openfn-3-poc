@@ -62,6 +62,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof WorkflowsIndexPag
           sort={{ key: "name", direction: "asc" }}
           canCreateWorkflow
           canDeleteWorkflow
+          lifecycle={false}
           {...handlers}
           {...props}
         />

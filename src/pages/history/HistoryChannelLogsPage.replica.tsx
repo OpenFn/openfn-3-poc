@@ -42,6 +42,8 @@ export default function HistoryChannelLogsPageReplica() {
       project={project}
       projectLabel={project.name}
       channelsEnabled={historyChannelsEnabled}
+      workOrdersHref={`/projects/${projectId}/history`}
+      channelLogsHref={`/projects/${projectId}/history/channels`}
       channels={channels.map(({ id, name }) => ({ id, name }))}
       channelId={channelId}
       rows={rows}

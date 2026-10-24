@@ -12,6 +12,7 @@ import { matchesQuery } from "../../utils/search";
 import { useUrlParams } from "../../utils/useUrlParams";
 import { compareBy, type SortValue } from "../../components/useTableSort";
 import type { WorkflowRow } from "../../types/workflows";
+import { FAILURE_STATES } from "../../types/workflow-health";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
 
 // The columns WorkflowLive.Index sorts by; any other key sorts by name, as its TableHelpers.sort_field does.
@@ -22,6 +23,8 @@ const sortBy: Record<string, (s: WorkflowRow) => SortValue> = {
   failed_workorders_count: (s) => s.failedWorkordersCount,
   enabled: (s) => s.workflow.enabled,
 };
+
+const thirtyDaysAgo = () => new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
 
 /**
  * The replica's side of WorkflowsIndexPage: the project from the URL, the
@@ -43,6 +46,13 @@ export default function WorkflowsIndexPageReplica() {
   if (!project) return <Navigate to="/projects" replace />;
 
   const { canCreateWorkflow, canDeleteWorkflow } = permissionsFor(project, user);
+  // History over the cards' 30-day window, as WorkflowLive.Index's `history_path` builds it.
+  const historyHref = (...states: string[]) =>
+    `/projects/${project.id}/history?${new URLSearchParams([
+      ["filters[date_after]", thirtyDaysAgo()],
+      ["filters[log]", "true"],
+      ...states.map((s) => [`filters[${s}]`, "true"]),
+    ])}`;
   const stats = workflowStatsFor(project.id)
     .filter((s) => !deleted.includes(s.workflow.id))
     .filter((s) => matchesQuery(search, s.workflow.name))
@@ -56,6 +66,8 @@ export default function WorkflowsIndexPageReplica() {
       period="last 30 days"
       stats={stats}
       metrics={projectMetricsFor(stats)}
+      pendingHref={historyHref("pending", "running")}
+      failedHref={historyHref(...FAILURE_STATES)}
       searchTerm={search}
       sort={sort}
       canCreateWorkflow={canCreateWorkflow}

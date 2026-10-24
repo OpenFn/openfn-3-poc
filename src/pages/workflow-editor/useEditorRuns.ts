@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { dataclipsIn, findRun, stepsOf, workOrdersOfWorkflow } from "../../mock-data/history";
 import { logsOf, runsOfWorkOrder } from "../../mock-data/history-extra";
-import type { HistoryWorkOrder } from "../../components/workflow/MiniHistory";
+import type { MiniHistoryWorkOrder } from "../../components/workflow/MiniHistory";
 import type { RunOverlay } from "../../components/workflow/WorkflowDiagram";
 import type { WorkflowGraph } from "../../types/workflow-graph";
 import { formatDuration } from "../../utils/format";
@@ -16,7 +16,7 @@ const EXIT_STATE = { success: "success", fail: "fail", crash: "crash" } as const
  */
 export function useEditorRuns(graph: WorkflowGraph, runId: string | null) {
   return useMemo(() => {
-    const history: HistoryWorkOrder[] = workOrdersOfWorkflow(graph.id)
+    const history: MiniHistoryWorkOrder[] = workOrdersOfWorkflow(graph.id)
       .sort((a, b) => b.lastActivity.localeCompare(a.lastActivity))
       .map((workOrder) => ({ workOrder, runs: runsOfWorkOrder(workOrder) }));
     const ownRuns = history.flatMap((h) => h.runs);
