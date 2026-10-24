@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Button from "../Button";
 import ConfirmModal from "../ConfirmModal";
 import Modal from "../Modal";
@@ -6,8 +7,8 @@ import type { CredentialRow } from "../../types/credentials";
 interface Props {
   onClose: () => void;
   credential: CredentialRow;
-  /** Schedules the deletion, or deletes a scheduled credential now. Rejects with a message, which the modal shows; it stays open. */
-  onDelete: () => Promise<void>;
+  /** Schedules the deletion, or deletes it now (`now`), as the dialog showed when it opened. Rejects with a message, which the modal shows; it stays open. */
+  onDelete: (intent: { now: boolean }) => Promise<void>;
 }
 
 const activityNote =
@@ -20,7 +21,9 @@ const activityNote =
  * Lightning asks for no typed confirmation here, so neither does this.
  */
 export default function CredentialDeletionModal({ onClose, credential, onDelete }: Props) {
-  if (credential.scheduledDeletion && credential.hasActivityInProjects) {
+  // Fixed when the dialog opens, as Lightning's `delete_now?`: a deletion scheduled meanwhile doesn't turn this confirm into a final delete.
+  const [now] = useState(!!credential.scheduledDeletion);
+  if (now && credential.hasActivityInProjects) {
     return (
       <Modal
         open
@@ -48,7 +51,7 @@ export default function CredentialDeletionModal({ onClose, credential, onDelete 
       tone="danger"
       confirmLabel="Delete credential"
       confirmId={`delete-credential-${credential.id}-modal_confirm_button`}
-      onConfirm={onDelete}
+      onConfirm={() => onDelete({ now })}
     >
       <p>
         Deleting this credential will immediately remove it from all jobs and projects. If you later restore it, you

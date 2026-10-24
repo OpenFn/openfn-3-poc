@@ -180,6 +180,23 @@ describe("CredentialsIndexPage", () => {
     expect(onLoadCredentialSchema).toHaveBeenCalledTimes(2);
   });
 
+  it("opens the type picked last when the pick changes while a schema loads", async () => {
+    const answers: Record<string, (v: unknown) => void> = {};
+    const onLoadCredentialSchema = vi.fn((key: string) => new Promise((resolve) => (answers[key] = resolve)));
+    const field = (key: string, label: string) => ({ key, label, kind: "url", required: false, placeholder: null, unrecognizedType: null });
+    renderPage({ onLoadCredentialSchema: onLoadCredentialSchema as never, credentialTypes: [{ key: "dhis2", name: "dhis2" }, { key: "http", name: "http" }] });
+    await addNew("Credential");
+    fireEvent.click(screen.getByLabelText("dhis2"));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Configure credential" }));
+    fireEvent.click(screen.getByLabelText("http"));
+    answers["dhis2"]!({ fields: [field("hostUrl", "Host URL")] });
+    await waitFor(() => expect(onLoadCredentialSchema).toHaveBeenLastCalledWith("http"));
+    answers["http"]!({ fields: [field("baseUrl", "Base URL")] });
+    expect(await screen.findByLabelText(/Base URL/)).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Create HTTP credential" })).toBeTruthy();
+    expect(screen.queryByLabelText(/Host URL/)).toBeNull();
+  });
+
   it("says which environment is missing a required field, without asking the host", async () => {
     const { onCreateCredential } = renderPage();
     await configure("dhis2");
@@ -297,8 +314,25 @@ describe("CredentialsIndexPage", () => {
     await choose("credentials-cred1", "Delete");
     expect(dialog().textContent).toContain("Deleting this credential will immediately remove it from all jobs and projects.");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Delete credential" }));
-    await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1"));
+    await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1", { now: false }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("sends the deletion the dialog showed, even when the credential was scheduled meanwhile", async () => {
+    const { onDeleteCredential, rerender } = renderPage();
+    await choose("credentials-cred1", "Delete");
+    rerender({ credentials: [{ ...dhis2, scheduledDeletion: "2026-10-21T09:00:00Z", hasActivityInProjects: true }, sheets] });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Delete credential" }));
+    await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1", { now: false }));
+  });
+
+  it("deletes a scheduled credential now, even when its deletion was cancelled meanwhile", async () => {
+    const scheduled = { ...dhis2, scheduledDeletion: "2026-10-21T09:00:00Z" };
+    const { onDeleteCredential, rerender } = renderPage({ credentials: [scheduled, sheets] });
+    await choose("credentials-cred1", "Delete now");
+    rerender({ credentials: [{ ...scheduled, scheduledDeletion: null }, sheets] });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Delete credential" }));
+    await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1", { now: true }));
   });
 
   it("keeps the delete dialog open with the host's error when it refuses", async () => {
