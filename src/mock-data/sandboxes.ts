@@ -5,7 +5,7 @@
  * scheduled for deletion so that section renders.
  */
 import { findProject, projects } from "./projects";
-import type { Project } from "../types/projects";
+import type { Project } from "./models/projects";
 import type { SandboxRow } from "../types/sandboxes";
 
 const envs: Record<string, string> = {

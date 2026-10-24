@@ -61,8 +61,16 @@ const routerImports = [
   { name: 'react-router', message: routerMessage },
 ]
 
+// The replica's models (src/mock-data/models/) are its own records. Contract
+// shapes are written by hand in src/types/ and the replica maps the models
+// onto them, so a fixture change can't change a contract (STANDARDS §11).
+const modelImports = {
+  group: ['**/mock-data/models', '**/mock-data/models/**'],
+  message: "Models are the replica's records: take a hand-written contract shape from src/types/ (STANDARDS §11).",
+}
 const mockDataImports = {
-  group: ['**/mock-data', '**/mock-data/**'],
+  // Any other mock-data path: models get their own message.
+  regex: '(^|/)mock-data(/(?!models(/|$)).*)?$',
   message: 'Take data as props; the replica loads it. Types live in src/types/, helpers in src/utils/.',
 }
 const sessionImports = {
@@ -140,9 +148,14 @@ export default defineConfig([
         'error',
         {
           paths: routerImports,
-          patterns: [mockDataImports, sessionImports],
+          patterns: [modelImports, mockDataImports, sessionImports],
         },
       ],
     },
+  },
+  {
+    // Contract shapes are written by hand, never built on models or fixtures.
+    files: ['src/types/**/*.ts'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, mockDataImports] }] },
   },
 ])

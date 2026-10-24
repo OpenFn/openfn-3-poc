@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
-import type { Project } from "../../types/projects";
-import type { User } from "../../types/users";
 import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
@@ -16,7 +14,7 @@ export type SidebarTheme = "primary-theme" | "sudo-variant";
 export interface SidebarProps {
   variant: SidebarVariant;
   /** Required for the project variant. */
-  project?: Pick<Project, "id"> | undefined;
+  project?: { id: string } | undefined;
   user: MenuUser;
   /** Superusers get the Admin menu in place of the support links. */
   canAccessAdmin: boolean;
@@ -35,7 +33,7 @@ function isAt(pathname: string, path: string) {
   return pathname === path || pathname.startsWith(path + "/");
 }
 
-function ProjectItems({ project, user }: { project: Pick<Project, "id">; user: Pick<User, "experimentalFeatures"> }) {
+function ProjectItems({ project, user }: { project: { id: string }; user: Pick<MenuUser, "experimentalFeatures"> }) {
   const { pathname } = useRouter().useLocation();
   const base = `/projects/${project.id}`;
   return (

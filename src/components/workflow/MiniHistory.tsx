@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { Run, WorkOrder } from "../../types/history";
+// eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
+import type { Run, WorkOrder } from "../../mock-data/models/history";
 import { cn } from "../../utils/cn";
 import Card from "../Card";
 import Heading from "../Heading";

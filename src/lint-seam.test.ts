@@ -40,4 +40,14 @@ describe("the data seam lint rule", () => {
       'import { projects } from "../mock-data/projects";\nimport { useCurrentUser } from "../session/session";\nexport const x = [projects, useCurrentUser];\n';
     expect(await seamMessages("src/utils/seamProbe.ts", code)).toHaveLength(2);
   });
+
+  it("pages, components and contract shapes may not import the replica's models, and say so once", async () => {
+    const code = (from: string) => `import type { Project } from "${from}";\nexport type X = Project;\n`;
+    const message =
+      "'../mock-data/models/projects' import is restricted from being used by a pattern. Models are the replica's records: take a hand-written contract shape from src/types/ (STANDARDS §11).";
+    expect(await seamMessages("src/pages/SeamProbePage.tsx", code("../mock-data/models/projects"))).toEqual([message]);
+    expect(await seamMessages("src/components/SeamProbe.tsx", code("../mock-data/models/projects"))).toEqual([message]);
+    expect(await seamMessages("src/types/seamProbe.ts", code("../mock-data/models/projects"))).toEqual([message]);
+    expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("../../mock-data/models/projects"))).toEqual([]);
+  });
 });

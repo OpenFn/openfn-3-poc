@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Project } from "../../types/projects";
+import type { CurrentProject } from "../../types/projects";
 import type { WorkflowSnapshot } from "../../types/workflow-graph";
 import IconButton from "../IconButton";
 import ProjectBreadcrumbs from "../shell/ProjectBreadcrumbs";
@@ -9,7 +9,7 @@ import SaveButton from "./SaveButton";
 import VersionDropdown from "./VersionDropdown";
 
 interface Props {
-  project: Project;
+  project: CurrentProject;
   /** The project picker's label ("parent/child" for a sandbox). */
   projectLabel: string;
   workflowName: string;
