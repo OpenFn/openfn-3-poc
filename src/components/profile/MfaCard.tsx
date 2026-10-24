@@ -79,7 +79,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
         </span>
       }
       // The switch shows the choice at once while setup starts, and goes back if it fails.
-      action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending} labelledBy={`${id}-label`} />}
+      action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
     >
       {show && (
         <div className="space-y-5 border-t border-gray-300 pt-5 text-sm">

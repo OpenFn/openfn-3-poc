@@ -335,6 +335,7 @@ describe("ProfilePage", () => {
       fireEvent.submit(document.getElementById("set_totp_form")!);
       const cancel = form("set_totp_form").getByRole("button", { name: "Cancel" }) as HTMLButtonElement;
       await waitFor(() => expect(cancel.disabled).toBe(true));
+      expect((mfaSwitch() as HTMLButtonElement).disabled).toBe(true);
       confirmed();
       await waitFor(() => expect(document.getElementById("set_totp_form")).toBeNull());
     });

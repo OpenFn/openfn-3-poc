@@ -82,7 +82,8 @@ export interface ProfilePageProps {
  * (profile_live/edit.html.heex): user info on the left, the cards on the
  * right. `deleting` opens the deletion modal over the page. Props only, so it
  * can run unchanged in Lightning; the replica's data lives in
- * ProfilePage.replica.tsx.
+ * ProfilePage.replica.tsx. Lightning's optional GDPR preferences card isn't
+ * part of the page: an instance that configures it renders it beside the page.
  */
 export default function ProfilePage(props: ProfilePageProps) {
   const { user, deletion } = props;
