@@ -10,22 +10,25 @@ import { RequestError } from "../utils/errors";
 const LATENCY_MS = 600;
 
 const settings = {
-  /** Reject the next call with this message, then clear. For stories and manual testing. */
-  failNextWith: null as string | null,
+  /** Reject the next call with this, then clear. For stories and manual testing. */
+  failNextWith: null as RequestError | null,
 };
 
-/** Makes the next `simulateRequest` fail, e.g. from a story's play function or the console. */
-export function failNextRequest(message = "The server could not complete that request.") {
-  settings.failNextWith = message;
+/**
+ * Makes the next `simulateRequest` fail, e.g. from a story's play function or
+ * the console. `fieldErrors` refuses named fields, as a rejected form would.
+ */
+export function failNextRequest(message = "The server could not complete that request.", fieldErrors?: Record<string, string[]>) {
+  settings.failNextWith = new RequestError(message, { fieldErrors });
 }
 
 /** Resolves with `result` after a short delay, or rejects once if `failNextRequest` was called. */
-export function simulateRequest<T = void>(result?: T, options: { latencyMs?: number; fieldErrors?: Record<string, string[]> } = {}): Promise<T> {
+export function simulateRequest<T = void>(result?: T, options: { latencyMs?: number } = {}): Promise<T> {
   const fail = settings.failNextWith;
   settings.failNextWith = null;
   return new Promise((resolve, reject) => {
     window.setTimeout(() => {
-      if (fail) reject(new RequestError(fail, { fieldErrors: options.fieldErrors }));
+      if (fail) reject(fail);
       else resolve(result as T);
     }, options.latencyMs ?? LATENCY_MS);
   });
