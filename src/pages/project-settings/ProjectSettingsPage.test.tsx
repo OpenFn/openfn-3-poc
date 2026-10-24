@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
-import { session } from "../../mock-data/users";
-import { SessionContext } from "../../session/session";
+import userEvent from "@testing-library/user-event";
+import type { CredentialRow, KeychainCredentialRow } from "../../types/credentials";
 import type { CollaboratorRow, WebhookAuthMethodRow } from "../../types/project-settings";
 import { RequestError } from "../../utils/errors";
 import ProjectSettingsPage, { type ProjectSettingsPageProps } from "./ProjectSettingsPage";
@@ -41,6 +41,28 @@ const basic: WebhookAuthMethodRow = {
   channels: [],
 };
 
+const dhis2: CredentialRow = {
+  id: "cred1",
+  name: "DHIS2 play",
+  schema: "dhis2",
+  oauthClient: null,
+  ownerEmail: "esther@example.org",
+  projects: [{ id: "p1", name: "openhie", workflowsUsing: [] }],
+  externalId: null,
+  environments: ["main"],
+  transferStatus: null,
+  scheduledDeletion: null,
+  hasActivityInProjects: false,
+  canEdit: false,
+};
+const byDistrict: KeychainCredentialRow = {
+  id: "kc1",
+  name: "By district",
+  path: "$.district_id",
+  defaultCredential: { id: "cred1", name: "DHIS2 play" },
+  ownerEmail: "amy@example.org",
+};
+
 const data = (): Omit<ProjectSettingsPageProps, `on${string}`> => ({
   project: { id: "p1", parentId: null, color: null },
   projectLabel: "openhie",
@@ -60,9 +82,12 @@ const data = (): Omit<ProjectSettingsPageProps, `on${string}`> => ({
     canDeleteProject: true,
   },
   credentials: {
-    credentials: [],
+    credentials: [dhis2],
     oauthClients: [],
-    keychainCredentials: [],
+    keychainCredentials: [byDistrict],
+    projects: [{ id: "p1", name: "openhie" }],
+    credentialTypes: [],
+    oauthSignIns: [],
     canCreateProjectCredential: true,
     canCreateKeychainCredential: true,
     canEditKeychainCredential: true,
@@ -135,15 +160,30 @@ function renderPage(props: Partial<ProjectSettingsPageProps> = {}, hash = "") {
     onInitiateGithubSync: done(),
     onRemoveGithubConnection: done(),
     onSaveDataStorage: done(),
+    onCreateCredential: done(),
+    onUpdateCredential: done(),
+    onLoadCredentialSecrets: vi.fn().mockResolvedValue({ environments: [] }),
+    onLoadCredentialSchema: vi.fn().mockResolvedValue({ fields: [] }),
+    onDeleteCredential: done(),
+    onCancelCredentialDeletion: done(),
+    onTransferCredential: done(),
+    onRevokeCredentialTransfer: done(),
+    onAuthorizeOauth: vi.fn().mockResolvedValue({ authorizeUrl: "about:blank" }),
+    onDiscardOauthSignIns: vi.fn().mockResolvedValue(undefined),
+    onCreateOauthClient: done(),
+    onUpdateOauthClient: done(),
+    onLoadOauthClientSecrets: vi.fn().mockResolvedValue({ clientId: "", clientSecret: "" }),
+    onDeleteOauthClient: done(),
+    onCreateKeychainCredential: done(),
+    onUpdateKeychainCredential: done(),
+    onDeleteKeychainCredential: done(),
   };
   const page = (next: Partial<ProjectSettingsPageProps>) => (
-    <SessionContext.Provider value={session}>
-      <RouterProvider value={router}>
-        <ToastProvider>
-          <ProjectSettingsPage {...data()} {...handlers} {...next} />
-        </ToastProvider>
-      </RouterProvider>
-    </SessionContext.Provider>
+    <RouterProvider value={router}>
+      <ToastProvider>
+        <ProjectSettingsPage {...data()} {...handlers} {...next} />
+      </ToastProvider>
+    </RouterProvider>
   );
   const { rerender } = render(page(props));
   return { ...handlers, rerender: (next: Partial<ProjectSettingsPageProps>) => rerender(page(next)) };
@@ -407,6 +447,51 @@ describe("ProjectSettingsPage", () => {
     expect((document.getElementById("download-export-file-f2-button") as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("shows the project's credentials with their owner, and its keychain credentials", () => {
+    renderPage({}, "#credentials");
+    const cells = (id: string) => [...document.getElementById(id)!.querySelectorAll("td")].map((td) => td.textContent);
+    expect(cells("credentials-cred1").slice(0, 3)).toEqual(["DHIS2 play", "dhis2", "esther@example.org"]);
+    expect(cells("keychain-credentials-kc1").slice(0, 4)).toEqual(["By district", "$.district_id", "DHIS2 play", "amy@example.org"]);
+    // Esther owns the credential, so the viewer gets no actions on it.
+    expect(within(document.getElementById("credentials-cred1")!).queryByRole("button", { name: /Actions/ })).toBeNull();
+  });
+
+  it("creates a keychain credential from the Add new menu", async () => {
+    const { onCreateKeychainCredential } = renderPage({}, "#credentials");
+    await userEvent.click(screen.getByRole("button", { name: /Add new/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Keychain" }));
+    fireEvent.change(within(dialog()).getByLabelText(/^Name/), { target: { value: "By facility" } });
+    fireEvent.change(within(dialog()).getByLabelText(/JSONPath Expression/), { target: { value: "$.facility" } });
+    fireEvent.change(within(dialog()).getByLabelText(/Default Credential/), { target: { value: "cred1" } });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Create" }));
+    await waitFor(() =>
+      expect(onCreateKeychainCredential).toHaveBeenCalledWith({ name: "By facility", path: "$.facility", defaultCredentialId: "cred1" })
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the keychain delete dialog open with the host's error when it refuses", async () => {
+    const onDeleteKeychainCredential = vi.fn().mockRejectedValue(new RequestError("You are not authorized to perform this action"));
+    renderPage({ onDeleteKeychainCredential }, "#credentials");
+    await userEvent.click(within(document.getElementById("keychain-credentials-kc1")!).getByRole("button", { name: /Actions/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Delete" }));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(onDeleteKeychainCredential).toHaveBeenCalledWith("kc1"));
+    expect(await within(dialog()).findByText("You are not authorized to perform this action")).toBeTruthy();
+  });
+
+  it("shares a new credential with this project by default", async () => {
+    const { onCreateCredential } = renderPage({}, "#credentials");
+    await userEvent.click(screen.getByRole("button", { name: /Add new/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Credential" }));
+    fireEvent.click(screen.getByLabelText("Raw JSON"));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Configure credential" }));
+    fireEvent.change(document.getElementById("credential-name")!, { target: { value: "Raw" } });
+    fireEvent.change(document.getElementById("credential-body-raw")!, { target: { value: "{}" } });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Credential" }));
+    await waitFor(() => expect(onCreateCredential).toHaveBeenCalledWith(expect.objectContaining({ projectIds: ["p1"] })));
+  });
+
   it("follows new props from the host", () => {
     const { rerender } = renderPage({}, "#security");
     expect(document.getElementById("toggle-mfa-switch")!.getAttribute("aria-checked")).toBe("false");
@@ -422,6 +507,40 @@ describe("ProjectSettingsPage", () => {
 
   describe("without permission", () => {
     const off = (button: string) => (screen.getByRole("button", { name: button }) as HTMLButtonElement).disabled;
+
+    it("can't create from the empty tables either", () => {
+      renderPage(
+        {
+          credentials: {
+            ...data().credentials,
+            credentials: [],
+            oauthClients: [],
+            keychainCredentials: [],
+            canCreateProjectCredential: false,
+            canCreateKeychainCredential: false,
+          },
+        },
+        "#credentials"
+      );
+      for (const name of ["Create a new OAuth client", "Create a new Credential", "Create a new keychain credential"]) {
+        const button = screen.getByRole("button", { name: new RegExp(name) }) as HTMLButtonElement;
+        expect(button.disabled).toBe(true);
+        fireEvent.click(button);
+      }
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("can't create credentials or keychains, or change keychains", async () => {
+      renderPage(
+        { credentials: { ...data().credentials, canCreateProjectCredential: false, canCreateKeychainCredential: false, canEditKeychainCredential: false } },
+        "#credentials"
+      );
+      expect(within(document.getElementById("keychain-credentials-kc1")!).queryByRole("button", { name: /Actions/ })).toBeNull();
+      await userEvent.click(screen.getByRole("button", { name: /Add new/ }));
+      for (const item of ["Credential", "Keychain"]) {
+        expect(screen.getByRole("menuitem", { name: item }).getAttribute("aria-disabled")).toBe("true");
+      }
+    });
 
     it("can't create, rename or delete collections", () => {
       renderPage({ collections: { ...data().collections, canManage: false } }, "#collections");
