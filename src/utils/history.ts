@@ -2,10 +2,18 @@
  * Pure helpers over history records: log filtering, channel request events,
  * failure counts and the workflows-index metric cards. No fixture access.
  */
-import type { ChannelEvent, ChannelRequest } from "../types/channels";
+import type { ChannelEvent } from "../types/channels";
 import type { LogLine } from "../types/history";
-import type { ProjectMetrics, WorkflowStats } from "../types/workflows";
+import type { ProjectMetrics } from "../types/workflows";
 import { FAILURE_STATES, type WorkOrderStateCounts } from "../types/workflow-health";
+
+/** What the metric cards count of one workflow. */
+interface WorkflowCounts {
+  workordersCount: number;
+  failedWorkordersCount: number;
+  pendingWorkorders: number;
+  runs: { total: number; pending: number; success: number };
+}
 
 const levelScore = (l: string) => ({ debug: 0, info: 1, warn: 2, error: 3 })[l] ?? 4;
 
@@ -15,7 +23,7 @@ export function logsAtLevel<T extends { level: string }>(logs: T[], level: LogLi
 }
 
 /** Prefers the destination response event, falls back to the error event. */
-export function primaryEvent(cr: Pick<ChannelRequest, "events">): ChannelEvent | undefined {
+export function primaryEvent(cr: { events: ChannelEvent[] }): ChannelEvent | undefined {
   return cr.events.find((e) => e.type === "destination_response") ?? cr.events.find((e) => e.type === "error");
 }
 
@@ -46,8 +54,8 @@ export const stateUrl = (projectId: string, workflowId: string, from: string, ..
 
 const pct = (n: number, d: number) => (d === 0 ? 0 : Math.round((n / d) * 1000) / 10);
 
-export function projectMetricsFor(stats: WorkflowStats[]): ProjectMetrics {
-  const sum = (f: (s: WorkflowStats) => number) => stats.reduce((acc, s) => acc + f(s), 0);
+export function projectMetricsFor(stats: WorkflowCounts[]): ProjectMetrics {
+  const sum = (f: (s: WorkflowCounts) => number) => stats.reduce((acc, s) => acc + f(s), 0);
   const woTotal = sum((s) => s.workordersCount);
   const woFailed = sum((s) => s.failedWorkordersCount);
   const runTotal = sum((s) => s.runs.total);

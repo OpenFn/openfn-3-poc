@@ -3,7 +3,6 @@
  * Ports of Lightning's LocalTimeConverter / ElapsedIndicator hooks
  * (assets/js/hooks/index.ts), utils/duration.ts and Lightning.Helpers.
  */
-import type { User } from "../types/users";
 
 const MONTHS = [
   "January",
@@ -237,7 +236,7 @@ export function formatNumber(n: number): string {
   return n.toLocaleString();
 }
 
-export function fullName(user: Pick<User, "firstName" | "lastName">): string {
+export function fullName(user: { firstName: string; lastName: string }): string {
   return [user.firstName, user.lastName].filter(Boolean).join(" ");
 }
 

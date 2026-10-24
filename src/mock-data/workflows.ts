@@ -4,7 +4,7 @@
  */
 
 import { kickstartWorkflows } from "./generated/kickstart";
-import type { WorkflowSummary } from "../types/workflows";
+import type { WorkflowSummary } from "./models/workflows";
 
 export const workflows: WorkflowSummary[] = [
   {

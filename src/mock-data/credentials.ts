@@ -4,25 +4,23 @@
  * Static fixtures only: every secret here is an obviously fake placeholder.
  */
 import { projects } from "./projects";
-import type { Project } from "../types/projects";
+import type { Project } from "./models/projects";
 import { findUser } from "./users";
 import { canEditCredential } from "../permissions";
-import type { User } from "../types/users";
+import type { User } from "./models/users";
 import { kickstartCredentials } from "./generated/kickstart";
 import type {
-  Credential,
   CredentialSecretsResult,
   CredentialIndexData,
   CredentialTypeOption,
-  KeychainCredential,
   KeychainCredentialRow,
-  OauthClient,
   OauthClientSecretsResult,
   OauthSignInResult,
   OauthUserInfo,
   StoredOauthToken,
   SchemaField,
 } from "../types/credentials";
+import type { Credential, KeychainCredential, OauthClient } from "./models/credentials";
 
 const openhie = projects[0]!;
 const dhis2Project = projects[1]!;

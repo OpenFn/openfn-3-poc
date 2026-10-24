@@ -3,7 +3,7 @@
  * page (Lightning's `Channels.list_channel_requests` and `ChannelRequestLive`).
  * Static fixtures only.
  */
-import type { ChannelRequest } from "../types/channels";
+import type { ChannelRequest } from "./models/channels";
 
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";

@@ -1,5 +1,5 @@
 import { Link, useRouter } from "../../routing/router";
-import type { Run, Step } from "../../types/history";
+import type { RunStep } from "../../types/history";
 import { cn } from "../../utils/cn";
 import ElapsedTime from "./ElapsedTime";
 import StepIcon from "./StepIcon";
@@ -10,7 +10,7 @@ import { clonedStepMessage, inspectStepPath, isClonedStep } from "./runHelpers";
  * `step_item`): each step links to `?step=`, the selected one gets a
  * primary right border and bold text. Elapsed times tick while a step runs.
  */
-export default function RunStepList<S extends Omit<Step, "runId">>({
+export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snapshotLockVersion"> & { insertedAt?: string }>({
   run,
   steps,
   selectedStepId,
@@ -18,7 +18,7 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
   workflowId,
   inspectPath,
 }: {
-  run: Pick<Run, "id" | "insertedAt">;
+  run: { id: string; insertedAt: string };
   steps: S[];
   selectedStepId: string | null;
   projectId: string;

@@ -1,9 +1,14 @@
-import type { User } from "../../types/users";
 import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../Menu";
 import UserAvatar from "../UserAvatar";
 
 /** What the account menu shows of the signed-in user. */
-export type MenuUser = Pick<User, "firstName" | "lastName" | "email" | "experimentalFeatures">;
+export interface MenuUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  /** The user turned experimental features on; the menu says so. */
+  experimentalFeatures: boolean;
+}
 
 const items = [
   { to: "/projects", icon: "hero-folder", label: "Projects" },

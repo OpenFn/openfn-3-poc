@@ -50,8 +50,9 @@ wrapper.
 - `src/components/` — the component library: primitives at the top level,
   app chrome (sidebar, project picker, user menu) in `shell/`, feature
   components in area subfolders. See **Components** below.
-- `src/types/` — the record types (`User`, `Project`, `WorkOrder`, …), one
-  file per area. Types only.
+- `src/types/` — the contract shapes pages and components take
+  (`WorkOrderRow`, `CurrentProject`, …), written by hand, one file per area.
+  Types only. Lint stops them importing the replica's models.
 - `src/constants.ts` — Lightning's fixed vocabulary: option lists, labels and
   copy hard-coded in its source (`historyStatuses`, `collaboratorRoles`, …).
 - `src/utils/format.ts` — every date, duration, size, id and name formatter
@@ -66,7 +67,10 @@ wrapper.
   `useCurrentUser()`, `useInstanceInfo()`, `usePermissions(project)`.
 - `src/mock-data/` — the fake database: fixtures modelled on Lightning's demo
   seed (`lib/lightning/setup_utils.ex`) and the queries over them (`findProject`,
-  `workOrdersIn`, …). No types, no pure helpers.
+  `workOrdersIn`, …). No pure helpers. Its own record types (`User`,
+  `Project`, `WorkOrder`, …) are in `models/`; pages and components don't
+  import them (ESLint enforces it; the unsplit workflow editor carries `debt:`
+  disables).
   `generated/kickstart.ts` is generated from the project exports in
   `kickstart/exports/` by `npm run kickstart:sync`, which also writes the
   Kickstart scenario that loads the same projects into a local Lightning

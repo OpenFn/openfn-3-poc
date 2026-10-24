@@ -5,7 +5,7 @@
  */
 
 import { webhookAuthMethodsIn } from "./project-settings";
-import type { Channel } from "../types/channels";
+import type { Channel } from "./models/channels";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 
