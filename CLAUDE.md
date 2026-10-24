@@ -51,7 +51,8 @@ wrapper.
   app chrome (sidebar, project picker, user menu) in `shell/`, feature
   components in area subfolders. See **Components** below.
 - `src/types/` — the record types (`User`, `Project`, `WorkOrder`, …), one
-  file per area. Types only.
+  file per area, and `actions.ts`, the kinds of `on*` prop a contract uses.
+  Types only.
 - `src/constants.ts` — Lightning's fixed vocabulary: option lists, labels and
   copy hard-coded in its source (`historyStatuses`, `collaboratorRoles`, …).
 - `src/utils/format.ts` — every date, duration, size, id and name formatter

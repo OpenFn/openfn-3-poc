@@ -232,7 +232,17 @@ is rewritten.
 - **`XPage.tsx`** takes everything as props: the records, and an `on*`
   function per action returning `Promise<void>`. It imports nothing from
   `src/mock-data/`, `src/session/` or `react-router-dom`. Its props type
-  (`XPageProps`, a comment on each prop) is the contract between the two.
+  (`XPageProps`, a comment on each prop its type doesn't already explain)
+  is the contract between the two.
+- **An `on*` prop is typed by its kind** in a new contract, from
+  `src/types/actions.ts`: `FormAction<V>` (a form on the page),
+  `ModalAction<A, R>` (a modal or confirm), `ButtonAction<A, R>` (a button
+  that toasts its failure), `ChoiceAction<T>` (a control saved on change) or
+  `LoadAction<A, R>` (a fetch). The type says how the host answers and where
+  a rejection shows, so the prop's comment only says what is special: which
+  keys its field errors use when they aren't the values' own, what the host
+  does on success. `ProfilePage` and `ProjectSettingsPage` are the worked
+  examples; other pages move to the types when next touched.
 - **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
   in state as the server would, reads URL params, awaits `simulateRequest`,
   fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
