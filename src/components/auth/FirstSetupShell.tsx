@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+// eslint-disable-next-line no-restricted-imports -- debt: reads instance info from the session; take it as a prop.
 import { useInstanceInfo } from "../../session/session";
 import { SidebarLogo } from "../shell/Sidebar";
 

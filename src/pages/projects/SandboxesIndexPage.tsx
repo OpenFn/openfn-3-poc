@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
@@ -9,12 +10,16 @@ import { useToast } from "../../components/Toast";
 import DeleteSandboxModal from "../../components/projects/sandboxes/DeleteSandboxModal";
 import SandboxFormModal from "../../components/projects/sandboxes/SandboxFormModal";
 import WorkspaceList from "../../components/projects/sandboxes/WorkspaceList";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { findProject, projects } from "../../mock-data/projects";
 import { projectLabel } from "../../components/shell/projectPickerItems";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { purgeDeletedAfterDays } from "../../mock-data/project-settings";
 import { permissionsFor } from "../../permissions";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { findSandboxRow, rootOf, sandboxRowsUnder } from "../../mock-data/sandboxes";
 import type { SandboxRow } from "../../types/sandboxes";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useCurrentUser } from "../../session/session";
 
 /**
