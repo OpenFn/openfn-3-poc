@@ -3,9 +3,7 @@ import Heading from "../Heading";
 import InfoTooltip from "../InfoTooltip";
 import Pill from "../Pill";
 import { Table, Td, Th, Tr } from "../Table";
-// eslint-disable-next-line no-restricted-imports -- wiring: owner emails, project names and OAuth client names are joins; Lightning preloads them.
-import { credentialTypeLabel, credentials as allCredentials, missingOauthClient, ownerEmail, projectNames } from "../../mock-data/credentials";
-import type { Credential, KeychainCredential, OauthClient } from "../../types/credentials";
+import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "../../types/credentials";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):
@@ -20,10 +18,10 @@ function TableTitle({ children }: { children: ReactNode }) {
   );
 }
 
-function ProjectBadges({ ids }: { ids: string[] }) {
+function ProjectBadges({ names }: { names: string[] }) {
   return (
     <div className="flex flex-wrap gap-1">
-      {projectNames(ids).map((name) => (
+      {names.map((name) => (
         <Pill key={name} color="primary" square>
           {name}
         </Pill>
@@ -40,6 +38,12 @@ function Code({ children }: { children: string }) {
   );
 }
 
+/** The Type column (data_tables.ex `credential_type`): the client's name for OAuth. */
+function credentialType(credential: CredentialRow): string {
+  if (credential.schema === "oauth") return credential.oauthClient ? credential.oauthClient.name.toLowerCase() : "oauth";
+  return credential.schema;
+}
+
 interface TableProps<T> {
   rows: T[];
   showOwner?: boolean;
@@ -49,7 +53,7 @@ interface TableProps<T> {
   actions?: (row: T) => ReactNode;
 }
 
-export function OauthClientsTable({ rows, showOwner = false, emptyState, actions }: TableProps<OauthClient>) {
+export function OauthClientsTable({ rows, showOwner = false, emptyState, actions }: TableProps<OauthClientRow>) {
   return (
     <div id="oauth-clients-table-container">
       <TableTitle>OAuth Clients</TableTitle>
@@ -71,11 +75,9 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
           {rows.map((client) => (
             <Tr key={client.id} id={`oauth-clients-${client.id}`}>
               <Td className="wrap-break-word max-w-60">{client.name}</Td>
-              {showOwner && (
-                <Td className="wrap-break-word max-w-60">{client.global ? "GLOBAL" : ownerEmail(client.ownerId)}</Td>
-              )}
+              {showOwner && <Td className="wrap-break-word max-w-60">{client.global ? "GLOBAL" : client.ownerEmail}</Td>}
               <Td className="wrap-break-word max-w-80">
-                <ProjectBadges ids={client.projectIds} />
+                <ProjectBadges names={client.global ? ["GLOBAL"] : client.projects.map((p) => p.name)} />
               </Td>
               <Td className="wrap-break-word max-w-72">{client.authorizationEndpoint}</Td>
               <Td actions>{actions?.(client)}</Td>
@@ -87,7 +89,7 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
   );
 }
 
-export function CredentialsTable({ rows, showOwner = false, emptyState, actions }: TableProps<Credential>) {
+export function CredentialsTable({ rows, showOwner = false, emptyState, actions }: TableProps<CredentialRow>) {
   return (
     <div id="credentials-table-container">
       <TableTitle>Credentials</TableTitle>
@@ -112,7 +114,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
             <Tr key={credential.id} id={`credentials-${credential.id}`}>
               <Td className="wrap-break-word max-w-60">
                 {credential.name}
-                {missingOauthClient(credential) && (
+                {credential.schema === "oauth" && !credential.oauthClient && (
                   <InfoTooltip
                     title="OAuth client not found"
                     icon="hero-exclamation-triangle"
@@ -121,12 +123,10 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
                   />
                 )}
               </Td>
-              <Td className="wrap-break-word max-w-40">{credentialTypeLabel(credential)}</Td>
-              {showOwner && (
-                <Td className="wrap-break-word max-w-60">{ownerEmail(credential.ownerId)}</Td>
-              )}
+              <Td className="wrap-break-word max-w-40">{credentialType(credential)}</Td>
+              {showOwner && <Td className="wrap-break-word max-w-60">{credential.ownerEmail}</Td>}
               <Td className="wrap-break-word max-w-100">
-                <ProjectBadges ids={credential.projectIds} />
+                <ProjectBadges names={credential.projects.map((p) => p.name)} />
               </Td>
               <Td className="wrap-break-word max-w-48">
                 {credential.externalId ? <Code>{credential.externalId}</Code> : <span className="text-gray-400">-</span>}
@@ -141,13 +141,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
   );
 }
 
-export function KeychainCredentialsTable({
-  rows,
-  showOwner = true,
-  emptyState,
-  actions,
-  credentials = allCredentials,
-}: TableProps<KeychainCredential> & { credentials?: Credential[] }) {
+export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, actions }: TableProps<KeychainCredentialRow>) {
   return (
     <div id="keychain-credentials-table-container">
       <TableTitle>Keychain Credentials</TableTitle>
@@ -166,24 +160,19 @@ export function KeychainCredentialsTable({
             </Tr>
           }
         >
-          {rows.map((kc) => {
-            const fallback = credentials.find((c) => c.id === kc.defaultCredentialId);
-            return (
-              <Tr key={kc.id} id={`keychain-credentials-${kc.id}`}>
-                <Td className="wrap-break-word max-w-60">{kc.name}</Td>
-                <Td className="wrap-break-word max-w-100">
-                  <Code>{kc.path}</Code>
-                </Td>
-                <Td className="wrap-break-word max-w-60">
-                  {fallback ? fallback.name : <span className="text-gray-400">None</span>}
-                </Td>
-                {showOwner && (
-                  <Td className="wrap-break-word max-w-60">{ownerEmail(kc.createdById)}</Td>
-                )}
-                <Td actions>{actions?.(kc)}</Td>
-              </Tr>
-            );
-          })}
+          {rows.map((kc) => (
+            <Tr key={kc.id} id={`keychain-credentials-${kc.id}`}>
+              <Td className="wrap-break-word max-w-60">{kc.name}</Td>
+              <Td className="wrap-break-word max-w-100">
+                <Code>{kc.path}</Code>
+              </Td>
+              <Td className="wrap-break-word max-w-60">
+                {kc.defaultCredential ? kc.defaultCredential.name : <span className="text-gray-400">None</span>}
+              </Td>
+              {showOwner && <Td className="wrap-break-word max-w-60">{kc.ownerEmail}</Td>}
+              <Td actions>{actions?.(kc)}</Td>
+            </Tr>
+          ))}
         </Table>
       )}
     </div>

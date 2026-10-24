@@ -2,20 +2,50 @@ import type { Meta, StoryObj } from "@storybook/react";
 import CredentialIndex from "./CredentialIndex";
 import NewCredentialMenuButton from "./NewCredentialMenuButton";
 import { projectCredentialMenuOptions } from "./credentialModalEvents";
-import { credentialsFor, keychainCredentialsIn, oauthClientsFor } from "../../mock-data/credentials";
+import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
 import { projects } from "../../mock-data/projects";
 import { session } from "../../mock-data/users";
 import { withGrayPanel } from "../../stories/decorators";
 
 const project = projects[0]!;
+const fixture = credentialsFixture();
+const done = async () => {};
+
+const actions = {
+  onCreateCredential: done,
+  onUpdateCredential: done,
+  onLoadCredentialSecrets: async (id: string) => credentialSecretsFor(fixture, fixture.credentials.find((c) => c.id === id)!),
+  onLoadCredentialSchema: async (key: string) => ({ fields: fieldsForSchema(key) }),
+  onDeleteCredential: done,
+  onCancelCredentialDeletion: done,
+  onTransferCredential: done,
+  onRevokeCredentialTransfer: done,
+  onAuthorizeOauth: async () => ({ authorizeUrl: "about:blank" }),
+  onDiscardOauthSignIns: async () => {},
+  onCreateOauthClient: done,
+  onUpdateOauthClient: done,
+  onLoadOauthClientSecrets: async (id: string) => clientSecretsFor(fixture, id),
+  onDeleteOauthClient: done,
+};
+
+const projectScope = {
+  id: project.id,
+  keychainCredentials: keychainRowsFor(fixture, project),
+  canCreateKeychainCredential: true,
+  canEditKeychainCredential: true,
+  onCreateKeychainCredential: done,
+  onUpdateKeychainCredential: done,
+  onDeleteKeychainCredential: done,
+};
 
 const meta: Meta<typeof CredentialIndex> = {
   title: "Credentials/CredentialIndex",
   component: CredentialIndex,
   decorators: [withGrayPanel],
   args: {
-    credentials: credentialsFor(undefined, session.user),
-    oauthClients: oauthClientsFor(undefined, session.user),
+    ...credentialIndexDataFor(fixture, undefined, session.user),
+    ...actions,
+    project: null,
     canCreateProjectCredential: true,
     canCreateGlobalOauthClient: true,
   },
@@ -34,12 +64,8 @@ export const UserCredentials: Story = {
 };
 
 const projectArgs = {
-  project,
-  credentials: credentialsFor(project, session.user),
-  oauthClients: oauthClientsFor(project, session.user),
-  keychainCredentials: keychainCredentialsIn(project),
-  canCreateKeychainCredential: true,
-  canEditKeychainCredential: true,
+  ...credentialIndexDataFor(fixture, project, session.user),
+  project: projectScope,
 };
 
 /** Project settings: owner column, keychains, project "Add new" options. */
@@ -55,8 +81,14 @@ export const ProjectCredentials: Story = {
 
 /** A project viewer: no row actions on keychains, and creating is refused. */
 export const ProjectViewer: Story = {
-  args: { ...projectArgs, canCreateProjectCredential: false, canCreateKeychainCredential: false, canEditKeychainCredential: false },
+  args: {
+    ...projectArgs,
+    project: { ...projectScope, canCreateKeychainCredential: false, canEditKeychainCredential: false },
+    canCreateProjectCredential: false,
+  },
 };
 
 export const Empty: Story = { args: { credentials: [], oauthClients: [] } };
-export const EmptyProject: Story = { args: { project, credentials: [], oauthClients: [], keychainCredentials: [] } };
+export const EmptyProject: Story = {
+  args: { ...projectArgs, project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
+};

@@ -16,6 +16,7 @@ import type { Project } from "../../types/projects";
 import { useCurrentUser } from "../../session/session";
 import { RequestError } from "../../utils/errors";
 import { urlSafeName } from "../../utils/format";
+import { credentialReplicaActions } from "../profile/credentialsReplica";
 import ProjectSettingsPage from "./ProjectSettingsPage";
 
 /** new_collaborator_component.ex `generate_flash_message`: existing accounts are added, the rest are invited. */
@@ -64,6 +65,8 @@ function Replica({ project: initial }: { project: Project }) {
     patchProject(changes);
     toast("Project updated successfully");
   };
+  const updateCredentials = (change: (c: SettingsFixture["credentials"]) => Partial<SettingsFixture["credentials"]>) =>
+    update((f) => ({ credentials: { ...f.credentials, ...change(f.credentials) } }));
   const updateMember = async (id: string, changes: Partial<Project["members"][number]>) => {
     await simulateRequest();
     update((f) => ({ project: { ...f.project, members: f.project.members.map((m) => (m.userId === id ? { ...m, ...changes } : m)) } }));
@@ -189,6 +192,7 @@ function Replica({ project: initial }: { project: Project }) {
         toast("Connection removed successfully");
       }}
       onSaveDataStorage={(values) => updateProject(values)}
+      {...credentialReplicaActions(fixture.credentials, updateCredentials, viewer, toast, project)}
     />
   );
 }

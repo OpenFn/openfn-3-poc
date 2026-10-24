@@ -1,6 +1,6 @@
 /** Project settings panels: collections, webhook auth, exports, GitHub sync. Types only: no data, no behaviour. */
 
-import type { Credential, KeychainCredential, OauthClient } from "./credentials";
+import type { CredentialIndexData, KeychainCredentialRow } from "./credentials";
 import type { ProjectRole, RetentionPolicy } from "./projects";
 
 export interface ProjectSettings {
@@ -255,14 +255,10 @@ export interface HistoryExportRow {
   downloadHref: string | null;
 }
 
-/** The Credentials tab: the shapes CredentialIndex takes, shared with the user's Credentials page. */
-export interface CredentialsSettings {
-  credentials: Credential[];
-  oauthClients: OauthClient[];
-  keychainCredentials: KeychainCredential[];
+/** The Credentials tab: the shared credential index, plus the project's keychain credentials. */
+export interface CredentialsSettings extends CredentialIndexData {
+  keychainCredentials: KeychainCredentialRow[];
   canCreateProjectCredential: boolean;
   canCreateKeychainCredential: boolean;
   canEditKeychainCredential: boolean;
-  /** Superusers may make an OAuth client global. */
-  canCreateGlobalOauthClient: boolean;
 }
