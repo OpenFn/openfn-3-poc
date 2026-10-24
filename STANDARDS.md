@@ -198,8 +198,8 @@ result the page already holds. Build after pattern 3.
 
 ## 9. Permission gating
 
-`can*` booleans come from `usePermissions(project)` in the page and are
-passed down. Already in place. The remaining rule: a gated action is
+`can*` booleans come from `usePermissions(project)` in the page's
+`.replica.tsx` and are passed down. Already in place. The remaining rule: a gated action is
 *disabled with a reason*, never hidden, unless Lightning hides it. The
 reason is `Button`'s `tooltip` or `SectionHeader`'s `permissionsSection`.
 No inline role checks in components.
@@ -221,8 +221,13 @@ is rewritten.
 
 - **`XPage.tsx`** takes everything as props: the records, and an `on*`
   function per action returning `Promise<void>`. It imports nothing from
-  `src/mock-data/`, `src/session/` or `react-router-dom`. Its props type
-  (`XPageProps`, a comment on each prop) is the contract between the two.
+  `src/mock-data/`, `src/session/` or `react-router-dom`. Lint enforces this on
+  `src/pages/`, `src/components/` and `src/utils/`; `*.replica.*` files,
+  `*Replica.ts` helpers (such as `src/pages/profile/credentialsReplica.ts`),
+  tests and stories are exempt, and a page not yet split carries a `-- debt:`
+  disable.
+  Its props type (`XPageProps`, a comment on each prop) is the contract
+  between the two.
 - **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
   in state as the server would, reads URL params, awaits `simulateRequest`,
   fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
