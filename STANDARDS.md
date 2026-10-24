@@ -20,7 +20,7 @@ Status of each pattern, as of this commit:
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 21 pages and the Sidebar | History work orders, Sandboxes, the workflow editor, profile, the remaining auth pages |
+| 11 | Page and wrapper | 22 pages and the Sidebar | History work orders, Sandboxes, the workflow editor, the remaining auth pages |
 | 12 | Server checks | Rule | each port adds its refusal tests |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
@@ -91,13 +91,13 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   `id` gets a generated one, so every label is linked to its control.
 
 Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
-`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, the
+`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, `MfaCard`, the
 credential modals (`CredentialFormModal`, `OauthClientFormModal`,
 `KeychainCredentialFormModal`, `TransferCredentialModal`). Still computing
 `errors={cond ? ["can't be blank"] : []}` in render: `AuthResetPasswordPage`, and
 `CredentialFormModal` for the environment name being typed and an object
 field's JSON (both checked as typed, as Lightning does). Other
-page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`, `MfaCard`,
+page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`,
 the auth pages) move to `useForm` when next touched.
 
 ## 3. Server-driven list
