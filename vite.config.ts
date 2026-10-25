@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
+    setupFiles: ['src/test/setup.ts'],
     // Testing Library unmounts between tests only when afterEach is global.
     globals: true,
   },

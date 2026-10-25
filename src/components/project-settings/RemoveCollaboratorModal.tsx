@@ -1,24 +1,23 @@
 import ConfirmModal from "../ConfirmModal";
-import type { User } from "../../types/users";
-import { fullName } from "../../utils/format";
+import type { CollaboratorRow } from "../../types/project-settings";
 
 interface Props {
-  user: User;
-  /** Names of credentials the user owns that will be removed from the project. */
-  ownedCredentials?: string[];
+  collaborator: CollaboratorRow;
   onCancel: () => void;
-  onConfirm: () => void;
+  /** May be async: the modal shows pending and stays open with the error if it throws. */
+  onConfirm: () => void | Promise<void>;
 }
 
 /** settings.ex `confirm_user_removal_modal`. */
-export default function RemoveCollaboratorModal({ user, ownedCredentials = [], onCancel, onConfirm }: Props) {
-  const name = fullName(user);
+export default function RemoveCollaboratorModal({ collaborator, onCancel, onConfirm }: Props) {
+  const name = `${collaborator.firstName} ${collaborator.lastName}`;
+  const owned = collaborator.ownedCredentialNames;
   const credentialsText =
-    ownedCredentials.length === 0
+    owned.length === 0
       ? ""
-      : ownedCredentials.length === 1
-        ? ` and their owned credential ${ownedCredentials[0]} will be removed from it`
-        : ` and their owned credentials ${ownedCredentials.join(", ")} will be removed from it`;
+      : owned.length === 1
+        ? ` and their owned credential ${owned[0]} will be removed from it`
+        : ` and their owned credentials ${owned.join(", ")} will be removed from it`;
   return (
     <ConfirmModal open onClose={onCancel} onConfirm={onConfirm} title={`Remove ${name}`} confirmLabel="Confirm" tone="danger">
       <p>

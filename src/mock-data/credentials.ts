@@ -6,9 +6,23 @@
 import { projects } from "./projects";
 import type { Project } from "../types/projects";
 import { findUser } from "./users";
+import { canEditCredential } from "../permissions";
 import type { User } from "../types/users";
 import { kickstartCredentials } from "./generated/kickstart";
-import type { Credential, CredentialTypeOption, KeychainCredential, OauthClient, SchemaField } from "../types/credentials";
+import type {
+  Credential,
+  CredentialSecretsResult,
+  CredentialIndexData,
+  CredentialTypeOption,
+  KeychainCredential,
+  KeychainCredentialRow,
+  OauthClient,
+  OauthClientSecretsResult,
+  OauthSignInResult,
+  OauthUserInfo,
+  StoredOauthToken,
+  SchemaField,
+} from "../types/credentials";
 
 const openhie = projects[0]!;
 const dhis2Project = projects[1]!;
@@ -119,10 +133,8 @@ export const keychainCredentials: KeychainCredential[] = [
 ];
 
 /**
- * Credential types offered on the first page of "Add a credential": every
- * adaptor with a credential schema (short names, as Lightning shows them),
- * plus Raw JSON and the OAuth clients available to the user or project.
- * Lightning sorts the combined list case-insensitively.
+ * Every adaptor with a credential schema (short names, as Lightning shows
+ * them), offered on the first page of "Add a credential".
  */
 const adaptorSchemas = [
   "airqo", "arcgis", "asana", "aws-s3", "azure-storage", "beyonic", "bigquery", "browserless",
@@ -136,55 +148,57 @@ const adaptorSchemas = [
   "twilio", "vtiger", "wigal-sms",
 ];
 
-export function credentialTypeOptions(clients: OauthClient[]): CredentialTypeOption[] {
-  return [
-    ...adaptorSchemas.map((s) => ({ name: s, key: s, type: "adaptor" as const })),
-    { name: "Raw JSON", key: "raw", type: "raw" as const },
-    ...clients.map((c) => ({ name: c.name, key: c.id, type: "oauth" as const })),
-  ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-}
+const field = (key: string, label: string, kind: SchemaField["kind"] = "text", required = false): SchemaField => ({
+  key,
+  label,
+  kind,
+  required,
+  placeholder: null,
+  unrecognizedType: null,
+});
 
 const genericFields: SchemaField[] = [
-  { key: "hostUrl", label: "Host URL", required: true },
-  { key: "username", label: "Username" },
-  { key: "password", label: "Password", secret: true },
+  field("hostUrl", "Host URL", "url", true),
+  field("username", "Username"),
+  field("password", "Password", "password"),
 ];
 
-/** A handful of real adaptor schemas; the rest fall back to host/user/password. */
+/** A handful of real adaptor schemas, with Lightning's input kinds; the rest fall back to host/user/password. */
 const schemaFields: Record<string, SchemaField[]> = {
   dhis2: [
-    { key: "hostUrl", label: "Host URL", required: true },
-    { key: "username", label: "Username" },
-    { key: "password", label: "Password", secret: true },
-    { key: "apiVersion", label: "API Version" },
-    { key: "pat", label: "Personal access token", secret: true },
+    field("hostUrl", "Host URL", "url", true),
+    field("username", "Username"),
+    field("password", "Password", "password"),
+    field("apiVersion", "API Version"),
+    field("pat", "Personal access token", "password"),
   ],
   http: [
-    { key: "baseUrl", label: "Base URL" },
-    { key: "username", label: "Username" },
-    { key: "password", label: "Password", secret: true },
-    { key: "access_token", label: "Access Token", secret: true },
+    field("baseUrl", "Base URL", "url"),
+    field("username", "Username"),
+    field("password", "Password", "password"),
+    field("access_token", "Access Token", "password"),
+    field("tls", "TLS", "object"),
   ],
   postgresql: [
-    { key: "host", label: "Host", required: true },
-    { key: "port", label: "Port", required: true },
-    { key: "database", label: "Database", required: true },
-    { key: "user", label: "User", required: true },
-    { key: "password", label: "Password", required: true, secret: true },
-    { key: "ssl", label: "SSL" },
+    field("host", "Host", "text", true),
+    field("port", "Port", "integer", true),
+    field("database", "Database", "text", true),
+    field("user", "User", "text", true),
+    field("password", "Password", "password", true),
+    field("ssl", "SSL", "boolean"),
   ],
   commcare: [
-    { key: "hostUrl", label: "Host URL" },
-    { key: "domain", label: "Domain", required: true },
-    { key: "appId", label: "App ID" },
-    { key: "username", label: "Username", required: true },
-    { key: "password", label: "Password", secret: true },
-    { key: "apiKey", label: "API Key", secret: true },
+    field("hostUrl", "Host URL", "url"),
+    field("domain", "Domain", "text", true),
+    field("appId", "App ID"),
+    field("username", "Username", "text", true),
+    field("password", "Password", "password"),
+    field("apiKey", "API Key", "password"),
   ],
   fhir: [
-    { key: "baseUrl", label: "Base URL", required: true },
-    { key: "apiPath", label: "API Path" },
-    { key: "access_token", label: "Access Token", secret: true },
+    field("baseUrl", "Base URL", "url", true),
+    field("apiPath", "API Path"),
+    field("access_token", "Access Token", "password"),
   ],
 };
 
@@ -192,44 +206,162 @@ export function fieldsForSchema(schema: string): SchemaField[] {
   return schemaFields[schema] ?? genericFields;
 }
 
-/** The Type column (DataTables `credential_type`). */
-export function credentialTypeLabel(credential: Credential): string {
-  if (credential.schema === "oauth") {
-    const client = oauthClients.find((c) => c.id === credential.oauthClientId);
-    return client ? client.name.toLowerCase() : "oauth";
-  }
-  return credential.schema;
-}
-
-export function missingOauthClient(credential: Credential): boolean {
-  return credential.schema === "oauth" && !oauthClients.some((c) => c.id === credential.oauthClientId);
-}
-
-export function projectNames(projectIds: string[]): string[] {
-  return projectIds.map((id) => projects.find((p) => p.id === id)?.name).filter((n): n is string => !!n);
-}
+/** "Add a credential"'s adaptor types. Their fields come from `fieldsForSchema`, one at a time, as Lightning loads them. */
+export const credentialTypes: CredentialTypeOption[] = adaptorSchemas.map((s) => ({ key: s, name: s }));
 
 export function ownerEmail(userId: string): string {
   return findUser(userId)?.email ?? "";
 }
 
-/** Credentials shown on /credentials (the user's own) or in a project's settings (shared with it). */
-export function credentialsFor(project: Project | undefined, user: User): Credential[] {
-  return project
-    ? credentials.filter((c) => c.projectIds.includes(project.id))
-    : credentials.filter((c) => c.ownerId === user.id);
+// ---------------------------------------------------------------------------
+// What the replica holds, as the server would, and the contract's rows from it
+
+/** Credentials whose runs are still in a project's audit trail (`has_activity_in_projects?`). */
+export const withActivity = new Set(["cred-old-postgres"]);
+
+/** Workflows with a job using a credential, by credential, then project (`Workflows.project_workflows_using_credentials`). */
+const workflowsUsing: Record<string, Record<string, string[]>> = { "cred-dhis2-play": { [openhie.id]: ["OpenHIE Workflow"] } };
+
+/** One stored environment. For OAuth, `body` holds the token, which never leaves the host. */
+export interface StoredEnvironment {
+  name: string;
+  body: string;
+  oauth: StoredOauthToken | null;
 }
 
-export function oauthClientsFor(project: Project | undefined, user: User): OauthClient[] {
-  return project
-    ? oauthClients.filter((c) => c.global || c.projectIds.includes(project.id))
-    : oauthClients.filter((c) => c.ownerId === user.id);
+/** A sign-in the host has a token for, until a save takes it. */
+export interface PendingSignIn {
+  formId: string;
+  credentialId: string | null;
+  oauthClientId: string;
+  scopes: string[];
+  userInfo: OauthUserInfo | null;
 }
 
-export function keychainCredentialsIn(project: Project): KeychainCredential[] {
-  return keychainCredentials.filter((k) => k.projectId === project.id);
+export interface CredentialsFixture {
+  credentials: Credential[];
+  oauthClients: OauthClient[];
+  keychainCredentials: KeychainCredential[];
+  /** Stored environments per credential; generated from the schema until one is saved. */
+  secrets: Record<string, StoredEnvironment[]>;
+  clientSecrets: Record<string, OauthClientSecretsResult>;
+  /** Tokens from sign-ins, by sign-in id. */
+  signIns: Record<string, PendingSignIn>;
+  /** Forms whose sign-ins were discarded; a sign-in answered later is dropped. */
+  discardedForms: string[];
+  /** How each sign-in ended, oldest first. */
+  oauthSignIns: OauthSignInResult[];
 }
 
-export function findCredential(id: string | null | undefined): Credential | undefined {
-  return credentials.find((c) => c.id === id);
+export function credentialsFixture(): CredentialsFixture {
+  return { credentials, oauthClients, keychainCredentials, secrets: {}, clientSecrets: {}, signIns: {}, discardedForms: [], oauthSignIns: [] };
+}
+
+/** A fake token, standing in for what the provider sends. */
+export const fakeToken = (scopes: string[]) => JSON.stringify({ access_token: "fixture-access-token", refresh_token: "fixture-refresh-token", scope: scopes.join(" ") });
+
+/** A credential's stored environments: saved ones, or obviously fake values for its schema's fields. */
+export function storedEnvironmentsFor(fixture: CredentialsFixture, credential: Credential): StoredEnvironment[] {
+  const saved = fixture.secrets[credential.id];
+  if (saved) return saved;
+  const client = fixture.oauthClients.find((c) => c.id === credential.oauthClientId);
+  return credential.environments.map((name) => {
+    if (credential.schema === "oauth") {
+      const scopes = client?.mandatoryScopes ?? [];
+      return { name, body: fakeToken(scopes), oauth: { scopes, status: "ready" as const, userInfo: null } };
+    }
+    if (credential.schema === "raw") return { name, body: JSON.stringify({ token: "fixture-token" }, null, 2), oauth: null };
+    const fields = fieldsForSchema(credential.schema).filter((f) => f.kind !== "object");
+    return {
+      name,
+      body: JSON.stringify(Object.fromEntries(fields.map((f) => [f.key, f.kind === "boolean" ? false : f.kind === "integer" ? 5432 : `fixture-${f.key}`]))),
+      oauth: null,
+    };
+  });
+}
+
+/** The host's answer to `onLoadCredentialSecrets`: an OAuth token's body stays behind. */
+export function credentialSecretsFor(fixture: CredentialsFixture, credential: Credential): CredentialSecretsResult {
+  return {
+    environments: storedEnvironmentsFor(fixture, credential).map((e) => ({ name: e.name, body: e.oauth ? "" : e.body, oauth: e.oauth })),
+  };
+}
+
+export function clientSecretsFor(fixture: CredentialsFixture, id: string): OauthClientSecretsResult {
+  return fixture.clientSecrets[id] ?? { clientId: "fixture-client-id", clientSecret: "fixture-client-secret" };
+}
+
+const byName = <T extends { name: string }>(list: T[]) => [...list].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+const projectRefs = (ids: string[]) =>
+  ids.flatMap((id) => {
+    const p = projects.find((x) => x.id === id);
+    return p ? [{ id: p.id, name: p.name }] : [];
+  });
+
+/**
+ * What the credential index shows, as Lightning sends it: the viewer's own
+ * credentials and clients (project undefined, /credentials) or those of the
+ * project (its settings), plus the global clients.
+ */
+export function credentialIndexDataFor(fixture: CredentialsFixture, project: Project | undefined, viewer: User): CredentialIndexData {
+  const shown = project
+    ? fixture.credentials.filter((c) => c.projectIds.includes(project.id))
+    : fixture.credentials.filter((c) => c.ownerId === viewer.id);
+  const clients = fixture.oauthClients.filter((c) => c.global || (project ? c.projectIds.includes(project.id) : c.ownerId === viewer.id));
+  return {
+    credentials: byName(shown).map((c) => {
+      const client = fixture.oauthClients.find((o) => o.id === c.oauthClientId);
+      return {
+        id: c.id,
+        name: c.name,
+        schema: c.schema,
+        oauthClient:
+          c.schema === "oauth" && client
+            ? { id: client.id, name: client.name, mandatoryScopes: client.mandatoryScopes, optionalScopes: client.optionalScopes, scopesDocUrl: client.scopesDocUrl }
+            : null,
+        ownerEmail: ownerEmail(c.ownerId),
+        projects: projectRefs(c.projectIds).map((p) => ({ ...p, workflowsUsing: workflowsUsing[c.id]?.[p.id] ?? [] })),
+        externalId: c.externalId,
+        environments: c.environments,
+        transferStatus: c.transferStatus,
+        scheduledDeletion: c.scheduledDeletion,
+        hasActivityInProjects: withActivity.has(c.id),
+        canEdit: canEditCredential(c, viewer),
+      };
+    }),
+    oauthClients: byName(clients).map((c) => ({
+      id: c.id,
+      name: c.name,
+      ownerEmail: ownerEmail(c.ownerId),
+      global: c.global,
+      projects: projectRefs(c.projectIds),
+      authorizationEndpoint: c.authorizationEndpoint,
+      tokenEndpoint: c.tokenEndpoint,
+      revocationEndpoint: c.revocationEndpoint,
+      introspectionEndpoint: c.introspectionEndpoint,
+      userinfoEndpoint: c.userinfoEndpoint,
+      mandatoryScopes: c.mandatoryScopes,
+      optionalScopes: c.optionalScopes,
+      scopesDocUrl: c.scopesDocUrl,
+      canEdit: canEditCredential(c, viewer),
+    })),
+    // The viewer's projects (Lightning's `assign_projects`).
+    projects: byName(projects.filter((p) => p.members.some((m) => m.userId === viewer.id))).map((p) => ({ id: p.id, name: p.name })),
+    credentialTypes,
+    oauthSignIns: fixture.oauthSignIns,
+    canCreateGlobalOauthClient: viewer.role === "superuser",
+  };
+}
+
+export function keychainRowsFor(fixture: CredentialsFixture, project: Project): KeychainCredentialRow[] {
+  return byName(fixture.keychainCredentials.filter((k) => k.projectId === project.id)).map((k) => {
+    const fallback = fixture.credentials.find((c) => c.id === k.defaultCredentialId);
+    return {
+      id: k.id,
+      name: k.name,
+      path: k.path,
+      defaultCredential: fallback ? { id: fallback.id, name: fallback.name } : null,
+      ownerEmail: ownerEmail(k.createdById),
+    };
+  });
 }

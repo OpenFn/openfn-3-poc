@@ -1,13 +1,42 @@
-import type { HistoryRun, HistoryStep, Run } from "../../types/history";
-import { formatElapsed, shortId, uuidOf } from "../../utils/format";
+import type { RunRow, StepRow } from "../../types/history";
+import { shortUuid } from "../../utils/format";
 import Card from "../Card";
 import IconButton from "../IconButton";
 import DateTime from "../DateTime";
 import TextLink from "../TextLink";
+import ElapsedTime from "./ElapsedTime";
 import StepIcon from "./StepIcon";
+import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
-import { clonedStepMessage, inspectStepPath, isClonedStep, zeroPersistenceMessage } from "./runHelpers";
+import { clonedStepMessage, zeroPersistenceMessage } from "./runHelpers";
 import Tooltip from "../Tooltip";
+
+/** The rerun icon on a finished step (run_live/components.ex `step_rerun_tag`). */
+function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStorageHref: string | null; onRetry: () => void }) {
+  if (step.inputWiped)
+    return (
+      <WipedTooltip message={zeroPersistenceMessage} dataStorageHref={dataStorageHref}>
+        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} title="" disabled />
+      </WipedTooltip>
+    );
+  if (step.jobDeleted)
+    return (
+      <IconButton
+        icon="hero-play-circle-mini"
+        label="This step has been deleted and cannot be retried. Try running from other steps"
+        disabled
+      />
+    );
+  return (
+    <IconButton
+      id={step.id}
+      icon="hero-play-circle-mini"
+      label="Run this step with the latest version of this workflow"
+      className="hover:text-primary-400"
+      onClick={onRetry}
+    />
+  );
+}
 
 /**
  * One step row inside an expanded work order (run_live/components.ex
@@ -16,31 +45,25 @@ import Tooltip from "../Tooltip";
  */
 export function StepListItem({
   step,
-  run,
-  projectId,
-  workflowId,
-  canRunWorkflow = true,
+  canRunWorkflow,
+  dataStorageHref,
+  onRetry,
 }: {
-  step: HistoryStep;
-  run: Run;
-  projectId: string;
-  workflowId: string;
-  canRunWorkflow?: boolean;
+  step: StepRow;
+  canRunWorkflow: boolean;
+  /** The project's data storage settings, for a wiped input; null when the viewer can't change them. */
+  dataStorageHref: string | null;
+  /** Reruns the run from this step. */
+  onRetry: () => void;
 }) {
-  const isClone = isClonedStep(step, run);
-  const inputAvailable = !step.inputWiped;
   return (
-    <div id={`step-${step.id}`} role="row" className={cn("flex items-center text-xs text-gray-500 hover:bg-white", isClone && "opacity-50")}>
+    <div id={`step-${step.id}`} role="row" className={cn("flex items-center text-xs text-gray-500 hover:bg-white", step.cloned && "opacity-50")}>
       <div role="cell" className="flex flex-1 items-center gap-2 py-2 pl-4">
-        <StepIcon reason={step.exitReason} />
-        <TextLink
-          to={`/projects/${projectId}/runs/${run.id}?step=${step.id}`}
-          variant="plain"
-          className="whitespace-nowrap text-gray-800 hover:text-primary-500"
-        >
+        <StepIcon reason={step.exitReason} errorType={step.errorType} />
+        <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-gray-800 hover:text-primary-500">
           {step.jobName}
         </TextLink>
-        {isClone && (
+        {step.cloned && (
           <Tooltip content={clonedStepMessage}>
             <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini h-3 w-3" />
           </Tooltip>
@@ -51,35 +74,30 @@ export function StepListItem({
         </span>
       </div>
       <div role="cell" className="flex min-w-60 shrink-0 items-center justify-end gap-3 px-4 py-2">
-        {canRunWorkflow &&
-          step.exitReason &&
-          (inputAvailable ? (
-            <IconButton icon="hero-play-circle-mini" label="Run this step with the latest version of this workflow" />
-          ) : (
-            <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} disabled />
-          ))}
-        <IconButton
-          icon="hero-document-magnifying-glass-mini"
-          label="Inspect this step"
-          to={inspectStepPath(projectId, workflowId, run, step)}
-        />
-        <span className="w-16 text-right">{formatElapsed(step.startedAt, step.finishedAt)}</span>
-        <span className="w-24 text-right font-mono">{step.exitReason}</span>
+        {canRunWorkflow && step.exitReason && <StepRerun step={step} dataStorageHref={dataStorageHref} onRetry={onRetry} />}
+        <IconButton id={`inspect-step-${step.id}`} icon="hero-document-magnifying-glass-mini" label="Inspect this step" to={step.inspectHref} />
+        <span className="w-16 text-right">
+          <ElapsedTime startedAt={step.startedAt} finishedAt={step.finishedAt} />
+        </span>
+        <span className="w-24 text-right font-mono">
+          {step.exitReason}
+          {step.errorType && `:${step.errorType}`}
+        </span>
       </div>
     </div>
   );
 }
 
-function runStatusText(run: Run) {
+function runStatusText(run: RunRow) {
   switch (run.state) {
     case "available":
       return ["enqueued", run.insertedAt] as const;
     case "claimed":
-      return ["claimed", run.startedAt ?? run.insertedAt] as const;
+      return ["claimed", run.claimedAt] as const;
     case "started":
       return ["started", run.startedAt] as const;
     case "cancelled":
-      return ["cancelled", run.finishedAt ?? run.insertedAt] as const;
+      return ["cancelled", run.updatedAt] as const;
     default:
       return ["finished", run.finishedAt] as const;
   }
@@ -96,19 +114,23 @@ export function RunCard({
   total,
   showPrevious,
   onTogglePrevious,
-  projectId,
-  workflowId,
-  canRunWorkflow = true,
+  canRunWorkflow,
+  dataStorageHref,
+  onCancel,
+  onRetryStep,
 }: {
-  run: HistoryRun;
+  run: RunRow;
   /** 1-based position, oldest first. */
   index: number;
   total: number;
   showPrevious: boolean;
   onTogglePrevious: () => void;
-  projectId: string;
-  workflowId: string;
-  canRunWorkflow?: boolean;
+  canRunWorkflow: boolean;
+  dataStorageHref: string | null;
+  /** Cancels this run while it waits for a worker. */
+  onCancel: () => void;
+  /** Reruns this run from one of its steps. */
+  onRetryStep: (stepId: string) => void;
 }) {
   const [label, at] = runStatusText(run);
   const steps = run.steps;
@@ -117,8 +139,8 @@ export function RunCard({
       <div className="flex items-center bg-gray-200 text-xs">
         <div className="flex flex-1 items-center gap-1 py-2 pl-4">
           Run
-          <TextLink to={`/projects/${projectId}/runs/${run.id}`} title={uuidOf(run.id)} className="font-mono">
-            {shortId(run.id)}
+          <TextLink to={run.href} title={run.id} className="font-mono">
+            {shortUuid(run.id)}
           </TextLink>
           {total > 1 && (
             <>
@@ -137,24 +159,26 @@ export function RunCard({
         </div>
         <div className="flex min-w-60 shrink-0 items-center justify-end gap-3 px-4 py-2">
           <span className="w-16 text-right">
-            {run.state !== "available" && run.state !== "cancelled" && formatElapsed(run.startedAt, run.finishedAt)}
+            {run.state !== "available" && run.state !== "cancelled" && (
+              <ElapsedTime startedAt={run.startedAt} finishedAt={run.finishedAt} />
+            )}
           </span>
           <span className="w-24 text-right font-mono">{run.state}</span>
           {run.state === "available" && canRunWorkflow && (
-            <IconButton icon="hero-x-mark-mini" label="Cancel this run" size="sm" className="hover:text-red-500" />
+            <IconButton
+              id={`cancel-run-${run.id}`}
+              icon="hero-x-mark-mini"
+              label="Cancel this run"
+              size="sm"
+              className="hover:text-red-500"
+              onClick={onCancel}
+            />
           )}
         </div>
       </div>
       <div role="rowgroup" id={`run-${run.id}`} className={cn("bg-gray-100", steps.length && "border-t border-gray-300")}>
         {steps.map((step) => (
-          <StepListItem
-            key={step.id}
-            step={step}
-            run={run}
-            projectId={projectId}
-            workflowId={workflowId}
-            canRunWorkflow={canRunWorkflow}
-          />
+          <StepListItem key={step.id} step={step} canRunWorkflow={canRunWorkflow} dataStorageHref={dataStorageHref} onRetry={() => onRetryStep(step.id)} />
         ))}
       </div>
     </Card>

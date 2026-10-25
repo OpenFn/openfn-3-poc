@@ -3,14 +3,15 @@ import IconButton from "../IconButton";
 import { Checkbox } from "../Inputs";
 import Pill from "../Pill";
 import { Td, Tr } from "../Table";
-import type { HistoryWorkOrder } from "../../types/history";
+import type { WorkOrderRow } from "../../types/history";
 import { activeStates } from "../../constants";
-import { formatElapsed, uuidOf } from "../../utils/format";
 import DateTime from "../DateTime";
 import TextLink from "../TextLink";
+import ElapsedTime from "./ElapsedTime";
 import StatePill from "./StatePill";
 import UuidChip from "../UuidChip";
 import { RunCard } from "./RunDetails";
+import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
 import Tooltip from "../Tooltip";
@@ -19,27 +20,47 @@ import Tooltip from "../Tooltip";
  * A work order row in History plus, when expanded, its runs and steps
  * (run_live/workorder_component.ex). Clicking the row toggles the details.
  */
-export default function WorkOrderRow({
-  workOrder,
-  projectId,
-  selected = false,
+export default function WorkOrderTableRow({
+  workOrder: wo,
+  selected,
   onSelect,
-  canRunWorkflow = true,
+  canRunWorkflow,
+  dataStorageHref,
   defaultExpanded = false,
+  onCancel,
+  onRetry,
+  onCancelRun,
+  onRetryStep,
 }: {
-  workOrder: HistoryWorkOrder;
-  projectId: string;
-  selected?: boolean;
-  onSelect?: (selected: boolean) => void;
-  canRunWorkflow?: boolean;
+  workOrder: WorkOrderRow;
+  selected: boolean;
+  onSelect: (selected: boolean) => void;
+  canRunWorkflow: boolean;
+  /** The project's data storage settings, for a wiped input; null when the viewer can't change them. */
+  dataStorageHref: string | null;
+  /** Opens with every run showing, as History does for the work order its URL filters to; follows the URL. */
   defaultExpanded?: boolean;
+  /** Cancels the pending work order. */
+  onCancel: () => void;
+  /** Retries the work order from the start. */
+  onRetry: () => void;
+  onCancelRun: (runId: string) => void;
+  onRetryStep: (runId: string, stepId: string) => void;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const [showPrevious, setShowPrevious] = useState(false);
-  const runs = workOrder.runs;
+  const [showPrevious, setShowPrevious] = useState(defaultExpanded);
+  // The URL can point at this work order after it mounted (an ID link, Back): open it then too.
+  const [opened, setOpened] = useState(defaultExpanded);
+  if (opened !== defaultExpanded) {
+    setOpened(defaultExpanded);
+    if (defaultExpanded) {
+      setExpanded(true);
+      setShowPrevious(true);
+    }
+  }
+  const runs = wo.runs;
   const lastRun = runs[0];
-  const available = !workOrder.dataclipWiped;
-  const wo = workOrder;
+  const available = !wo.dataclipWiped;
 
   return (
     <>
@@ -49,23 +70,33 @@ export default function WorkOrderRow({
         onClick={runs.length ? () => setExpanded((e) => !e) : undefined}
       >
         <Td className="!pr-1">
-          <Tooltip content={available ? undefined : zeroPersistence} disabled={!available}>
+          {available ? (
             <Checkbox
+              id={`select_${wo.id}`}
               label={<span className="sr-only">Select work order</span>}
-              className="disabled:bg-gray-100"
               checked={selected}
-              disabled={!available}
-              onChange={(e) => onSelect?.(e.target.checked)}
+              onChange={(e) => onSelect(e.target.checked)}
             />
-          </Tooltip>
+          ) : (
+            <WipedTooltip message={zeroPersistence} dataStorageHref={dataStorageHref}>
+              <Checkbox
+                id={`select_${wo.id}`}
+                label={<span className="sr-only">Select work order</span>}
+                className="disabled:bg-gray-100"
+                checked={false}
+                disabled
+                onChange={() => {}}
+              />
+            </WipedTooltip>
+          )}
         </Td>
         <Td>
-          <UuidChip uuid={uuidOf(wo.id)} to={`/projects/${projectId}/history?filters[workorder_id]=${wo.id}`} />
+          <UuidChip uuid={wo.id} to={wo.href} />
         </Td>
         <Td>
-          {lastRun ? (
+          {wo.workflowHref ? (
             <TextLink
-              to={`/projects/${projectId}/w/${wo.workflowId}?run=${lastRun.id}`}
+              to={wo.workflowHref}
               variant="plain"
               className="workflow-name block max-w-50 truncate text-gray-900 hover:text-primary-600"
               title={
@@ -84,12 +115,16 @@ export default function WorkOrderRow({
           )}
         </Td>
         <Td>
-          <UuidChip
-            uuid={uuidOf(wo.dataclipId)}
-            to={`/projects/${projectId}/dataclips/${wo.dataclipId}/show`}
-            disabled={!available}
-            tooltip={available ? undefined : "The input dataclip is unavailable due to this project's data retention policy."}
-          />
+          {available ? (
+            <UuidChip uuid={wo.dataclipId} to={wo.dataclipHref} />
+          ) : (
+            <WipedTooltip
+              message="The input dataclip is unavailable due to this project's data retention policy."
+              dataStorageHref={dataStorageHref}
+            >
+              <UuidChip uuid={wo.dataclipId} disabled />
+            </WipedTooltip>
+          )}
         </Td>
         <Td>
           <DateTime value={wo.insertedAt} />
@@ -97,7 +132,9 @@ export default function WorkOrderRow({
         <Td>
           <DateTime value={wo.lastActivity} />
         </Td>
-        <Td align="right" className="w-28">{lastRun && formatElapsed(lastRun.startedAt, lastRun.finishedAt)}</Td>
+        <Td align="right" className="w-28">
+          {lastRun && <ElapsedTime startedAt={lastRun.startedAt} finishedAt={lastRun.finishedAt} />}
+        </Td>
         <Td align="right" className="w-32">
           <StatePill state={wo.state} />
         </Td>
@@ -106,27 +143,33 @@ export default function WorkOrderRow({
             <>
               {wo.state === "pending" && canRunWorkflow && (
                 <IconButton
+                  id={`cancel-wo-${wo.id}`}
                   icon="hero-x-mark-mini"
                   label="Cancel pending run"
                   size="sm"
                   className="hover:text-red-500"
+                  onClick={onCancel}
                 />
               )}
               {!activeStates.includes(wo.state) &&
                 (available && canRunWorkflow ? (
                   <IconButton
+                    id={`retry-workorder-${wo.id}`}
                     icon="hero-arrow-path-mini"
                     label="Retry (run from the start)"
                     size="sm"
                     className="hover:text-primary-400"
+                    onClick={() => {
+                      onRetry();
+                      setExpanded((e) => !e);
+                    }}
                   />
+                ) : canRunWorkflow ? (
+                  <WipedTooltip message={zeroPersistence} dataStorageHref={dataStorageHref}>
+                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} title="" size="sm" disabled />
+                  </WipedTooltip>
                 ) : (
-                  <IconButton
-                    icon="hero-arrow-path-mini"
-                    label={canRunWorkflow ? zeroPersistence : "You are not authorized to start runs for this project."}
-                    size="sm"
-                    disabled
-                  />
+                  <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="sm" disabled />
                 ))}
               <Pill>{runs.length}</Pill>
               <span className={cn(expanded ? "hero-chevron-up" : "hero-chevron-down", "size-4 text-gray-400")} />
@@ -149,9 +192,10 @@ export default function WorkOrderRow({
                     total={runs.length}
                     showPrevious={showPrevious}
                     onTogglePrevious={() => setShowPrevious((s) => !s)}
-                    projectId={projectId}
-                    workflowId={wo.workflowId}
                     canRunWorkflow={canRunWorkflow}
+                    dataStorageHref={dataStorageHref}
+                    onCancel={() => onCancelRun(run.id)}
+                    onRetryStep={(stepId) => onRetryStep(run.id, stepId)}
                   />
                 );
               })}

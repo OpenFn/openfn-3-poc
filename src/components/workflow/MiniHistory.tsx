@@ -26,7 +26,7 @@ function FullHistoryLink({ to, id }: { to: string; id?: string }) {
   );
 }
 
-export interface HistoryWorkOrder {
+export interface MiniHistoryWorkOrder {
   workOrder: WorkOrder;
   runs: Run[];
 }
@@ -36,7 +36,7 @@ interface Props {
   workflowId: string;
   collapsed: boolean;
   onToggle: () => void;
-  history: HistoryWorkOrder[];
+  history: MiniHistoryWorkOrder[];
   selectedRunId: string | null;
   onSelectRun: (runId: string) => void;
   onDeselectRun: () => void;

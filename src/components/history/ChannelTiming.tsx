@@ -68,7 +68,8 @@ const hatch =
 function segmentLabel(s: Segment) {
   if (s.badge || s.us === 0) return "";
   const ms = s.us / 1000;
-  return ms >= 1000 ? `${Math.round(ms / 100) / 10}s` : `${formatUs(s.us)}ms`;
+  // timing.ex: whole seconds keep one decimal ("30.0s").
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${formatUs(s.us)}ms`;
 }
 
 /**
@@ -80,7 +81,9 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
   if (!data) return null;
   const inner = data.segments.reduce((a, s) => a + s.us, 0) || 1;
   const segs = data.segments.map((s) => ({ ...s, pct: Math.max(Math.round((s.us / inner) * 1000) / 10, 0.5) }));
+  // The marker needs a positive TTFB; the legend shows a zero one ("TTFB: 0 ms"), as timing.ex did.
   const ttfbPct = data.ttfbUs ? Math.round((data.ttfbUs / inner) * 1000) / 10 : null;
+  const hasTtfb = data.ttfbUs != null;
   const showOverhead = data.tier === "full";
 
   return (
@@ -108,9 +111,9 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
                 </Tooltip>
               ))}
             </div>
-            {ttfbPct && <div className="absolute inset-y-0 z-10 w-0.5 bg-gray-700" style={{ left: `${ttfbPct}%` }} />}
+            {ttfbPct ? <div className="absolute inset-y-0 z-10 w-0.5 bg-gray-700" style={{ left: `${ttfbPct}%` }} /> : null}
           </div>
-          {ttfbPct && (
+          {ttfbPct ? (
             <div className="relative mt-1.5 h-4">
               <div
                 className="absolute flex items-center gap-1 whitespace-nowrap font-mono font-medium text-gray-600"
@@ -120,7 +123,7 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
                 TTFB: {formatUs(data.ttfbUs)} ms
               </div>
             </div>
-          )}
+          ) : null}
           <div className="mt-1 flex justify-between font-mono text-gray-500">
             <span>0 ms</span>
             <span>{formatUs(data.totalUs)} ms</span>
@@ -139,7 +142,7 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
               Proxy overhead
             </span>
           )}
-          {data.ttfbUs && <span className="ml-auto font-mono text-gray-400">TTFB: {formatUs(data.ttfbUs)} ms</span>}
+          {hasTtfb && <span className="ml-auto font-mono text-gray-400">TTFB: {formatUs(data.ttfbUs)} ms</span>}
         </div>
       </div>
     </Disclosure>

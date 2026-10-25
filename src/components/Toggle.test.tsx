@@ -17,4 +17,9 @@ describe("Toggle", () => {
     render(<Toggle checked disabled />);
     expect(screen.getByRole("switch").parentElement!.tagName).toBe("DIV");
   });
+
+  it("leaves an enabled switch's tooltip to the Tooltip, with no title box on top", () => {
+    render(<Toggle checked={false} label="Disable workflow" tooltip="Turns off every trigger." />);
+    expect(screen.getByRole("switch", { name: "Disable workflow" }).hasAttribute("title")).toBe(false);
+  });
 });

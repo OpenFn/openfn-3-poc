@@ -61,6 +61,14 @@ const routerImports = [
   { name: 'react-router', message: routerMessage },
 ]
 
+// The design system runs outside Lightning too (the replica, Storybook), so it
+// can't lean on LiveView or the browser URL. URLs go through src/routing.
+const hostMessage = 'Design-system code must not depend on LiveView or the browser URL; use useRouter() from src/routing/router.'
+const liveViewAttribute = {
+  selector: 'JSXAttribute[name.name=/^phx-/]',
+  message: `phx- attribute: ${hostMessage}`,
+}
+
 export default defineConfig([
   globalIgnores(['dist', 'storybook-static', 'compare-out']),
   {
@@ -83,12 +91,27 @@ export default defineConfig([
     // Stories set fixed canvas sizes, so they're left out.
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': ['error', ...designRules] },
+    rules: { 'no-restricted-syntax': ['error', ...designRules, liveViewAttribute] },
   },
   {
     files: ['src/pages/**/*.tsx', 'src/components/*/**/*.tsx'],
     ignores: ['**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': ['error', ...designRules, rawControl] },
+    rules: { 'no-restricted-syntax': ['error', ...designRules, liveViewAttribute, rawControl] },
+  },
+  {
+    // The router adapter is the one place that reads the browser URL.
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/routing/**'],
+    rules: {
+      'no-restricted-globals': ['error', { name: 'location', message: hostMessage }],
+      'no-restricted-properties': [
+        'error',
+        { object: 'window', property: 'location', message: hostMessage },
+        { object: 'document', property: 'location', message: hostMessage },
+        { property: 'pushEvent', message: hostMessage },
+        { property: 'pushEventTo', message: hostMessage },
+      ],
+    },
   },
   {
     // Utils and annotations navigate through the router adapter too.

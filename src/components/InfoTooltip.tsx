@@ -16,7 +16,7 @@ interface Props {
 export default function InfoTooltip({
   title,
   icon = "hero-information-circle-solid",
-  iconClass = "w-4 h-4 text-primary-600 opacity-50",
+  iconClass = "-mt-0.5 w-4 h-4 text-primary-600 opacity-50",
   className,
 }: Props) {
   return (

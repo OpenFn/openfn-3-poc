@@ -164,7 +164,7 @@ export const authProvider: AuthProvider | null = {
   name: "google",
   discoveryUrl: "https://accounts.google.com/.well-known/openid-configuration",
   clientId: "1081234567890-abc123def456.apps.googleusercontent.com",
-  clientSecret: "demo-client-secret",
+  hasClientSecret: true,
   redirectHost: instanceUrl,
   allowUnverifiedEmail: false,
 };
@@ -174,7 +174,7 @@ export const emptyAuthProvider: AuthProvider = {
   name: "",
   discoveryUrl: "",
   clientId: "",
-  clientSecret: "",
+  hasClientSecret: false,
   redirectHost: instanceUrl,
   allowUnverifiedEmail: false,
 };

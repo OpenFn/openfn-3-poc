@@ -1,21 +1,34 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BulkCancelModal, BulkRerunModal, ExportConfirmationModal, RerunFromJobModal } from "./HistoryModals";
-import { workflowJobs } from "../../mock-data/history-extra";
 
-const meta = { title: "History/HistoryModals", component: BulkRerunModal } satisfies Meta<typeof BulkRerunModal>;
+const confirm = async () => {};
+const selection = { selectedCount: 3, allSelected: false, pageNumber: 1, pages: 1, totalEntries: 3 };
+const allOnPage = { selectedCount: 10, allSelected: true, pageNumber: 1, pages: 4, totalEntries: 37 };
+
+const meta = {
+  title: "History/HistoryModals",
+  component: BulkRerunModal,
+  args: { open: true, onClose: () => {}, selection, query: "for OpenHIE workflow", onConfirm: confirm },
+} satisfies Meta<typeof BulkRerunModal>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BulkRerun: Story = { args: { open: true, onClose: () => {}, selectedCount: 3 } };
-export const BulkCancel: Story = {
-  args: { open: true, onClose: () => {}, selectedCount: 2 },
-  render: (args) => <BulkCancelModal {...args} />,
-};
+export const BulkRerun: Story = {};
+export const BulkRerunAllMatching: Story = { args: { selection: allOnPage } };
+export const BulkCancel: Story = { render: (args) => <BulkCancelModal {...args} /> };
+export const BulkCancelAllMatching: Story = { args: { selection: allOnPage }, render: (args) => <BulkCancelModal {...args} /> };
 export const RerunFromJob: Story = {
-  args: { open: true, onClose: () => {}, selectedCount: 2 },
-  render: (args) => <RerunFromJobModal {...args} jobs={workflowJobs("wf-openhie")} />,
+  render: (args) => (
+    <RerunFromJobModal
+      {...args}
+      jobs={[
+        { id: "j1", name: "Fetch patients", retriableCount: 3 },
+        { id: "j2", name: "Send to DHIS2", retriableCount: 1 },
+        { id: "j3", name: "Notify", retriableCount: 0 },
+      ]}
+    />
+  ),
 };
 export const ExportConfirmation: Story = {
-  args: { open: true, onClose: () => {}, selectedCount: 0 },
-  render: (args) => <ExportConfirmationModal open={args.open} onClose={args.onClose} count={5} />,
+  render: (args) => <ExportConfirmationModal open={args.open} onClose={args.onClose} count={5} onConfirm={confirm} />,
 };

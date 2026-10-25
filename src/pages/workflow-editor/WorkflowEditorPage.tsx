@@ -21,7 +21,8 @@ import YAMLImportModal from "../../components/workflow/YAMLImportModal";
 import { workflowNameFromYaml } from "../../components/workflow/workflowYaml";
 import { aiSessionsFor } from "../../mock-data/ai-assistant";
 import { adaptorShortName } from "../../utils/adaptors";
-import { findProject } from "../../mock-data/projects";
+import { findProject, projects } from "../../mock-data/projects";
+import { projectLabel } from "../../components/shell/projectPickerItems";
 import type { Project } from "../../types/projects";
 import { blankWorkflowGraph, newWorkflowGraph, templateGraph } from "../../utils/workflowGraph";
 import { findWorkflowGraph, snapshotsOf, workflowTemplates } from "../../mock-data/workflow";
@@ -267,6 +268,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
         {!showLanding && (
           <EditorHeader
             project={project}
+            projectLabel={projectLabel(project, projects)}
             workflowName={graph.name}
             snapshots={snapshotsOf(graph)}
             pinnedVersion={pinnedVersion}

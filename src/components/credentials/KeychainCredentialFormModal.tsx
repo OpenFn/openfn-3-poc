@@ -1,49 +1,29 @@
-import { useState } from "react";
 import FormModal from "../FormModal";
 import { Select, TextInput } from "../Inputs";
-import { useCurrentUser } from "../../session/session";
-import type { Credential, KeychainCredential } from "../../types/credentials";
+import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
+import type { CredentialRef, KeychainCredentialRow, KeychainCredentialValues } from "../../types/credentials";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  projectId: string;
   /** Set to edit an existing keychain credential. */
-  keychainCredential?: KeychainCredential | undefined;
+  keychainCredential?: KeychainCredentialRow | undefined;
   /** The project's credentials, offered as the default. */
-  credentials: Credential[];
-  onSave?: (keychain: KeychainCredential) => void;
+  credentials: CredentialRef[];
+  /** Saves the form. Rejects with field errors or a message, and the modal stays open; closes once it resolves. */
+  onSave: (values: KeychainCredentialValues) => Promise<void>;
 }
 
 /**
  * Lightning's `keychain_credential_form` (live/components/credentials.ex):
  * a name, a JSONPath that selects the credential at run time, and a default.
  */
-export default function KeychainCredentialFormModal({
-  open,
-  onClose,
-  projectId,
-  keychainCredential: kc,
-  credentials,
-  onSave,
-}: Props) {
-  const user = useCurrentUser();
-  const [name, setName] = useState(kc?.name ?? "");
-  const [path, setPath] = useState(kc?.path ?? "");
-  const [defaultId, setDefaultId] = useState(kc?.defaultCredentialId ?? "");
-  const valid = name.trim() !== "" && path.trim() !== "";
-
-  const save = () => {
-    onSave?.({
-      id: kc?.id ?? `kc-${Date.now()}`,
-      name: name.trim(),
-      path: path.trim(),
-      defaultCredentialId: defaultId || null,
-      projectId,
-      createdById: kc?.createdById ?? user.id,
-    });
-    onClose();
-  };
+export default function KeychainCredentialFormModal({ open, onClose, keychainCredential: kc, credentials, onSave }: Props) {
+  const form = useForm({
+    initial: { name: kc?.name ?? "", path: kc?.path ?? "", defaultCredentialId: kc?.defaultCredential?.id ?? "" },
+    validate: (v) => ({ name: blank(v.name), path: blank(v.path) }),
+  });
 
   return (
     <FormModal
@@ -53,31 +33,30 @@ export default function KeychainCredentialFormModal({
       size="xl"
       formId={`keychain-credential-form-${kc?.id ?? "new"}`}
       formClassName="space-y-4"
-      onSubmit={save}
+      onSubmit={form.modalSubmit(async (v) => {
+        await onSave({ name: v.name.trim(), path: v.path.trim(), defaultCredentialId: v.defaultCredentialId || null });
+        onClose();
+      })}
       submitLabel={kc ? "Save Changes" : "Create"}
       submitId={`save-keychain-credential-button-${kc?.id ?? "new"}`}
-      submitDisabled={!valid}
     >
       <TextInput
         label="Name"
         hint="A descriptive name for this keychain credential"
         placeholder="Enter keychain credential name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        {...form.fieldProps("name")}
       />
       <TextInput
         label="JSONPath Expression"
         hint="JSONPath expression to extract credential selector from run data"
         placeholder="$.user_id"
-        value={path}
-        onChange={(e) => setPath(e.target.value)}
+        {...form.fieldProps("path")}
       />
       <Select
         label="Default Credential"
         hint="Credential to use when JSONPath expression doesn't match"
-        value={defaultId}
-        onChange={(e) => setDefaultId(e.target.value)}
         options={[["No default credential", ""], ...credentials.map((c): [string, string] => [c.name, c.id])]}
+        {...form.fieldProps("defaultCredentialId")}
       />
     </FormModal>
   );

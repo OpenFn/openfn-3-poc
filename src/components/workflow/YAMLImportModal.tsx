@@ -71,7 +71,7 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
           </Card>
         ) : (
           <div className="h-full overflow-hidden rounded-lg">
-            <CodeEditor value={yaml} onChange={setYaml} ariaLabel="Workflow YAML" />
+            <CodeEditor value={yaml} onChange={setYaml} language="yaml" ariaLabel="Workflow YAML" />
           </div>
         )}
       </div>

@@ -6,31 +6,35 @@ import { DetailItem, DetailList } from "../DetailList";
 import Pill from "../Pill";
 import SectionHeader from "../SectionHeader";
 import TextLink from "../TextLink";
+import { useToast } from "../Toast";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { VcsFixture } from "../../types/project-settings";
+import type { GithubSyncSettings } from "../../types/project-settings";
+import { errorMessage } from "../../utils/errors";
+import { useAction } from "../../utils/useAction";
 
 interface Props {
-  vcs: VcsFixture;
-  canInstallGithub: boolean;
-  canInitiateGithubSync: boolean;
-  /** Whether the viewer has linked their OpenFn account to GitHub. */
-  userGithubConnected: boolean;
-  sandbox?: boolean;
+  githubSync: GithubSyncSettings;
+  sandbox: boolean;
+  /** "Initiate Sync to Branch". */
+  onInitiateSync: () => Promise<void>;
+  /** Disconnects the repository, after the user has confirmed. */
+  onRemoveConnection: () => Promise<void>;
 }
 
 /**
  * The Sync to GitHub tab (`#vcs`, settings.html.heex:758-860 and
  * github_sync_component.html.heex). Shows "not configured", "connect your
- * account", or a connected repo, depending on the fixture. The
- * installation / repo / branch form for a new connection needs the GitHub
- * API, so it isn't reproduced.
+ * account", or a connected repo. The installation / repo / branch form for
+ * a new connection needs the GitHub API, so it isn't reproduced.
  */
-export default function GithubSyncPanel({ vcs, canInstallGithub, canInitiateGithubSync, userGithubConnected, sandbox = false }: Props) {
-  const [connection, setConnection] = useState(vcs.connection);
+export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, onRemoveConnection }: Props) {
+  const { enabled, connection, userConnected, connectAccountHref, canInstall, canInitiateSync } = githubSync;
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const toast = useToast();
+  const sync = useAction(onInitiateSync, { onError: (e) => toast(errorMessage(e), "error") });
 
   let body: ReactNode = null;
-  if (!vcs.githubEnabled) {
+  if (!enabled) {
     body = (
       <Card
         title="Sync to GitHub"
@@ -62,13 +66,15 @@ export default function GithubSyncPanel({ vcs, canInstallGithub, canInitiateGith
           </DetailList>
           <Button
             id="initiate-sync-button"
-            disabled={!canInitiateGithubSync}
-            tooltip={canInitiateGithubSync ? undefined : "Contact an editor or admin to sync."}
+            disabled={!canInitiateSync}
+            tooltip={canInitiateSync ? undefined : "Contact an editor or admin to sync."}
+            pending={sync.pending}
+            onClick={() => void sync.run()}
           >
             Initiate Sync to Branch
           </Button>
         </Card>
-        {canInstallGithub && (
+        {canInstall && (
           <p>
             No longer need to sync this project?{" "}
             <TextLink variant="danger" onClick={() => setConfirmRemove(true)}>
@@ -80,8 +86,8 @@ export default function GithubSyncPanel({ vcs, canInstallGithub, canInitiateGith
         <ConfirmModal
           open={confirmRemove}
           onClose={() => setConfirmRemove(false)}
-          onConfirm={() => {
-            setConnection(null);
+          onConfirm={async () => {
+            await onRemoveConnection();
             setConfirmRemove(false);
           }}
           title="Remove Integration?"
@@ -95,16 +101,18 @@ export default function GithubSyncPanel({ vcs, canInstallGithub, canInitiateGith
         </ConfirmModal>
       </div>
     );
-  } else if (canInstallGithub && !userGithubConnected) {
+  } else if (canInstall && !userConnected) {
     body = (
       <Card
         title="Connect your OpenFn account to GitHub"
         description="To create a new GitHub version control connection you must first connect your OpenFn account to GitHub. Please click the button below to get started."
       >
-        <Button id="connect-github-link">Connect your GitHub Account</Button>
+        <Button id="connect-github-link" href={connectAccountHref}>
+          Connect your GitHub Account
+        </Button>
       </Card>
     );
-  } else if (canInstallGithub) {
+  } else if (canInstall) {
     body = (
       <Card
         title="Connect a repository"
@@ -119,9 +127,7 @@ export default function GithubSyncPanel({ vcs, canInstallGithub, canInitiateGith
         title="Version control"
         subtitle="View or modify external version control settings for this project."
         permissionsSection={
-          canInstallGithub
-            ? undefined
-            : `version control configuration${canInitiateGithubSync ? " but you can initiate a sync." : "."}`
+          canInstall ? undefined : `version control configuration${canInitiateSync ? " but you can initiate a sync." : "."}`
         }
       />
       {sandbox && <SandboxSettingsBanner variant="local" />}

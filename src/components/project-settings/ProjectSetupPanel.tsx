@@ -7,22 +7,20 @@ import TextLink from "../TextLink";
 import Toggle from "../Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import Card from "../Card";
-import type { Project } from "../../types/projects";
+import type { ParentProjectRef, ProjectIdentityValues, SetupSettings } from "../../types/project-settings";
 import { errorMessage } from "../../utils/errors";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
 
 interface Props {
-  project: Project;
-  /** Project environment, shown read-only. */
-  env: string;
-  /** The parent, when `project` is a sandbox. */
-  parentProject?: Project | undefined;
-  canEditProject: boolean;
-  canDeleteProject: boolean;
-  /** Saves the identity or concurrency form. Rejects on failure, which the form shows inline. */
-  onUpdate: (changes: Partial<Pick<Project, "name" | "description" | "concurrency">>) => Promise<void>;
+  setup: SetupSettings;
+  /** The parent, when the project is a sandbox. */
+  parent: ParentProjectRef | null;
+  /** Saves Project Identity. Rejects with field errors (`rawName`) or a message, which the form shows inline. */
+  onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
+  /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */
+  onSaveConcurrency: (concurrency: number | null) => Promise<void>;
 }
 
 /**
@@ -31,13 +29,14 @@ interface Props {
  * Identity's Save is enabled whenever the user can edit; Concurrency's waits
  * for a change.
  */
-export default function ProjectSetupPanel({ project, env, parentProject, canEditProject, canDeleteProject, onUpdate }: Props) {
-  const sandbox = project.parentId !== null;
-  const identity = useForm({
-    initial: { rawName: project.name, description: project.description },
+export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSaveConcurrency }: Props) {
+  const { canEditProject, canDeleteProject } = setup;
+  const sandbox = parent !== null;
+  const identity = useForm<ProjectIdentityValues>({
+    initial: { rawName: setup.name, description: setup.description },
     validate: ({ rawName }) => ({ rawName: blank(urlSafeName(rawName)) }),
   });
-  const concurrency = useForm({ initial: { serial: project.concurrency === 1 } });
+  const concurrency = useForm({ initial: { serial: setup.concurrency === 1 } });
 
   return (
     <>
@@ -54,23 +53,16 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
       <Card
         title={sandbox ? "Sandbox Identity" : "Project Identity"}
         description={
-          sandbox ? (
+          parent ? (
             <>
-              Identifies this sandbox within its parent:{" "}
-              {parentProject && (
-                <TextLink to={`/projects/${parentProject.id}/settings`}>{parentProject.name}</TextLink>
-              )}
+              Identifies this sandbox within its parent: <TextLink to={parent.settingsHref}>{parent.name}</TextLink>
             </>
           ) : (
             "This metadata helps you identify the types of workflows managed in this project and the people that have access."
           )
         }
       >
-        <form
-          id="project-settings-form"
-          className="space-y-4"
-          onSubmit={identity.submit(({ rawName, description }) => onUpdate({ name: urlSafeName(rawName), description }))}
-        >
+        <form id="project-settings-form" className="space-y-4" onSubmit={identity.submit(onSaveIdentity)}>
           <NameField
             id="project-settings-form_raw_name"
             label="Project name"
@@ -82,7 +74,7 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
             id="project-settings-form_env"
             label="Project environment"
             hint="Credentials will be loaded with values from this environment."
-            value={env}
+            value={setup.env}
             disabled
             readOnly
           />
@@ -122,7 +114,7 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
         <form
           id="project-concurrency-form"
           className="space-y-4"
-          onSubmit={concurrency.submit(({ serial }) => onUpdate({ concurrency: serial ? 1 : null }))}
+          onSubmit={concurrency.submit(({ serial }) => onSaveConcurrency(serial ? 1 : null))}
         >
           <Toggle
             id="project-concurrency-switch"
@@ -153,7 +145,9 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
         title="Export your Project"
         description="Export your project as code, to save this version or edit your project locally."
       >
-        <Button>Export project</Button>
+        <Button href={setup.exportHref} target="_blank">
+          Export project
+        </Button>
       </Card>
 
       {canDeleteProject && (
@@ -165,7 +159,7 @@ export default function ProjectSetupPanel({ project, env, parentProject, canEdit
               : "Deleting your project is irreversible"
           }
         >
-          <Button theme="danger" to={`/projects/${project.id}/settings/delete`}>
+          <Button theme="danger" to={setup.deleteHref}>
             {sandbox ? "Delete sandbox" : "Delete project"}
           </Button>
         </Card>

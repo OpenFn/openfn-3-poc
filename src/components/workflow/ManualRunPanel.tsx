@@ -122,7 +122,7 @@ export default function ManualRunPanel({
                 <FieldError>{parseError}</FieldError>
               </div>
             )}
-            <CodeEditor value={body} onChange={setBody} ariaLabel="Custom input" />
+            <CodeEditor value={body} onChange={setBody} language="json" ariaLabel="Custom input" />
           </div>
         </div>
       )}
@@ -190,7 +190,7 @@ export default function ManualRunPanel({
         <IconButton icon="hero-x-mark" label="Unselect dataclip" onClick={() => setSelected(null)} />
       </div>
       <div className="min-h-64 flex-1">
-        <CodeEditor value={JSON.stringify(selected.body, null, 2)} readOnly ariaLabel="Dataclip body" />
+        <CodeEditor value={JSON.stringify(selected.body, null, 2)} language="json" readOnly ariaLabel="Dataclip body" />
       </div>
     </div>
   );

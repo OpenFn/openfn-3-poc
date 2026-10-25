@@ -17,3 +17,13 @@ export async function hover(el: Element) {
 
 /** The text of every open tooltip. */
 export const openTooltips = () => screen.queryAllByRole("tooltip").map((t) => t.textContent);
+
+/** Hovers `el`, reads its tooltip, then moves the mouse off again. Null when none opens. */
+export async function tooltipOf(el: Element) {
+  await hover(el);
+  const text = openTooltips().at(-1) ?? null;
+  await act(async () => {
+    fireEvent.mouseLeave(el);
+  });
+  return text;
+}

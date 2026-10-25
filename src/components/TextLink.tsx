@@ -37,7 +37,7 @@ export default function TextLink({ to, href, external = false, target, onClick, 
   if (to && !external) {
     return (
       <Tooltip content={title}>
-        <Link to={to} id={id} aria-label={ariaLabel} className={classes} onClick={onClick} data-ui="link" data-variant={variant}>
+        <Link to={to} target={target} id={id} aria-label={ariaLabel} className={classes} onClick={onClick} data-ui="link" data-variant={variant}>
           {children}
         </Link>
       </Tooltip>

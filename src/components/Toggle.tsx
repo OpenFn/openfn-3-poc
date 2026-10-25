@@ -16,13 +16,16 @@ interface Props {
   tooltip?: string | undefined;
   /** id of an element that labels the switch, when there's no `label`. */
   labelledBy?: string;
+  /** Name of the hidden checkbox that mirrors the state, as Lightning's toggle input has. */
+  name?: string | undefined;
 }
 
 /**
  * Lightning's toggle switch (new_inputs.ex `type="toggle"`): primary-600
- * when on, with a check / cross in the knob.
+ * when on, with a check / cross in the knob. A hidden checkbox mirrors the
+ * state, as Lightning's does, so forms and tests can read it.
  */
-export default function Toggle({ checked, onChange, label, note, description, disabled = false, id, tooltip, labelledBy }: Props) {
+export default function Toggle({ checked, onChange, label, note, description, disabled = false, id, tooltip, labelledBy, name }: Props) {
   const labelId = useId();
   const button = (
     <button
@@ -31,6 +34,8 @@ export default function Toggle({ checked, onChange, label, note, description, di
       role="switch"
       aria-checked={checked}
       aria-labelledby={labelledBy ?? (label ? labelId : undefined)}
+      // An unlabelled switch is named by its tooltip, as Lightning's toggle input is.
+      aria-label={label || labelledBy ? undefined : tooltip}
       disabled={disabled}
       data-ui="toggle"
       onClick={() => onChange?.(!checked)}
@@ -58,6 +63,7 @@ export default function Toggle({ checked, onChange, label, note, description, di
         <Tooltip content={tooltip} disabled={disabled}>
           {button}
         </Tooltip>
+        <input type="checkbox" name={name} checked={checked} readOnly tabIndex={-1} aria-hidden="true" className="hidden" />
         {label && (
           <span id={labelId} className="text-sm text-gray-500">
             <span className="font-medium text-gray-900">{label}</span>

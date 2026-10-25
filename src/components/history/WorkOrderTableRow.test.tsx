@@ -1,57 +1,57 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Table } from "../Table";
-import type { HistoryWorkOrder } from "../../types/history";
+import type { RunRow, WorkOrderRow } from "../../types/history";
 import { hover, openTooltips } from "../../test/tooltip";
 import { zeroPersistenceMessage } from "./runHelpers";
-import WorkOrderRow from "./WorkOrderRow";
+import WorkOrderTableRow from "./WorkOrderTableRow";
 
-const workOrder: HistoryWorkOrder = {
+const workOrder: WorkOrderRow = {
   id: "7f6e5d4c-0000-4000-8000-000000000001",
-  projectId: "p1",
   workflowId: "w1",
   workflowName: "Intake",
   state: "success",
   dataclipId: "7f6e5d4c-0000-4000-8000-000000000002",
+  dataclipWiped: true,
   insertedAt: "2026-10-01T10:00:00Z",
   lastActivity: "2026-10-01T10:01:00Z",
-  runIds: [],
   runs: [],
-  dataclipWiped: true,
+  href: "/projects/p1/history",
+  workflowHref: null,
+  dataclipHref: "/projects/p1/dataclips/7f6e5d4c-0000-4000-8000-000000000002/show",
 };
 
-describe("WorkOrderRow", () => {
-  it("passes a disabled checkbox's hover to the wrapper that says why", async () => {
+const noop = () => {};
+const props = { selected: false, onSelect: noop, canRunWorkflow: true, dataStorageHref: null, onCancel: noop, onRetry: noop, onCancelRun: noop, onRetryStep: noop };
+
+describe("WorkOrderTableRow", () => {
+  it("passes a wiped work order's checkbox hover to the wrapper that says why", async () => {
     render(
       <Table header={null}>
-        <WorkOrderRow workOrder={workOrder} projectId="p1" />
+        <WorkOrderTableRow {...props} workOrder={workOrder} />
       </Table>
     );
-    const checkbox = screen.getByRole("checkbox", { name: "Select work order" });
-    expect(checkbox.getAttribute("aria-description")).toBe(zeroPersistenceMessage);
-    const wrapper = checkbox.closest(".cursor-not-allowed")!;
+    const wrapper = screen.getByRole("checkbox", { name: "Select work order" }).closest(".cursor-not-allowed")!;
     expect(wrapper.classList).toContain("*:pointer-events-none");
     await hover(wrapper);
-    expect(openTooltips()).toEqual([zeroPersistenceMessage]);
+    expect(openTooltips()[0]).toContain(zeroPersistenceMessage);
   });
 
   it("leaves the row collapsed when the disabled retry's wrapper is clicked", () => {
-    const run = {
+    const run: RunRow = {
       id: "run-1",
-      workOrderId: workOrder.id,
-      state: "success" as const,
-      startingTrigger: null,
-      startingJob: null,
-      createdBy: null,
+      state: "success",
       insertedAt: "2026-10-01T10:00:00Z",
+      claimedAt: "2026-10-01T10:00:00Z",
       startedAt: "2026-10-01T10:00:00Z",
       finishedAt: "2026-10-01T10:01:00Z",
-      stepIds: [],
+      updatedAt: "2026-10-01T10:01:00Z",
+      href: "/projects/p1/runs/run-1",
       steps: [],
     };
     render(
       <Table header={null}>
-        <WorkOrderRow workOrder={{ ...workOrder, runIds: [run.id], runs: [run] }} projectId="p1" />
+        <WorkOrderTableRow {...props} workOrder={{ ...workOrder, runs: [run] }} />
       </Table>
     );
     const rows = screen.getAllByRole("row").length;

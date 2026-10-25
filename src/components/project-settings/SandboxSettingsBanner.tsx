@@ -1,6 +1,6 @@
 import Alert, { type AlertType } from "../Alert";
 import TextLink from "../TextLink";
-import type { Project } from "../../types/projects";
+import type { ParentProjectRef } from "../../types/project-settings";
 
 type Variant = "local" | "editable" | "inherited";
 
@@ -10,13 +10,13 @@ interface Props {
    * parent on merge; inherited: they come from the parent and are read-only.
    */
   variant: Variant;
-  parentProject?: Project | undefined;
+  parent?: ParentProjectRef | null | undefined;
 }
 
 const alertTypes: Record<Variant, AlertType> = { local: "info", editable: "success", inherited: "warning" };
 
 /** Lightning's `sandbox_settings_banner` (components/sandbox_settings_banner.ex). */
-export default function SandboxSettingsBanner({ variant, parentProject }: Props) {
+export default function SandboxSettingsBanner({ variant, parent }: Props) {
   return (
     <Alert type={alertTypes[variant]}>
       {variant === "local" &&
@@ -25,9 +25,9 @@ export default function SandboxSettingsBanner({ variant, parentProject }: Props)
       {variant === "inherited" && (
         <>
           These settings are inherited from the parent project{" "}
-          {parentProject && (
+          {parent && (
             <>
-              (<TextLink to={`/projects/${parentProject.id}/settings`}>{parentProject.name}</TextLink>){" "}
+              (<TextLink to={parent.settingsHref}>{parent.name}</TextLink>){" "}
             </>
           )}
           and cannot be changed here.

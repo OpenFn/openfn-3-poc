@@ -3,6 +3,7 @@ import Button from "../Button";
 import IconButton from "../IconButton";
 import type { SearchFieldId } from "../../types/history";
 import SearchInput from "../SearchInput";
+import Tooltip from "../Tooltip";
 
 /**
  * History's search row (run_live/index.html.heex): the search input, "by",
@@ -22,6 +23,12 @@ export default function HistorySearchBar({
   onSearch: (term: string) => void;
 }) {
   const [value, setValue] = useState(term);
+  // The term lives in the URL, so Back or a link can change it under the box: follow it.
+  const [shown, setShown] = useState(term);
+  if (shown !== term) {
+    setShown(term);
+    setValue(term);
+  }
 
   return (
     <div className="mt-2 flex items-center gap-2">
@@ -39,14 +46,16 @@ export default function HistorySearchBar({
       <div id="search_button_group" className="flex items-center gap-2">
         <div className="inline-flex gap-0.5 rounded-md bg-white p-1 ring-1 ring-inset ring-gray-300">
           {fields.map((f) => (
-            <IconButton
-              key={f.id}
-              icon={f.icon}
-              label={f.label}
-              active={selected.includes(f.id)}
-              aria-pressed={selected.includes(f.id)}
-              onClick={() => onToggle(f.id)}
-            />
+            <Tooltip key={f.id} content={f.label} side="top">
+              <IconButton
+                icon={f.icon}
+                label={f.label}
+                title=""
+                active={selected.includes(f.id)}
+                aria-pressed={selected.includes(f.id)}
+                onClick={() => onToggle(f.id)}
+              />
+            </Tooltip>
           ))}
         </div>
         <Button type="submit" form="run-search-form">

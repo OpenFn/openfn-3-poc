@@ -11,6 +11,8 @@ import Tooltip from "../Tooltip";
 
 interface Props {
   project: Project;
+  /** The project picker's label ("parent/child" for a sandbox). */
+  projectLabel: string;
   workflowName: string;
   snapshots: WorkflowSnapshot[];
   pinnedVersion: number | null;
@@ -46,6 +48,7 @@ interface Props {
  */
 export default function EditorHeader({
   project,
+  projectLabel,
   workflowName,
   snapshots,
   pinnedVersion,
@@ -72,6 +75,7 @@ export default function EditorHeader({
       <div className="flex min-w-0 items-center">
         <ProjectBreadcrumbs
           project={project}
+          label={projectLabel}
           items={[["Workflows", `/projects/${project.id}/w`]]}
           current={
             <span className="flex items-center gap-2">

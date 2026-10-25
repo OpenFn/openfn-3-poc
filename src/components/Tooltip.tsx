@@ -5,6 +5,7 @@ import {
   FloatingArrow,
   FloatingPortal,
   offset,
+  safePolygon,
   shift,
   useDismiss,
   useFloating,
@@ -15,6 +16,7 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { cloneElement, useState, type ReactElement, type ReactNode, type Ref, type SyntheticEvent } from "react";
+import { cn } from "../utils/cn";
 import { useCopy } from "../utils/useCopy";
 
 // One tooltip at a time, like Radix: one open from keyboard focus closes when another opens on hover.
@@ -27,7 +29,8 @@ let closeShown: (() => void) | undefined;
  * renders no tooltip. With `copy`, clicking the child copies that text and the
  * tooltip says "Copied!" for 1.5 seconds, then hides, like Lightning's Tooltip
  * and Copy hooks. With `disabled`, the child is a disabled control and a
- * wrapper takes its hover.
+ * wrapper takes its hover. With `interactive`, the pointer can move onto the
+ * tooltip, so a link in it can be clicked.
  */
 export default function Tooltip({
   children,
@@ -35,6 +38,7 @@ export default function Tooltip({
   copy,
   side = "bottom",
   disabled = false,
+  interactive = false,
 }: {
   children: ReactElement;
   content: ReactNode;
@@ -43,6 +47,8 @@ export default function Tooltip({
   side?: "top" | "right" | "bottom" | "left" | undefined;
   /** The child is a disabled control. */
   disabled?: boolean | undefined;
+  /** The tooltip holds something to click, such as a link. */
+  interactive?: boolean | undefined;
 }) {
   const [open, setOpen] = useState(false);
   // With no content the listeners are off, so text that goes while the tooltip is open would leave this set.
@@ -65,7 +71,7 @@ export default function Tooltip({
   const enabled = !!content;
   const { getReferenceProps, getFloatingProps } = useInteractions([
     // Only mouseenter opens it, so the next mouse move doesn't undo a press that closed it.
-    useHover(context, { enabled, delay: { open: 200 }, mouseOnly: true, move: false }),
+    useHover(context, { enabled, delay: { open: 200 }, mouseOnly: true, move: false, handleClose: interactive ? safePolygon() : null }),
     // Only keyboard focus: Headless Menu and Dialog hand focus back to their trigger after a mouse close.
     useFocus(context, { enabled, visibleOnly: true }),
     // Escape goes on to a modal too, so one press closes both. A press on the trigger closes it, unless it copies.
@@ -101,12 +107,12 @@ export default function Tooltip({
       {cloneElement(child, getReferenceProps({ ...child.props, ref, onClick }))}
       {context.open && (
         <FloatingPortal>
-          {/* z-300: the same layer as Menu and Popover panels, above modals. Clicks go through it to whatever is underneath. */}
+          {/* z-300: the same layer as Menu and Popover panels, above modals. Clicks go through it to whatever is underneath, unless it is interactive. */}
           <div
             ref={setFloating}
             style={floatingStyles}
             {...getFloatingProps()}
-            className="pointer-events-none z-300 max-w-xs rounded-md bg-primary-950 px-3 py-1.5 text-center text-xs text-primary-50 shadow-md"
+            className={cn("z-300 max-w-xs rounded-md bg-primary-950 px-3 py-1.5 text-center text-xs text-primary-50 shadow-md", !interactive && "pointer-events-none")}
             data-ui="tooltip"
           >
             {copied ? "Copied!" : content}
@@ -116,7 +122,7 @@ export default function Tooltip({
       )}
       {copy !== undefined && (
         <span role="status" className="sr-only">
-          {copied ? "Copied!" : ""}
+          {copied ? "Copied to clipboard" : ""}
         </span>
       )}
     </>

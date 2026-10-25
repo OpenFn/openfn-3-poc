@@ -3,7 +3,6 @@
  * Ports of Lightning's LocalTimeConverter / ElapsedIndicator hooks
  * (assets/js/hooks/index.ts), utils/duration.ts and Lightning.Helpers.
  */
-import type { WebhookAuthMethod } from "../types/project-settings";
 import type { User } from "../types/users";
 
 const MONTHS = [
@@ -109,6 +108,18 @@ export function formatUs(us: number | null) {
   if (us === null) return "—";
   const ms = us / 1000;
   return Number.isInteger(ms) ? String(ms) : String(Math.round(ms * 10) / 10);
+}
+
+/**
+ * channel_request_live/helpers.ex `format_bytes`: binary units (1024) with
+ * one decimal kept, B, KB and MB only. 4096 -> "4.0 KB", 15 -> "15 B".
+ * The channel request page uses it; the rest of the app is decimal (below).
+ */
+export function formatBinaryBytes(bytes: number | null): string {
+  if (bytes === null) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1_048_576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }
 
 /**
@@ -250,7 +261,7 @@ export function shortId(id: string): string {
 }
 
 /** The "Linked Triggers & Channels" summary, e.g. "1 trigger, 2 channels". */
-export function linkedUsageSummary(method: WebhookAuthMethod): string {
+export function linkedUsageSummary(method: { triggers: unknown[]; channels: unknown[] }): string {
   return (
     [
       [method.triggers.length, "trigger"],

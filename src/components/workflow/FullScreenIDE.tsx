@@ -125,7 +125,7 @@ export default function FullScreenIDE({
         <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState && !runStrip ? "w-7/10" : "flex-1")}>
           <div className={cn("overflow-hidden", docsCollapsed ? "flex-1" : vertical ? "h-3/5" : "w-3/5")}>
             {job ? (
-              <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} />
+              <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
             ) : (
               <div className="mx-auto max-w-md p-8 text-center text-sm text-gray-600">
                 <p>The job you're trying to view didn't exist in this version of the workflow.</p>
