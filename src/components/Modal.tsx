@@ -1,7 +1,7 @@
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
-import IconButton from "./IconButton";
+import CloseButton from "./CloseButton";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
@@ -66,7 +66,7 @@ export default function Modal({ open, onClose, title, description, children, foo
                         <DialogTitle className="text-lg font-semibold leading-5 text-gray-800">{title}</DialogTitle>
                         {description && <Description className="mt-2 text-sm text-gray-600">{description}</Description>}
                       </div>
-                      <IconButton icon="hero-x-mark" label="Close" size="sm" className="-m-0.5 p-0.5" onClick={onClose} />
+                      <CloseButton size="sm" className="-m-0.5 p-0.5" onClick={onClose} />
                     </header>
                     <div className="my-4 h-0.5 bg-gray-100" />
                   </>

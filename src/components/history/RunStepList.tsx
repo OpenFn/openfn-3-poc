@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 import ElapsedTime from "./ElapsedTime";
 import StepIcon from "./StepIcon";
 import { clonedStepMessage, inspectStepPath, isClonedStep } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /**
  * The run page's step list (run_live/components.ex `step_list` +
@@ -52,17 +53,19 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
               <StepIcon reason={step.exitReason} errorType={step.errorType ?? null} />
               <span className={cn("flex min-w-0 flex-1 items-center gap-1 pr-1.5", isClone && "opacity-50")}>
                 {isClone && (
-                  <span role="img" aria-label={clonedStepMessage} title={clonedStepMessage} className="hero-paper-clip-mini mr-1 h-3 w-3" />
+                  <Tooltip content={clonedStepMessage}>
+                    <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini mr-1 h-3 w-3" />
+                  </Tooltip>
                 )}
                 {step.jobName}
                 {/* A link inside the step's link in Lightning; a focusable span here so the DOM stays valid.
                     The icon sits inside it because the icon's mask would clip the focus ring. */}
+                <Tooltip content="Inspect Step">
                 <span
                   role="link"
                   tabIndex={0}
                   aria-label="Inspect Step"
                   className="ml-1 inline-flex cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-                  title="Inspect Step"
                   onClick={open}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") open(e);
@@ -70,6 +73,7 @@ export default function RunStepList<S extends Omit<Step, "runId">>({
                 >
                   <span className="hero-document-magnifying-glass-mini h-5 w-5" aria-hidden="true" />
                 </span>
+                </Tooltip>
                 <span className="grow whitespace-nowrap text-right text-gray-500">
                   <ElapsedTime startedAt={step.startedAt} finishedAt={step.finishedAt} />
                 </span>

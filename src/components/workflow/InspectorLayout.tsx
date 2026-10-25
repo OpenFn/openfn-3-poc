@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Card from "../Card";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 
 interface Props {
@@ -46,7 +47,7 @@ export default function InspectorLayout({
             {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="sm" onClick={onBack ?? onClose} />}
             <Heading as="h2">{title}</Heading>
           </div>
-          <IconButton icon="hero-x-mark" label="Close panel" onClick={onClose} />
+          <CloseButton label="Close panel" onClick={onClose} />
         </div>
         <div className={cn("flex-1 overflow-y-auto", !bare && "space-y-6 p-6")}>{children}</div>
         {footer && (

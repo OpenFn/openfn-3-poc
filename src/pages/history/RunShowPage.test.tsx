@@ -5,6 +5,7 @@ import type { LogLine, RunDetail, RunStep } from "../../types/history";
 import { RequestError } from "../../utils/errors";
 import { ToastProvider } from "../../components/Toast";
 import RunShowPage from "./RunShowPage";
+import { tooltipOf } from "../../test/tooltip";
 
 const RUN_ID = "5e9a1c2b-1111-4a4a-8b8b-0123456789ab";
 const WO_ID = "7c1d2e3f-2222-4a4a-8b8b-0123456789ab";
@@ -162,19 +163,19 @@ describe("RunShowPage", () => {
     expect(within(a as HTMLElement).getByRole("link", { name: /Map to FHIR/ }).className).toContain("border-primary-500");
     expect(b.querySelector(".hero-paper-clip-mini")).not.toBeNull();
 
-    fireEvent.click(within(b as HTMLElement).getByTitle("Inspect Step"));
+    fireEvent.click(within(b as HTMLElement).getByRole("link", { name: "Inspect Step" }));
     expect(router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-b&v=1#log`);
   });
 
   it("pins no version for a step on the latest snapshot, and pins with as_run under experimental features", () => {
     const step = (id: string) => document.querySelector(`[data-step-id='${id}']`) as HTMLElement;
     const latest = renderPage();
-    fireEvent.click(within(step("step-a")).getByTitle("Inspect Step"));
+    fireEvent.click(within(step("step-a")).getByRole("link", { name: "Inspect Step" }));
     expect(latest.router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-a#log`);
 
     document.body.innerHTML = "";
     const experimental = renderPage({ experimentalFeatures: true });
-    fireEvent.click(within(step("step-b")).getByTitle("Inspect Step"));
+    fireEvent.click(within(step("step-b")).getByRole("link", { name: "Inspect Step" }));
     expect(experimental.router.navigate).toHaveBeenCalledWith(`/projects/p1/w/wf-1?run=${RUN_ID}&panel=editor&job=job-b&as_run=${RUN_ID}#log`);
   });
 
@@ -210,11 +211,11 @@ describe("RunShowPage", () => {
     expect(screen.getByText("Nothing yet")).toBeTruthy();
   });
 
-  it("starts on the tab in the URL hash", () => {
+  it("starts on the tab in the URL hash", async () => {
     renderPage({ selectedStepId: "step-a", outputDataclip: { id: DC_OUT, wiped: true } }, "#output");
     expect(screen.getByRole("tab", { name: "Output" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText("No Output Data here!")).toBeTruthy();
-    expect(screen.getByText("project admins").getAttribute("title")).toBe("amy@example.org");
+    expect(await tooltipOf(screen.getByText("project admins"))).toBe("amy@example.org");
   });
 
   it("goes back to Log when the URL names no tab, and step links keep the tab that is open", () => {
