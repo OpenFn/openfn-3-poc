@@ -11,19 +11,21 @@ Status of each pattern, as of this commit:
 | # | Pattern | Status | Where |
 |---|---------|--------|-------|
 | 1 | Async action | **Done** | `useAction`, `Button pending`, `FormModal`, `ConfirmModal`, `Spinner` |
-| 2 | Form with server errors | **Done** | `useForm` (`submit`, `modalSubmit`); render-time validation remains in 3 files (see below) |
+| 2 | Form with server errors | **Done** | `useForm` (`submit`, `modalSubmit`); render-time validation remains in 2 files (see below) |
 | 3 | Server-driven list | Todo | History first |
-| 4 | Data down, mutations up | Convention; 5 panels break it | see list below |
+| 4 | Data down, mutations up | **Done** | `CredentialIndex` was the last copy of a record list |
 | 5 | Resource loading states | Todo | needs `AsyncBoundary`, 404, error page |
-| 6 | Confirm then act | Done in `ConfirmModal`; 3 other ways remain | retire `window.confirm`, custom modals |
+| 6 | Confirm then act | **Done** | `ConfirmModal`; `CredentialDeletionModal` rebuilt on it |
 | 7 | Feedback | Convention; mixed today | page toasts, component never does |
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 19 pages and the Sidebar | History work orders, Sandboxes, project settings, the workflow editor, profile, credentials, the remaining auth pages |
+| 11 | Page and wrapper | 22 pages and the Sidebar | History work orders, Sandboxes, the workflow editor, the remaining auth pages |
+| 12 | Server checks | Rule | each port adds its refusal tests |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
-`TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
+`TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11). Its `newToken`
+prop predates D145 (§11) and is still to move into `onGenerate`'s reply.
 
 ## 1. Async action
 
@@ -88,10 +90,14 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   compare tooling and the annotations still line up. An input without an
   `id` gets a generated one, so every label is linked to its control.
 
-Converted: `CreateProjectModal`, `ProjectSetupPanel`, `ProfileForms`. Still
-computing `errors={cond ? ["can't be blank"] : []}` in render:
-`DataStoragePanel`, `CredentialFormModal`, `AuthResetPasswordPage`. Other
-page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`, `MfaCard`,
+Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
+`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, `MfaCard`, the
+credential modals (`CredentialFormModal`, `OauthClientFormModal`,
+`KeychainCredentialFormModal`, `TransferCredentialModal`). Still computing
+`errors={cond ? ["can't be blank"] : []}` in render: `AuthResetPasswordPage`, and
+`CredentialFormModal` for the environment name being typed and an object
+field's JSON (both checked as typed, as Lightning does). Other
+page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`,
 the auth pages) move to `useForm` when next touched.
 
 ## 3. Server-driven list
@@ -102,15 +108,23 @@ query, not the rows.
 - Query state (filters, sort, page, search) lives in the URL via
   `useUrlParams`, using Lightning's own param names (`filters[workflow_id]`,
   `sort_by`, `page`). Reloading the page reproduces the view.
+- The host sends the result as plain data: the rows, `page: PageInfo` and,
+  for a sorted list, `sort: SortState`. No callbacks for paging or sorting,
+  and no browser fallback when they are missing.
+- The page links to its own query string only (`useUrlParams().href`),
+  never a path, so it knows no routes. A link to another page is an `…Href`
+  prop from the host.
 - The page turns the URL into a query (today: a mock-data function that
   filters fixtures; later: a request) and gets back `{ rows, total, page,
   pageSize }`.
 - `Table` takes rows and a `state: "loading" | "error" | "ready"`, and shows
   the loading and error treatments itself. `EmptyState` stays for "no rows".
-- `Pagination` takes `page`, `total`, `pageSize`, `onPage`. No component
-  hardcodes `pageNumber={1}`.
-- `useTableSort` becomes sort *state* only; nothing sorts rows in the browser
-  except small, fully loaded lists (project members, tabs).
+- `Pagination` takes `page` and links each page to this URL with `?page=`
+  changed, showing five pages either side as Lightning does. No component
+  hardcodes `number: 1`.
+- A server-sorted header is `<Th sortHref>`, a plain link. `onSort` and
+  `useTableSort` are only for small, fully loaded lists (project members,
+  tabs).
 
 Build it on History first (`HistoryWorkOrdersPage`): nine filters move from
 `useState` into the URL, `matchesSearch` and friends move behind one
@@ -125,10 +139,14 @@ A component never copies a record list into local state and mutates it.
   query layer) applies the change and re-renders with new props.
 - Local state in a component is for *UI* only: which modal is open, which
   row is expanded, draft text not yet submitted.
-- `initialX` props are a smell: `CollaborationPanel.initialMembers`,
-  `CollectionsPanel`, `WebhookSecurityPanel`, `SecurityPanel`,
-  `CredentialIndex`. Each needs its list lifted to its page and `on*`
-  callbacks added.
+- `initialX` props are a smell: a component that seeds state from them is
+  keeping its own copy of the records.
+- A component shared by two pages takes one shared action interface, which
+  both pages' props extend (`CredentialActions` for `CredentialIndex`, used by
+  the Credentials page and project settings' Credentials tab).
+- A record's secrets aren't props. An edit form that shows stored secrets
+  asks for them when it opens (`onLoadCredentialSecrets`), and the answer
+  lives only in the open modal.
 
 ## 5. Resource loading states
 
@@ -150,9 +168,11 @@ Type-to-confirm keeps the confirm button disabled until the text matches,
 and the dialog says what to type ("To confirm, type alice@example.org
 below"). This is the one exception to pattern 2's rule.
 
-Retire: `window.confirm` (`CredentialFormModal`, `WorkflowsTable`), the
-bespoke `CredentialDeletionModal` (rebuild on `ConfirmModal` with
-`confirmation`, as `UserDeletionModal` is).
+A dialog that can only explain why the action can't happen yet (a
+scheduled credential with audited runs, a user with activity) is a plain
+`Modal` with one dismiss button, beside the `ConfirmModal`, as
+`CredentialDeletionModal` and `UserDeletionModal` do. Type-to-confirm is
+used only where Lightning asks for typing; it doesn't for credentials.
 The `/…/delete` routes stay, because Lightning has them; they open a
 `ConfirmModal`.
 
@@ -211,12 +231,47 @@ is rewritten.
   `pushEvent`. After an action the LiveView re-renders with new attributes,
   so new props arrive the same way they do in the replica.
 - **Shapes are Lightning's**, not the convenient ones: a token arrives
-  `masked`, and its secret only once, as `newToken`.
+  `masked`.
+- **Secrets come back only in an action's reply, never in props** (D145):
+  `onGenerateApiKey` answers with the key, `onLoadCredentialSecrets` with a
+  credential's stored values. What the host can keep (an OAuth token, the
+  generated API key) it keeps, and the page sends nothing of it back.
+- **A browser redirect's URL comes from the host**, as data or in a reply
+  (`onAuthorizeOauth` answers with the provider's sign-in page). The page
+  never builds a provider URL. How the redirect ended comes back as data,
+  one answer per attempt (`oauthSignIns`, keyed by `signInId`). Whatever the
+  host keeps from it is tied to the form that started it (`formId`) and the
+  record it was for, so it can only be saved there.
+- **The contract is written by hand.** `XPageProps` and the shapes it names
+  never build on the replica's model types (`User`, `Project`, `WorkOrder`);
+  the replica maps fixtures onto them. Every one is exported from `index.ts`,
+  camelCase, and plain JSON apart from the `on*` callbacks.
+- **Names say what a shape is**: `…Row` for a table row, `…Ref` for a
+  pointer to another record, `…Values` for what a form saves, `…Detail` for
+  one record's page, `…Result` for an event's answer, `…Actions` for the
+  `on*` set a shared component takes. No two exported types share a name.
+- **Required unless the host may not support it.** Data the host always knows
+  is required, `T | null` for none. `?:` hides a feature; it never falls back
+  to a route or wording the design system makes up.
 - **The page keeps UI state only**: which modal is open, a draft not yet
   saved. Never its own copy of the records.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
+
+## 12. Server checks
+
+The page disables or explains an action from the host's `can*` flags
+(pattern 9). That is a courtesy, not a check: the host's server is what
+decides who may do what, whatever the page sent or shows.
+
+- A page and its components never enforce a permission.
+- The replica enforces none either, on purpose: it does whatever it is
+  asked, so a page can be tried with any role.
+- Contracts don't write down who may do each action. That lives in
+  Lightning's code and tests, and a copy here would go stale.
+- When a page is ported, each action with a check gets a Lightning test that
+  a user without access is refused, and the port gets a security review.
 
 ## How to add a pattern to a component
 

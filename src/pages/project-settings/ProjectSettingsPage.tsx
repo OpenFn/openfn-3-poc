@@ -1,5 +1,4 @@
-import { useState, type ReactNode } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import type { ReactNode } from "react";
 import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
@@ -16,69 +15,123 @@ import ProjectSetupPanel from "../../components/project-settings/ProjectSetupPan
 import SandboxSettingsBanner from "../../components/project-settings/SandboxSettingsBanner";
 import SecurityPanel from "../../components/project-settings/SecurityPanel";
 import Tabs from "../../components/Tabs";
-import { useToast } from "../../components/Toast";
 import WebhookSecurityPanel from "../../components/project-settings/WebhookSecurityPanel";
 import { defaultSettingsHash, projectSettingsTabs } from "../../components/project-settings/tabs";
-import { collectionsIn, dataRetentionPeriods, projectFilesIn, projectSettingsFor, purgeDeletedAfterDays, vcsFor, webhookAuthMethodsIn } from "../../mock-data/project-settings";
-import { credentialsFor, keychainCredentialsIn, oauthClientsFor } from "../../mock-data/credentials";
-import { findProject, projects } from "../../mock-data/projects";
-import { projectLabel } from "../../components/shell/projectPickerItems";
-import type { Project } from "../../types/projects";
-import { simulateRequest } from "../../mock-data/request";
-import { users } from "../../mock-data/users";
-import { permissionsFor } from "../../permissions";
-import { useCurrentUser } from "../../session/session";
+import DeleteSandboxModal from "../../components/projects/sandboxes/DeleteSandboxModal";
+import { useRouter } from "../../routing/router";
+import type {
+  AddCollaboratorsResult,
+  CollaborationSettings,
+  CollaboratorValues,
+  CollectionsSettings,
+  CredentialsSettings,
+  DataStorageSettings,
+  DataStorageValues,
+  Digest,
+  GithubSyncSettings,
+  HistoryExportRow,
+  InviteValues,
+  ParentProjectRef,
+  ProjectIdentityValues,
+  ReauthValues,
+  SecuritySettings,
+  SetupSettings,
+  WebhookAuthMethodValues,
+  WebhookSecuritySettings,
+} from "../../types/project-settings";
+import type { CredentialActions, KeychainCredentialActions } from "../../types/credentials";
+import type { CurrentProject } from "../../types/projects";
 import { cn } from "../../utils/cn";
+
+/**
+ * The contract between this page and whatever feeds it (the replica wrapper,
+ * later Lightning): one shape per tab, so a tab can change without touching
+ * the others. Every action resolves once the host has answered; the host
+ * announces success (its flash), and the page says what went wrong.
+ */
+export interface ProjectSettingsPageProps extends CredentialActions, KeychainCredentialActions {
+  project: CurrentProject;
+  /** The picker's label, "parent/child" for a sandbox. */
+  projectLabel: string;
+  /** A sandbox's parent; null for a top-level project. */
+  parent: ParentProjectRef | null;
+  /** The deletion modal is open (/settings/delete). */
+  deleting: boolean;
+  setup: SetupSettings;
+  credentials: CredentialsSettings;
+  collections: CollectionsSettings;
+  webhookSecurity: WebhookSecuritySettings;
+  collaboration: CollaborationSettings;
+  security: SecuritySettings;
+  githubSync: GithubSyncSettings;
+  dataStorage: DataStorageSettings;
+  historyExports: HistoryExportRow[];
+
+  /** Saves Project Identity. Rejects with field errors (`rawName`) or a message, which the form shows. */
+  onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
+  /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */
+  onSaveConcurrency: (concurrency: number | null) => Promise<void>;
+  /** Deletes the project (or sandbox) with the name the user typed, which the host checks. The host moves the user on. */
+  onDeleteProject: (nameConfirmation: string) => Promise<void>;
+  /** Closes the deletion modal (Cancel). */
+  onCloseDelete: () => void;
+
+  // The Credentials tab's actions come from CredentialActions and KeychainCredentialActions (types/credentials.ts).
+
+  /** Creates a collection from the name as typed. Rejects with field errors (`rawName`) or a message. */
+  onCreateCollection: (rawName: string) => Promise<void>;
+  onRenameCollection: (id: string, rawName: string) => Promise<void>;
+  onDeleteCollection: (id: string) => Promise<void>;
+  /** The collection's first record, pretty-printed, or null when it's empty. */
+  onPreviewCollection: (id: string) => Promise<string | null>;
+
+  /** Creates a webhook auth method; an API key method gets the key `onGenerateApiKey` last handed out. Rejects with field errors (`name`) or a message. */
+  onCreateWebhookAuthMethod: (values: WebhookAuthMethodValues) => Promise<void>;
+  onRenameWebhookAuthMethod: (id: string, name: string) => Promise<void>;
+  onDeleteWebhookAuthMethod: (id: string) => Promise<void>;
+  /** A new API key, shown in the form before the method is created. The host keeps it for `onCreateWebhookAuthMethod`. */
+  onGenerateApiKey: () => Promise<string>;
+  /** A method's password or API key, once the user has re-authenticated. Rejects when the password or code is wrong. */
+  onRevealWebhookSecret: (id: string, values: ReauthValues) => Promise<string>;
+
+  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. */
+  onAddCollaborators: (values: CollaboratorValues[]) => Promise<AddCollaboratorsResult>;
+  /** Rejects with field errors keyed by row and field (`"1.email"`), which show on that row, or a message. */
+  onInviteCollaborators: (values: InviteValues[]) => Promise<void>;
+  onRemoveCollaborator: (id: string) => Promise<void>;
+  onSetSupportAccess: (on: boolean) => Promise<void>;
+  /** The viewer's own alert settings (`id` is their project user). */
+  onSetFailureAlert: (id: string, on: boolean) => Promise<void>;
+  onSetDigest: (id: string, digest: Digest) => Promise<void>;
+
+  onSetRequiresMfa: (on: boolean) => Promise<void>;
+  onInitiateGithubSync: () => Promise<void>;
+  onRemoveGithubConnection: () => Promise<void>;
+  /** Saves the Data Storage form. Rejects with field errors or a message, which the form shows. */
+  onSaveDataStorage: (values: DataStorageValues) => Promise<void>;
+}
 
 /**
  * Inventory views `project-settings-*` (live/project_live/settings.ex +
  * settings.html.heex): one page with a vertical tab list; the URL hash
- * picks the panel, defaulting to #project. /settings/delete opens the
- * project deletion modal over the Setup panel.
+ * picks the panel, defaulting to #project. `deleting` opens the deletion
+ * modal over the Setup panel. Props only, so it can run unchanged in
+ * Lightning; the replica's data lives in ProjectSettingsPage.replica.tsx.
  */
-export default function ProjectSettingsPage() {
-  const { projectId } = useParams();
-  const { hash, pathname } = useLocation();
-  const navigate = useNavigate();
-  const toast = useToast();
-  const user = useCurrentUser();
-  // Saved Setup changes per project, until the page is wired to the backend.
-  const [edits, setEdits] = useState<Record<string, Partial<Project>>>({});
-  const found = findProject(projectId);
-  const project = found && { ...found, ...edits[found.id] };
-
-  if (!project) {
-    return (
-      <PageContent header={<Header title="Project settings" />}>
-        <Centered>
-          <p className="text-sm text-gray-500">Project not found.</p>
-        </Centered>
-      </PageContent>
-    );
-  }
-
-  const deleting = pathname.endsWith("/settings/delete");
-  const requested = hash.replace(/^#/, "");
+export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
+  const { project, projectLabel, parent, deleting, setup, credentials } = props;
+  const { useLocation } = useRouter();
+  const requested = useLocation().hash.replace(/^#/, "");
   const active = projectSettingsTabs.some((t) => t.id === requested) ? requested : defaultSettingsHash;
-  const settingsPath = `/projects/${project.id}/settings`;
-  const parentProject = project.parentId ? findProject(project.parentId) : undefined;
-  const sandbox = !!parentProject;
-  const perms = permissionsFor(project, user);
-  const settings = projectSettingsFor(project.id);
+  const sandbox = parent !== null;
 
   const panels: Record<string, ReactNode> = {
     project: (
       <ProjectSetupPanel
-        project={project}
-        env={settings.env}
-        parentProject={parentProject}
-        canEditProject={perms.canEditProject}
-        canDeleteProject={perms.canDeleteProject}
-        onUpdate={async (changes) => {
-          await simulateRequest();
-          setEdits((e) => ({ ...e, [project.id]: { ...e[project.id], ...changes } }));
-          toast("Project updated successfully");
-        }}
+        setup={setup}
+        parent={parent}
+        onSaveIdentity={props.onSaveIdentity}
+        onSaveConcurrency={props.onSaveConcurrency}
       />
     ),
     credentials: (
@@ -86,100 +139,83 @@ export default function ProjectSettingsPage() {
         <SectionHeader
           title="Project credentials"
           subtitle="Manage OAuth 2.0 Clients and Credentials accessible to this project."
-          permissionsSection={perms.canCreateProjectCredential ? undefined : "available credentials."}
+          permissionsSection={credentials.canCreateProjectCredential ? undefined : "available credentials."}
           action={
             <NewCredentialMenuButton
               id="project-credential-options-menu-button"
-              options={projectCredentialMenuOptions(perms.canCreateProjectCredential, perms.canCreateKeychainCredential)}
+              options={projectCredentialMenuOptions(credentials.canCreateProjectCredential, credentials.canCreateKeychainCredential)}
             />
           }
         />
         {sandbox && <SandboxSettingsBanner variant="editable" />}
+        {/* The page props carry the credential actions; the tab's data comes after, so its `credentials` list wins. */}
         <CredentialIndex
-          project={project}
-          credentials={credentialsFor(project, user)}
-          oauthClients={oauthClientsFor(project, user)}
-          keychainCredentials={keychainCredentialsIn(project)}
-          canCreateProjectCredential={perms.canCreateProjectCredential}
-          canCreateKeychainCredential={perms.canCreateKeychainCredential}
-          canEditKeychainCredential={perms.canEditKeychainCredential}
-          canCreateGlobalOauthClient={perms.canCreateGlobalOauthClient}
+          {...props}
+          {...credentials}
+          project={{
+            id: project.id,
+            keychainCredentials: credentials.keychainCredentials,
+            canCreateKeychainCredential: credentials.canCreateKeychainCredential,
+            canEditKeychainCredential: credentials.canEditKeychainCredential,
+            onCreateKeychainCredential: props.onCreateKeychainCredential,
+            onUpdateKeychainCredential: props.onUpdateKeychainCredential,
+            onDeleteKeychainCredential: props.onDeleteKeychainCredential,
+          }}
         />
       </>
     ),
     collections: (
       <CollectionsPanel
-        projectId={project.id}
-        initialCollections={collectionsIn(project.id)}
-        canCreateCollection={perms.canCreateCollection}
+        collections={props.collections}
         sandbox={sandbox}
+        onCreate={props.onCreateCollection}
+        onRename={props.onRenameCollection}
+        onDelete={props.onDeleteCollection}
+        onPreview={props.onPreviewCollection}
       />
     ),
     webhook_security: (
       <WebhookSecurityPanel
-        projectId={project.id}
-        initialAuthMethods={webhookAuthMethodsIn(project.id)}
-        canWrite={perms.canWriteWebhookAuthMethod}
-        parentProject={parentProject}
+        webhookSecurity={props.webhookSecurity}
+        parent={parent}
+        onCreate={props.onCreateWebhookAuthMethod}
+        onRename={props.onRenameWebhookAuthMethod}
+        onDelete={props.onDeleteWebhookAuthMethod}
+        onGenerateApiKey={props.onGenerateApiKey}
+        onReveal={props.onRevealWebhookSecret}
       />
     ),
     collaboration: (
       <CollaborationPanel
-        initialMembers={project.members}
-        users={users}
-        currentUserId={user.id}
-        initialSupportAccess={settings.allowSupportAccess}
-        canEditProject={perms.canEditProject}
-        canAddProjectUser={perms.canAddProjectUser}
-        canRemoveProjectUser={perms.canRemoveProjectUser}
+        collaboration={props.collaboration}
         sandbox={sandbox}
+        onAdd={props.onAddCollaborators}
+        onInvite={props.onInviteCollaborators}
+        onRemove={props.onRemoveCollaborator}
+        onSetSupportAccess={props.onSetSupportAccess}
+        onSetFailureAlert={props.onSetFailureAlert}
+        onSetDigest={props.onSetDigest}
       />
     ),
-    security: (
-      <SecurityPanel
-        initialRequiresMfa={project.requiresMfa}
-        canEditProject={perms.canEditProject}
-        canRequireMfa={perms.canRequireMfa}
-        parentProject={parentProject}
-      />
-    ),
+    security: <SecurityPanel security={props.security} parent={parent} onSetRequiresMfa={props.onSetRequiresMfa} />,
     vcs: (
       <GithubSyncPanel
-        vcs={vcsFor(project.id)}
-        canInstallGithub={perms.canInstallGithub}
-        canInitiateGithubSync={perms.canInitiateGithubSync}
-        userGithubConnected={user.githubConnected}
+        githubSync={props.githubSync}
         sandbox={sandbox}
+        onInitiateSync={props.onInitiateGithubSync}
+        onRemoveConnection={props.onRemoveGithubConnection}
       />
     ),
-    "data-storage": (
-      <DataStoragePanel
-        initial={{
-          historyRetentionPeriod: project.historyRetentionPeriod,
-          dataclipRetentionPeriod: project.dataclipRetentionPeriod,
-          retentionPolicy: project.retentionPolicy,
-        }}
-        periods={dataRetentionPeriods}
-        canEditDataRetention={perms.canEditDataRetention}
-        sandbox={sandbox}
-      />
-    ),
-    "history-exports": <HistoryExportsPanel files={projectFilesIn(project.id)} users={users} sandbox={sandbox} />,
+    "data-storage": <DataStoragePanel dataStorage={props.dataStorage} sandbox={sandbox} onSave={props.onSaveDataStorage} />,
+    "history-exports": <HistoryExportsPanel exports={props.historyExports} sandbox={sandbox} />,
   };
 
   return (
-    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel(project, projects)} current="Project settings" />} />}>
+    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Project settings" />} />}>
       <Centered>
         {/* Keyed by project so panel state resets when the project picker switches projects. */}
         <div key={project.id} id="project-settings-container" className="flex h-full">
-          <Tabs
-            orientation="vertical"
-            label="Project settings"
-            className="flex-none pr-8"
-            tabs={projectSettingsTabs}
-            active={active}
-            onChange={(id) => navigate({ pathname: settingsPath, hash: id })}
-          />
+          <Tabs orientation="vertical" label="Project settings" className="flex-none pr-8" tabs={projectSettingsTabs} active={active} />
           <div className="min-w-0 grow">
             {projectSettingsTabs.map((t) => (
               <div
@@ -194,18 +230,29 @@ export default function ProjectSettingsPage() {
           </div>
         </div>
       </Centered>
-      {deleting && perms.canDeleteProject && (
-        <ProjectDeletionModal
-          project={project}
-          gracePeriodDays={purgeDeletedAfterDays}
-          key={project.id}
-          onCancel={() => navigate(settingsPath)}
-          onDelete={() => {
-            toast("Project scheduled for deletion");
-            navigate("/projects");
-          }}
-        />
-      )}
+      {deleting &&
+        setup.canDeleteProject &&
+        (setup.sandboxDeletion ? (
+          <DeleteSandboxModal
+            key={project.id}
+            sandboxName={setup.name}
+            descendantCount={setup.sandboxDeletion.descendantCount}
+            isCurrent
+            rootName={setup.sandboxDeletion.rootName}
+            gracePeriodDays={setup.gracePeriodDays}
+            onClose={props.onCloseDelete}
+            onConfirm={props.onDeleteProject}
+          />
+        ) : (
+          <ProjectDeletionModal
+            key={project.id}
+            project={{ name: setup.name }}
+            // Lightning deletes an already scheduled project at once, so it goes "today".
+            gracePeriodDays={setup.scheduledDeletion ? 0 : setup.gracePeriodDays}
+            onCancel={props.onCloseDelete}
+            onDelete={props.onDeleteProject}
+          />
+        ))}
     </PageContent>
   );
 }

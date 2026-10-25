@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Alert from "../Alert";
 import Button from "../Button";
 import ConfirmModal from "../ConfirmModal";
 import Heading from "../Heading";
@@ -8,50 +9,68 @@ import SectionHeader from "../SectionHeader";
 import TextLink from "../TextLink";
 import Toggle from "../Toggle";
 import Card from "../Card";
+import { useToast } from "../Toast";
+import type { MfaSettings, MfaSetupResult } from "../../types/profile";
+import { errorMessage } from "../../utils/errors";
+import { useAction } from "../../utils/useAction";
+import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
 
 interface Props {
-  mfaEnabled: boolean;
-  /** The TOTP secret offered while setting up MFA ("this secret key"). */
-  totpSecret: string;
-  onChange?: (enabled: boolean) => void;
-}
-
-/** A stand-in for the TOTP QR code (Lightning renders a real one with EQRCode). */
-function FakeQrCode() {
-  const cells = Array.from({ length: 21 * 21 }, (_, i) => {
-    const x = i % 21, y = Math.floor(i / 21);
-    const finder = (cx: number, cy: number) => x >= cx && x < cx + 7 && y >= cy && y < cy + 7 && (x === cx || x === cx + 6 || y === cy || y === cy + 6 || (x >= cx + 2 && x <= cx + 4 && y >= cy + 2 && y <= cy + 4));
-    if (finder(0, 0) || finder(14, 0) || finder(0, 14)) return true;
-    if ((x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12)) return false;
-    return ((x * 7 + y * 13 + x * y) % 5) < 2;
-  });
-  return (
-    <svg viewBox="0 0 21 21" className="h-44 w-44" shapeRendering="crispEdges" aria-label="QR code (demo)">
-      {cells.map((on, i) => on && <rect key={i} x={i % 21} y={Math.floor(i / 21)} width="1" height="1" />)}
-    </svg>
-  );
+  mfa: MfaSettings;
+  /** Starts setting up an authenticator app. The secret and QR code arrive only in this reply. */
+  onStartSetup: () => Promise<MfaSetupResult>;
+  /** Saves the setup with the code the app shows. Rejects with field errors (`code`) or a message. */
+  onConfirm: (code: string) => Promise<void>;
+  onDisable: () => Promise<void>;
 }
 
 /**
- * The MFA card on /profile (profile_live/mfa_component.html.heex): the toggle
- * opens the authenticator-app setup, or the "Disable MFA" confirmation when
- * MFA is on; with MFA on it links to the recovery codes.
+ * The MFA card on /profile (profile_live/mfa_component.html.heex). The switch
+ * doesn't save on its own: off → on asks the host for a secret and shows the
+ * setup form; on → off asks to confirm "Disable MFA". With MFA on it links to
+ * the recovery codes. The secret lives here only while the setup form is open.
  */
-export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
+export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Props) {
   const id = "mfa_section";
-  const [editing, setEditing] = useState(false);
-  const [code, setCode] = useState("");
+  const toast = useToast();
+  const [setup, setSetup] = useState<MfaSetupResult | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
-  const show = mfaEnabled || editing;
+  // After a confirmed setup the switch stays on until the host's props say MFA is on.
+  const [confirmed, setConfirmed] = useState(false);
+  const [lastEnabled, setLastEnabled] = useState(mfa.enabled);
+  if (lastEnabled !== mfa.enabled) {
+    setLastEnabled(mfa.enabled);
+    setConfirmed(false);
+  }
+  const form = useForm({
+    initial: { code: "" },
+    // Lightning's UserTOTP changeset wording.
+    validate: ({ code }) => ({ code: code.trim() && !/^\d{6}$/.test(code) ? ["should be a 6 digit number"] : blank(code) }),
+    clearOnSave: true,
+  });
+  const start = useAction(
+    async () => {
+      const result = await onStartSetup();
+      form.reset();
+      setShowSecret(false);
+      setSetup(result);
+    },
+    { onError: (e) => toast(errorMessage(e), "error") }
+  );
+  const enabled = mfa.enabled || confirmed;
+  const show = enabled || setup !== null;
 
   const toggle = () => {
-    if (mfaEnabled) setConfirmDisable(true);
-    else setEditing((e) => !e);
+    if (enabled) setConfirmDisable(true);
+    else if (setup) setSetup(null);
+    else void start.run();
   };
 
   return (
-    <Card padding="lg"
+    <Card
+      padding="lg"
       annotation="profile-mfa"
       title={<span id={`${id}-label`}>Enable multi-factor authentication</span>}
       description={
@@ -59,18 +78,21 @@ export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
           This adds an additional layer of security to your account by requiring more than just a password to sign in.
         </span>
       }
-      action={<Toggle id="toggle-mfa-switch" checked={show} onChange={toggle} labelledBy={`${id}-label`} />}
+      // The switch shows the choice at once while setup starts, and goes back if it fails.
+      action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
     >
       {show && (
         <div className="space-y-5 border-t border-gray-300 pt-5 text-sm">
-          {mfaEnabled && !editing && (
+          {enabled && !setup && (
             <p>
               You have configured an authentication app to get two-factor authentication codes.{" "}
-              <TextLink onClick={() => setEditing(true)}>Setup another device instead</TextLink>
+              <TextLink id="setup_another_totp_device" onClick={() => void start.run()}>
+                Setup another device instead
+              </TextLink>
             </p>
           )}
 
-          {editing && (
+          {setup && (
             <div className="space-y-2 text-gray-500">
               <Heading>Authenticator app</Heading>
               <p>
@@ -79,7 +101,7 @@ export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
               </p>
               <Heading>Scan the QR code</Heading>
               <p>Use an authenticator app or browser extension to scan.</p>
-              <FakeQrCode />
+              <img src={setup.qrCodeSrc} alt="QR code for your authenticator app" className="h-44 w-44" />
               <p>
                 Unable to scan? You can use <TextLink onClick={() => setShowSecret(true)}>this secret key</TextLink> to
                 manually configure your authenticator app.
@@ -87,37 +109,40 @@ export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
               <form
                 id="set_totp_form"
                 className="max-w-md space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!/^\d{6}$/.test(code)) return;
-                  setEditing(false);
-                  setCode("");
-                  onChange?.(true);
-                }}
+                onSubmit={form.submit(async ({ code }) => {
+                  await onConfirm(code);
+                  setConfirmed(true);
+                  setSetup(null);
+                })}
               >
                 <TextInput
                   label="Verify the code from the app"
                   autoComplete="one-time-code"
                   placeholder="XXXXXX"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  {...form.fieldProps("code")}
                 />
+                {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
                 <div className="flex gap-1">
-                  <Button theme="secondary" onClick={() => setEditing(false)}>
+                  <Button theme="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
                     Cancel
                   </Button>
-                  <Button type="submit">Save</Button>
+                  <Button type="submit" pending={form.pending}>
+                    Save
+                  </Button>
                 </div>
               </form>
+              <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
+                <code className="text-sm text-gray-600">{setup.secret}</code>
+              </Modal>
             </div>
           )}
 
-          {mfaEnabled && (
+          {enabled && (
             <SectionHeader
               title="Recovery codes"
               subtitle="Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor authentication codes."
               action={
-                <Button theme="secondary" to="/profile/auth/backup_codes">
+                <Button theme="secondary" to={mfa.backupCodesHref}>
                   View
                 </Button>
               }
@@ -132,9 +157,12 @@ export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
         title="Disable MFA"
         tone="danger"
         confirmLabel="Disable"
-        onConfirm={() => {
+        confirmId="disable_mfa_button"
+        onConfirm={async () => {
+          await onDisable();
           setConfirmDisable(false);
-          onChange?.(false);
+          setConfirmed(false);
+          setSetup(null);
         }}
       >
         <p>
@@ -142,10 +170,6 @@ export default function MfaCard({ mfaEnabled, totpSecret, onChange }: Props) {
           attacker get hold of your password, there will be nothing preventing them from accessing your account
         </p>
       </ConfirmModal>
-
-      <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
-        <code className="text-sm text-gray-600">{totpSecret}</code>
-      </Modal>
     </Card>
   );
 }

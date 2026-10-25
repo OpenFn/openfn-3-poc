@@ -91,8 +91,9 @@ export function Th({
   colSpan?: number;
   /** When set the header is sortable; "asc" / "desc" marks the active column. */
   sortDirection?: "asc" | "desc" | null;
+  /** Sorts a fully loaded list in the browser. */
   onSort?: () => void;
-  /** With it, the sort control is a link to this URL (Lightning's sort lives in `?sort&dir`); a left click still goes through `onSort`. */
+  /** Re-sorts a server-sorted list: the sort control links to this URL instead of calling `onSort`. */
   sortHref?: string | undefined;
   align?: CellAlign;
   /** The row-actions column. With no children the header reads "Actions" to screen readers only. */
@@ -118,16 +119,8 @@ export function Th({
       colSpan={colSpan}
       className={cn("text-sm font-semibold text-gray-900 select-none whitespace-nowrap", alignClasses[align], className)}
     >
-      {onSort && sortHref ? (
-        <Link
-          to={sortHref}
-          onClick={(e) => {
-            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-            e.preventDefault();
-            onSort();
-          }}
-          className="group inline-flex items-center"
-        >
+      {sortHref ? (
+        <Link to={sortHref} className="group inline-flex items-center">
           {sortContent}
         </Link>
       ) : onSort ? (

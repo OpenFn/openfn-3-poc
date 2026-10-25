@@ -2,19 +2,20 @@ import { useState } from "react";
 import Button from "../Button";
 import ConfirmModal from "../ConfirmModal";
 import Card from "../Card";
+import type { GithubAccessSettings } from "../../types/profile";
 
 interface Props {
-  /** VersionControl.github_enabled?(): is a GitHub app configured on the instance? */
-  oauthEnabled: boolean;
-  connected: boolean;
-  onDisconnect?: () => void;
+  github: GithubAccessSettings;
+  onDisconnect: () => Promise<void>;
 }
 
 /** The GitHub Access card on /profile (profile_live/github_component.ex). */
-export default function GithubCard({ oauthEnabled, connected, onDisconnect }: Props) {
+export default function GithubCard({ github, onDisconnect }: Props) {
   const [confirming, setConfirming] = useState(false);
+  const { connectHref, status } = github;
   return (
-    <Card padding="lg"
+    <Card
+      padding="lg"
       annotation="profile-github"
       title={<span id="github_section-label">GitHub Access</span>}
       description={
@@ -23,17 +24,23 @@ export default function GithubCard({ oauthEnabled, connected, onDisconnect }: Pr
         </span>
       }
       action={
-        !oauthEnabled ? (
+        connectHref === null ? (
           <Button id="github-oauth-not-enabled" disabled tooltip="GitHub OAuth has not been enabled for this instance.">
             Connect your GitHub account
           </Button>
-        ) : connected ? (
+        ) : status === "connected" ? (
           <Button id="disconnect-github-button" theme="danger" onClick={() => setConfirming(true)}>
             Disconnect from GitHub
           </Button>
         ) : (
-          // Lightning links to the GitHub app's OAuth URL; the demo has none.
-          <Button id="connect-github-link">Connect your GitHub Account</Button>
+          <Button
+            id="connect-github-link"
+            href={connectHref}
+            target="_blank"
+            tooltip={status === "expired" ? "Your token has expired" : undefined}
+          >
+            {status === "expired" ? "Reconnect" : "Connect"} your GitHub Account
+          </Button>
         )
       }
     >
@@ -43,9 +50,10 @@ export default function GithubCard({ oauthEnabled, connected, onDisconnect }: Pr
         title="Disconnect from GitHub?"
         tone="danger"
         confirmLabel="Disconnect"
-        onConfirm={() => {
+        confirmId="disconnect_github_modal_confirm_button"
+        onConfirm={async () => {
+          await onDisconnect();
           setConfirming(false);
-          onDisconnect?.();
         }}
       >
         <p>

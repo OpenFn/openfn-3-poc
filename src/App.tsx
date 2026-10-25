@@ -18,16 +18,16 @@ import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage";
 import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage.replica";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
-import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage";
+import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
 import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
 import RunShowPage from "./pages/history/RunShowPage.replica";
 import DataclipShowPage from "./pages/history/DataclipShowPage.replica";
 
-import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage";
+import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.replica";
 
-import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage";
-import ProfilePage from "./pages/profile/ProfilePage";
+import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
+import ProfilePage from "./pages/profile/ProfilePage.replica";
 import TokensPage from "./pages/profile/TokensPage.replica";
 import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 

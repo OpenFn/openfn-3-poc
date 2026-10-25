@@ -4,7 +4,7 @@ import CollectionFormModal from "./CollectionFormModal";
 const meta: Meta<typeof CollectionFormModal> = {
   title: "Project settings/CollectionFormModal",
   component: CollectionFormModal,
-  args: { title: "Create Collection", onCancel: () => {}, onSave: () => {} },
+  args: { title: "Create Collection", onCancel: () => {}, onSave: async () => {} },
 };
 export default meta;
 type Story = StoryObj<typeof CollectionFormModal>;

@@ -9,7 +9,10 @@ const meta: Meta<typeof ProjectMetrics> = {
   title: "Projects/ProjectMetrics",
   component: ProjectMetrics,
   decorators: [withRouter],
-  args: { projectId: projects[0]!.id, metrics: projectMetricsFor(workflowStatsFor(projects[0]!.id)) },
+  args: {
+    pendingHref: `/projects/${projects[0]!.id}/history?filters[pending]=true&filters[running]=true`,
+    failedHref: `/projects/${projects[0]!.id}/history?filters[failed]=true`,
+    metrics: projectMetricsFor(workflowStatsFor(projects[0]!.id)) },
 };
 export default meta;
 type Story = StoryObj<typeof ProjectMetrics>;

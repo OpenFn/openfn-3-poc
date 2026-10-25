@@ -1,13 +1,13 @@
 import Alert from "../Alert";
 import ConfirmModal from "../ConfirmModal";
 import { UsageLinks } from "./LinkedUsageModal";
-import type { WebhookAuthMethod } from "../../types/project-settings";
+import type { WebhookAuthMethodRow } from "../../types/project-settings";
 
 interface Props {
-  projectId: string;
-  authMethod: WebhookAuthMethod;
+  authMethod: WebhookAuthMethodRow;
   onCancel: () => void;
-  onDelete: () => void;
+  /** May be async: the modal shows pending and stays open with the error if it throws. */
+  onDelete: () => void | Promise<void>;
 }
 
 const countLabel = (n: number, noun: string) => (n === 1 ? `1 ${noun}` : `${n} ${noun}s`);
@@ -16,7 +16,7 @@ const countLabel = (n: number, noun: string) => (n === 1 ? `1 ${noun}` : `${n} $
  * WebhookAuthMethodDeleteModal (workflow_live/webhook_auth_method_delete_modal.ex):
  * lists what loses protection and asks for "DELETE".
  */
-export default function WebhookAuthMethodDeleteModal({ projectId, authMethod, onCancel, onDelete }: Props) {
+export default function WebhookAuthMethodDeleteModal({ authMethod, onCancel, onDelete }: Props) {
   const { triggers, channels } = authMethod;
   const unused = triggers.length === 0 && channels.length === 0;
 
@@ -42,12 +42,12 @@ export default function WebhookAuthMethodDeleteModal({ projectId, authMethod, on
       </p>
       {triggers.length > 0 && (
         <Alert type="warning" header={`${countLabel(triggers.length, "workflow trigger")} will stop requiring authentication`}>
-          <UsageLinks projectId={projectId} authMethod={authMethod} kind="triggers" />
+          <UsageLinks refs={triggers} />
         </Alert>
       )}
       {channels.length > 0 && (
         <Alert type="danger" header={`${countLabel(channels.length, "channel")} will accept unauthenticated requests`}>
-          <UsageLinks projectId={projectId} authMethod={authMethod} kind="channels" />
+          <UsageLinks refs={channels} sort />
           <p className="mt-2">
             These channels stay enabled and keep forwarding requests to their destination with the project
             credential attached. Add another client auth method, or disable the channels, before deleting this one.

@@ -6,7 +6,8 @@ import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
 import { useToast } from "../../components/Toast";
 import type { CurrentProject } from "../../types/projects";
-import type { ProjectMetrics as Metrics, WorkflowRow, WorkflowsSort } from "../../types/workflows";
+import type { SortState } from "../../types/lists";
+import type { ProjectMetrics as Metrics, WorkflowRow } from "../../types/workflows";
 import { errorMessage } from "../../utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -21,23 +22,23 @@ export interface WorkflowsIndexPageProps {
   /** The four cards' numbers, aggregated by the server. */
   metrics: Metrics;
   /** History links behind the Work Orders card's "pending" and the failed card's "View all". */
-  pendingHref?: string | undefined;
-  failedHref?: string | undefined;
+  pendingHref: string;
+  failedHref: string;
   /** The current search (`?q`). */
   searchTerm: string;
-  /** The current order (`?sort`, `?dir`); undefined sorts in the browser. */
-  sort?: WorkflowsSort | undefined;
+  /** The order the server listed `stats` in (`?sort`, `?dir`). */
+  sort: SortState;
   canCreateWorkflow: boolean;
   canDeleteWorkflow: boolean;
   /** The experimental workflow lifecycle: state badges instead of switches outside a sandbox. */
-  lifecycle?: boolean;
+  lifecycle: boolean;
   /** Searches; the host narrows the list and the URL. */
   onSearch: (term: string) => void;
   /** Clears the search. */
   onClear: () => void;
   /** Switches a workflow on or off. Resolves when the host has answered; the host announces the result. */
   onToggle: (workflowId: string, enabled: boolean) => Promise<void>;
-  /** Deletes a workflow, after the page has asked the user to confirm. */
+  /** Deletes a workflow, after the page has asked the user to confirm. A rejection keeps the confirm open with its message. */
   onDelete: (workflowId: string) => Promise<void>;
 }
 
@@ -59,7 +60,7 @@ export default function WorkflowsIndexPage({
   sort,
   canCreateWorkflow,
   canDeleteWorkflow,
-  lifecycle = false,
+  lifecycle,
   onSearch,
   onClear,
   onToggle,
@@ -79,7 +80,7 @@ export default function WorkflowsIndexPage({
           onSearch={onSearch}
           onClear={onClear}
         />
-        <ProjectMetrics metrics={metrics} projectId={project.id} pendingHref={pendingHref} failedHref={failedHref} />
+        <ProjectMetrics metrics={metrics} pendingHref={pendingHref} failedHref={failedHref} />
         <div className="mt-8">
           <WorkflowsTable
             stats={stats}
@@ -91,7 +92,7 @@ export default function WorkflowsIndexPage({
             isSandbox={project.parentId !== null}
             sort={sort}
             onToggle={(id, v) => void onToggle(id, v).catch(failed)}
-            onDelete={(id) => void onDelete(id).catch(failed)}
+            onDelete={onDelete}
           />
         </div>
       </Centered>

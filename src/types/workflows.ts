@@ -73,15 +73,6 @@ export type WorkflowRow = Omit<WorkflowStats, "workflow" | "pendingWorkorders" |
   workflow: Pick<WorkflowSummary, "id" | "name" | "updatedAt" | "enabled" | "triggerType">;
 };
 
-/** How the workflows table sorts, when the host keeps the order in the URL. */
-export interface WorkflowsSort {
-  key: string;
-  direction: "asc" | "desc";
-  /** The URL that sorts by `key` (flipping the direction when it is the current key). */
-  hrefFor: (key: string) => string;
-  onSort: (key: string) => void;
-}
-
 /** The four metric cards above the workflows table (`ProjectMetrics`). */
 export interface ProjectMetrics {
   workOrders: { total: number; pending: number; failed: number; failedPercentage: number };

@@ -10,24 +10,21 @@ import TextLink from "../TextLink";
  */
 export default function ProjectMetrics({
   metrics,
-  projectId,
   pendingHref,
   failedHref,
 }: {
   metrics: Metrics;
-  projectId: string;
   /** History filtered to pending and running work orders in the window. */
-  pendingHref?: string | undefined;
+  pendingHref: string;
   /** History filtered to every failure state in the window. */
-  failedHref?: string | undefined;
+  failedHref: string;
 }) {
-  const history = `/projects/${projectId}/history`;
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <MetricCard
         title="Work Orders"
         value={metrics.workOrders.total}
-        suffix={<TextLink to={pendingHref ?? history}>{metrics.workOrders.pending} pending</TextLink>}
+        suffix={<TextLink to={pendingHref}>{metrics.workOrders.pending} pending</TextLink>}
       />
       <MetricCard title="Runs" value={metrics.runs.total} suffix={`${metrics.runs.pending} pending`} />
       <MetricCard
@@ -39,7 +36,7 @@ export default function ProjectMetrics({
         title="Work Orders in failed state"
         value={metrics.workOrders.failed}
         suffix={`${metrics.workOrders.failedPercentage.toFixed(1)}%`}
-        link={<TextLink to={failedHref ?? history}>View all</TextLink>}
+        link={<TextLink to={failedHref}>View all</TextLink>}
       />
     </div>
   );

@@ -3,80 +3,56 @@ import FormModal from "../FormModal";
 import Alert from "../Alert";
 import Card from "../Card";
 import Pill from "../Pill";
-import { Checkbox, PasswordInput, TextInput } from "../Inputs";
+import { Checkbox, Field, PasswordInput, TextInput } from "../Inputs";
 import ProjectsPicker from "./ProjectsPicker";
-// eslint-disable-next-line no-restricted-imports -- wiring: the projects a client can be shared with (the user's projects).
-import { projects as allProjects } from "../../mock-data/projects";
-import type { Project } from "../../types/projects";
-import { useCurrentUser } from "../../session/session";
-import type { OauthClient } from "../../types/credentials";
+import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
+import type { CredentialProjectRef, OauthClientRow, OauthClientSecretsResult, OauthClientValues } from "../../types/credentials";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  /** Set to edit an existing client. */
-  client?: OauthClient | undefined;
-  projects?: Project[];
+  /** Set to edit an existing client, with its id and secret from the host. */
+  client?: OauthClientRow | undefined;
+  secrets?: OauthClientSecretsResult | undefined;
+  projects: CredentialProjectRef[];
   defaultProjectIds?: string[];
   /** Superusers may make a client global. */
   allowGlobal: boolean;
-  onSave?: (client: OauthClient) => void;
+  /** Saves the form. Rejects with field errors or a message, and the modal stays open; closes once it resolves. */
+  onSave: (values: OauthClientValues) => Promise<void>;
 }
 
 /**
  * Lightning's OauthClientFormComponent (credential_live/oauth_client_form_component.ex):
  * endpoints, client id and secret, scopes, and project access.
  */
-export default function OauthClientFormModal({
-  open,
-  onClose,
-  client,
-  projects = allProjects,
-  defaultProjectIds = [],
-  allowGlobal,
-  onSave,
-}: Props) {
-  const user = useCurrentUser();
-  const [values, setValues] = useState({
-    name: client?.name ?? "",
-    authorizationEndpoint: client?.authorizationEndpoint ?? "",
-    tokenEndpoint: client?.tokenEndpoint ?? "",
-    revocationEndpoint: client?.revocationEndpoint ?? "",
-    introspectionEndpoint: client?.introspectionEndpoint ?? "",
-    userinfoEndpoint: client?.userinfoEndpoint ?? "",
-    clientId: client ? "demo-client-id" : "",
-    clientSecret: client ? "demo-client-secret" : "",
-    scopesDocUrl: client?.scopesDocUrl ?? "",
+export default function OauthClientFormModal({ open, onClose, client, secrets, projects, defaultProjectIds = [], allowGlobal, onSave }: Props) {
+  const form = useForm<OauthClientValues>({
+    initial: {
+      name: client?.name ?? "",
+      authorizationEndpoint: client?.authorizationEndpoint ?? "",
+      tokenEndpoint: client?.tokenEndpoint ?? "",
+      revocationEndpoint: client?.revocationEndpoint ?? "",
+      introspectionEndpoint: client?.introspectionEndpoint ?? "",
+      userinfoEndpoint: client?.userinfoEndpoint ?? "",
+      clientId: secrets?.clientId ?? "",
+      clientSecret: secrets?.clientSecret ?? "",
+      mandatoryScopes: client?.mandatoryScopes ?? [],
+      optionalScopes: client?.optionalScopes ?? [],
+      scopesDocUrl: client?.scopesDocUrl ?? "",
+      global: client?.global ?? false,
+      projectIds: client?.projects.map((p) => p.id) ?? defaultProjectIds,
+    },
+    validate: (v) => ({
+      name: blank(v.name),
+      authorizationEndpoint: blank(v.authorizationEndpoint),
+      tokenEndpoint: blank(v.tokenEndpoint),
+      clientId: blank(v.clientId),
+      clientSecret: blank(v.clientSecret),
+    }),
   });
-  const [mandatory, setMandatory] = useState<string[]>(client?.mandatoryScopes ?? []);
-  const [optional, setOptional] = useState<string[]>(client?.optionalScopes ?? []);
-  const [global, setGlobal] = useState(client?.global ?? false);
-  const [projectIds, setProjectIds] = useState<string[]>(client?.projectIds ?? defaultProjectIds);
-
-  const set = (key: keyof typeof values) => (e: { target: { value: string } }) =>
-    setValues((v) => ({ ...v, [key]: e.target.value }));
-  const valid = ["name", "authorizationEndpoint", "tokenEndpoint", "clientId", "clientSecret"].every(
-    (k) => values[k as keyof typeof values].trim()
-  );
-
-  const save = () => {
-    onSave?.({
-      id: client?.id ?? `oc-${Date.now()}`,
-      ownerId: client?.ownerId ?? user.id,
-      name: values.name.trim(),
-      global,
-      projectIds: global ? [] : projectIds,
-      authorizationEndpoint: values.authorizationEndpoint,
-      tokenEndpoint: values.tokenEndpoint,
-      revocationEndpoint: values.revocationEndpoint,
-      introspectionEndpoint: values.introspectionEndpoint,
-      userinfoEndpoint: values.userinfoEndpoint,
-      mandatoryScopes: mandatory,
-      optionalScopes: optional,
-      scopesDocUrl: values.scopesDocUrl,
-    });
-    onClose();
-  };
+  const { values } = form;
 
   return (
     <FormModal
@@ -85,42 +61,60 @@ export default function OauthClientFormModal({
       title={client ? "Edit OAuth Client" : "Add an OAuth Client"}
       size="xl"
       formId={`oauth-client-form-${client?.id ?? "new"}`}
-      onSubmit={save}
+      onSubmit={form.modalSubmit(async (v) => {
+        await onSave({ ...v, name: v.name.trim(), projectIds: v.global ? [] : v.projectIds });
+        onClose();
+      })}
       submitLabel={client ? "Save Changes" : "Add OAuth Client"}
-      submitDisabled={!valid}
     >
-      <TextInput id="oauth-client-name" label="Name" required value={values.name} onChange={set("name")} />
-      <TextInput label="Authorization Endpoint" required value={values.authorizationEndpoint} onChange={set("authorizationEndpoint")} />
-      <TextInput label="Token Endpoint" required value={values.tokenEndpoint} onChange={set("tokenEndpoint")} />
-      <TextInput label="Revocation Endpoint" value={values.revocationEndpoint} onChange={set("revocationEndpoint")} />
-      <TextInput label="Introspection Endpoint" value={values.introspectionEndpoint} onChange={set("introspectionEndpoint")} />
-      <TextInput label="UserInfo Endpoint" value={values.userinfoEndpoint} onChange={set("userinfoEndpoint")} />
-      <PasswordInput label="Client ID" required value={values.clientId} onChange={set("clientId")} />
-      <PasswordInput label="Client Secret" required autoComplete="new-password" value={values.clientSecret} onChange={set("clientSecret")} />
+      <TextInput id="oauth-client-name" label="Name" required {...form.fieldProps("name")} />
+      <TextInput label="Authorization Endpoint" required {...form.fieldProps("authorizationEndpoint")} />
+      <TextInput label="Token Endpoint" required {...form.fieldProps("tokenEndpoint")} />
+      <TextInput label="Revocation Endpoint" {...form.fieldProps("revocationEndpoint")} />
+      <TextInput label="Introspection Endpoint" {...form.fieldProps("introspectionEndpoint")} />
+      <TextInput label="UserInfo Endpoint" {...form.fieldProps("userinfoEndpoint")} />
+      <PasswordInput label="Client ID" required {...form.fieldProps("clientId")} />
+      <PasswordInput label="Client Secret" required autoComplete="new-password" {...form.fieldProps("clientSecret")} />
 
       <Card as="section" title="Manage Scopes" description="Type the names of the scopes and separate them using comma">
-        <ScopesInput id={`mandatory-scopes-${client?.id ?? "new"}`} label="Mandatory Scopes" scopes={mandatory} onChange={setMandatory} />
-        <ScopesInput id={`optional-scopes-${client?.id ?? "new"}`} label="Optional Scopes" scopes={optional} onChange={setOptional} />
-        <TextInput label="Scopes Documentation URL" value={values.scopesDocUrl} onChange={set("scopesDocUrl")} />
+        <ScopesInput
+          id={`mandatory-scopes-${client?.id ?? "new"}`}
+          label="Mandatory Scopes"
+          scopes={values.mandatoryScopes}
+          errors={form.errors.mandatoryScopes}
+          onChange={(s) => form.set("mandatoryScopes", s)}
+        />
+        <ScopesInput
+          id={`optional-scopes-${client?.id ?? "new"}`}
+          label="Optional Scopes"
+          scopes={values.optionalScopes}
+          errors={form.errors.optionalScopes}
+          onChange={(s) => form.set("optionalScopes", s)}
+        />
+        <TextInput label="Scopes Documentation URL" {...form.fieldProps("scopesDocUrl")} />
       </Card>
 
       <Card as="section" title="Manage Project Access" description="Control which projects have access to this OAuth client">
         {allowGlobal && (
           <Alert type="warning">
-            <Checkbox
-              label="Make client global (allow any project in this instance to use this client)"
-              checked={global}
-              onChange={(e) => setGlobal(e.target.checked)}
-            />
+            <Field errors={form.errors.global}>
+              <Checkbox
+                label="Make client global (allow any project in this instance to use this client)"
+                checked={values.global}
+                onChange={(e) => form.set("global", e.target.checked)}
+              />
+            </Field>
           </Alert>
         )}
-        {!global && (
+        {!values.global && (
           <ProjectsPicker
             id={client?.id ?? "new"}
             type="oauth_client"
             projects={projects}
-            selectedIds={projectIds}
-            onChange={setProjectIds}
+            granted={client?.projects}
+            selectedIds={values.projectIds}
+            errors={form.errors.projectIds}
+            onChange={(ids) => form.set("projectIds", ids)}
           />
         )}
       </Card>
@@ -128,25 +122,26 @@ export default function OauthClientFormModal({
   );
 }
 
-/** Scope entry: type and press comma or Enter to add a chip (Lightning's ClearInput hook). */
+/** Scope entry: type and press comma, space or Enter to add a chip (Lightning's ClearInput hook). */
 function ScopesInput({
   id,
   label,
   scopes,
+  errors,
   onChange,
 }: {
   id: string;
   label: string;
   scopes: string[];
+  /** The host's refusals for these scopes. */
+  errors: string[];
   onChange: (scopes: string[]) => void;
 }) {
   const [draft, setDraft] = useState("");
+  // oauth_client_form_component.ex `parse_and_update_scopes`: split on commas and spaces, merged and sorted.
   const commit = (raw: string) => {
-    const added = raw
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s && !scopes.includes(s));
-    if (added.length) onChange([...scopes, ...added]);
+    const added = raw.split(/[, ]+/).filter((s) => s && !scopes.includes(s));
+    if (added.length) onChange([...new Set([...scopes, ...added])].sort());
     setDraft("");
   };
   return (
@@ -155,7 +150,8 @@ function ScopesInput({
         id={id}
         label={label}
         value={draft}
-        onChange={(e) => (e.target.value.endsWith(",") ? commit(e.target.value) : setDraft(e.target.value))}
+        errors={errors}
+        onChange={(e) => (/[, ]/.test(e.target.value) ? commit(e.target.value) : setDraft(e.target.value))}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();

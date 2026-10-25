@@ -3,7 +3,6 @@
  * Ports of Lightning's LocalTimeConverter / ElapsedIndicator hooks
  * (assets/js/hooks/index.ts), utils/duration.ts and Lightning.Helpers.
  */
-import type { WebhookAuthMethod } from "../types/project-settings";
 import type { User } from "../types/users";
 
 const MONTHS = [
@@ -280,7 +279,7 @@ export function shortId(id: string): string {
 }
 
 /** The "Linked Triggers & Channels" summary, e.g. "1 trigger, 2 channels". */
-export function linkedUsageSummary(method: WebhookAuthMethod): string {
+export function linkedUsageSummary(method: { triggers: unknown[]; channels: unknown[] }): string {
   return (
     [
       [method.triggers.length, "trigger"],

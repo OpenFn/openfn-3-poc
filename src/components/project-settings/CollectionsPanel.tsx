@@ -7,38 +7,50 @@ import CollectionFormModal from "./CollectionFormModal";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 import CollectionsTable from "./CollectionsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { Collection } from "../../types/project-settings";
+import type { CollectionRow, CollectionsSettings } from "../../types/project-settings";
+import { errorMessage } from "../../utils/errors";
+import { useAction } from "../../utils/useAction";
 
 interface Props {
-  projectId: string;
-  initialCollections: Collection[];
-  canCreateCollection: boolean;
-  sandbox?: boolean;
+  collections: CollectionsSettings;
+  sandbox: boolean;
+  /** Creates a collection from the name as typed. Rejects with field errors or a message, which keep the modal open. */
+  onCreate: (rawName: string) => Promise<void>;
+  onRename: (id: string, rawName: string) => Promise<void>;
+  /** Deletes a collection, after the user has confirmed. */
+  onDelete: (id: string) => Promise<void>;
+  /** The collection's first record, pretty-printed, or null when it's empty. */
+  onPreview: (id: string) => Promise<string | null>;
 }
 
-type Action = { kind: "new" } | { kind: "edit" | "delete" | "preview"; collection: Collection } | null;
+type Action =
+  | { kind: "new" }
+  | { kind: "edit" | "delete"; collection: CollectionRow }
+  | { kind: "preview"; collection: CollectionRow; json: string | null }
+  | null;
 
-/**
- * The Collections tab (`#collections`, project_live/collections_component.ex).
- * Create, edit and delete change local state only.
- */
-export default function CollectionsPanel({ projectId, initialCollections, canCreateCollection, sandbox = false }: Props) {
-  const [items, setItems] = useState(initialCollections);
+/** The Collections tab (`#collections`, project_live/collections_component.ex). */
+export default function CollectionsPanel({ collections: { collections, canManage }, sandbox, onCreate, onRename, onDelete, onPreview }: Props) {
   const [action, setAction] = useState<Action>(null);
   const close = () => setAction(null);
   const toast = useToast();
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const preview = useAction(
+    async (collection: CollectionRow) => setAction({ kind: "preview", collection, json: await onPreview(collection.id) }),
+    { onError: (e) => toast(errorMessage(e), "error") }
+  );
 
   return (
     <div id="collections" className="space-y-4">
       <SectionHeader
         title="Project collections"
         subtitle="Manage collections for this project."
-        permissionsSection={canCreateCollection ? undefined : "available collections."}
+        permissionsSection={canManage ? undefined : "available collections."}
         action={
           <Button
             id="open-create-collection-modal-button"
             size="lg"
-            disabled={!canCreateCollection}
+            disabled={!canManage}
             onClick={() => setAction({ kind: "new" })}
           >
             Create collection
@@ -51,10 +63,9 @@ export default function CollectionsPanel({ projectId, initialCollections, canCre
         <CollectionFormModal
           title="Create Collection"
           onCancel={close}
-          onSave={(name) => {
-            setItems([...items, { id: `col-${Date.now()}`, projectId, name, byteSizeSum: 0, previewJson: null }]);
+          onSave={async (rawName) => {
+            await onCreate(rawName);
             close();
-            toast("Collection created");
           }}
         />
       )}
@@ -63,10 +74,9 @@ export default function CollectionsPanel({ projectId, initialCollections, canCre
           title="Edit Collection"
           initialName={action.collection.name}
           onCancel={close}
-          onSave={(name) => {
-            setItems(items.map((c) => (c.id === action.collection.id ? { ...c, name } : c)));
+          onSave={async (rawName) => {
+            await onRename(action.collection.id, rawName);
             close();
-            toast("Collection updated");
           }}
         />
       )}
@@ -74,20 +84,25 @@ export default function CollectionsPanel({ projectId, initialCollections, canCre
         <CollectionDeleteModal
           collection={action.collection}
           onCancel={close}
-          onDelete={() => {
-            setItems(items.filter((c) => c.id !== action.collection.id));
+          onDelete={async () => {
+            await onDelete(action.collection.id);
             close();
-            toast("Collection deleted");
           }}
         />
       )}
-      {action?.kind === "preview" && <CollectionPreviewModal collection={action.collection} onClose={close} />}
+      {action?.kind === "preview" && (
+        <CollectionPreviewModal name={action.collection.name} json={action.json} onClose={close} />
+      )}
 
       <CollectionsTable
-        collections={items}
-        canCreateCollection={canCreateCollection}
+        collections={collections}
+        canManage={canManage}
         onCreate={() => setAction({ kind: "new" })}
-        onPreview={(collection) => setAction({ kind: "preview", collection })}
+        previewingId={preview.pending ? previewingId : null}
+        onPreview={(collection) => {
+          setPreviewingId(collection.id);
+          void preview.run(collection);
+        }}
         onEdit={(collection) => setAction({ kind: "edit", collection })}
         onDelete={(collection) => setAction({ kind: "delete", collection })}
       />
