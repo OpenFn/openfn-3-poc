@@ -46,8 +46,8 @@ import { cn } from "../../utils/cn";
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,
  * later Lightning): one shape per tab, so a tab can change without touching
- * the others. Every action resolves once the host has answered; the host
- * announces success (its flash), and the page says what went wrong.
+ * the others. "Async action" in STANDARDS.md says how the host answers each
+ * action. The host announces success (its flash).
  */
 export interface ProjectSettingsPageProps extends CredentialActions, KeychainCredentialActions {
   project: CurrentProject;
@@ -67,7 +67,6 @@ export interface ProjectSettingsPageProps extends CredentialActions, KeychainCre
   dataStorage: DataStorageSettings;
   historyExports: HistoryExportRow[];
 
-  /** Saves Project Identity. Rejects with field errors (`rawName`) or a message, which the form shows. */
   onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
   /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */
   onSaveConcurrency: (concurrency: number | null) => Promise<void>;
@@ -78,36 +77,38 @@ export interface ProjectSettingsPageProps extends CredentialActions, KeychainCre
 
   // The Credentials tab's actions come from CredentialActions and KeychainCredentialActions (types/credentials.ts).
 
-  /** Creates a collection from the name as typed. Rejects with field errors (`rawName`) or a message. */
+  /** Creates a collection from the name as typed. Field errors are keyed `rawName`. */
   onCreateCollection: (rawName: string) => Promise<void>;
+  /** Field errors are keyed `rawName`. */
   onRenameCollection: (id: string, rawName: string) => Promise<void>;
   onDeleteCollection: (id: string) => Promise<void>;
   /** The collection's first record, pretty-printed, or null when it's empty. */
   onPreviewCollection: (id: string) => Promise<string | null>;
 
-  /** Creates a webhook auth method; an API key method gets the key `onGenerateApiKey` last handed out. Rejects with field errors (`name`) or a message. */
+  /** Creates a webhook auth method; an API key method gets the key `onGenerateApiKey` last handed out. */
   onCreateWebhookAuthMethod: (values: WebhookAuthMethodValues) => Promise<void>;
+  /** Field errors are keyed `name`. */
   onRenameWebhookAuthMethod: (id: string, name: string) => Promise<void>;
   onDeleteWebhookAuthMethod: (id: string) => Promise<void>;
   /** A new API key, shown in the form before the method is created. The host keeps it for `onCreateWebhookAuthMethod`. */
   onGenerateApiKey: () => Promise<string>;
-  /** A method's password or API key, once the user has re-authenticated. Rejects when the password or code is wrong. */
+  /** A method's password or API key, once the user has re-authenticated. Rejects when the password or code is wrong; only the message shows. */
   onRevealWebhookSecret: (id: string, values: ReauthValues) => Promise<string>;
 
-  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. */
+  /** Adds the emails that have OpenFn accounts, and answers with the rest to invite. Only a rejection's message shows. */
   onAddCollaborators: (values: CollaboratorValues[]) => Promise<AddCollaboratorsResult>;
-  /** Rejects with field errors keyed by row and field (`"1.email"`), which show on that row, or a message. */
+  /** Field errors are keyed by row and field (`"1.email"`), which show on that row. */
   onInviteCollaborators: (values: InviteValues[]) => Promise<void>;
   onRemoveCollaborator: (id: string) => Promise<void>;
   onSetSupportAccess: (on: boolean) => Promise<void>;
-  /** The viewer's own alert settings (`id` is their project user). */
+  /** The viewer's own alert settings (`id` is their project user), saved on change. */
   onSetFailureAlert: (id: string, on: boolean) => Promise<void>;
+  /** Saved on change. */
   onSetDigest: (id: string, digest: Digest) => Promise<void>;
 
   onSetRequiresMfa: (on: boolean) => Promise<void>;
   onInitiateGithubSync: () => Promise<void>;
   onRemoveGithubConnection: () => Promise<void>;
-  /** Saves the Data Storage form. Rejects with field errors or a message, which the form shows. */
   onSaveDataStorage: (values: DataStorageValues) => Promise<void>;
 }
 
