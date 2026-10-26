@@ -45,7 +45,8 @@ does (`FormModal`, `ConfirmModal`).
 - **Double submit** is impossible: `run` ignores calls while pending.
 - **Until wired,** page mutations `await simulateRequest(...)` from
   `src/mock-data/request.ts`, so the pending state is visible in the demo.
-  `failNextRequest()` makes the next call reject, for stories and manual checks.
+  `failNextRequest(message, fieldErrors?)` makes the next call reject, for
+  stories and manual checks.
 
 Rules: no `onClick={() => toast("Saved")}` without an awaited request in
 between. No `setTimeout` to fake latency inside a component. A sync handler
@@ -169,6 +170,13 @@ Type-to-confirm keeps the confirm button disabled until the text matches,
 and the dialog says what to type ("To confirm, type alice@example.org
 below"). This is the one exception to pattern 2's rule.
 
+A modal (`ConfirmModal`, `FormModal`, anything on `Modal`) is mounted only
+while open and keyed by what it is about:
+`{deleting && <ConfirmModal key={deleting.id} open … />}`. Closing it throws
+its state away, so a typed confirmation or a failed attempt's error never
+shows up again on the next open. Modals still kept mounted with
+`open={flag}` are moved to this pattern when their page is next changed.
+
 A dialog that can only explain why the action can't happen yet (a
 scheduled credential with audited runs, a user with activity) is a plain
 `Modal` with one dismiss button, beside the `ConfirmModal`, as
@@ -256,6 +264,10 @@ is rewritten.
   to a route or wording the design system makes up.
 - **The page keeps UI state only**: which modal is open, a draft not yet
   saved. Never its own copy of the records.
+- **The replica shows each kind of refusal once**, not every Lightning
+  server rule: one of each the page handles (a field error, a message, a
+  refusal after a race). A refusal the page handles the same way as one
+  already shown is out of scope; Lightning enforces the rest on the server.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
