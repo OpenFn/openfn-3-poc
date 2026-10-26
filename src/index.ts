@@ -23,6 +23,7 @@ export { default as TokensPage } from "./pages/profile/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/ProjectsDashboardPage";
+export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/WorkflowsIndexPage";
 
@@ -54,6 +55,7 @@ export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndex
 export type { TokensPageProps } from "./pages/profile/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
+export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/WorkflowsIndexPage";
 
@@ -156,6 +158,16 @@ export type {
   ProfileDetail,
 } from "./types/profile";
 export type { CurrentProject, ProjectRole, RetentionPolicy } from "./types/projects";
+export type {
+  MergeCredentialRow,
+  MergePreviewResult,
+  MergeTargetRef,
+  MergeValues,
+  MergeWorkflowRow,
+  SandboxForm,
+  SandboxRow,
+  SandboxValues,
+} from "./types/sandboxes";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectMetrics, ProjectOverview, WorkflowRow } from "./types/workflows";
 

@@ -8,12 +8,16 @@ const deleted: SandboxRow = {
   id: "s1",
   name: "staging",
   color: null,
-  parentId: "p1",
   env: null,
   scheduledDeletion: "2026-11-01T00:00:00Z",
-  canEdit: true,
-  canDelete: true,
-  canMerge: true,
+  workflowsHref: "/projects/s1/w",
+  editHref: "/projects/p1/sandboxes/s1/edit",
+  canEdit: false,
+  canDelete: false,
+  canMerge: false,
+  canCancelDeletion: true,
+  restoreBlockedReason: null,
+  activeDescendantCount: 0,
 };
 
 describe("WorkspaceCard", () => {
