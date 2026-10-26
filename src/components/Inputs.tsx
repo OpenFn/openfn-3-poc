@@ -1,6 +1,8 @@
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type Ref, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { Label as HeadlessLabel, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import { useId, useState, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { cn } from "../utils/cn";
 import { controlClasses } from "./controlClasses";
+import { floatingPanelClasses } from "./floating";
 import IconButton from "./IconButton";
 
 /**
@@ -119,6 +121,32 @@ function optionParts(o: SelectOption): [string, string] {
   return [o.label, o.value];
 }
 
+interface SelectProps extends FieldProps {
+  id?: string | undefined;
+  /** Adds a hidden input with this name, for a plain form post. */
+  name?: string | undefined;
+  /** The chosen value. Leave it out to let the control keep its own. */
+  value?: string | undefined;
+  options: SelectOption[];
+  /** Shown while the value matches no option. It isn't an option itself. */
+  prompt?: string | undefined;
+  disabled?: boolean | undefined;
+  /** Shaped like a select's change event, so handlers read `e.target.value`. */
+  onChange?: (e: { target: { value: string } }) => void;
+  /** Runs when focus leaves the control, not when it moves into the open list. */
+  onBlur?: () => void;
+  /** Names the control when it has no visible `label`. */
+  "aria-label"?: string | undefined;
+  /** Classes for the button. */
+  className?: string | undefined;
+}
+
+/**
+ * A dropdown: a button showing the chosen option, opening a list to pick
+ * from (Lightning's `custom-select`, new_inputs.ex). Headless UI's Listbox
+ * gives it the keyboard (arrows, Home/End, type-ahead, Enter/Space, Escape)
+ * and the listbox ARIA. A value that matches no option shows the prompt.
+ */
 export function Select({
   label,
   required,
@@ -128,23 +156,66 @@ export function Select({
   options,
   prompt,
   className,
-  ...rest
-}: FieldProps & SelectHTMLAttributes<HTMLSelectElement> & { options: SelectOption[]; prompt?: string }) {
-  const id = useFieldId(rest.id);
+  id: givenId,
+  name,
+  value,
+  disabled,
+  onChange,
+  onBlur,
+  "aria-label": ariaLabel,
+}: SelectProps) {
+  const id = useFieldId(givenId);
+  const items = options.map(optionParts);
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
-      <select required={required} data-ui="field" className={controlClasses(errors.length > 0, className)} {...rest} id={id}>
-        {prompt && <option value="">{prompt}</option>}
-        {options.map((o) => {
-          const [l, v] = optionParts(o);
-          return (
-            <option key={v} value={v}>
-              {l}
-            </option>
-          );
-        })}
-      </select>
-    </Field>
+    <Listbox
+      {...(value !== undefined && { value })}
+      {...(name !== undefined && { name })}
+      disabled={disabled ?? false}
+      invalid={errors.length > 0}
+      // Like a native select, picking the option already chosen changes nothing.
+      onChange={(v: string) => v !== value && onChange?.({ target: { value: v } })}
+    >
+      {({ value: current }) => (
+        // Headless UI's Label names the button "<label> <chosen option>", as a
+        // native select is read. A `for` on the label would replace that name
+        // with the label alone, so Field gets no id.
+        <Field label={label && <HeadlessLabel as="span" passive>{label}</HeadlessLabel>} required={required} hint={hint} errors={errors} className={fieldClassName}>
+          {!label && ariaLabel && (
+            <HeadlessLabel as="span" passive className="sr-only">
+              {ariaLabel}
+            </HeadlessLabel>
+          )}
+          <ListboxButton
+            id={id}
+            data-ui="field"
+            onBlur={(e) => {
+              if (!e.relatedTarget?.closest("[role=listbox]")) onBlur?.();
+            }}
+            className={controlClasses(errors.length > 0, cn("grid grid-cols-1 border py-2 pl-3 pr-2 text-left", className))}
+          >
+            <span className="col-start-1 row-start-1 truncate pr-6">{items.find(([, v]) => v === current)?.[0] ?? prompt ?? "\u00a0"}</span>
+            <span className="hero-chevron-up-down col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
+          </ListboxButton>
+          <ListboxOptions
+            anchor={{ to: "bottom start", gap: 4 }}
+            transition
+            data-ui="listbox"
+            className={cn(floatingPanelClasses, "max-h-60 min-w-(--button-width) overflow-auto py-1 text-base sm:text-sm")}
+          >
+            {items.map(([l, v]) => (
+              <ListboxOption
+                key={v}
+                value={v}
+                className="group relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900 data-focus:bg-primary-600 data-focus:text-white"
+              >
+                <span className="block truncate group-data-selected:font-semibold">{l}</span>
+                <span className="hero-check invisible absolute inset-y-0 left-1.5 my-auto size-5 text-primary-600 group-data-focus:text-white group-data-selected:visible" />
+              </ListboxOption>
+            ))}
+          </ListboxOptions>
+        </Field>
+      )}
+    </Listbox>
   );
 }
 

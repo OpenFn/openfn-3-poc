@@ -5,6 +5,7 @@ import { ToastProvider } from "../../components/Toast";
 import userEvent from "@testing-library/user-event";
 import type { CredentialRow, KeychainCredentialRow } from "../../types/credentials";
 import type { CollaboratorRow, WebhookAuthMethodRow } from "../../types/project-settings";
+import { pickOption } from "../../test/select";
 import { RequestError } from "../../utils/errors";
 import ProjectSettingsPage, { type ProjectSettingsPageProps } from "./ProjectSettingsPage";
 
@@ -362,7 +363,7 @@ describe("ProjectSettingsPage", () => {
     renderPage({ onAddCollaborators }, "#collaboration");
     fireEvent.click(screen.getByRole("button", { name: "Add Collaborator(s)" }));
     fireEvent.change(within(dialog()).getByLabelText("Email"), { target: { value: "new@example.org" } });
-    fireEvent.change(within(dialog()).getByLabelText("Role"), { target: { value: "viewer" } });
+    await pickOption(within(dialog()).getByRole("button", { name: /^Role/ }), "Viewer");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Save Collaborator" }));
     await waitFor(() => expect(onAddCollaborators).toHaveBeenCalledWith([{ email: "new@example.org", role: "viewer" }]));
     expect(await screen.findByText("Invite new user(s) to join OpenFn")).toBeTruthy();
@@ -382,7 +383,7 @@ describe("ProjectSettingsPage", () => {
     renderPage({ onAddCollaborators, onInviteCollaborators }, "#collaboration");
     fireEvent.click(screen.getByRole("button", { name: "Add Collaborator(s)" }));
     fireEvent.change(within(dialog()).getByLabelText("Email"), { target: { value: "new@example.org" } });
-    fireEvent.change(within(dialog()).getByLabelText("Role"), { target: { value: "viewer" } });
+    await pickOption(within(dialog()).getByRole("button", { name: /^Role/ }), "Viewer");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Save Collaborator" }));
     await screen.findByText("Invite new user(s) to join OpenFn");
     for (const label of ["First Name", "Last Name"]) {
@@ -409,25 +410,25 @@ describe("ProjectSettingsPage", () => {
     const onSetFailureAlert = vi.fn().mockRejectedValue(new RequestError("You are not authorized to perform this action."));
     const { onSetDigest } = renderPage({ onSetFailureAlert }, "#collaboration");
     expect(document.getElementById("digest-pu-esther")).toBeNull();
-    fireEvent.change(document.getElementById("digest-pu-me")!, { target: { value: "daily" } });
+    await pickOption(document.getElementById("digest-pu-me")!, "Daily");
     expect(onSetDigest).toHaveBeenCalledWith("pu-me", "daily");
-    const alert = document.getElementById("failure-alert-pu-me") as HTMLSelectElement;
-    fireEvent.change(alert, { target: { value: "false" } });
+    const alert = document.getElementById("failure-alert-pu-me")!;
+    await pickOption(alert, "Disabled");
     expect(await screen.findByText("You are not authorized to perform this action.")).toBeTruthy();
-    expect(alert.value).toBe("true");
+    expect(alert.textContent).toBe("Enabled");
   });
 
   it("shows the chosen digest while the host saves it, and puts it back if the save fails", async () => {
     let fail: (e: Error) => void = () => {};
     const onSetDigest = vi.fn(() => new Promise<void>((_, reject) => (fail = reject)));
     renderPage({ onSetDigest }, "#collaboration");
-    const digest = document.getElementById("digest-pu-me") as HTMLSelectElement;
-    fireEvent.change(digest, { target: { value: "daily" } });
+    const digest = document.getElementById("digest-pu-me")!;
+    await pickOption(digest, "Daily");
     expect(onSetDigest).toHaveBeenCalledWith("pu-me", "daily");
-    expect(digest.value).toBe("daily");
+    expect(digest.textContent).toBe("Daily");
     fail(new RequestError("Error when updating the project user"));
     expect(await screen.findByText("Error when updating the project user")).toBeTruthy();
-    expect(digest.value).toBe("weekly");
+    expect(digest.textContent).toBe("Weekly");
   });
 
   it("shows the MFA switch's new state at once, and puts it back if the save fails", async () => {
@@ -462,11 +463,11 @@ describe("ProjectSettingsPage", () => {
 
   it("refuses a dataclip period longer than history on Save, then saves a valid one", async () => {
     const { onSaveDataStorage } = renderPage({}, "#data-storage");
-    fireEvent.change(document.getElementById("project_dataclip_retention_period")!, { target: { value: "90" } });
+    await pickOption(document.getElementById("project_dataclip_retention_period")!, "90 Days");
     fireEvent.click(document.getElementById("input-output-retention-period-submit-btn")!);
     expect(await screen.findByText("dataclip retention period must be less or equal to the history retention period")).toBeTruthy();
     expect(onSaveDataStorage).not.toHaveBeenCalled();
-    fireEvent.change(document.getElementById("project_dataclip_retention_period")!, { target: { value: "7" } });
+    await pickOption(document.getElementById("project_dataclip_retention_period")!, "7 Days");
     fireEvent.click(document.getElementById("input-output-retention-period-submit-btn")!);
     await waitFor(() =>
       expect(onSaveDataStorage).toHaveBeenCalledWith({ historyRetentionPeriod: 30, dataclipRetentionPeriod: 7, retentionPolicy: "retain_all" })
@@ -494,7 +495,7 @@ describe("ProjectSettingsPage", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: "Keychain" }));
     fireEvent.change(within(dialog()).getByLabelText(/^Name/), { target: { value: "By facility" } });
     fireEvent.change(within(dialog()).getByLabelText(/JSONPath Expression/), { target: { value: "$.facility" } });
-    fireEvent.change(within(dialog()).getByLabelText(/Default Credential/), { target: { value: "cred1" } });
+    await pickOption(within(dialog()).getByRole("button", { name: /^Default Credential/ }), "DHIS2 play");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Create" }));
     await waitFor(() =>
       expect(onCreateKeychainCredential).toHaveBeenCalledWith({ name: "By facility", path: "$.facility", defaultCredentialId: "cred1" })
@@ -606,7 +607,7 @@ describe("ProjectSettingsPage", () => {
 
     it("can't change data storage", () => {
       renderPage({ dataStorage: { ...data().dataStorage, canEdit: false } }, "#data-storage");
-      expect((document.getElementById("project_history_retention_period") as HTMLSelectElement).disabled).toBe(true);
+      expect((document.getElementById("project_history_retention_period") as HTMLButtonElement).disabled).toBe(true);
       expect((document.getElementById("retain_all") as HTMLInputElement).disabled).toBe(true);
       expect((document.getElementById("input-output-retention-period-submit-btn") as HTMLButtonElement).disabled).toBe(true);
     });

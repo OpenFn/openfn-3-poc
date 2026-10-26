@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { AdminUserRow } from "../../types/admin";
 import { RequestError } from "../../utils/errors";
+import { pickOption } from "../../test/select";
 import AdminUserEditPage from "./AdminUserEditPage";
 
 const amara: AdminUserRow = { id: "u1", firstName: "Amara", lastName: "Okafor", email: "amara@example.org", role: "user", supportUser: false, disabled: false, scheduledDeletion: null };
@@ -79,12 +80,13 @@ describe("AdminUserEditPage", () => {
     expect(screen.getByText("This user will be able to access ALL projects that have support access enabled")).toBeTruthy();
   });
 
-  it("offers Scheduled Deletion only while the role is User", () => {
+  it("offers Scheduled Deletion only while the role is User", async () => {
     renderPage({ user: amara });
     expect(screen.getByLabelText("Scheduled Deletion")).toBeTruthy();
-    type("Role", "superuser");
+    const role = screen.getByRole("button", { name: /^Role/ });
+    await pickOption(role, "Superuser");
     expect(screen.queryByLabelText("Scheduled Deletion")).toBeNull();
-    type("Role", "user");
+    await pickOption(role, "User");
     expect(screen.getByLabelText("Scheduled Deletion")).toBeTruthy();
   });
 

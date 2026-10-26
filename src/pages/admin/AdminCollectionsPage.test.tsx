@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { describe, expect, it, vi } from "vitest";
 import { ToastProvider } from "../../components/Toast";
 import type { AdminCollectionRow } from "../../types/admin";
+import { pickOption } from "../../test/select";
 import { RequestError } from "../../utils/errors";
 import AdminCollectionsPage from "./AdminCollectionsPage";
 
@@ -59,7 +60,7 @@ describe("AdminCollectionsPage", () => {
     fireEvent.click(document.getElementById("open-create-collection-modal-button")!);
     fireEvent.change(screen.getByLabelText(/Name/), { target: { value: "New Collection" } });
     expect(screen.getByRole("dialog").textContent).toContain("new-collection");
-    fireEvent.change(screen.getByLabelText(/Project/), { target: { value: "p1" } });
+    await pickOption(screen.getByRole("button", { name: /^Project/ }), "Malawi HIV");
     fireEvent.submit(document.getElementById("collection-form-new")!);
 
     await waitFor(() => expect(onCreate).toHaveBeenCalledWith({ rawName: "New Collection", projectId: "p1" }));
@@ -81,7 +82,7 @@ describe("AdminCollectionsPage", () => {
     renderPage({ onUpdate });
     fireEvent.click(document.getElementById("edit-collection-c1-button")!);
     expect((screen.getByLabelText(/Name/) as HTMLInputElement).value).toBe("patients");
-    expect((screen.getByLabelText(/Project/) as HTMLSelectElement).value).toBe("p1");
+    expect(screen.getByRole("button", { name: /^Project/ }).textContent).toBe("Malawi HIV");
     fireEvent.change(screen.getByLabelText(/Name/), { target: { value: "visits" } });
     fireEvent.submit(document.getElementById("collection-form-c1")!);
 

@@ -5,6 +5,7 @@ import { RouterProvider, type Router } from "../../routing/router";
 import type { MergePreviewResult, MergeWorkflowRow, SandboxForm, SandboxRow } from "../../types/sandboxes";
 import { RequestError } from "../../utils/errors";
 import { formatUtcDate } from "../../utils/format";
+import { pickOption } from "../../test/select";
 import SandboxesIndexPage, { type SandboxesIndexPageProps } from "./SandboxesIndexPage";
 
 const row = (id: string, name: string, more: Partial<SandboxRow> = {}): SandboxRow => ({
@@ -315,6 +316,7 @@ describe("SandboxesIndexPage", () => {
         .filter((i) => i.checked)
         .map((i) => i.closest("label")!.textContent);
     const submit = () => document.getElementById("merge-sandbox-submit") as HTMLButtonElement;
+    const target = () => screen.getByRole("button", { name: /^Target project/ });
     const openMerge = async (props: Partial<SandboxesIndexPageProps> = {}) => {
       const onPreviewMerge = props.onPreviewMerge ?? vi.fn().mockResolvedValue(preview());
       const handlers = renderPage({ ...props, onPreviewMerge });
@@ -328,7 +330,7 @@ describe("SandboxesIndexPage", () => {
       expect(onPreviewMerge).toHaveBeenCalledWith("s1", null);
       expect(ticked()).toEqual(["Changed oneChangedDiverged", "Brand newNew", "Sandbox creds", "cache-a", "cache-b"]);
       expect(tick("Gone in sandbox").closest("label")!.textContent).toContain("Deleted in sandbox");
-      expect((document.getElementById("merge-target-select") as HTMLSelectElement).value).toBe("p1");
+      expect(target().textContent).toBe("openhie-project");
       const text = screen.getByRole("dialog").textContent;
       expect(text).toContain("overwrite their counterparts in openhie-project.");
       expect(text).toContain("2 of 4 selected");
@@ -383,7 +385,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.click(tick("Same one"));
       fireEvent.click(tick("Sandbox creds"));
       fireEvent.click(tick("cache-a"));
-      fireEvent.change(document.getElementById("merge-target-select")!, { target: { value: "s3" } });
+      await pickOption(target(), "other-sandbox");
       expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", "s3");
       await screen.findByText("Other new");
       expect(ticked()).toEqual(["Same one", "Other newNew", "More creds", "cache-a", "cache-b"]);
@@ -398,15 +400,15 @@ describe("SandboxesIndexPage", () => {
         .mockReturnValueOnce(new Promise<MergePreviewResult>((res) => (resolveSlow = res)))
         .mockResolvedValueOnce(preview({ targetId: "p1" }));
       await openMerge({ onPreviewMerge });
-      const select = document.getElementById("merge-target-select")!;
-      fireEvent.change(select, { target: { value: "s3" } });
+      const select = target();
+      await pickOption(select, "other-sandbox");
       expect(submit().disabled).toBe(true);
-      fireEvent.change(select, { target: { value: "p1" } });
+      await pickOption(select, "openhie-project");
       await waitFor(() => expect(submit().disabled).toBe(false));
       resolveSlow(preview({ targetId: "s3", workflows: [wf("w9", "Stale one", { isChanged: true })] }));
       await new Promise((r) => setTimeout(r, 0));
       expect(screen.queryByText("Stale one")).toBeNull();
-      expect((select as HTMLSelectElement).value).toBe("p1");
+      expect(select.textContent).toBe("openhie-project");
     });
 
     it("drops a stale preview that fails after a newer one arrived", async () => {
@@ -417,9 +419,9 @@ describe("SandboxesIndexPage", () => {
         .mockReturnValueOnce(new Promise<MergePreviewResult>((_, rej) => (rejectSlow = rej)))
         .mockResolvedValueOnce(preview());
       await openMerge({ onPreviewMerge });
-      const select = document.getElementById("merge-target-select")!;
-      fireEvent.change(select, { target: { value: "s3" } });
-      fireEvent.change(select, { target: { value: "p1" } });
+      const select = target();
+      await pickOption(select, "other-sandbox");
+      await pickOption(select, "openhie-project");
       await waitFor(() => expect(submit().disabled).toBe(false));
       rejectSlow(new RequestError("Target project not found"));
       await new Promise((r) => setTimeout(r, 0));
@@ -435,9 +437,9 @@ describe("SandboxesIndexPage", () => {
         .mockResolvedValueOnce(preview());
       await openMerge({ onPreviewMerge });
       fireEvent.click(tick("cache-a"));
-      const select = document.getElementById("merge-target-select")!;
-      fireEvent.change(select, { target: { value: "s3" } });
-      fireEvent.change(select, { target: { value: "p1" } });
+      const select = target();
+      await pickOption(select, "other-sandbox");
+      await pickOption(select, "openhie-project");
       await waitFor(() => expect(submit().disabled).toBe(false));
       expect(tick("cache-a").checked).toBe(false);
       expect(tick("cache-b").checked).toBe(true);
@@ -446,14 +448,13 @@ describe("SandboxesIndexPage", () => {
     it("prompts for a target when the preview has no default, so picking the first one asks for its preview", async () => {
       const onPreviewMerge = vi.fn().mockResolvedValueOnce(preview({ targetId: null })).mockResolvedValueOnce(preview());
       await openMerge({ onPreviewMerge });
-      const select = document.getElementById("merge-target-select") as HTMLSelectElement;
-      expect(select.value).toBe("");
-      expect(select.selectedOptions[0]?.textContent).toBe("Select a project");
+      const select = target();
+      expect(select.textContent).toBe("Select a project");
       expect(submit().getAttribute("aria-description")).toBe("No project to merge into");
-      fireEvent.change(select, { target: { value: "p1" } });
+      await pickOption(select, "openhie-project");
       expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", "p1");
       await waitFor(() => expect(submit().disabled).toBe(false));
-      expect(select.value).toBe("p1");
+      expect(select.textContent).toBe("openhie-project");
       expect(screen.getByRole("dialog").textContent).toContain("counterparts in openhie-project.");
     });
 
@@ -470,7 +471,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }));
       fireEvent.click(action("branch-rewire", "s1"));
       await screen.findByText("Workflows to merge");
-      fireEvent.change(document.getElementById("merge-target-select")!, { target: { value: "s3" } });
+      await pickOption(target(), "other-sandbox");
       text = screen.getByRole("dialog").textContent;
       expect(text).toContain("counterparts in other-sandbox.");
     });
@@ -511,9 +512,9 @@ describe("SandboxesIndexPage", () => {
     it("shows a failed preview in the modal and puts the target back", async () => {
       const onPreviewMerge = vi.fn().mockResolvedValueOnce(preview()).mockRejectedValueOnce(new RequestError("Target project not found"));
       await openMerge({ onPreviewMerge });
-      fireEvent.change(document.getElementById("merge-target-select")!, { target: { value: "s3" } });
+      await pickOption(target(), "other-sandbox");
       expect(await screen.findByText("Target project not found")).toBeTruthy();
-      expect((document.getElementById("merge-target-select") as HTMLSelectElement).value).toBe("p1");
+      expect(target().textContent).toBe("openhie-project");
       expect(submit().disabled).toBe(false);
     });
 

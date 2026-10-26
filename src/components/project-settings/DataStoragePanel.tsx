@@ -106,7 +106,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               prompt="Select Period"
               options={options}
               disabled={!canEdit || periods.length === 1}
-              className="w-auto"
+              className="w-fit"
               hint={limitMessage ?? undefined}
               {...form.fieldProps("historyRetentionPeriod")}
             />
@@ -163,7 +163,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               prompt="Select Period"
               options={options}
               disabled={!canEdit || noHistory || eraseAll}
-              className="w-auto"
+              className="w-fit"
               {...form.fieldProps("dataclipRetentionPeriod")}
             />
           </Setting>
