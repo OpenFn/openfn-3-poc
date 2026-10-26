@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
@@ -267,13 +267,45 @@ describe("ProjectSettingsPage", () => {
     expect(await screen.findByText('[{"key": "patient-1"}]')).toBeTruthy();
   });
 
-  it("shows which preview is loading, and holds back the others until it's done", () => {
+  it("shows which preview is loading, and leaves the other rows free to ask", () => {
     const collections = [...data().collections.collections, { id: "c2", name: "visits", byteSizeSum: 0, downloadHref: "/download/collections/p1/visits" }];
     renderPage({ collections: { collections, canManage: true }, onPreviewCollection: vi.fn(() => new Promise<string>(() => {})) }, "#collections");
     const button = (id: string) => document.getElementById(`preview-collection-${id}-button`) as HTMLButtonElement;
     fireEvent.click(button("c1"));
     expect(button("c1").getAttribute("aria-busy")).toBe("true");
-    expect(button("c2").disabled).toBe(true);
+    expect(button("c2").disabled).toBe(false);
+  });
+
+  it("opens the preview of the row asked for last, and ignores the one still loading before it", async () => {
+    const collections = [...data().collections.collections, { id: "c2", name: "visits", byteSizeSum: 0, downloadHref: "/download/collections/p1/visits" }];
+    const answers: Record<string, (json: string) => void> = {};
+    const onPreviewCollection = vi.fn((id: string) => new Promise<string>((resolve) => (answers[id] = resolve)));
+    renderPage({ collections: { collections, canManage: true }, onPreviewCollection }, "#collections");
+    const button = (id: string) => document.getElementById(`preview-collection-${id}-button`) as HTMLButtonElement;
+    fireEvent.click(button("c1"));
+    fireEvent.click(button("c2"));
+    expect(button("c1").getAttribute("aria-busy")).not.toBe("true");
+    expect(button("c2").getAttribute("aria-busy")).toBe("true");
+
+    await act(async () => answers["c1"]!("older"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    await act(async () => answers["c2"]!("newer"));
+    expect(within(dialog()).getByText("newer")).toBeTruthy();
+    expect(screen.queryByText("older")).toBeNull();
+  });
+
+  it("opens the newer preview when the older one answers last", async () => {
+    const collections = [...data().collections.collections, { id: "c2", name: "visits", byteSizeSum: 0, downloadHref: "/download/collections/p1/visits" }];
+    const answers: Record<string, (json: string) => void> = {};
+    const onPreviewCollection = vi.fn((id: string) => new Promise<string>((resolve) => (answers[id] = resolve)));
+    renderPage({ collections: { collections, canManage: true }, onPreviewCollection }, "#collections");
+    fireEvent.click(document.getElementById("preview-collection-c1-button")!);
+    fireEvent.click(document.getElementById("preview-collection-c2-button")!);
+
+    await act(async () => answers["c2"]!("newer"));
+    await act(async () => answers["c1"]!("older"));
+    expect(within(dialog()).getByText("newer")).toBeTruthy();
+    expect(screen.queryByText("older")).toBeNull();
   });
 
   it("shows the key the host generated, and leaves the key with the host on create", async () => {
