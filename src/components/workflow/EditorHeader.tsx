@@ -5,6 +5,7 @@ import IconButton from "../IconButton";
 import ProjectBreadcrumbs from "../shell/ProjectBreadcrumbs";
 import Toggle from "../Toggle";
 import NewRunButton from "./NewRunButton";
+import RunBadge from "./RunBadge";
 import SaveButton from "./SaveButton";
 import VersionDropdown from "./VersionDropdown";
 import Tooltip from "../Tooltip";
@@ -17,6 +18,9 @@ interface Props {
   snapshots: WorkflowSnapshot[];
   pinnedVersion: number | null;
   onVersionSelect: (version: number | "latest") => void;
+  /** The loaded run (?run=). It takes the version pill's place, with an x that unloads it. */
+  loadedRunId?: string | null;
+  onUnloadRun?: () => void;
   /** Clicking the workflow name closes every panel and returns to the bare canvas. */
   onTitleClick: () => void;
   enabled: boolean;
@@ -42,7 +46,8 @@ interface Props {
 /**
  * The collaborative editor's header bar (collaborative-editor/components/
  * Header.tsx + BreadcrumbContent in CollaborativeEditor.tsx): project picker,
- * Workflows, the workflow name with its version pill; then the enabled
+ * Workflows, the workflow name with its version pill (or the loaded run,
+ * with an x to unload it); then the enabled
  * switch, the settings icon, the split Run button, Save and the AI button.
  * This is the "no experimental features" layout Lightning shows by default.
  */
@@ -53,6 +58,8 @@ export default function EditorHeader({
   snapshots,
   pinnedVersion,
   onVersionSelect,
+  loadedRunId = null,
+  onUnloadRun,
   onTitleClick,
   enabled,
   onEnabledChange,
@@ -85,7 +92,11 @@ export default function EditorHeader({
                   {workflowName}
                 </button>
               </Tooltip>
-              <VersionDropdown snapshots={snapshots} pinnedVersion={pinnedVersion} onVersionSelect={onVersionSelect} />
+              {loadedRunId ? (
+                <RunBadge runId={loadedRunId} onClose={onUnloadRun} closeLabel="Unload run" />
+              ) : (
+                <VersionDropdown snapshots={snapshots} pinnedVersion={pinnedVersion} onVersionSelect={onVersionSelect} />
+              )}
             </span>
           }
         />

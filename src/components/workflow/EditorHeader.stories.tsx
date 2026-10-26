@@ -38,6 +38,7 @@ type Story = StoryObj<typeof EditorHeader>;
 export const Default: Story = {};
 export const EnabledWithUnsavedChanges: Story = { args: { enabled: true, hasChanges: true } };
 export const PinnedVersion: Story = { args: { pinnedVersion: 10 } };
+export const RunLoaded: Story = { args: { loadedRunId: "run-1-7f3a91c2" } };
 export const IDEOpen: Story = { args: { runDisabled: true } };
 export const Sandbox: Story = {
   args: { project: projects.find((p) => p.parentId !== null) ?? projects[0]!, workflowName: "OpenHIE Workflow" },

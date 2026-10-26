@@ -278,6 +278,8 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
             snapshots={snapshotsOf(graph)}
             pinnedVersion={pinnedVersion}
             onVersionSelect={(v) => setPinnedVersion(v === "latest" || v === graph.lockVersion ? null : v)}
+            loadedRunId={runs.selectedRun?.id ?? null}
+            onUnloadRun={() => update({ run: null, step: null })}
             onTitleClick={closeAll}
             enabled={graph.triggers.some((t) => t.enabled)}
             onEnabledChange={editor.setEnabled}
