@@ -65,7 +65,8 @@ does (`FormModal`, `ConfirmModal`).
   A load hands its result to `onSuccess`.
 - **Until wired,** page mutations `await simulateRequest(...)` from
   `src/mock-data/request.ts`, so the pending state is visible in the demo.
-  `failNextRequest()` makes the next call reject, for stories and manual checks.
+  `failNextRequest(message, fieldErrors?)` makes the next call reject, for
+  stories and manual checks.
 
 Rules: no `onClick={() => toast("Saved")}` without an awaited request in
 between. No `setTimeout` to fake latency inside a component. A sync handler
@@ -189,6 +190,13 @@ Type-to-confirm keeps the confirm button disabled until the text matches,
 and the dialog says what to type ("To confirm, type alice@example.org
 below"). This is the one exception to pattern 2's rule.
 
+A modal (`ConfirmModal`, `FormModal`, anything on `Modal`) is mounted only
+while open and keyed by what it is about:
+`{deleting && <ConfirmModal key={deleting.id} open … />}`. Closing it throws
+its state away, so a typed confirmation or a failed attempt's error never
+shows up again on the next open. Modals still kept mounted with
+`open={flag}` are moved to this pattern when their page is next changed.
+
 A dialog that can only explain why the action can't happen yet (a
 scheduled credential with audited runs, a user with activity) is a plain
 `Modal` with one dismiss button, beside the `ConfirmModal`, as
@@ -219,8 +227,8 @@ result the page already holds. Build after pattern 3.
 
 ## 9. Permission gating
 
-`can*` booleans come from `usePermissions(project)` in the page and are
-passed down. Already in place. The remaining rule: a gated action is
+`can*` booleans come from `usePermissions(project)` in the page's
+`.replica.tsx` and are passed down. Already in place. The remaining rule: a gated action is
 *disabled with a reason*, never hidden, unless Lightning hides it. The
 reason is `Button`'s `tooltip` or `SectionHeader`'s `permissionsSection`.
 No inline role checks in components.
@@ -242,8 +250,13 @@ is rewritten.
 
 - **`XPage.tsx`** takes everything as props: the records, and an `on*`
   function per action returning a promise (pattern 1). It imports nothing from
-  `src/mock-data/`, `src/session/` or `react-router-dom`. Its props type
-  (`XPageProps`, a comment on each prop) is the contract between the two.
+  `src/mock-data/`, `src/session/` or `react-router-dom`. Lint enforces this on
+  `src/pages/`, `src/components/` and `src/utils/`; `*.replica.*` files,
+  `*Replica.ts` helpers (such as `src/pages/profile/credentialsReplica.ts`),
+  tests and stories are exempt, and a page not yet split carries a `-- debt:`
+  disable.
+  Its props type (`XPageProps`, a comment on each prop) is the contract
+  between the two.
 - **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
   in state as the server would, reads URL params, awaits `simulateRequest`,
   fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
@@ -264,9 +277,11 @@ is rewritten.
   host keeps from it is tied to the form that started it (`formId`) and the
   record it was for, so it can only be saved there.
 - **The contract is written by hand.** `XPageProps` and the shapes it names
-  never build on the replica's model types (`User`, `Project`, `WorkOrder`);
-  the replica maps fixtures onto them. Every one is exported from `index.ts`,
-  camelCase, and plain JSON apart from the `on*` callbacks.
+  never build on the replica's model types (`User`, `Project`, `WorkOrder`,
+  in `src/mock-data/models/`); the replica maps fixtures onto them, and lint
+  stops `src/types/`, pages and components importing the models. Every one is
+  exported from `index.ts`, camelCase, and plain JSON apart from the `on*`
+  callbacks.
 - **Names say what a shape is**: `…Row` for a table row, `…Ref` for a
   pointer to another record, `…Values` for what a form saves, `…Detail` for
   one record's page, `…Result` for an event's answer, `…Actions` for the
@@ -276,6 +291,10 @@ is rewritten.
   to a route or wording the design system makes up.
 - **The page keeps UI state only**: which modal is open, a draft not yet
   saved. Never its own copy of the records.
+- **The replica shows each kind of refusal once**, not every Lightning
+  server rule: one of each the page handles (a field error, a message, a
+  refusal after a race). A refusal the page handles the same way as one
+  already shown is out of scope; Lightning enforces the rest on the server.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).

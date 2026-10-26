@@ -1,4 +1,4 @@
-import type { Step, StepDataclip } from "../../types/history";
+import type { RunStep, StepDataclip } from "../../types/history";
 import JsonViewer from "./JsonViewer";
 import TextPingLoader from "./TextPingLoader";
 import WipedDataViewer from "./WipedDataViewer";
@@ -18,7 +18,7 @@ export default function StepDataclipViewer({
   canEditDataRetention,
   adminContacts,
 }: {
-  step: Pick<Step, "inputDataclipId" | "outputDataclipId" | "finishedAt"> | undefined;
+  step: Pick<RunStep, "inputDataclipId" | "outputDataclipId" | "finishedAt"> | undefined;
   dataclip: StepDataclip | undefined;
   inputOrOutput: "input" | "output";
   runFinished: boolean;

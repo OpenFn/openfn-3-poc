@@ -1,8 +1,7 @@
 import ConfirmModal from "../ConfirmModal";
-import type { Project } from "../../types/projects";
 
 interface Props {
-  project: Pick<Project, "name">;
+  project: { name: string };
   /** Days until the project is purged; 0 means "today". */
   gracePeriodDays: number;
   onCancel: () => void;

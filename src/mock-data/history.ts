@@ -2,7 +2,8 @@
  * Work orders, runs, steps and dataclips for History, the run page, the
  * dataclip page and workflow health. Static fixtures only.
  */
-import type { Dataclip, LogLine, Run, Step, WorkOrder } from "../types/history";
+import type { LogLine } from "../types/history";
+import type { Dataclip, Run, Step, WorkOrder } from "./models/history";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const DHIS2 = "1f0b7c2e-9d3a-4a4b-8f5e-2c6d7e8f9a01";

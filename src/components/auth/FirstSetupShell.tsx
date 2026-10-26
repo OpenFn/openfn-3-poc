@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { useInstanceInfo } from "../../session/session";
 import { SidebarLogo } from "../shell/Sidebar";
 
 /**
@@ -7,8 +6,7 @@ import { SidebarLogo } from "../shell/Sidebar";
  * (layouts/live.html.heex with `is_first_setup`): the side menu is there but
  * empty (no user menu, no items, no project picker), just the footer logo.
  */
-export default function FirstSetupShell({ children }: { children: ReactNode }) {
-  const { releaseLabel } = useInstanceInfo();
+export default function FirstSetupShell({ releaseLabel, children }: { releaseLabel: string; children: ReactNode }) {
   return (
     <main className="flex h-screen">
       <div className="w-48 shrink-0" />

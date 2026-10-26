@@ -3,7 +3,7 @@
  * Static fixtures only: nothing here talks to a backend.
  */
 import type { Session } from "../session/session";
-import type { User } from "../types/users";
+import type { User } from "./models/users";
 
 export const users: User[] = [
   {
