@@ -201,13 +201,13 @@ once, and that's fine: they're the unit we wire to the backend and annotate.
 They compose primitives and don't carry their own button, input, modal or
 menu styling.
 
-- **Pages compose components** and hold state, route params and mock-data
-  queries. No styled raw `<button>`, `<input>` or `<table>` in pages. Under
-  pattern 11 the `.replica.tsx` wrapper holds those, and the page only takes
-  props.
-- **Components never import `src/mock-data/`** (ESLint enforces it; stories
-  are exempt). They take records and `can*` booleans as props. See **The data
-  seam** below.
+- **Pages compose components** and take everything as props. State, route
+  params and mock-data queries live in the page's `.replica.tsx` wrapper. No
+  styled raw `<button>`, `<input>` or `<table>` in pages.
+- **Components, pages and utils never import `src/mock-data/`, `src/session/`
+  or the router** (ESLint enforces it; `*.replica.*` files, `*Replica.ts`
+  helpers, tests and stories are exempt). They take records and `can*`
+  booleans as props. See **The data seam** below.
 - **Need something that doesn't exist yet?** If it's general, add or extend a
   primitive. If it's specific to an area, make a feature component. Either
   way, add its story first.
@@ -222,24 +222,28 @@ menu styling.
 
 ## The data seam
 
-Wiring the backend should only touch files that import `src/mock-data/`:
-pages, `main.tsx` (the session) and a short, labelled list of components.
+Wiring the backend should only touch the files that import `src/mock-data/`,
+`src/session/` or the router: `*.replica.*` wrappers, `*Replica.ts` helpers,
+`main.tsx` (the session) and a short, labelled list of exceptions. ESLint
+enforces this on `src/components/`, `src/pages/` and `src/utils/`.
 
-- **Data** comes in through pages. A page queries mock-data and passes records
-  down. When a component needs a join Lightning preloads (a work order's runs,
-  a project's owner), give the record type the joined field
-  (`HistoryWorkOrder`, `AdminProjectRow`) and build it in the mock-data query.
-- **Pattern 11 pages** narrow the seam to one file: only the `.replica.tsx`
-  wrapper imports mock-data. Wiring that page means writing a Lightning
-  wrapper; the page file doesn't change.
-- **The current user** comes from `useCurrentUser()`, never a fixture import.
+- **Data** comes in through the replica. `XPage.replica.tsx` queries mock-data
+  and passes records to `XPage.tsx` as props. When a component needs a join
+  Lightning preloads (a work order's runs, a project's owner), give the record
+  type the joined field (`HistoryWorkOrder`, `AdminProjectRow`) and build it
+  in the mock-data query. Wiring that page means writing a Lightning wrapper;
+  the page file doesn't change.
+- **The current user** is read in the replica with `useCurrentUser()`, never a
+  fixture import, and passed down.
 - **Permissions** come from `permissionsFor(project, user)` (or
-  `usePermissions(project)`) in the page, passed down as booleans, the way
+  `usePermissions(project)`) in the replica, passed down as booleans, the way
   Lightning's views assign `can_*` at mount. No inline role checks.
-- **Exceptions** are components that still read fixtures. Each import says
-  why: `// eslint-disable-next-line no-restricted-imports -- wiring: …`.
-  `grep -rn "wiring:" src/components` lists them. Don't add one without a reason
-  the next person can act on.
+- **Exceptions** are files that still cross the seam. Each import says why:
+  `// eslint-disable-next-line no-restricted-imports -- wiring: …` for one that
+  stays (the app shell, the adaptor registry), `-- debt: …` for a page not yet
+  split into page and replica.
+  `grep -rnE "no-restricted-imports -- (wiring|debt):" src` lists them. Don't add one without a
+  reason the next person can act on.
 
 ## Storybook
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { Navigate, useParams } from "react-router-dom";
 import Pill from "../../components/Pill";
 import { useToast } from "../../components/Toast";
@@ -19,12 +20,15 @@ import WorkflowDiagram, { type Selection } from "../../components/workflow/Workf
 import WorkflowSettings from "../../components/workflow/WorkflowSettings";
 import YAMLImportModal from "../../components/workflow/YAMLImportModal";
 import { workflowNameFromYaml } from "../../components/workflow/workflowYaml";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { aiSessionsFor } from "../../mock-data/ai-assistant";
 import { adaptorShortName } from "../../utils/adaptors";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { findProject, projects } from "../../mock-data/projects";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import type { Project } from "../../types/projects";
 import { blankWorkflowGraph, newWorkflowGraph, templateGraph } from "../../utils/workflowGraph";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { findWorkflowGraph, snapshotsOf, workflowTemplates } from "../../mock-data/workflow";
 import type { WorkflowGraph } from "../../types/workflow-graph";
 import { useUrlParams, type ParamPatch } from "../../utils/useUrlParams";

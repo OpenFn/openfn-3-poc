@@ -1,10 +1,12 @@
 import type { FormEvent } from "react";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
 import AuthCard, { AuthFooterLinks } from "../../components/auth/AuthCard";
 import SsoLogin from "../../components/auth/SsoLogin";
 import Button from "../../components/Button";
 import { Checkbox, PasswordInput, TextInput } from "../../components/Inputs";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { authFlags } from "../../mock-data/auth";
 import { authMessages } from "../../constants";
 import TextLink from "../../components/TextLink";

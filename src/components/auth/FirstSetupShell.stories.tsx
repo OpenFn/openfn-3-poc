@@ -13,6 +13,7 @@ type Story = StoryObj<typeof FirstSetupShell>;
 
 export const Default: Story = {
   args: {
+    releaseLabel: "v2.19.1",
     children: (
       <PageContent header={<Header title="Setup" loggedOut />}>
         <Centered>
