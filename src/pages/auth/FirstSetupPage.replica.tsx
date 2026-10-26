@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import FirstSetupShell from "../../components/auth/FirstSetupShell";
 import { simulateRequest } from "../../mock-data/request";
+import { useInstanceInfo } from "../../session/session";
 import FirstSetupPage from "./FirstSetupPage";
 
 /**
@@ -10,8 +11,9 @@ import FirstSetupPage from "./FirstSetupPage";
  */
 export default function FirstSetupPageReplica() {
   const navigate = useNavigate();
+  const { releaseLabel } = useInstanceInfo();
   return (
-    <FirstSetupShell>
+    <FirstSetupShell releaseLabel={releaseLabel}>
       <FirstSetupPage
         onSave={async () => {
           await simulateRequest();
