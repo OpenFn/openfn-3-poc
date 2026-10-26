@@ -30,7 +30,7 @@ prop predates D145 (§11) and is still to move into `onGenerate`'s reply.
 ## 1. Async action
 
 Every handler that will talk to the server is async, `() => Promise<void>`,
-or `() => Promise<T>` for a load whose result goes to `onSuccess`, and runs
+or `() => Promise<T>` when the page needs something from the reply, and runs
 through `useAction` (`src/utils/useAction.ts`), or through a primitive that
 does (`FormModal`, `ConfirmModal`).
 
@@ -43,6 +43,16 @@ does (`FormModal`, `ConfirmModal`).
   once wired). The primitive stays where it was: a modal stays open and shows
   the message as an `Alert` above the form; a page button toasts it with
   `useAction(handler, { onError: "toast" })`. The user can retry or cancel.
+- **Host.** Every `on*` prop is answered the same way: resolve when the
+  server has done it, with any data the page needs, or reject with a
+  `RequestError` carrying a message. When the prop takes form values, the
+  error's `fieldErrors` use those values' field names (pattern 2). Where the
+  message shows is the page's choice, so a prop's comment only says what is
+  special about it.
+- **Saved on change.** A switch or select the host saves on every change
+  uses `useChosenValue(saved, save, onError)`: it shows the choice at once,
+  puts back the saved value if the save fails, and new props from the host
+  always replace the choice.
 - **Double submit** is impossible: `run` ignores calls while pending, unless `latest` is set.
 - **One per row.** A list whose rows each have an action uses `useActions`:
   `run(id, ...args)`, `pending(id)`, `error(id)`, `reset(id)`. Each id has
@@ -231,19 +241,9 @@ feeds it. The page file is copied into Lightning unchanged; only the wrapper
 is rewritten.
 
 - **`XPage.tsx`** takes everything as props: the records, and an `on*`
-  function per action returning `Promise<void>`. It imports nothing from
+  function per action returning a promise (pattern 1). It imports nothing from
   `src/mock-data/`, `src/session/` or `react-router-dom`. Its props type
-  (`XPageProps`, a comment on each prop its type doesn't already explain)
-  is the contract between the two.
-- **An `on*` prop is typed by its kind** in a new contract, from
-  `src/types/actions.ts`: `FormAction<V>` (a form on the page),
-  `ModalAction<A, R>` (a modal or confirm), `ButtonAction<A, R>` (a button
-  that toasts its failure), `ChoiceAction<T>` (a control saved on change) or
-  `LoadAction<A, R>` (a fetch). The type says how the host answers and where
-  a rejection shows, so the prop's comment only says what is special: which
-  keys its field errors use when they aren't the values' own, what the host
-  does on success. `ProfilePage` and `ProjectSettingsPage` are the worked
-  examples; other pages move to the types when next touched.
+  (`XPageProps`, a comment on each prop) is the contract between the two.
 - **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
   in state as the server would, reads URL params, awaits `simulateRequest`,
   fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
