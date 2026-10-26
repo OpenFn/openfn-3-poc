@@ -1,6 +1,7 @@
 import type { MouseEvent, ReactNode } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
+import Tooltip from "./Tooltip";
 
 interface Props {
   /** In-app route, or an external URL when `external` is set. */
@@ -19,7 +20,7 @@ interface Props {
    */
   variant?: "default" | "danger" | "plain";
   /** Hover text. */
-  title?: string;
+  title?: ReactNode;
   id?: string;
   "aria-label"?: string;
   className?: string;
@@ -35,29 +36,32 @@ export default function TextLink({ to, href, external = false, target, onClick, 
   const classes = cn(variant !== "plain" && "link", variant === "danger" && "link-danger", className);
   if (to && !external) {
     return (
-      <Link to={to} target={target} id={id} aria-label={ariaLabel} className={classes} title={title} onClick={onClick} data-ui="link" data-variant={variant}>
-        {children}
-      </Link>
+      <Tooltip content={title}>
+        <Link to={to} target={target} id={id} aria-label={ariaLabel} className={classes} onClick={onClick} data-ui="link" data-variant={variant}>
+          {children}
+        </Link>
+      </Tooltip>
     );
   }
   const url = to ?? href;
   return (
-    <a
-      href={url ?? "#"}
-      target={external ? "_blank" : target}
-      rel={external ? "noreferrer" : undefined}
-      id={id}
-      aria-label={ariaLabel}
-      className={classes}
-      title={title}
-      data-ui="link"
-      data-variant={variant}
-      onClick={(e) => {
-        if (!url) e.preventDefault();
-        onClick?.(e);
-      }}
-    >
-      {children}
-    </a>
+    <Tooltip content={title}>
+      <a
+        href={url ?? "#"}
+        target={external ? "_blank" : target}
+        rel={external ? "noreferrer" : undefined}
+        id={id}
+        aria-label={ariaLabel}
+        className={classes}
+        data-ui="link"
+        data-variant={variant}
+        onClick={(e) => {
+          if (!url) e.preventDefault();
+          onClick?.(e);
+        }}
+      >
+        {children}
+      </a>
+    </Tooltip>
   );
 }

@@ -9,6 +9,7 @@ import StepIcon from "./StepIcon";
 import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { clonedStepMessage, zeroPersistenceMessage } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /** The rerun icon on a finished step (run_live/components.ex `step_rerun_tag`). */
 function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStorageHref: string | null; onRetry: () => void }) {
@@ -62,7 +63,11 @@ export function StepListItem({
         <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-gray-800 hover:text-primary-500">
           {step.jobName}
         </TextLink>
-        {step.cloned && <span className="hero-paper-clip-mini h-3 w-3" title={clonedStepMessage} />}
+        {step.cloned && (
+          <Tooltip content={clonedStepMessage}>
+            <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini h-3 w-3" />
+          </Tooltip>
+        )}
         &bull;
         <span>
           started <DateTime value={step.startedAt} format="time_only" />

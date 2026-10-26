@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
+import Tooltip from "../Tooltip";
 
 /** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
 export type SidebarVariant = "project" | "profile" | "admin";
@@ -201,13 +202,15 @@ export default function Sidebar({
           </div>
           {user.experimentalFeatures && (
             <div className="mt-3 border-t border-white/10 pt-3">
-              <div
-                title="You're using features that are still being built. Things may work differently for you than for your teammates."
-                className="menu-item mx-3 flex h-8 items-center rounded-lg text-sm font-medium text-amber-300"
+              <Tooltip
+                content="You're using features that are still being built. Things may work differently for you than for your teammates."
+                side="right"
               >
-                <span className="hero-wrench-screwdriver h-5 w-5" />
-                <span className="menu-item-text truncate">Experimental</span>
-              </div>
+                <div className="menu-item mx-3 flex h-8 items-center rounded-lg text-sm font-medium text-amber-300">
+                  <span className="hero-wrench-screwdriver h-5 w-5" />
+                  <span className="menu-item-text truncate">Experimental</span>
+                </div>
+              </Tooltip>
             </div>
           )}
           <SidebarLogo releaseLabel={releaseLabel} collapsed={collapsed} />
@@ -216,22 +219,24 @@ export default function Sidebar({
             type="button"
             onClick={onToggle}
             className="sidebar-toggle-btn mt-2 flex border-t border-white/10 py-1.5 pl-6 transition-colors hover:bg-white/5 focus:outline-none"
-            title="Toggle sidebar"
             aria-label="Toggle sidebar"
           >
-            <svg className="h-5 w-5 text-white/70" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true">
-              {collapsed ? (
-                <path
-                  fillRule="evenodd"
-                  d="M12.54 9.154l-3.444 3.442 1.058 1.058 4.5-4.5-4.5-4.5-1.058 1.057 3.444 3.443zm-7.194-4.5v9h1.5v-9h-1.5z"
-                />
-              ) : (
-                <path
-                  fillRule="evenodd"
-                  d="M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z"
-                />
-              )}
-            </svg>
+            {/* On the icon, not the button: the button spans the sidebar, so the tooltip would float off its far edge. */}
+            <Tooltip content="Toggle sidebar" side="right">
+              <svg className="h-5 w-5 text-white/70" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true">
+                {collapsed ? (
+                  <path
+                    fillRule="evenodd"
+                    d="M12.54 9.154l-3.444 3.442 1.058 1.058 4.5-4.5-4.5-4.5-1.058 1.057 3.444 3.443zm-7.194-4.5v9h1.5v-9h-1.5z"
+                  />
+                ) : (
+                  <path
+                    fillRule="evenodd"
+                    d="M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z"
+                  />
+                )}
+              </svg>
+            </Tooltip>
           </button>
         </nav>
       </div>

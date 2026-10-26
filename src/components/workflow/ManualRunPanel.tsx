@@ -6,6 +6,7 @@ import DataclipTypePill from "../history/DataclipTypePill";
 import Button from "../Button";
 import Card from "../Card";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import { FieldError } from "../Inputs";
 import CodeEditor from "./CodeEditor";
@@ -15,6 +16,7 @@ import NewRunButton from "./NewRunButton";
 import SearchInput from "../SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatLocalDate, formatShortLocalDateTime, shortUuid, uuidOf } from "../../utils/format";
+import Tooltip from "../Tooltip";
 
 type Tab = "empty" | "custom" | "existing";
 
@@ -146,7 +148,13 @@ export default function ManualRunPanel({
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     {i === 0 ? (
-                      <span className="hero-star-solid size-4 shrink-0 text-primary-400 group-hover:text-primary-600" title="Current dataclip for this step" />
+                      <Tooltip content="Current dataclip for this step">
+                        <span
+                          role="img"
+                          aria-label="Current dataclip for this step"
+                          className="hero-star-solid size-4 shrink-0 text-primary-400 group-hover:text-primary-600"
+                        />
+                      </Tooltip>
                     ) : (
                       <span className="hero-document-text size-4 shrink-0 group-hover:text-primary-600" />
                     )}
@@ -203,7 +211,7 @@ export default function ManualRunPanel({
             tabs={tabOptions}
             active={tab}
             onChange={setTab}
-            after={onClosePanel && <IconButton icon="hero-x-mark" label="Close panel" size="sm" onClick={onClosePanel} />}
+            after={onClosePanel && <CloseButton label="Close panel" size="sm" onClick={onClosePanel} />}
           />
         )}
         <div className="flex-1 overflow-auto">{fromEdge ? edgeMessage : selected ? selectedView : <div className="flex h-full min-h-0 flex-col">{tabContent}</div>}</div>

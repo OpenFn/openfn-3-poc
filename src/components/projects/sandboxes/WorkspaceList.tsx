@@ -6,64 +6,69 @@ import WorkspaceCard from "./WorkspaceCard";
 
 /**
  * The sandboxes page list (SandboxLive.Components.workspace_list): the root
- * project card, its live sandboxes (or the dashed "No sandboxes found" box),
- * then a "Scheduled for deletion" section.
+ * card (a sandbox card when the root is a sandbox), its live sandboxes (or
+ * the dashed "No sandboxes found" box), then a "Scheduled for deletion"
+ * section.
  */
 export default function WorkspaceList({
   root,
+  rootIsSandbox = false,
   sandboxes,
   currentProjectId,
-  canCreate = true,
-  disabledReason,
+  newHref,
+  createBlockedReason = null,
   onMerge,
   onEdit,
   onDelete,
   onRestore,
 }: {
   root: SandboxRow;
+  rootIsSandbox?: boolean;
   sandboxes: SandboxRow[];
   currentProjectId: string;
-  canCreate?: boolean;
-  disabledReason?: string | undefined;
+  /** "Create your first sandbox" links here. */
+  newHref: string;
+  /** Shown instead of that link when the user can't create one. */
+  createBlockedReason?: string | null;
   onMerge?: (s: SandboxRow) => void;
   onEdit?: (s: SandboxRow) => void;
   onDelete?: (s: SandboxRow) => void;
-  onRestore?: (s: SandboxRow) => void;
+  onRestore?: (s: SandboxRow) => Promise<void>;
 }) {
   const active = sandboxes.filter((s) => !s.scheduledDeletion);
   const scheduled = sandboxes.filter((s) => s.scheduledDeletion);
-  const card = (s: SandboxRow) => (
+  const card = (s: SandboxRow, isRoot = false) => (
     <WorkspaceCard
       key={s.id}
       workspace={s}
+      isRoot={isRoot}
       isCurrent={s.id === currentProjectId}
       onMerge={() => onMerge?.(s)}
       onEdit={() => onEdit?.(s)}
       onDelete={() => onDelete?.(s)}
-      onRestore={() => onRestore?.(s)}
+      onRestore={async () => {
+        await onRestore?.(s);
+      }}
     />
   );
 
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <WorkspaceCard workspace={root} isRoot={root.parentId === null} isCurrent={root.id === currentProjectId} />
+        {card(root, !rootIsSandbox)}
         {active.length === 0 && scheduled.length === 0 ? (
           <Card dashed className="space-y-3 py-8 text-center text-sm text-gray-500">
             <p className="text-base font-medium">No sandboxes found</p>
             <p>
-              {canCreate ? (
+              {createBlockedReason ?? (
                 <>
-                  <TextLink to={`/projects/${currentProjectId}/sandboxes/new`}>Create your first sandbox</TextLink> to
-                  start experimenting.
+                  <TextLink to={newHref}>Create your first sandbox</TextLink> to start experimenting.
                 </>
-              ) : (
-                disabledReason
               )}
             </p>
           </Card>
         ) : (
-          active.map(card)
+          active.map((s) => card(s))
         )}
       </div>
       {scheduled.length > 0 && (
@@ -71,7 +76,7 @@ export default function WorkspaceList({
           <Heading as="h2" size="lg">
             Scheduled for deletion
           </Heading>
-          {scheduled.map(card)}
+          {scheduled.map((s) => card(s))}
         </div>
       )}
     </div>
