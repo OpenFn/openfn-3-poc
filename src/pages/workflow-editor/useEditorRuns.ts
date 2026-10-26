@@ -1,5 +1,7 @@
 import { useMemo } from "react";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { dataclipsIn, findRun, stepsOf, workOrdersOfWorkflow } from "../../mock-data/history";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { logsOf, runsOfWorkOrder } from "../../mock-data/history-extra";
 import type { MiniHistoryWorkOrder } from "../../components/workflow/MiniHistory";
 import type { RunOverlay } from "../../components/workflow/WorkflowDiagram";

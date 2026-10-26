@@ -1,4 +1,5 @@
 import LiveDashboardHome from "../../components/admin/LiveDashboardHome";
+// eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { liveDashboard } from "../../mock-data/admin";
 
 /**

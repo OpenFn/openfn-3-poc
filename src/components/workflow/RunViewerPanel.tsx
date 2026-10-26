@@ -1,4 +1,6 @@
-import type { Dataclip, LogLine, Run, Step } from "../../types/history";
+import type { LogLine } from "../../types/history";
+// eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
+import type { Dataclip, Run, Step } from "../../mock-data/models/history";
 import { finalRunStates } from "../../constants";
 import { formatElapsed, formatLocalDateTime, uuidOf } from "../../utils/format";
 import { cn } from "../../utils/cn";

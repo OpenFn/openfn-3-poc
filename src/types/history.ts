@@ -20,58 +20,6 @@ export type StepExitReason = "success" | "fail" | "crash" | "cancel" | "kill" | 
 
 export type DataclipType = "http_request" | "global" | "step_result" | "saved_input" | "kafka";
 
-export interface Dataclip {
-  id: string;
-  projectId: string;
-  type: DataclipType;
-  name: string | null;
-  body: unknown;
-  insertedAt: string;
-  /** Body wiped by the project's retention policy. */
-  wiped: boolean;
-}
-
-export interface Step {
-  id: string;
-  runId: string;
-  jobId: string;
-  jobName: string;
-  exitReason: StepExitReason | null;
-  /** Why a killed step was killed (SecurityError, TimeoutError, OOMError…); picks the icon. */
-  errorType?: string | null;
-  startedAt: string;
-  finishedAt: string | null;
-  /** When the step row was written. A step older than its run was cloned from an earlier run. */
-  insertedAt?: string;
-  inputDataclipId: string;
-  outputDataclipId: string | null;
-}
-
-export interface Run {
-  id: string;
-  workOrderId: string;
-  state: RunState;
-  startingTrigger: string | null;
-  startingJob: string | null;
-  createdBy: string | null;
-  insertedAt: string;
-  startedAt: string | null;
-  finishedAt: string | null;
-  stepIds: string[];
-}
-
-export interface WorkOrder {
-  id: string;
-  projectId: string;
-  workflowId: string;
-  workflowName: string;
-  state: WorkOrderState;
-  dataclipId: string;
-  insertedAt: string;
-  lastActivity: string;
-  runIds: string[];
-}
-
 export interface LogLine {
   timestamp: string;
   /** "R/T", "JOB", "ADA", "CLI"; the worker may add others. */
@@ -104,8 +52,19 @@ export interface RunWorkflow {
 }
 
 /** A step on the run page: its own snapshot version pins the inspect link. */
-export interface RunStep extends Omit<Step, "runId"> {
+export interface RunStep {
+  id: string;
+  jobId: string;
+  jobName: string;
+  exitReason: StepExitReason | null;
+  /** Why a killed step was killed (SecurityError, TimeoutError, OOMError…); picks the icon. */
+  errorType?: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  /** When the step row was written. A step older than its run was cloned from an earlier run. */
   insertedAt: string;
+  inputDataclipId: string;
+  outputDataclipId: string | null;
   snapshotLockVersion: number;
 }
 

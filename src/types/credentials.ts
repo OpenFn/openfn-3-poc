@@ -1,50 +1,6 @@
-/** Credentials, OAuth clients and keychain credentials: the replica's model, then the credential index's contract. Types only: no data, no behaviour. */
+/** Credentials, OAuth clients and keychain credentials: the credential index's contract. Types only: no data, no behaviour. */
 
 export type TransferStatus = "pending" | "completed" | null;
-
-export interface Credential {
-  id: string;
-  name: string;
-  /** Adaptor short name ("dhis2"), "raw" or "oauth". */
-  schema: string;
-  ownerId: string;
-  projectIds: string[];
-  externalId: string | null;
-  /** Environment names; Lightning defaults to a single "main". */
-  environments: string[];
-  /** Only for schema "oauth"; null means the client was deleted. */
-  oauthClientId?: string | null;
-  transferStatus: TransferStatus;
-  /** ISO date the credential will be purged, when deletion is scheduled. */
-  scheduledDeletion: string | null;
-}
-
-export interface OauthClient {
-  id: string;
-  name: string;
-  ownerId: string;
-  /** Global clients are usable by every project on the instance. */
-  global: boolean;
-  projectIds: string[];
-  authorizationEndpoint: string;
-  tokenEndpoint: string;
-  revocationEndpoint: string;
-  introspectionEndpoint: string;
-  userinfoEndpoint: string;
-  mandatoryScopes: string[];
-  optionalScopes: string[];
-  scopesDocUrl: string;
-}
-
-export interface KeychainCredential {
-  id: string;
-  name: string;
-  /** JSONPath that picks the credential selector out of the run's input. */
-  path: string;
-  defaultCredentialId: string | null;
-  projectId: string;
-  createdById: string;
-}
 
 /**
  * One field of an adaptor's credential schema, as JsonSchemaBodyComponent
@@ -67,7 +23,7 @@ export interface SchemaField {
 // The credential index's contract, written by hand and shared by the user's
 // Credentials page (CredentialsIndexPageProps) and project settings'
 // Credentials tab (CredentialsSettings). Hosts send these; the replica maps
-// the model above onto them.
+// its models onto them.
 
 /** A project a credential or OAuth client is shared with, or can be. */
 export interface CredentialProjectRef {

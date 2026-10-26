@@ -3,7 +3,7 @@
  */
 import type { ProfilePageProps } from "../pages/profile/ProfilePage";
 import type { MfaSetupResult } from "../types/profile";
-import type { User } from "../types/users";
+import type { User } from "./models/users";
 
 /** VersionControl.github_enabled?(): the demo instance has no GitHub app configured, like the reference. */
 export const githubOauthEnabled = false;

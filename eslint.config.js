@@ -55,11 +55,28 @@ const local = {
   },
 }
 
-const routerMessage = 'Components navigate through useRouter() and Link from src/routing/router.'
+const routerMessage = 'Navigate through useRouter() and Link from src/routing/router.'
 const routerImports = [
   { name: 'react-router-dom', message: routerMessage },
   { name: 'react-router', message: routerMessage },
 ]
+
+// The replica's models (src/mock-data/models/) are its own records. Contract
+// shapes are written by hand in src/types/ and the replica maps the models
+// onto them, so a fixture change can't change a contract (STANDARDS §11).
+const modelImports = {
+  group: ['**/mock-data/models', '**/mock-data/models/**'],
+  message: "Models are the replica's records: take a hand-written contract shape from src/types/ (STANDARDS §11).",
+}
+const mockDataImports = {
+  // Any other mock-data path: models get their own message.
+  regex: '(^|/)mock-data(/(?!models(/|$)).*)?$',
+  message: 'Take data as props; the replica loads it. Types live in src/types/, helpers in src/utils/.',
+}
+const sessionImports = {
+  group: ['**/session', '**/session/**'],
+  message: 'Take the user and permissions as props; the replica reads the session.',
+}
 
 // The design system runs outside Lightning too (the replica, Storybook), so it
 // can't lean on LiveView or the browser URL. URLs go through src/routing.
@@ -114,31 +131,31 @@ export default defineConfig([
     },
   },
   {
-    // Utils and annotations navigate through the router adapter too.
-    files: ['src/utils/**/*.{ts,tsx}', 'src/annotations/**/*.{ts,tsx}'],
+    // Annotations navigate through the router adapter too.
+    files: ['src/annotations/**/*.{ts,tsx}'],
     rules: { 'no-restricted-imports': ['error', { paths: routerImports }] },
   },
   {
-    // The data seam: components get records and permission booleans as props
-    // (pages load them), so wiring the backend only touches pages. Stories
-    // may use fixtures. An import that still crosses the seam is on the wiring
-    // list and says why: `// eslint-disable-next-line no-restricted-imports -- wiring: …`.
-    files: ['src/components/**/*.{ts,tsx}'],
-    ignores: ['**/*.stories.tsx'],
+    // The data seam: components, pages and utils get records and permission
+    // booleans as props (the wiring loads them), so wiring the backend only
+    // touches `*.replica.*` files and `*Replica.ts` helpers. Stories may use
+    // fixtures. An import that still crosses the seam says why, with
+    // `-- wiring: …` (it stays) or `-- debt: …` (page not yet split).
+    files: ['src/components/**/*.{ts,tsx}', 'src/pages/**/*.{ts,tsx}', 'src/utils/**/*.{ts,tsx}'],
+    ignores: ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.test.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
           paths: routerImports,
-          patterns: [
-            {
-              group: ['**/mock-data', '**/mock-data/**'],
-              message:
-                'Components take data as props; load it in the page. Types live in src/types/, helpers in src/utils/.',
-            },
-          ],
+          patterns: [modelImports, mockDataImports, sessionImports],
         },
       ],
     },
+  },
+  {
+    // Contract shapes are written by hand, never built on models or fixtures.
+    files: ['src/types/**/*.ts'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, mockDataImports] }] },
   },
 ])
