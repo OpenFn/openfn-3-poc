@@ -2,6 +2,7 @@ import type { MouseEventHandler } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import { shortUuid } from "../utils/format";
+import Tooltip from "./Tooltip";
 
 /**
  * The gray monospace short-id chip for work order, run and dataclip ids.
@@ -27,14 +28,18 @@ export default function UuidChip({
   const short = shortUuid(uuid, length);
   if (to && !disabled) {
     return (
-      <Link to={to} onClick={onClick} title={tooltip ?? uuid} className="link-uuid" data-ui="uuid-chip">
-        {short}
-      </Link>
+      <Tooltip content={tooltip ?? uuid}>
+        <Link to={to} onClick={onClick} className="link-uuid" data-ui="uuid-chip">
+          {short}
+        </Link>
+      </Tooltip>
     );
   }
   return (
-    <span title={tooltip ?? uuid} className={cn("link-uuid", disabled && "cursor-not-allowed")} data-ui="uuid-chip">
-      {short}
-    </span>
+    <Tooltip content={tooltip ?? uuid}>
+      <span className={cn("link-uuid", disabled && "cursor-not-allowed")} data-ui="uuid-chip">
+        {short}
+      </span>
+    </Tooltip>
   );
 }

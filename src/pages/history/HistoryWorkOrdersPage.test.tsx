@@ -585,7 +585,7 @@ describe("HistoryWorkOrdersPage", () => {
     renderPage({ rows: [wo] });
     await userEvent.click(rowOf("c1"));
     const marker = /originally executed in a previous run/;
-    expect(within(document.getElementById("step-s1")!).getByTitle(marker)).toBeTruthy();
-    expect(within(document.getElementById("step-s2")!).queryByTitle(marker)).toBeNull();
+    expect(within(document.getElementById("step-s1")!).getByRole("img", { name: marker })).toBeTruthy();
+    expect(within(document.getElementById("step-s2")!).queryByRole("img", { name: marker })).toBeNull();
   });
 });

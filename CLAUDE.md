@@ -132,6 +132,7 @@ everywhere. Reach for these first:
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
 | A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard); `Spinner` for anything loading |
 | An icon-only action | `IconButton` (always give it a `label`; `to`/`href` for icon links, `external` to open `href` in a new tab, `tone="danger"`, or pass an SVG element as `icon`) |
+| The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
 | A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
 | A name that becomes a URL-safe slug | `NameField` (input plus the "will be named" badge) |
@@ -150,7 +151,7 @@ everywhere. Reach for these first:
 | A heading inside a page | `Heading` (`size` xl/lg/md/sm/eyebrow, `as` for the level) |
 | Labelled values | `DetailList` + `DetailItem` (`rows` or `grid`) |
 | A timestamp | `DateTime` (hover shows UTC, click copies it) |
-| A tooltip | `Tooltip` (`copy` makes a click copy that text and say "Copied!"); `InfoTooltip` for the faded info icon next to a label |
+| A tooltip | `Tooltip` (`copy` makes a click copy that text and say "Copied!"; `disabled` when the child is a disabled control, so a wrapper takes its hover and swallows the click); `InfoTooltip` for the faded info icon next to a label |
 | A short work order, run or dataclip id | `UuidChip` (`to` links it, `length={7}` in the workflow editor) |
 | An on/off switch | `Toggle` (`note` adds gray text after the label) |
 | An inline link | `TextLink` (`variant="danger"` for destructive ones) |
@@ -167,8 +168,32 @@ element selectors or utility classes, so a new primitive or variant needs its
 hook, and the GDS theme is worth a look after styling changes.
 
 Dialogs, menus and popovers sit on Headless UI (`@headlessui/react`), which
-handles focus, keyboard and positioning. Don't hand-roll `fixed inset-0`
+handles focus, keyboard and positioning. `Tooltip` sits on Floating UI
+(`@floating-ui/react`), the library under Headless UI. Don't hand-roll `fixed inset-0`
 overlays, click-outside handlers or `absolute` dropdown panels.
+
+**Primitives own their behaviour.** Callers pass props; they never patch
+around a primitive.
+
+- **Fix the primitive, not the caller.** If a caller needs a workaround (a
+  wrapper span, `title=""`, an offset tweak), the fix belongs in the
+  primitive. A disabled control's tooltip is `Tooltip`'s `disabled` prop,
+  not a span in five components. A close X with no tooltip is `CloseButton`,
+  not `title=""` on seven buttons.
+- **Off means off.** A primitive with nothing to show (`Tooltip` with no
+  `content`) renders its child unchanged: no listeners, no effect on
+  anything around it. It also keeps the same element tree, so toggling it
+  never remounts the child and loses focus.
+- **One library per job.** Overlays share one stack (Headless UI and Floating
+  UI) so focus, Escape and stacking agree. If a primitive needs workarounds
+  against its library's internals, swap the library, as `Tooltip` did with
+  Radix.
+- **Anchor to what it describes.** A tooltip on a full-width row floats far
+  from its icon; put it on the icon.
+- **No options nobody uses.** Add a prop when a caller needs it, not before.
+- **Every rule has a test that fails without it.** Behaviour in a primitive
+  is shared by every page, so test it in the primitive's own test file, not
+  through each caller.
 
 **Feature components** (`src/components/<area>/`) are one panel or section
 of a page (`WorkOrdersTable`, `WebhookSecurityPanel`). They're often used

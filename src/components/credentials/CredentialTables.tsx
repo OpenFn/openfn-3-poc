@@ -4,6 +4,7 @@ import InfoTooltip from "../InfoTooltip";
 import Pill from "../Pill";
 import { Table, Td, Th, Tr } from "../Table";
 import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "../../types/credentials";
+import Tooltip from "../Tooltip";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):
@@ -131,7 +132,11 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
               <Td className="wrap-break-word max-w-48">
                 {credential.externalId ? <Code>{credential.externalId}</Code> : <span className="text-gray-400">-</span>}
               </Td>
-              <Td title={credential.environments.join(", ")}>{credential.environments.length}</Td>
+              <Td>
+                <Tooltip content={credential.environments.join(", ")}>
+                  <span>{credential.environments.length}</span>
+                </Tooltip>
+              </Td>
               <Td actions>{actions?.(credential)}</Td>
             </Tr>
           ))}

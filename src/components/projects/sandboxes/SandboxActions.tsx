@@ -1,12 +1,16 @@
 import type { SandboxRow } from "../../../types/sandboxes";
+import { errorMessage } from "../../../utils/errors";
+import { useAction } from "../../../utils/useAction";
 import Button from "../../Button";
 import IconButton from "../../IconButton";
+import { useToast } from "../../Toast";
 import BranchesIcon from "./BranchesIcon";
 
 /**
  * The icon buttons on a sandbox card (SandboxLive.Components.sandbox_actions):
  * Merge, Edit and Delete, greyed with a "not authorized" tooltip when the
- * user can't. A sandbox scheduled for deletion gets a Restore button instead.
+ * user can't. A sandbox scheduled for deletion gets a Restore button instead,
+ * greyed when the user can't or the plan's limit blocks it.
  */
 export default function SandboxActions({
   sandbox,
@@ -19,17 +23,23 @@ export default function SandboxActions({
   onMerge?: (() => void) | undefined;
   onEdit?: (() => void) | undefined;
   onDelete?: (() => void) | undefined;
-  onRestore?: (() => void) | undefined;
+  /** Restore spins while this is out, and a rejection's message toasts. Each card has its own, so two rows can restore at once. */
+  onRestore?: (() => Promise<void>) | undefined;
 }) {
+  const toast = useToast();
+  const restore = useAction(
+    async () => {
+      await onRestore?.();
+    },
+    { onError: (e) => toast(errorMessage(e), "error") },
+  );
   if (sandbox.scheduledDeletion) {
+    const blocked = sandbox.canCancelDeletion
+      ? (sandbox.restoreBlockedReason ?? undefined)
+      : "You are not authorized to cancel deletion of this sandbox";
     return (
       <div id={`cancel-deletion-sandbox-${sandbox.id}`}>
-        <Button
-          theme="secondary"
-          disabled={!sandbox.canDelete}
-          tooltip={sandbox.canDelete ? undefined : "You are not authorized to cancel deletion of this sandbox"}
-          onClick={onRestore}
-        >
+        <Button theme="secondary" disabled={!!blocked} tooltip={blocked} pending={restore.pending} onClick={() => void restore.run()}>
           Restore
         </Button>
       </div>

@@ -5,6 +5,7 @@ import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
 import { RequestError } from "../../utils/errors";
 import ProfilePage, { type ProfilePageProps } from "./ProfilePage";
+import { tooltipOf } from "../../test/tooltip";
 
 const data = (): Omit<ProfilePageProps, `on${string}`> => ({
   user: {
@@ -363,7 +364,7 @@ describe("ProfilePage", () => {
   });
 
   describe("GitHub", () => {
-    it("links to GitHub to connect or reconnect, and says when it isn't set up", () => {
+    it("links to GitHub to connect or reconnect, and says when it isn't set up", async () => {
       const { rerender } = renderPage();
       const link = () => document.getElementById("connect-github-link")!;
       expect(link().getAttribute("href")).toBe("https://github.com/login/oauth/authorize?client_id=x");
@@ -371,7 +372,7 @@ describe("ProfilePage", () => {
       expect(link().getAttribute("target")).toBe("_blank");
       rerender({ github: { ...data().github, status: "expired" } });
       expect(link().textContent).toBe("Reconnect your GitHub Account");
-      expect(link().getAttribute("title")).toBe("Your token has expired");
+      expect(await tooltipOf(link())).toBe("Your token has expired");
       rerender({ github: { connectHref: null, status: "none" } });
       expect((document.getElementById("github-oauth-not-enabled") as HTMLButtonElement).disabled).toBe(true);
     });
