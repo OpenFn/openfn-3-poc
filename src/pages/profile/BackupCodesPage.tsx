@@ -2,9 +2,7 @@ import Header from "../../components/Header";
 import { Centered, PageContent } from "../../components/PageContent";
 import BackupCodesCard from "../../components/profile/BackupCodesCard";
 import MfaDisabledNotice from "../../components/profile/MfaDisabledNotice";
-import { useToast } from "../../components/Toast";
 import type { BackupCode } from "../../types/tokens";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -26,8 +24,7 @@ export interface BackupCodesPageProps {
  * and toasts live in BackupCodesPage.replica.tsx.
  */
 export default function BackupCodesPage({ codes, mfaEnabled, onRegenerate, onPrint }: BackupCodesPageProps) {
-  const toast = useToast();
-  const regenerate = useAction(onRegenerate, { onError: (e) => toast(errorMessage(e), "error") });
+  const regenerate = useAction(onRegenerate, { onError: "toast" });
   return (
     <PageContent header={<Header title="Two-factor backup codes" />}>
       <Centered>

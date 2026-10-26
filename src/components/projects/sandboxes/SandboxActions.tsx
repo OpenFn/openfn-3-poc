@@ -1,9 +1,7 @@
 import type { SandboxRow } from "../../../types/sandboxes";
-import { errorMessage } from "../../../utils/errors";
 import { useAction } from "../../../utils/useAction";
 import Button from "../../Button";
 import IconButton from "../../IconButton";
-import { useToast } from "../../Toast";
 import BranchesIcon from "./BranchesIcon";
 
 /**
@@ -26,12 +24,11 @@ export default function SandboxActions({
   /** Restore spins while this is out, and a rejection's message toasts. Each card has its own, so two rows can restore at once. */
   onRestore?: (() => Promise<void>) | undefined;
 }) {
-  const toast = useToast();
   const restore = useAction(
     async () => {
       await onRestore?.();
     },
-    { onError: (e) => toast(errorMessage(e), "error") },
+    { onError: "toast" },
   );
   if (sandbox.scheduledDeletion) {
     const blocked = sandbox.canCancelDeletion

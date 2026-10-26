@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { MergePreviewResult, MergeValues } from "../../../types/sandboxes";
 import { errorMessage } from "../../../utils/errors";
 import { formatGracePeriod } from "../../../utils/format";
+import { useAction } from "../../../utils/useAction";
 import Alert from "../../Alert";
 import FormModal from "../../FormModal";
 import { Checkbox, Select } from "../../Inputs";
@@ -88,19 +89,16 @@ export default function MergeSandboxModal({
     credentials: new Set(),
     collections: new Set(),
   });
-  const latest = useRef(0);
-  const ask = (targetId: string | null) => {
-    const n = ++latest.current;
-    onPreview(targetId).then(
-      (next) => n === latest.current && setS((cur) => applyPreview(cur, next)),
-      (e: unknown) =>
-        n === latest.current &&
-        setS((cur) => ({ ...cur, loading: false, error: errorMessage(e), shown: cur.preview?.targetId ?? null }))
-    );
-  };
+  // Only the newest preview asked for counts; an older answer, or failure, is dropped.
+  const previewing = useAction(onPreview, {
+    onSuccess: (next) => setS((cur) => applyPreview(cur, next)),
+    onError: (e) => setS((cur) => ({ ...cur, loading: false, error: errorMessage(e), shown: cur.preview?.targetId ?? null })),
+    latest: true,
+  });
+  const ask = previewing.run;
   const askRef = useRef(ask);
   useEffect(() => {
-    askRef.current(null);
+    void askRef.current(null);
   }, []);
 
   const { preview } = s;
@@ -158,7 +156,7 @@ export default function MergeSandboxModal({
             onChange={(e) => {
               const targetId = e.target.value;
               setS((cur) => ({ ...cur, shown: targetId, loading: true, error: null }));
-              ask(targetId);
+              void ask(targetId);
             }}
           />
         </div>

@@ -29,7 +29,8 @@ prop predates D145 (§11) and is still to move into `onGenerate`'s reply.
 
 ## 1. Async action
 
-Every handler that will talk to the server is `() => Promise<void>` and runs
+Every handler that will talk to the server is async, `() => Promise<void>`,
+or `() => Promise<T>` for a load whose result goes to `onSuccess`, and runs
 through `useAction` (`src/utils/useAction.ts`), or through a primitive that
 does (`FormModal`, `ConfirmModal`).
 
@@ -41,8 +42,17 @@ does (`FormModal`, `ConfirmModal`).
 - **Failure.** The handler throws (a `RequestError` from `src/utils/errors.ts`
   once wired). The primitive stays where it was: a modal stays open and shows
   the message as an `Alert` above the form; a page button toasts it with
-  `useAction`'s `onError`. The user can retry or cancel.
-- **Double submit** is impossible: `run` ignores calls while pending.
+  `useAction(handler, { onError: "toast" })`. The user can retry or cancel.
+- **Double submit** is impossible: `run` ignores calls while pending, unless `latest` is set.
+- **One per row.** A list whose rows each have an action uses `useActions`:
+  `run(id, ...args)`, `pending(id)`, `error(id)`, `reset(id)`. Each id has
+  its own pending, error and double-submit guard, so two rows can run at
+  once; `pending()` with no id says whether any is running.
+- **Only the newest answer.** A request whose answer can arrive after the
+  user moved on (a select changed, another tab, the modal closed) sets
+  `latest: true`. A new run supersedes the one in flight, `cancel()` and
+  unmounting drop it, and a dropped answer, success or failure, never lands.
+  A load hands its result to `onSuccess`.
 - **Until wired,** page mutations `await simulateRequest(...)` from
   `src/mock-data/request.ts`, so the pending state is visible in the demo.
   `failNextRequest(message, fieldErrors?)` makes the next call reject, for

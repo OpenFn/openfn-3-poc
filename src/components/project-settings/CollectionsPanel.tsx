@@ -1,15 +1,13 @@
 import { useState } from "react";
 import Button from "../Button";
 import SectionHeader from "../SectionHeader";
-import { useToast } from "../Toast";
 import CollectionDeleteModal from "./CollectionDeleteModal";
 import CollectionFormModal from "./CollectionFormModal";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 import CollectionsTable from "./CollectionsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { CollectionRow, CollectionsSettings } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
+import { useActions } from "../../utils/useAction";
 
 interface Props {
   collections: CollectionsSettings;
@@ -33,11 +31,10 @@ type Action =
 export default function CollectionsPanel({ collections: { collections, canManage }, sandbox, onCreate, onRename, onDelete, onPreview }: Props) {
   const [action, setAction] = useState<Action>(null);
   const close = () => setAction(null);
-  const toast = useToast();
-  const [previewingId, setPreviewingId] = useState<string | null>(null);
-  const preview = useAction(
-    async (collection: CollectionRow) => setAction({ kind: "preview", collection, json: await onPreview(collection.id) }),
-    { onError: (e) => toast(errorMessage(e), "error") }
+  // Only the newest preview opens: asking for another row drops the one still loading.
+  const preview = useActions(
+    async (_id: string, collection: CollectionRow) => ({ kind: "preview" as const, collection, json: await onPreview(collection.id) }),
+    { onSuccess: setAction, onError: "toast", latest: true }
   );
 
   return (
@@ -98,11 +95,8 @@ export default function CollectionsPanel({ collections: { collections, canManage
         collections={collections}
         canManage={canManage}
         onCreate={() => setAction({ kind: "new" })}
-        previewingId={preview.pending ? previewingId : null}
-        onPreview={(collection) => {
-          setPreviewingId(collection.id);
-          void preview.run(collection);
-        }}
+        previewingId={collections.find((c) => preview.pending(c.id))?.id ?? null}
+        onPreview={(collection) => void preview.run(collection.id, collection)}
         onEdit={(collection) => setAction({ kind: "edit", collection })}
         onDelete={(collection) => setAction({ kind: "delete", collection })}
       />

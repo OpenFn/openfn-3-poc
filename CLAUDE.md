@@ -134,7 +134,7 @@ everywhere. Reach for these first:
 |---|---|
 | An action | `Button` (`to` for routes, `href` for plain links; `size="xs" theme="secondary"` for table row actions; `pending` while its request runs) |
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
-| A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard); `Spinner` for anything loading |
+| A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard; `useActions` for one per row, `latest` when only the newest answer counts); `Spinner` for anything loading |
 | An icon-only action | `IconButton` (always give it a `label`; `to`/`href` for icon links, `external` to open `href` in a new tab, `tone="danger"`, or pass an SVG element as `icon`) |
 | The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |

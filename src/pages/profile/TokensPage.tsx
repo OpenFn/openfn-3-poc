@@ -4,9 +4,7 @@ import { Centered, PageContent } from "../../components/PageContent";
 import NewTokenBanner from "../../components/profile/NewTokenBanner";
 import TokensTable from "../../components/profile/TokensTable";
 import TokenDeletionModal from "../../components/profile/TokenDeletionModal";
-import { useToast } from "../../components/Toast";
 import type { ApiToken } from "../../types/tokens";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
@@ -32,8 +30,7 @@ export interface TokensPageProps {
  * routing live in TokensPage.replica.tsx.
  */
 export default function TokensPage({ tokens, newToken, tokenId, onGenerate, onDelete, onClose }: TokensPageProps) {
-  const toast = useToast();
-  const generate = useAction(onGenerate, { onError: (e) => toast(errorMessage(e), "error") });
+  const generate = useAction(onGenerate, { onError: "toast" });
 
   return (
     <PageContent
