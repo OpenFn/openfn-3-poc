@@ -7,6 +7,7 @@ import { Select, TextArea, TextInput } from "../Inputs";
 import TextLink from "../TextLink";
 import Toggle from "../Toggle";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
+import Tooltip from "../Tooltip";
 
 interface Props {
   edge: EditorEdge;
@@ -73,7 +74,13 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
               <span className="inline-flex items-center gap-2">
                 Javascript Expression
                 {unsafe && (
-                  <span className="hero-exclamation-triangle h-4 w-4 text-yellow-600" title="Expression contains potentially unsafe functions" />
+                  <Tooltip content="Expression contains potentially unsafe functions">
+                    <span
+                      role="img"
+                      aria-label="Expression contains potentially unsafe functions"
+                      className="hero-exclamation-triangle h-4 w-4 text-yellow-600"
+                    />
+                  </Tooltip>
                 )}
               </span>
             }

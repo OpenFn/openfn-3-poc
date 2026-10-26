@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, Ref } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
@@ -14,37 +14,38 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: "px-3.5 py-2.5",
 };
 
-// Lightning's new_inputs.ex button_theme_classes, enabled vs disabled.
+// Lightning's new_inputs.ex button_theme_classes, enabled vs disabled. Each theme gives its focus
+// outline a colour; Lightning's secondary has none, so here it uses primary.
 const themeClasses: Record<ButtonTheme, { enabled: string; disabled: string }> = {
   primary: {
     enabled:
-      "bg-primary-600 hover:bg-primary-500 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
+      "bg-primary-600 hover:bg-primary-500 text-white focus-visible:outline-primary-600",
     disabled: "bg-primary-300 text-white",
   },
   secondary: {
-    enabled: "bg-white hover:bg-gray-50 text-gray-900 ring-1 ring-gray-300 ring-inset",
+    enabled: "bg-white hover:bg-gray-50 text-gray-900 ring-1 ring-gray-300 ring-inset focus-visible:outline-primary-600",
     disabled: "bg-gray-50 text-gray-400 ring-1 ring-gray-200 ring-inset",
   },
   danger: {
     enabled:
-      "bg-red-600 hover:bg-red-500 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
+      "bg-red-600 hover:bg-red-500 text-white focus-visible:outline-red-600",
     disabled: "bg-red-300 text-white",
   },
   success: {
     enabled:
-      "bg-green-600 hover:bg-green-500 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600",
+      "bg-green-600 hover:bg-green-500 text-white focus-visible:outline-green-600",
     disabled: "bg-green-300 text-white",
   },
   warning: {
     enabled:
-      "bg-yellow-600 hover:bg-yellow-500 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600",
+      "bg-yellow-600 hover:bg-yellow-500 text-white focus-visible:outline-yellow-600",
     disabled: "bg-yellow-300 text-white",
   },
 };
 
 function buttonClasses(theme: ButtonTheme, size: ButtonSize = "md", disabled = false, className?: string) {
   return cn(
-    "rounded-md text-sm font-semibold shadow-xs phx-submit-loading:opacity-75 inline-flex items-center justify-center gap-x-1.5",
+    "rounded-md text-sm font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 phx-submit-loading:opacity-75 inline-flex items-center justify-center gap-x-1.5",
     sizeClasses[size],
     themeClasses[theme][disabled ? "disabled" : "enabled"],
     disabled && "cursor-not-allowed",
@@ -106,7 +107,6 @@ export default function Button({
   const shared = {
     id,
     className: classes,
-    title: tooltip,
     "data-ui": "button",
     "data-variant": theme,
     "data-pending": pending || undefined,
@@ -120,31 +120,28 @@ export default function Button({
   );
   // Links take the same handlers and aria props as buttons.
   const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
+  const wrap = (el: ReactElement) => (
+    <Tooltip content={tooltip} disabled={disabled && !pending}>
+      {el}
+    </Tooltip>
+  );
   if (to && !disabled) {
-    return (
+    return wrap(
       <Link to={to} {...link}>
         {children}
       </Link>
     );
   }
   if (href && !disabled) {
-    return (
+    return wrap(
       <a href={href} download={download} {...link}>
         {children}
       </a>
     );
   }
-  const button = (
+  return wrap(
     <button ref={ref} type={type} disabled={disabled} {...shared} {...rest}>
       {content}
     </button>
-  );
-  // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return disabled && tooltip && !pending ? (
-    <Tooltip content={tooltip}>
-      <span className="inline-flex">{button}</span>
-    </Tooltip>
-  ) : (
-    button
   );
 }

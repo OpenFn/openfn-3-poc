@@ -4,6 +4,7 @@ import { HEALTH_LOAD_ERROR } from "../../../constants";
 import type { ErrorSignatures, HealthQuery, Outcomes, RunVolume } from "../../../types/workflow-health";
 import { FAILED } from "./palette";
 import WorkflowHealth from "./WorkflowHealth";
+import { tooltipOf } from "../../../test/tooltip";
 
 const range = { from: "2026-10-07T10:00:00.000Z", to: "2026-10-14T10:00:00.000Z" };
 const zero = { success: 0, cancelled: 0, failed: 0, crashed: 0, killed: 0, exception: 0, lost: 0, rejected: 0 };
@@ -65,8 +66,7 @@ describe("WorkflowHealth range picker", () => {
   it("names the retention when a disabled range is hovered", async () => {
     renderHealth({ historyRetentionPeriod: 14 });
     // The tooltip hangs off the wrapper, since a disabled radio drops pointer events.
-    fireEvent.pointerMove(screen.getByRole("radio", { name: "Last 30 days" }).parentElement!, { pointerType: "mouse" });
-    expect((await screen.findAllByText("Only 14 days of history are kept for this project.")).length).toBeGreaterThan(0);
+    expect(await tooltipOf(screen.getByRole("radio", { name: "Last 30 days" }).parentElement!)).toBe("Only 14 days of history are kept for this project.");
   });
 });
 

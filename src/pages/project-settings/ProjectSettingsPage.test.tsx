@@ -562,14 +562,14 @@ describe("ProjectSettingsPage", () => {
       renderPage({ collaboration: { ...data().collaboration, canAddProjectUser: false } }, "#collaboration");
       const add = screen.getByRole("button", { name: "Add Collaborator(s)" }) as HTMLButtonElement;
       expect(add.disabled).toBe(true);
-      expect(add.title).toBe("You are not authorized to perform this action");
+      expect(add.getAttribute("aria-description")).toBe("You are not authorized to perform this action");
     });
 
     it("can't add collaborators past the plan's limit, and says so", () => {
       renderPage({ collaboration: { ...data().collaboration, addBlockedReason: "You have reached your collaborator limit." } }, "#collaboration");
       const add = screen.getByRole("button", { name: "Add Collaborator(s)" }) as HTMLButtonElement;
       expect(add.disabled).toBe(true);
-      expect(add.title).toBe("You have reached your collaborator limit.");
+      expect(add.getAttribute("aria-description")).toBe("You have reached your collaborator limit.");
     });
 
     it("can't change data storage", () => {
@@ -599,7 +599,7 @@ describe("ProjectSettingsPage", () => {
       renderPage({ security: { requiresMfa: false, canEditProject: false, canRequireMfa: true } }, "#security");
       const mfa = document.getElementById("toggle-mfa-switch") as HTMLButtonElement;
       expect(mfa.disabled).toBe(true);
-      expect(mfa.title).toBe("You do not have permission to perform this action");
+      expect(mfa.getAttribute("aria-description")).toBe("You do not have permission to perform this action");
     });
   });
 });
