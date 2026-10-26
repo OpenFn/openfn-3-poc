@@ -16,3 +16,5 @@ type Story = StoryObj<typeof SandboxActions>;
 export const Default: Story = {};
 export const NotAuthorized: Story = { args: { sandbox: { ...rows[0]!, canEdit: false, canDelete: false, canMerge: false } } };
 export const ScheduledForDeletion: Story = { args: { sandbox: rows.find((r) => r.scheduledDeletion)! } };
+/** Click Restore to see it spin. */
+export const Restoring: Story = { args: { sandbox: rows.find((r) => r.scheduledDeletion)!, onRestore: () => new Promise(() => {}) } };

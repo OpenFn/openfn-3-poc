@@ -2,6 +2,7 @@ import { formatNumber } from "../../../utils/format";
 import type { ErrorSignature } from "../../../types/workflow-health";
 import { cn } from "../../../utils/cn";
 import { EMPTY, FAILED, UNATTRIBUTED, adaptorLabel } from "./palette";
+import Tooltip from "../../Tooltip";
 
 const NO_STEP = "no-step";
 
@@ -39,9 +40,9 @@ export default function StepFailureBars({
           <li key={key} className="flex flex-col gap-2">
             <div className="flex items-baseline justify-between gap-4 text-sm">
               <div className="flex min-w-0 flex-col gap-1">
-                <span className={cn("truncate", key === NO_STEP ? "italic text-gray-500" : "text-gray-900")} title={label}>
-                  {label}
-                </span>
+                <Tooltip content={label}>
+                  <span className={cn("truncate", key === NO_STEP ? "italic text-gray-500" : "text-gray-900")}>{label}</span>
+                </Tooltip>
                 {adaptor && <span className="truncate font-mono text-xs text-gray-500">{adaptorLabel(adaptor)}</span>}
               </div>
               <span className="shrink-0 font-medium tabular-nums text-gray-900">{formatNumber(count)}</span>

@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
+import Tooltip from "./Tooltip";
 
 export type IconButtonSize = "sm" | "md" | "lg";
 
@@ -64,31 +65,30 @@ export default function IconButton({
     className
   );
   const content = typeof icon === "string" ? <span className={cn(icon, s.icon)} aria-hidden="true" /> : icon;
-  const common = { "aria-label": label, title: title ?? label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
+  const common = { "aria-label": label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
+  const hint = title ?? label;
 
   if ((to || href) && !rest.disabled) {
     const onClick = rest.onClick as unknown as MouseEventHandler<HTMLAnchorElement> | undefined;
-    return to ? (
-      <Link to={to} onClick={onClick} {...common}>
-        {content}
-      </Link>
-    ) : (
-      <a href={href} onClick={onClick} {...(external && { target: "_blank", rel: "noopener noreferrer" })} {...common}>
-        {content}
-      </a>
+    return (
+      <Tooltip content={hint}>
+        {to ? (
+          <Link to={to} onClick={onClick} {...common}>
+            {content}
+          </Link>
+        ) : (
+          <a href={href} onClick={onClick} {...(external && { target: "_blank", rel: "noopener noreferrer" })} {...common}>
+            {content}
+          </a>
+        )}
+      </Tooltip>
     );
   }
-  const button = (
-    <button ref={ref} type={type} {...rest} {...common}>
-      {content}
-    </button>
-  );
-  // Disabled buttons don't get hover events in every browser, so the tooltip goes on a wrapper.
-  return rest.disabled ? (
-    <span title={common.title} className="inline-flex">
-      {button}
-    </span>
-  ) : (
-    button
+  return (
+    <Tooltip content={hint} disabled={rest.disabled}>
+      <button ref={ref} type={type} {...rest} {...common}>
+        {content}
+      </button>
+    </Tooltip>
   );
 }

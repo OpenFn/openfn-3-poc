@@ -3,6 +3,7 @@ import Disclosure from "../Disclosure";
 import { cn } from "../../utils/cn";
 import Pill from "../Pill";
 import { formatUs } from "../../utils/format";
+import Tooltip from "../Tooltip";
 
 interface Segment {
   label: string;
@@ -95,19 +96,19 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
           >
             <div className="flex h-7 w-full min-w-0">
               {segs.map((s) => (
-                <div
-                  key={s.label}
-                  className={cn("relative flex items-center justify-center first:rounded-l last:rounded-r", s.color)}
-                  style={{ width: `${s.pct}%`, minWidth: 20 }}
-                  title={`${s.label}: ${formatUs(s.us)} ms`}
-                >
-                  {s.badge && (
-                    <Pill color="orange" square className="absolute -top-5 left-1/2 -translate-x-1/2 px-1 py-0">
-                      {s.badge}
-                    </Pill>
-                  )}
-                  <span className={cn("truncate px-0.5 font-medium", s.textColor)}>{segmentLabel(s)}</span>
-                </div>
+                <Tooltip key={s.label} content={`${s.label}: ${formatUs(s.us)} ms`}>
+                  <div
+                    className={cn("relative flex items-center justify-center first:rounded-l last:rounded-r", s.color)}
+                    style={{ width: `${s.pct}%`, minWidth: 20 }}
+                  >
+                    {s.badge && (
+                      <Pill color="orange" square className="absolute -top-5 left-1/2 -translate-x-1/2 px-1 py-0">
+                        {s.badge}
+                      </Pill>
+                    )}
+                    <span className={cn("truncate px-0.5 font-medium", s.textColor)}>{segmentLabel(s)}</span>
+                  </div>
+                </Tooltip>
               ))}
             </div>
             {ttfbPct ? <div className="absolute inset-y-0 z-10 w-0.5 bg-gray-700" style={{ left: `${ttfbPct}%` }} /> : null}

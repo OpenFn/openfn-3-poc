@@ -3,11 +3,13 @@ import type { ThemeMeta } from "../../theme/themes";
 import { useAnnotations } from "../../annotations/annotations-context";
 import { cn } from "../../utils/cn";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import { Radio } from "../Inputs";
 import Popover from "../Popover";
 import Toggle from "../Toggle";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
+import Tooltip from "../Tooltip";
 
 /**
  * Floating settings button in the bottom-right corner. Its panel opens and
@@ -43,7 +45,7 @@ export default function SettingsMenu() {
           <div data-devtools aria-label="Settings" className="space-y-4">
             <div className="flex items-center justify-between">
               <Heading size="sm">Settings</Heading>
-              <IconButton icon="hero-x-mark" label="Close settings" title="Close" size="sm" onClick={close} />
+              <CloseButton label="Close settings" size="sm" onClick={close} />
             </div>
             <Toggle
               checked={annotations.open}
@@ -84,10 +86,13 @@ function ThemeName({ theme }: { theme: ThemeMeta }) {
         ))}
       </span>
       {theme.name}
-      <span
-        title={dark ? "Dark" : "Light"}
-        className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-gray-200")}
-      />
+      <Tooltip content={dark ? "Dark" : "Light"}>
+        <span
+          role="img"
+          aria-label={dark ? "Dark" : "Light"}
+          className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-gray-200")}
+        />
+      </Tooltip>
     </span>
   );
 }
