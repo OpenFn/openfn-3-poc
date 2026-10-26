@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
 import ChannelRequestShowPage from "./ChannelRequestShowPage";
+import { tooltipOf } from "../../test/tooltip";
 
 const channel: ChannelRequestChannel = {
   id: "c1",
@@ -81,7 +82,13 @@ function renderPage(props: Partial<React.ComponentProps<typeof ChannelRequestSho
   );
 }
 
-const titles = () => Array.from(document.querySelectorAll("#timing-section [title]")).map((el) => el.getAttribute("title"));
+/** The tooltip on each timing bar, left to right. */
+async function titles() {
+  const bars = Array.from(document.querySelectorAll("#timing-section .h-7 > div"));
+  const tips: (string | null)[] = [];
+  for (const bar of bars) tips.push(await tooltipOf(bar));
+  return tips;
+}
 const section = (id: string) => document.getElementById(id);
 
 describe("ChannelRequestShowPage", () => {
@@ -118,17 +125,17 @@ describe("ChannelRequestShowPage", () => {
     expect(screen.getByText(/Channel Request/).textContent).toContain("4f1c9a8e");
   });
 
-  it("explains a transport error and shows its code, with one timing bar", () => {
+  it("explains a transport error and shows its code, with one timing bar", async () => {
     renderPage({ request: request({ state: "error" }, errorEvent("econnrefused", { latencyUs: 100_000 })) });
     expect(screen.getByText("No response received")).toBeTruthy();
     expect(screen.getByText(/Connection refused/)).toBeTruthy();
     expect(screen.getByText("econnrefused")).toBeTruthy();
-    expect(titles()).toContain("Total: 100 ms");
+    expect(await titles()).toContain("Total: 100 ms");
   });
 
-  it("shows a timed-out request as one thirty-second bar", () => {
+  it("shows a timed-out request as one thirty-second bar", async () => {
     renderPage({ request: request({ state: "timeout" }, errorEvent("response_timeout", { latencyUs: 30_000_000 })) });
-    expect(titles()).toEqual(["Total: 30000 ms"]);
+    expect(await titles()).toEqual(["Total: 30000 ms"]);
     expect(section("timing-section")!.textContent).toContain("30.0s");
     expect(screen.getByText("Timeout")).toBeTruthy();
   });
@@ -155,18 +162,18 @@ describe("ChannelRequestShowPage", () => {
     expect(section("timing-section")).toBeNull();
   });
 
-  it("draws every phase with the proxy overhead and the TTFB marker", () => {
+  it("draws every phase with the proxy overhead and the TTFB marker", async () => {
     renderPage({
       request: request({}, { queueUs: 2_000, connectUs: 15_000, requestSendUs: 5_000, ttfbUs: 180_000, responseDurationUs: 65_000, latencyUs: 260_000 }),
     });
-    expect(titles()).toEqual(["Queue: 2 ms", "Connect: 15 ms", "Send: 5 ms", "Processing: 158 ms", "Recv: 65 ms"]);
+    expect(await titles()).toEqual(["Queue: 2 ms", "Connect: 15 ms", "Send: 5 ms", "Processing: 158 ms", "Recv: 65 ms"]);
     expect(section("timing-section")!.textContent).toContain("TTFB: 180 ms");
     expect(section("timing-section")!.textContent).toContain("Proxy overhead");
     expect(section("timing-section")!.textContent).toContain("0 ms");
     expect(section("timing-section")!.textContent).toContain("260 ms");
   });
 
-  it("marks a reused connection and computes processing from a missing queue and connect", () => {
+  it("marks a reused connection and computes processing from a missing queue and connect", async () => {
     renderPage({
       request: request({}, { reusedConnection: true, queueUs: 1_000, connectUs: 0, requestSendUs: 4_000, ttfbUs: 120_000, responseDurationUs: 30_000, latencyUs: 155_000 }),
     });
@@ -176,17 +183,17 @@ describe("ChannelRequestShowPage", () => {
     renderPage({
       request: request({}, { queueUs: null, connectUs: null, requestSendUs: 10_000, ttfbUs: 200_000, responseDurationUs: 50_000, latencyUs: 260_000 }),
     });
-    expect(titles()).toContain("Processing: 190 ms");
+    expect(await titles()).toContain("Processing: 190 ms");
   });
 
-  it("degrades to TTFB and download, then to one total bar", () => {
+  it("degrades to TTFB and download, then to one total bar", async () => {
     renderPage({ request: request({}, { ttfbUs: 280_000, latencyUs: 350_000 }) });
-    expect(titles()).toEqual(["TTFB: 280 ms", "Download: 70 ms"]);
+    expect(await titles()).toEqual(["TTFB: 280 ms", "Download: 70 ms"]);
     expect(section("timing-section")!.textContent).not.toContain("Proxy overhead");
 
     document.body.innerHTML = "";
     renderPage({ request: request({}, { latencyUs: 420_000 }) });
-    expect(titles()).toEqual(["Total: 420 ms"]);
+    expect(await titles()).toEqual(["Total: 420 ms"]);
     expect(section("timing-section")!.textContent).toContain("420 ms");
   });
 
@@ -256,10 +263,10 @@ describe("ChannelRequestShowPage", () => {
     expect(section("response-section")).toBeNull();
   });
 
-  it("tells others whom to contact about a wiped request, naming the admins", () => {
+  it("tells others whom to contact about a wiped request, naming the admins", async () => {
     renderPage({ request: request({ isWiped: true }), canEditDataRetention: false, adminContacts: ["admin@example.com"] });
     expect(screen.getByText(/Contact one of your/)).toBeTruthy();
-    expect(screen.getByText("project admins").getAttribute("title")).toBe("admin@example.com");
+    expect(await tooltipOf(screen.getByText("project admins"))).toBe("admin@example.com");
     expect(document.body.textContent).not.toContain("for future requests");
     expect(screen.queryByRole("link", { name: "this policy" })).toBeNull();
   });

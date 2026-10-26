@@ -8,6 +8,7 @@ import UuidChip from "../UuidChip";
 import StatePill from "../history/StatePill";
 import RunBadge from "./RunBadge";
 import { formatDuration, formatRelative, uuidOf } from "../../utils/format";
+import Tooltip from "../Tooltip";
 
 const Dot = () => <span className="text-gray-800">&bull;</span>;
 
@@ -192,7 +193,6 @@ export default function MiniHistory({
       onPointerDown={(e) => e.stopPropagation()}
     >
         <div
-          title="⌘ H"
           className={cn(
             "flex cursor-pointer items-center justify-between gap-3 border-gray-200 bg-gray-50 px-3 py-2 text-gray-400 hover:bg-gray-100",
             !collapsed && "border-b"
@@ -200,7 +200,12 @@ export default function MiniHistory({
           onClick={onToggle}
         >
           <div className="flex items-center gap-2">
-            <Heading size="sm">{collapsed ? "View History" : "Recent History"}</Heading>
+            {/* Only on the heading: around the link too, it would open with the link's own tooltip. */}
+            <Tooltip content="⌘ H">
+              <div>
+                <Heading size="sm">{collapsed ? "View History" : "Recent History"}</Heading>
+              </div>
+            </Tooltip>
             <FullHistoryLink id="view-history" to={historyHref} />
           </div>
           <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />

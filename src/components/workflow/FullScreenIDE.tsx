@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import type { EditorJob } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
 import Button from "../Button";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import Tabs from "../Tabs";
 import AdaptorDisplay from "./AdaptorDisplay";
@@ -12,6 +13,7 @@ import NewRunButton from "./NewRunButton";
 import RunBadge from "./RunBadge";
 import RunRetryButton from "./RunRetryButton";
 import type { RunViewerTab } from "./RunViewerPanel";
+import Tooltip from "../Tooltip";
 
 export type IDEPanelState = "run-viewer" | "history" | "create-run" | undefined;
 
@@ -70,6 +72,7 @@ export default function FullScreenIDE({
   const [docsCollapsed, setDocsCollapsed] = useState(false);
   const [vertical, setVertical] = useState(false);
   const [runCollapsed, setRunCollapsed] = useState(false);
+  const runStrip = runCollapsed && panelState === "run-viewer";
 
   const showDocs = (tab: "docs" | "metadata") => {
     if (docsTab === tab && !docsCollapsed) setDocsCollapsed(true);
@@ -119,7 +122,7 @@ export default function FullScreenIDE({
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState ? "w-7/10" : "w-full")}>
+        <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState && !runStrip ? "w-7/10" : "flex-1")}>
           <div className={cn("overflow-hidden", docsCollapsed ? "flex-1" : vertical ? "h-3/5" : "w-3/5")}>
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
@@ -153,7 +156,7 @@ export default function FullScreenIDE({
                         className={cn(vertical && "rotate-90")}
                         onClick={() => setVertical((v) => !v)}
                       />
-                      <IconButton icon="hero-x-mark" label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
+                      <CloseButton label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
                     </>
                   }
                 />
@@ -168,19 +171,15 @@ export default function FullScreenIDE({
         {panelState && (
           <>
             <div className="w-1 shrink-0 bg-gray-200" />
-            <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runCollapsed && panelState === "run-viewer" ? "w-10" : "flex-1")}>
+            <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runStrip ? "w-10" : "flex-1")}>
               {panelState === "run-viewer" && runCollapsed && followRunId ? (
                 <div className="flex h-full flex-col items-center gap-3 overflow-hidden pt-3">
-                  {/* eslint-disable-next-line no-restricted-syntax -- vertical tab on the collapsed run panel; Tabs can't set vertical text */}
-                  <button
-                    type="button"
-                    style={{ writingMode: "vertical-rl" }}
-                    onClick={() => setRunCollapsed(false)}
-                    title="Expand run panel"
-                    aria-label="Expand run panel"
-                  >
-                    <RunBadge runId={followRunId} />
-                  </button>
+                  <Tooltip content="Expand run panel">
+                    {/* eslint-disable-next-line no-restricted-syntax -- vertical tab on the collapsed run panel; Tabs can't set vertical text */}
+                    <button type="button" style={{ writingMode: "vertical-rl" }} onClick={() => setRunCollapsed(false)} aria-label="Expand run panel">
+                      <RunBadge runId={followRunId} />
+                    </button>
+                  </Tooltip>
                   <div className="flex flex-col items-center gap-1">
                     {(["log", "input", "output"] as const).map((t) => (
                       // eslint-disable-next-line no-restricted-syntax -- vertical tab on the collapsed run panel; Tabs can't set vertical text
