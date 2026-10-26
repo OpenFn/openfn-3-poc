@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../utils/cn";
-import IconButton from "./IconButton";
+import CloseButton from "./CloseButton";
 
 export type ToastTone = "info" | "error";
 
@@ -120,7 +120,7 @@ export function Toast({ tone = "info", children, onClose, timeout }: ToastProps)
     >
       <span className={cn(c.icon, "h-5 w-5 shrink-0")} />
       <span>{children}</span>
-      {onClose && <IconButton icon="hero-x-mark" label="Close" size="sm" />}
+      {onClose && <CloseButton size="sm" />}
     </div>
   );
 }

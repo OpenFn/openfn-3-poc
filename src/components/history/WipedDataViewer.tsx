@@ -1,6 +1,7 @@
 import Card from "../Card";
 import Heading from "../Heading";
 import TextLink from "../TextLink";
+import Tooltip from "../Tooltip";
 
 const labels = { input: "Input", output: "Output", request_response: "Request/Response" } as const;
 const subjects = { input: "step", output: "step", request_response: "channel request" } as const;
@@ -42,9 +43,9 @@ export default function WipedDataViewer({
         ) : (
           <>
             Contact one of your{" "}
-            <span className="inline-block text-primary-400" title={adminContacts.join(", ")}>
-              project admins
-            </span>{" "}
+            <Tooltip content={adminContacts.join(", ")}>
+              <span className="inline-block text-primary-400">project admins</span>
+            </Tooltip>{" "}
             for more information.
           </>
         )}

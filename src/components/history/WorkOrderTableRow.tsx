@@ -14,6 +14,7 @@ import { RunCard } from "./RunDetails";
 import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
+import Tooltip from "../Tooltip";
 
 /**
  * A work order row in History plus, when expanded, its runs and steps
@@ -98,14 +99,19 @@ export default function WorkOrderTableRow({
               to={wo.workflowHref}
               variant="plain"
               className="workflow-name block max-w-50 truncate text-gray-900 hover:text-primary-600"
-              title={`${wo.workflowName}\nClick to view`}
+              title={
+                <>
+                  {wo.workflowName}
+                  <span className="block text-xs text-gray-400">Click to view</span>
+                </>
+              }
             >
               {wo.workflowName}
             </TextLink>
           ) : (
-            <span title={wo.workflowName} className="workflow-name block max-w-50 truncate text-gray-900">
-              {wo.workflowName}
-            </span>
+            <Tooltip content={wo.workflowName}>
+              <span className="workflow-name block max-w-50 truncate text-gray-900">{wo.workflowName}</span>
+            </Tooltip>
           )}
         </Td>
         <Td>

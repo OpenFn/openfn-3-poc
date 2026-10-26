@@ -14,7 +14,7 @@ import ProjectsDashboardPage from "./pages/projects/ProjectsDashboardPage.replic
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
 import WorkflowsIndexPage from "./pages/projects/WorkflowsIndexPage.replica";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage.replica";
-import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage";
+import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage.replica";
 import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage.replica";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
