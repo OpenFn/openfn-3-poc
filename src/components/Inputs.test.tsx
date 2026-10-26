@@ -57,6 +57,32 @@ describe("Select", () => {
     expect(screen.getByLabelText(/Role/)).toBe(select);
   });
 
+  it("says it's required in its name", () => {
+    render(<Select label="Role" required options={["viewer"]} value="viewer" />);
+    // jsdom drops the space before "(required)"; a browser keeps it.
+    expect(screen.getByRole("button", { name: /^Role ?\(required\) viewer$/ })).toBeTruthy();
+  });
+
+  it("focuses the button when its label is clicked", () => {
+    render(<Controlled initial="editor" />);
+    fireEvent.click(screen.getByText("Role"));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Role Editor" }));
+  });
+
+  it("opens on Enter rather than submitting its form", async () => {
+    const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <Controlled initial="viewer" />
+        <button type="submit">Save</button>
+      </form>
+    );
+    screen.getByRole("button", { name: /^Role/ }).focus();
+    await key("Enter");
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByRole("listbox")).toBeTruthy();
+  });
+
   it("is named by aria-label when it has no visible label", () => {
     render(<Select aria-label="History Retention Period" prompt="Select Period" options={["7", "30"]} value="" />);
     expect(screen.getByRole("button", { name: "History Retention Period Select Period" })).toBeTruthy();
@@ -149,6 +175,20 @@ describe("Select", () => {
     expect(onBlur).not.toHaveBeenCalled();
     await key("Escape");
     act(() => select.blur());
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports a blur when focus leaves from the open list", async () => {
+    const onBlur = vi.fn();
+    render(
+      <>
+        <Select label="Role" options={["viewer"]} value="viewer" onBlur={onBlur} />
+        <input aria-label="Next field" />
+      </>
+    );
+    screen.getByRole("button", { name: /Role/ }).focus();
+    await key("ArrowDown");
+    act(() => screen.getByLabelText("Next field").focus());
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
 });

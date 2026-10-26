@@ -21,13 +21,14 @@ export const PasswordWithError: Story = {
 };
 export const Area: Story = { render: () => <TextArea id="desc" label="Description" rows={3} /> };
 export const Dropdown: Story = {
-  render: () => <Select id="role" label="Role" options={["viewer", "editor", "admin", "owner"]} prompt="Choose a role" />,
+  render: () => <Select id="role" label="Role" options={["viewer", "editor", "admin", "owner"]} prompt="Choose a role" value="" />,
 };
 export const DropdownWithObjects: Story = {
   render: () => (
     <Select
       id="adaptor"
       label="Adaptor"
+      value="@openfn/language-http"
       options={[
         { label: "HTTP", value: "@openfn/language-http" },
         { label: "DHIS2", value: "@openfn/language-dhis2" },
@@ -85,7 +86,7 @@ export const GrowInRow: Story = {
     <div className="flex items-end gap-2">
       <TextInput id="first" label="First name" fieldClassName="flex-1" />
       <TextInput id="last" label="Last name" fieldClassName="flex-1" />
-      <Select id="role" label="Role" options={["viewer", "editor", "admin"]} fieldClassName="w-40" />
+      <Select id="role" label="Role" options={["viewer", "editor", "admin"]} value="viewer" fieldClassName="w-40" />
     </div>
   ),
 };

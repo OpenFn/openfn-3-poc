@@ -1,5 +1,5 @@
 import { Label as HeadlessLabel, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
+import { useId, useRef, useState, type FocusEvent, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { cn } from "../utils/cn";
 import { controlClasses } from "./controlClasses";
 import { floatingPanelClasses } from "./floating";
@@ -125,8 +125,8 @@ interface SelectProps extends FieldProps {
   id?: string | undefined;
   /** Adds a hidden input with this name, for a plain form post. */
   name?: string | undefined;
-  /** The chosen value. Leave it out to let the control keep its own. */
-  value?: string | undefined;
+  /** The chosen value. */
+  value: string;
   options: SelectOption[];
   /** Shown while the value matches no option. It isn't an option itself. */
   prompt?: string | undefined;
@@ -166,9 +166,22 @@ export function Select({
 }: SelectProps) {
   const id = useFieldId(givenId);
   const items = options.map(optionParts);
+  const button = useRef<HTMLButtonElement>(null);
+  // Focus can move between the button and the open list; only leaving both is a blur.
+  const leave = (e: FocusEvent) => {
+    const to = e.relatedTarget as HTMLElement | null;
+    if (to !== button.current && !to?.closest("[role=listbox]")) onBlur?.();
+  };
+  // Headless UI's Label is a span, without `for`, so clicking it focuses the button by hand.
+  const labelText = (text: ReactNode, className?: string) => (
+    <HeadlessLabel as="span" className={className} onClick={() => button.current?.focus()}>
+      {text}
+      {required && <span className="sr-only"> (required)</span>}
+    </HeadlessLabel>
+  );
   return (
     <Listbox
-      {...(value !== undefined && { value })}
+      value={value}
       {...(name !== undefined && { name })}
       disabled={disabled ?? false}
       invalid={errors.length > 0}
@@ -179,17 +192,19 @@ export function Select({
         // Headless UI's Label names the button "<label> <chosen option>", as a
         // native select is read. A `for` on the label would replace that name
         // with the label alone, so Field gets no id.
-        <Field label={label && <HeadlessLabel as="span" passive>{label}</HeadlessLabel>} required={required} hint={hint} errors={errors} className={fieldClassName}>
-          {!label && ariaLabel && (
-            <HeadlessLabel as="span" passive className="sr-only">
-              {ariaLabel}
-            </HeadlessLabel>
-          )}
+        <Field label={label && labelText(label)} required={required} hint={hint} errors={errors} className={fieldClassName}>
+          {!label && ariaLabel && labelText(ariaLabel, "sr-only")}
           <ListboxButton
+            ref={button}
             id={id}
             data-ui="field"
-            onBlur={(e) => {
-              if (!e.relatedTarget?.closest("[role=listbox]")) onBlur?.();
+            onBlur={leave}
+            onKeyDown={(e) => {
+              // Headless UI submits the form on Enter; a native select doesn't, so Enter opens the list instead.
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.currentTarget.click();
+              }
             }}
             className={controlClasses(errors.length > 0, cn("grid grid-cols-1 border py-2 pl-3 pr-2 text-left", className))}
           >
@@ -200,6 +215,7 @@ export function Select({
             anchor={{ to: "bottom start", gap: 4 }}
             transition
             data-ui="listbox"
+            onBlur={leave}
             className={cn(floatingPanelClasses, "max-h-60 min-w-(--button-width) overflow-auto py-1 text-base sm:text-sm")}
           >
             {items.map(([l, v]) => (
