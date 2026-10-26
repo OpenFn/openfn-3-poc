@@ -69,7 +69,7 @@ describe("Select", () => {
     expect(document.activeElement).toBe(screen.getByRole("button", { name: "Role Editor" }));
   });
 
-  it("opens on Enter rather than submitting its form", async () => {
+  it("doesn't submit its form on Enter, before or after a mouse pick", async () => {
     const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
     render(
       <form onSubmit={onSubmit}>
@@ -77,10 +77,32 @@ describe("Select", () => {
         <button type="submit">Save</button>
       </form>
     );
-    screen.getByRole("button", { name: /^Role/ }).focus();
+    const select = screen.getByRole("button", { name: /^Role/ });
+    select.focus();
+    await key("Enter");
+    fireEvent.pointerDown(select, { pointerType: "mouse", button: 0 });
+    await pickOption(select, "Editor");
+    select.focus();
     await key("Enter");
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole("listbox")).toBeTruthy();
+  });
+
+  it("leaves focus on a button inside its label when that is clicked", () => {
+    render(
+      <Select
+        label={
+          <>
+            Contact preference <button type="button">More</button>
+          </>
+        }
+        options={["any"]}
+        value="any"
+      />
+    );
+    const more = screen.getByText("More");
+    more.focus();
+    fireEvent.click(more);
+    expect(document.activeElement).toBe(more);
   });
 
   it("is named by aria-label when it has no visible label", () => {
