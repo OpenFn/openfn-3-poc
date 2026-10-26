@@ -175,7 +175,16 @@ export function Select({
   // Headless UI's Label is a span, without `for`, so clicking it focuses the button by hand
   // (but not a click on a link or button inside the label, such as an InfoTooltip).
   const labelText = (text: ReactNode, className?: string) => (
-    <HeadlessLabel as="span" className={className} onClick={(e) => (e.target as Element).closest("a, button") || button.current?.focus()}>
+    <HeadlessLabel
+      as="span"
+      className={className}
+      onClick={(e) => {
+        if ((e.target as Element).closest("a, button")) return;
+        // Without `for`, the label would pass the click on to the first button inside it.
+        e.preventDefault();
+        button.current?.focus();
+      }}
+    >
       {text}
       {required && <span className="sr-only"> (required)</span>}
     </HeadlessLabel>

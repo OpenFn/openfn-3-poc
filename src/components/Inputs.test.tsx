@@ -87,21 +87,29 @@ describe("Select", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it("leaves focus on a button inside its label when that is clicked", () => {
+  it("leaves a button inside its label to itself, and doesn't click it when the label text is clicked", () => {
+    const onMore = vi.fn();
     render(
       <Select
         label={
           <>
-            Contact preference <button type="button">More</button>
+            Contact preference{" "}
+            <button type="button" onClick={onMore}>
+              More
+            </button>
           </>
         }
         options={["any"]}
         value="any"
       />
     );
+    fireEvent.click(screen.getByText("Contact preference"));
+    expect(onMore).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: /^Contact preference.* any$/ }));
     const more = screen.getByText("More");
     more.focus();
     fireEvent.click(more);
+    expect(onMore).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(more);
   });
 
