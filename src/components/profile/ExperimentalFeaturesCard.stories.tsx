@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ExperimentalFeaturesCard from "./ExperimentalFeaturesCard";
 
-const meta: Meta<typeof ExperimentalFeaturesCard> = { title: "Profile/ExperimentalFeaturesCard", component: ExperimentalFeaturesCard };
+const meta: Meta<typeof ExperimentalFeaturesCard> = {
+  title: "Profile/ExperimentalFeaturesCard",
+  component: ExperimentalFeaturesCard,
+  args: { onChange: async () => {} },
+};
 export default meta;
 type Story = StoryObj<typeof ExperimentalFeaturesCard>;
 

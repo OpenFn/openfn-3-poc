@@ -20,7 +20,8 @@ Status of each pattern, as of this commit:
 | 8 | Live updates | Todo, after 3 | subscription hook |
 | 9 | Permission gating | Mostly done | one disabled-with-reason look |
 | 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 22 pages and the Sidebar | History work orders, the workflow editor, profile, the remaining auth pages |
+| 11 | Page and wrapper | 23 pages and the Sidebar | History work orders, the workflow editor, the remaining auth pages |
+| 12 | Server checks | Rule | each port adds its refusal tests |
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
 `TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11). Its `newToken`
@@ -90,14 +91,14 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   `id` gets a generated one, so every label is linked to its control.
 
 Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
-`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`,
+`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, `MfaCard`,
 `SandboxFormModal`, the
 credential modals (`CredentialFormModal`, `OauthClientFormModal`,
 `KeychainCredentialFormModal`, `TransferCredentialModal`). Still computing
 `errors={cond ? ["can't be blank"] : []}` in render: `AuthResetPasswordPage`, and
 `CredentialFormModal` for the environment name being typed and an object
 field's JSON (both checked as typed, as Lightning does). Other
-page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`, `MfaCard`,
+page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`,
 the auth pages) move to `useForm` when next touched.
 
 ## 3. Server-driven list
@@ -258,6 +259,20 @@ is rewritten.
 - **The page gets a story** with plain props: `withRouter`,
   `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
   its parent, so without a height its body is clipped).
+
+## 12. Server checks
+
+The page disables or explains an action from the host's `can*` flags
+(pattern 9). That is a courtesy, not a check: the host's server is what
+decides who may do what, whatever the page sent or shows.
+
+- A page and its components never enforce a permission.
+- The replica enforces none either, on purpose: it does whatever it is
+  asked, so a page can be tried with any role.
+- Contracts don't write down who may do each action. That lives in
+  Lightning's code and tests, and a copy here would go stale.
+- When a page is ported, each action with a check gets a Lightning test that
+  a user without access is refused, and the port gets a security review.
 
 ## How to add a pattern to a component
 

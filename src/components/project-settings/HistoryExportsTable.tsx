@@ -1,7 +1,8 @@
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import Button from "../Button";
 import type { ExportStatus, HistoryExportRow } from "../../types/project-settings";
-import { capitalize, formatAgo } from "../../utils/format";
+import { capitalize } from "../../utils/format";
+import DateTime from "../DateTime";
 
 /** data_tables.ex `format_export_status/1`: "in_progress" -> "In progress". */
 function formatStatus(status: ExportStatus): string {
@@ -33,7 +34,7 @@ export default function HistoryExportsTable({ exports }: { exports: HistoryExpor
       {exports.map((f) => (
         <Tr key={f.id}>
           <Td>
-            <span title={f.insertedAt}>{formatAgo(f.insertedAt)}</span>
+            <DateTime value={f.insertedAt} />
           </Td>
           <Td>{f.fileName ?? <em>Pending</em>}</Td>
           <Td>{f.requestedBy}</Td>

@@ -4,7 +4,7 @@ import Button from "../Button";
 import Card from "../Card";
 import InfoTooltip from "../InfoTooltip";
 import { PasswordInput, Select, TextInput } from "../Inputs";
-import type { User } from "../../types/users";
+import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "../../types/profile";
 import { contactPreferenceOptions, contactPreferenceTooltip } from "../../constants";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
@@ -12,7 +12,8 @@ import { blank, isValidEmail } from "../../utils/validate";
 
 /**
  * The three forms of ProfileLive.FormComponent (profile_live/form_component.html.heex),
- * each its own card. Each `on*` handler may be async; a failure shows in the card.
+ * each its own card. Each form hands its values to its `on*` action; a refusal
+ * puts field errors on the fields, and any other failure shows in the card.
  */
 
 function FormCard({
@@ -41,18 +42,16 @@ function FormCard({
   );
 }
 
-type BasicInfo = Pick<User, "firstName" | "lastName" | "contactPreference">;
-
-export function BasicInfoForm({ user, onSave }: { user: User; onSave?: (u: BasicInfo) => Promise<void> }) {
-  const form = useForm<BasicInfo>({
-    initial: { firstName: user.firstName, lastName: user.lastName, contactPreference: user.contactPreference },
+export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onSave: (values: BasicInfoValues) => Promise<void> }) {
+  const form = useForm<BasicInfoValues>({
+    initial: values,
     validate: ({ firstName, lastName }) => ({ firstName: blank(firstName), lastName: blank(lastName) }),
   });
   return (
     <FormCard
       id="basic-info-form"
       title="Change basic information"
-      onSubmit={form.submit(async (values) => onSave?.(values))}
+      onSubmit={form.submit(onSave)}
       error={form.error}
       button={
         <Button type="submit" disabled={!form.dirty} pending={form.pending}>
@@ -76,12 +75,12 @@ export function BasicInfoForm({ user, onSave }: { user: User; onSave?: (u: Basic
   );
 }
 
-export function ChangeEmailForm({ onSubmit }: { onSubmit?: (email: string) => Promise<void> }) {
-  const form = useForm({
-    initial: { email: "", password: "" },
-    validate: ({ email, password }) => ({
+export function ChangeEmailForm({ onSubmit }: { onSubmit: (values: ChangeEmailValues) => Promise<void> }) {
+  const form = useForm<ChangeEmailValues>({
+    initial: { email: "", currentPassword: "" },
+    validate: ({ email, currentPassword }) => ({
       email: email.trim() && !isValidEmail(email) ? ["must be a valid email address"] : blank(email),
-      password: blank(password),
+      currentPassword: blank(currentPassword),
     }),
     clearOnSave: true,
   });
@@ -89,7 +88,7 @@ export function ChangeEmailForm({ onSubmit }: { onSubmit?: (email: string) => Pr
     <FormCard
       id="email-form"
       title="Change email"
-      onSubmit={form.submit(async ({ email }) => onSubmit?.(email))}
+      onSubmit={form.submit(onSubmit)}
       error={form.error}
       button={
         <Button type="submit" pending={form.pending}>
@@ -98,18 +97,18 @@ export function ChangeEmailForm({ onSubmit }: { onSubmit?: (email: string) => Pr
       }
     >
       <TextInput label="New email address" required {...form.fieldProps("email")} />
-      <PasswordInput label="Enter password to confirm" required autoComplete="current-password" {...form.fieldProps("password")} />
+      <PasswordInput label="Enter password to confirm" required autoComplete="current-password" {...form.fieldProps("currentPassword")} />
     </FormCard>
   );
 }
 
-export function ChangePasswordForm({ onSubmit }: { onSubmit?: () => Promise<void> }) {
-  const form = useForm({
-    initial: { password: "", confirmation: "", current: "" },
-    validate: ({ password, confirmation, current }) => ({
+export function ChangePasswordForm({ onSubmit }: { onSubmit: (values: ChangePasswordValues) => Promise<void> }) {
+  const form = useForm<ChangePasswordValues>({
+    initial: { password: "", passwordConfirmation: "", currentPassword: "" },
+    validate: ({ password, passwordConfirmation, currentPassword }) => ({
       password: password.trim() && password.length < 12 ? ["should be at least 12 character(s)"] : blank(password),
-      confirmation: confirmation !== password ? ["does not match password"] : [],
-      current: blank(current),
+      passwordConfirmation: passwordConfirmation !== password ? ["does not match password"] : [],
+      currentPassword: blank(currentPassword),
     }),
     clearOnSave: true,
   });
@@ -117,7 +116,7 @@ export function ChangePasswordForm({ onSubmit }: { onSubmit?: () => Promise<void
     <FormCard
       id="password-form"
       title="Change password"
-      onSubmit={form.submit(async () => onSubmit?.())}
+      onSubmit={form.submit(onSubmit)}
       error={form.error}
       button={
         <Button type="submit" pending={form.pending}>
@@ -126,8 +125,8 @@ export function ChangePasswordForm({ onSubmit }: { onSubmit?: () => Promise<void
       }
     >
       <PasswordInput label="New password" required autoComplete="new-password" {...form.fieldProps("password")} />
-      <PasswordInput label="Confirm new password" required autoComplete="new-password" {...form.fieldProps("confirmation")} />
-      <PasswordInput label="Current password" required autoComplete="current-password" {...form.fieldProps("current")} />
+      <PasswordInput label="Confirm new password" required autoComplete="new-password" {...form.fieldProps("passwordConfirmation")} />
+      <PasswordInput label="Current password" required autoComplete="current-password" {...form.fieldProps("currentPassword")} />
     </FormCard>
   );
 }

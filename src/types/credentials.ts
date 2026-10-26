@@ -341,8 +341,13 @@ export interface CredentialActions {
   onLoadCredentialSecrets: (id: string) => Promise<CredentialSecretsResult>;
   /** An adaptor's form fields, fetched when it's picked (or its credential is edited). */
   onLoadCredentialSchema: (key: string) => Promise<CredentialSchemaResult>;
-  /** Schedules the deletion, or deletes a credential that is already scheduled. */
-  onDeleteCredential: (id: string) => Promise<void>;
+  /**
+   * Schedules the deletion, or with `now` deletes it for good: what the dialog
+   * showed when it opened, even if the credential was scheduled or restored
+   * since. Scheduling one that is already scheduled moves its date. A
+   * credential with activity in projects can't be deleted now.
+   */
+  onDeleteCredential: (id: string, intent: { now: boolean }) => Promise<void>;
   onCancelCredentialDeletion: (id: string) => Promise<void>;
   /**
    * Rejects with field errors on `receiverEmail`: no such user, the viewer

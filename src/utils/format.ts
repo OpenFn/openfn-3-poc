@@ -79,24 +79,6 @@ export function formatUtc(iso: string) {
   return new Date(iso).toISOString().replace("T", " ").replace(/(\.000)?Z$/, " UTC");
 }
 
-/** "2 hours ago", via Intl.RelativeTimeFormat. */
-export function formatAgo(iso: string, now: Date = new Date()): string {
-  const seconds = Math.round((new Date(iso).getTime() - now.getTime()) / 1000);
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-  const steps: [Intl.RelativeTimeFormatUnit, number][] = [
-    ["year", 31536000],
-    ["month", 2592000],
-    ["week", 604800],
-    ["day", 86400],
-    ["hour", 3600],
-    ["minute", 60],
-  ];
-  for (const [unit, size] of steps) {
-    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit);
-  }
-  return rtf.format(seconds, "second");
-}
-
 /** "14-Sep" (adds "-2025" outside the current year), as on the filter chips. */
 export function formatChipDate(d: Date) {
   const base = `${d.getDate()}-${MONTHS_SHORT[d.getMonth()]}`;

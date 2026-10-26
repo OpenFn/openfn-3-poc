@@ -6,6 +6,7 @@ import { formatUtcDate } from "../../../utils/format";
 import Card from "../../Card";
 import Heading from "../../Heading";
 import Pill from "../../Pill";
+import Tooltip from "../../Tooltip";
 import SandboxActions from "./SandboxActions";
 
 function deletionTooltip(iso: string) {
@@ -60,7 +61,7 @@ export default function WorkspaceCard({
       <div
         className={cn("flex min-w-0 flex-1 items-center gap-3 p-4 focus:outline-none", deleted ? "cursor-not-allowed" : "cursor-pointer")}
         {...(deleted
-          ? { "aria-disabled": true, title: deletionTooltip(deleted) }
+          ? { "aria-disabled": true, "aria-description": deletionTooltip(deleted) }
           : {
               role: "button",
               tabIndex: 0,
@@ -72,9 +73,14 @@ export default function WorkspaceCard({
               },
             })}
       >
-        <Heading size="lg" className={cn("truncate", deleted && "text-gray-500 line-through")}>
-          {workspace.name}
-        </Heading>
+        {/* Only on the name: around the badges too, it would open with their own tooltips. */}
+        <Tooltip content={deleted ? deletionTooltip(deleted) : undefined}>
+          <div className="min-w-0">
+            <Heading size="lg" className={cn("truncate", deleted && "text-gray-500 line-through")}>
+              {workspace.name}
+            </Heading>
+          </div>
+        </Tooltip>
         {env && <Badge id={`env-badge-${workspace.id}`} label={env} />}
         {isCurrent && <Badge id={`active-badge-${workspace.id}`} label="active" />}
       </div>

@@ -15,7 +15,7 @@ const rows = () => screen.getAllByRole("listitem").map((li) => li.textContent);
 
 // The bar is aria-hidden decoration (the count beside it is the row's value),
 // so find it from its row, which carries the step name as a title.
-const bar = (label: string) => screen.getByTitle(label).closest("li")!.querySelector<HTMLElement>("[aria-hidden] > div")!;
+const bar = (label: string) => screen.getByText(label).closest("li")!.querySelector<HTMLElement>("[aria-hidden] > div")!;
 
 describe("StepFailureBars", () => {
   it("lists one row per step, heaviest first, with its adaptor", () => {

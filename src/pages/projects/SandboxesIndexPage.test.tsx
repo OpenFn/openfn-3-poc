@@ -126,7 +126,7 @@ describe("SandboxesIndexPage", () => {
     renderPage({ sandboxes: [], createBlockedReason: "Maximum sandbox nesting depth reached (2 levels deep)" });
     const create = document.getElementById("create-sandbox-button") as HTMLButtonElement;
     expect(create.disabled).toBe(true);
-    expect(create.getAttribute("title")).toBe("Maximum sandbox nesting depth reached (2 levels deep)");
+    expect(create.getAttribute("aria-description")).toBe("Maximum sandbox nesting depth reached (2 levels deep)");
     expect(screen.getByText("No sandboxes found")).toBeTruthy();
     expect(screen.getByText("Maximum sandbox nesting depth reached (2 levels deep)", { selector: "p" })).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Create your first sandbox" })).toBeNull();
@@ -243,7 +243,7 @@ describe("SandboxesIndexPage", () => {
       vi.setSystemTime(new Date("2026-10-21T12:00:00Z"));
       try {
         renderPage({ sandboxes: [live, gone] });
-        expect(document.querySelector("#sandbox-card-s2 [aria-disabled]")!.getAttribute("title")).toBe(
+        expect(document.querySelector("#sandbox-card-s2 [aria-disabled]")!.getAttribute("aria-description")).toBe(
           "Scheduled for deletion on " + formatUtcDate(gone.scheduledDeletion!) + " (today). Cancel the deletion to restore it."
         );
       } finally {
@@ -277,9 +277,9 @@ describe("SandboxesIndexPage", () => {
         ],
       });
       expect(action("cancel-deletion", "s2").disabled).toBe(true);
-      expect(action("cancel-deletion", "s2").getAttribute("title")).toBe("Upgrade to restore more sandboxes");
+      expect(action("cancel-deletion", "s2").getAttribute("aria-description")).toBe("Upgrade to restore more sandboxes");
       expect(action("cancel-deletion", "s5").disabled).toBe(true);
-      expect(action("cancel-deletion", "s5").getAttribute("title")).toBe("You are not authorized to cancel deletion of this sandbox");
+      expect(action("cancel-deletion", "s5").getAttribute("aria-description")).toBe("You are not authorized to cancel deletion of this sandbox");
     });
   });
 
@@ -362,7 +362,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.click(all);
       expect(all.checked).toBe(false);
       expect(submit().disabled).toBe(true);
-      expect(submit().getAttribute("title")).toBe("No workflows selected");
+      expect(submit().getAttribute("aria-description")).toBe("No workflows selected");
       fireEvent.submit(document.getElementById("merge-sandbox-form")!);
       expect(onMergeSandbox).not.toHaveBeenCalled();
     });
@@ -449,7 +449,7 @@ describe("SandboxesIndexPage", () => {
       const select = document.getElementById("merge-target-select") as HTMLSelectElement;
       expect(select.value).toBe("");
       expect(select.selectedOptions[0]?.textContent).toBe("Select a project");
-      expect(submit().getAttribute("title")).toBe("No project to merge into");
+      expect(submit().getAttribute("aria-description")).toBe("No project to merge into");
       fireEvent.change(select, { target: { value: "p1" } });
       expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", "p1");
       await waitFor(() => expect(submit().disabled).toBe(false));
@@ -480,7 +480,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.click(action("branch-rewire", "s1"));
       expect(await screen.findByText("Sandbox not found")).toBeTruthy();
       expect(submit().disabled).toBe(true);
-      expect(submit().getAttribute("title")).toBe("The merge preview didn't load");
+      expect(submit().getAttribute("aria-description")).toBe("The merge preview didn't load");
     });
 
     it("closes if the host's list no longer has the sandbox", async () => {
@@ -521,7 +521,7 @@ describe("SandboxesIndexPage", () => {
       await openMerge({ onPreviewMerge: vi.fn().mockResolvedValue(preview({ targets: [], targetId: null })) });
       expect(screen.getByRole("dialog").textContent).toContain("counterparts in MAIN.");
       expect(submit().disabled).toBe(true);
-      expect(submit().getAttribute("title")).toBe("No project to merge into");
+      expect(submit().getAttribute("aria-description")).toBe("No project to merge into");
     });
 
     it("stays open with the host's refusal", async () => {

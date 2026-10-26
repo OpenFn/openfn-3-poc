@@ -94,14 +94,20 @@ describe("credentialReplicaActions", () => {
   });
 
   it("unshares a credential from every project when it schedules its deletion", async () => {
-    await settle(actions().onDeleteCredential("cred-hapi-fhir"));
+    await settle(actions().onDeleteCredential("cred-hapi-fhir", { now: false }));
     const credential = fixture.credentials.find((c) => c.id === "cred-hapi-fhir")!;
     expect(credential.scheduledDeletion).not.toBeNull();
     expect(credential.projectIds).toEqual([]);
   });
 
+  it("schedules a scheduled credential again, with a new date, when the dialog said schedule", async () => {
+    await settle(actions().onDeleteCredential("cred-old-postgres", { now: false }));
+    const credential = fixture.credentials.find((c) => c.id === "cred-old-postgres")!;
+    expect(credential.scheduledDeletion).not.toBe("2026-10-21T09:00:00Z");
+  });
+
   it("won't delete a scheduled credential with activity in projects", async () => {
-    const refused = actions().onDeleteCredential("cred-old-postgres").catch((e: unknown) => e);
+    const refused = actions().onDeleteCredential("cred-old-postgres", { now: true }).catch((e: unknown) => e);
     await vi.runAllTimersAsync();
     expect(((await refused) as RequestError).message).toBe("Cannot delete a credential that has activities in projects");
     expect(fixture.credentials.some((c) => c.id === "cred-old-postgres")).toBe(true);

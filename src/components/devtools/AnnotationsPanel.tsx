@@ -1,9 +1,11 @@
 import { useAnnotations } from "../../annotations/annotations-context";
 import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "../../annotations/source";
 import Heading from "../Heading";
+import CloseButton from "../CloseButton";
 import IconButton from "../IconButton";
 import TextLink from "../TextLink";
 import AnnotationCard from "./AnnotationCard";
+import Tooltip from "../Tooltip";
 
 export const ANNOTATIONS_PANEL_WIDTH = 440;
 
@@ -27,9 +29,11 @@ export default function AnnotationsPanel() {
           <Heading as="p" size="sm">
             Annotations
           </Heading>
-          <p className="truncate text-xs text-gray-500" title={ANNOTATIONS_BRANCH}>
-            {pinnedId ? "Pinned" : "Following the mouse"} · copy of {ANNOTATIONS_BRANCH}
-          </p>
+          <Tooltip content={ANNOTATIONS_BRANCH}>
+            <p className="truncate text-xs text-gray-500">
+              {pinnedId ? "Pinned" : "Following the mouse"} · copy of {ANNOTATIONS_BRANCH}
+            </p>
+          </Tooltip>
         </div>
         <div className="flex items-center gap-1">
           <IconButton
@@ -38,7 +42,7 @@ export default function AnnotationsPanel() {
             active={!!pinnedId}
             onClick={() => pin(pinnedId ? null : currentId)}
           />
-          <IconButton icon="hero-x-mark" label="Close" onClick={() => setOpen(false)} />
+          <CloseButton onClick={() => setOpen(false)} />
         </div>
       </div>
 

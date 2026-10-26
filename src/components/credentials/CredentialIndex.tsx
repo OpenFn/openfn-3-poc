@@ -235,10 +235,11 @@ export default function CredentialIndex(props: Props) {
       )}
       {active?.kind === "delete_credential" && activeCredential && (
         <CredentialDeletionModal
+          key={activeCredential.id}
           onClose={close}
           credential={activeCredential}
-          onDelete={async () => {
-            await props.onDeleteCredential(activeCredential.id);
+          onDelete={async (intent) => {
+            await props.onDeleteCredential(activeCredential.id, intent);
             close();
           }}
         />
