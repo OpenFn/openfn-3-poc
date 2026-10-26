@@ -1,6 +1,5 @@
 /** Superuser admin views: audit trail and auth provider. Types only: no data, no behaviour. */
-import type { Collection } from "./project-settings";
-import type { Project, ProjectRole } from "./projects";
+import type { ProjectRole } from "./projects";
 import type { UserRole } from "./users";
 
 /** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
@@ -83,7 +82,11 @@ export interface AuthProviderValues {
 }
 
 /** A row of /settings/projects: what the table shows, with the owner's name joined in. */
-export interface AdminProjectRow extends Pick<Project, "id" | "name" | "description" | "insertedAt"> {
+export interface AdminProjectRow {
+  id: string;
+  name: string;
+  description: string;
+  insertedAt: string;
   /** The owner's full name; "" when the project has no owner. */
   ownerName: string;
   scheduledDeletion: string | null;
@@ -117,9 +120,13 @@ export interface AdminDeleteProject {
   name: string;
 }
 
-/** A row of /settings/collections: the collection with its project's name. */
-/** One row of the instance-wide collections table: what it shows, no preview. */
-export interface AdminCollectionRow extends Omit<Collection, "previewJson"> {
+/** One row of the instance-wide collections table (/settings/collections): what it shows, no preview. */
+export interface AdminCollectionRow {
+  id: string;
+  projectId: string;
+  name: string;
+  /** Sum of the byte size of every item (shown as "Used storage"). */
+  byteSizeSum: number;
   projectName: string;
 }
 

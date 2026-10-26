@@ -257,9 +257,11 @@ is rewritten.
   host keeps from it is tied to the form that started it (`formId`) and the
   record it was for, so it can only be saved there.
 - **The contract is written by hand.** `XPageProps` and the shapes it names
-  never build on the replica's model types (`User`, `Project`, `WorkOrder`);
-  the replica maps fixtures onto them. Every one is exported from `index.ts`,
-  camelCase, and plain JSON apart from the `on*` callbacks.
+  never build on the replica's model types (`User`, `Project`, `WorkOrder`,
+  in `src/mock-data/models/`); the replica maps fixtures onto them, and lint
+  stops `src/types/`, pages and components importing the models. Every one is
+  exported from `index.ts`, camelCase, and plain JSON apart from the `on*`
+  callbacks.
 - **Names say what a shape is**: `…Row` for a table row, `…Ref` for a
   pointer to another record, `…Values` for what a form saves, `…Detail` for
   one record's page, `…Result` for an event's answer, `…Actions` for the

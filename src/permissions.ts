@@ -17,8 +17,9 @@
  * project MFA requirement (no fixture project sets it), which Lightning also
  * folds into these answers.
  */
-import type { Project, ProjectRole } from "./types/projects";
-import type { User } from "./types/users";
+import type { ProjectRole } from "./types/projects";
+import type { Project } from "./mock-data/models/projects";
+import type { User } from "./mock-data/models/users";
 
 export interface Permissions {
   // Instance (the user's own role).
