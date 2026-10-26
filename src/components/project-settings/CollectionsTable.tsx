@@ -62,7 +62,6 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
               theme="secondary"
               size="xs"
               pending={previewingId === c.id}
-              disabled={previewingId !== null}
               onClick={() => onPreview(c)}
             >
               <span className="hero-eye h-4 w-4" aria-hidden="true" />
