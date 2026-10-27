@@ -26,7 +26,7 @@ export const BodyCard: Story = {
   args: { dataclip },
   render: () => (
     <DataclipBodyCard wiped={false}>
-      <JsonViewer value={body} />
+      <JsonViewer body={{ text: body }} />
     </DataclipBodyCard>
   ),
 };

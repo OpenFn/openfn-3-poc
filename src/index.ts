@@ -109,6 +109,7 @@ export type {
   TransferStatus,
 } from "./types/credentials";
 export type {
+  DataclipBody,
   HistoryWorkOrderState,
   LogLine,
   RunRow,

@@ -34,7 +34,7 @@ export default function DataclipShowPageReplica() {
         updatedAt,
         wipedAt: dataclip.wiped ? updatedAt : null,
       }}
-      body={dataclip.wiped ? undefined : body}
+      body={dataclip.wiped ? undefined : { text: body }}
     />
   );
 }

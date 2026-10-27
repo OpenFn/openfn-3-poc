@@ -77,11 +77,14 @@ export interface DataclipDetail {
   wipedAt: string | null;
 }
 
+/** A loaded dataclip body: its text, or why it could not be loaded. Never both, so an error is never copied as data. */
+export type DataclipBody = { text: string } | { error: string };
+
 /** A selected step's input or output: the body arrives separately and may still be loading. */
 export interface StepDataclip {
   id: string;
   wiped: boolean;
-  body?: unknown;
+  body?: DataclipBody;
 }
 
 export type SearchFieldId = "id" | "dataclip_name" | "body" | "log";

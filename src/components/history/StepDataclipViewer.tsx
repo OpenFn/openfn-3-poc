@@ -6,8 +6,9 @@ import WipedDataViewer from "./WipedDataViewer";
 /**
  * A selected step's input or output on the run page (viewers.ex
  * `step_dataclip_viewer`): the wiped box, a "could not be saved" note,
- * "Nothing yet" while running, or the JSON body. A dataclip whose body has
- * not arrived yet shows an empty viewer, as Lightning's does while it fetches.
+ * "Nothing yet" while running, the JSON body, or the reason it could not be
+ * loaded. A dataclip whose body has not arrived yet shows an empty viewer, as
+ * Lightning's does while it fetches.
  */
 export default function StepDataclipViewer({
   step,
@@ -52,7 +53,7 @@ export default function StepDataclipViewer({
     // Monaco fills a sized box; a min-height alone doesn't give it one.
     <div className="relative h-full min-h-96 grow">
       <div className="absolute inset-0">
-        <JsonViewer value={dataclip.body ?? ""} ariaLabel={inputOrOutput === "input" ? "Input" : "Output"} />
+        <JsonViewer body={dataclip.body} ariaLabel={inputOrOutput === "input" ? "Input" : "Output"} />
       </div>
     </div>
   );
