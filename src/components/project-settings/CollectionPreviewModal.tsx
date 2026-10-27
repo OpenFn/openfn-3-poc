@@ -30,9 +30,9 @@ export default function CollectionPreviewModal({ name, json, onClose }: Props) {
       }
     >
       {json ? (
-        <pre className="h-96 overflow-auto rounded-md bg-gray-700 p-4 text-xs text-gray-200">{json}</pre>
+        <pre className="h-96 overflow-auto rounded-md bg-code p-4 text-xs text-code">{json}</pre>
       ) : (
-        <p className="flex h-96 items-center justify-center text-sm text-gray-400">This collection is empty.</p>
+        <p className="flex h-96 items-center justify-center text-sm text-faint">This collection is empty.</p>
       )}
     </Modal>
   );

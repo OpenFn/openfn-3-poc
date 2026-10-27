@@ -14,6 +14,7 @@ import {
   type BulkSelection,
 } from "../../components/history/HistoryModals";
 import WorkOrdersTable from "../../components/history/WorkOrdersTable";
+import { allTicked } from "../../utils/history";
 import { useToast } from "../../components/Toast";
 import { historySearchFields, historyStatuses } from "../../constants";
 import type { HistoryWorkOrderState, RunState, SearchFieldId, WorkOrderRow } from "../../types/history";
@@ -265,7 +266,7 @@ export default function HistoryWorkOrdersPage({
   const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
   const selection: BulkSelection = {
     selectedCount: selectedIds.length,
-    allSelected: rows.length > 0 && selectedIds.length === rows.length,
+    allSelected: allTicked(rows, selectedIds),
     pageNumber: page.number,
     pages: Math.max(1, Math.ceil(page.totalEntries / page.size)),
     totalEntries: page.totalEntries,
@@ -425,7 +426,7 @@ export default function HistoryWorkOrdersPage({
         />
 
         {filters.searchTerm && (
-          <div className="m-2 truncate text-sm text-gray-500">
+          <div className="m-2 truncate text-sm text-muted">
             {page.totalEntries}
             {capped && "+"} work orders with runs matching "{filters.searchTerm}"
             {capped && <span className="text-xs"> (try more specific filters)</span>}

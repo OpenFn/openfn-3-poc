@@ -30,9 +30,9 @@ export function MethodBadge({ method }: { method: string | null | undefined }) {
 
 export function RequestPathDisplay({ event }: { event: ChannelEvent | undefined }) {
   return (
-    <span className="break-all font-mono text-sm text-gray-900">
+    <span className="break-all font-mono text-sm text-strong">
       {event?.requestPath}
-      {event?.requestQueryString && <span className="text-gray-400">?{event.requestQueryString}</span>}
+      {event?.requestQueryString && <span className="text-faint">?{event.requestQueryString}</span>}
     </span>
   );
 }
@@ -55,7 +55,7 @@ export function StatusCodeBadge({ status }: { status: number | null | undefined 
 }
 
 export function SectionSizeBadge({ size }: { size: number }) {
-  return <span className="font-mono text-xs text-gray-400">{formatBytes(size)}</span>;
+  return <span className="font-mono text-xs text-faint">{formatBytes(size)}</span>;
 }
 
 export function HeadersTable({ headers }: { headers: [string, string][] }) {
@@ -64,7 +64,7 @@ export function HeadersTable({ headers }: { headers: [string, string][] }) {
       {headers.map(([name, value], i) => (
         // Headers repeat (set-cookie, via), so the key is the position.
         <DetailItem key={i} label={name} mono>
-          <span className={cn("break-all", value === "[REDACTED]" && "italic text-gray-400")}>{value}</span>
+          <span className={cn("break-all", value === "[REDACTED]" && "italic text-faint")}>{value}</span>
         </DetailItem>
       ))}
     </DetailList>
@@ -105,12 +105,12 @@ export function BodyViewer({
   }
   if (ct && !isText(ct)) {
     return (
-      <div className="flex items-center gap-2 py-4 text-sm text-gray-500">
+      <div className="flex items-center gap-2 py-4 text-sm text-muted">
         <Pill square mono>
           {contentTypeLabel(ct)}
         </Pill>
         {size != null && <span>{formatBytes(size)}</span>}
-        {hash && <span className="font-mono text-xs text-gray-400">SHA256: {hash}</span>}
+        {hash && <span className="font-mono text-xs text-faint">SHA256: {hash}</span>}
       </div>
     );
   }
@@ -118,14 +118,14 @@ export function BodyViewer({
   const previewBytes = preview == null ? 0 : new TextEncoder().encode(preview).length;
   if (preview == null) {
     return (
-      <div className="py-4 text-sm text-gray-500">
+      <div className="py-4 text-sm text-muted">
         Body not captured
-        {size != null && <span className="ml-1 text-xs text-gray-400">({formatBytes(size)})</span>}
+        {size != null && <span className="ml-1 text-xs text-faint">({formatBytes(size)})</span>}
       </div>
     );
   }
   return (
-    <div className="space-y-1 text-xs text-gray-400">
+    <div className="space-y-1 text-xs text-faint">
       <Card muted padding="none" className="relative">
         <div className="absolute right-2 top-2 flex items-center gap-1.5">
           {ct && (
@@ -135,7 +135,7 @@ export function BodyViewer({
           )}
           <CopyButton value={preview} label="Copy body" size="sm" className="bg-white/80" />
         </div>
-        <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all p-3 pr-20 font-mono text-gray-700">{preview}</pre>
+        <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all p-3 pr-20 font-mono text-body">{preview}</pre>
       </Card>
       {hash && (
         <div className="flex items-center gap-2 pt-1">
@@ -167,7 +167,7 @@ export function ResponseEmpty({
       ? ["hero-exclamation-triangle", "No response received"]
       : ["hero-lock-closed", "Request not sent — credential error"];
   return (
-    <EmptyState variant="plain" icon={icon} title={label} message={humanMessage} className="border-t border-gray-100">
+    <EmptyState variant="plain" icon={icon} title={label} message={humanMessage} className="border-t border-subtle">
       <Pill square mono>
         {errorCode}
       </Pill>

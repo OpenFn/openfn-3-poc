@@ -3,7 +3,7 @@ import { Centered, PageContent } from "../../components/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import DataclipDetailsCard, { DataclipBodyCard } from "../../components/history/DataclipDetailsCard";
 import JsonViewer from "../../components/history/JsonViewer";
-import type { DataclipDetail } from "../../types/history";
+import type { DataclipBody, DataclipDetail } from "../../types/history";
 import type { CurrentProject } from "../../types/projects";
 import { shortUuid } from "../../utils/format";
 
@@ -11,8 +11,8 @@ export interface DataclipShowPageProps {
   project: CurrentProject;
   projectLabel: string;
   dataclip: DataclipDetail;
-  /** The body, pretty-printed; undefined while the host fetches it. Never shown for a wiped dataclip. */
-  body: string | undefined;
+  /** The body (pretty-printed text) or why it could not be loaded; undefined while the host fetches it. Never shown for a wiped dataclip. */
+  body: DataclipBody | undefined;
 }
 
 /** Inventory view `dataclip-show` (DataclipLive.Show, dataclip_live/show.ex). */
@@ -39,7 +39,7 @@ export default function DataclipShowPage({ project, projectLabel, dataclip, body
       <Centered>
         <DataclipDetailsCard dataclip={dataclip} />
         <DataclipBodyCard wiped={dataclip.wipedAt !== null}>
-          <JsonViewer value={body ?? ""} />
+          <JsonViewer body={body} />
         </DataclipBodyCard>
       </Centered>
     </PageContent>

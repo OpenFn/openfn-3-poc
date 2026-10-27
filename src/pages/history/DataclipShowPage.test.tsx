@@ -17,7 +17,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof DataclipShowPage>
         project={{ id: "p1", parentId: null, color: null }}
         projectLabel="Malawi HIV"
         dataclip={{ id: ID, type: "http_request", insertedAt: "2026-10-14T09:30:00Z", updatedAt: "2026-10-14T09:31:00Z", wipedAt: null }}
-        body={'{\n  "x": 1\n}'}
+        body={{ text: '{\n  "x": 1\n}' }}
         {...props}
       />
     </RouterProvider>
@@ -38,6 +38,12 @@ describe("DataclipShowPage", () => {
     renderPage({ dataclip: { id: ID, type: "step_result", insertedAt: "2026-10-14T09:30:00Z", updatedAt: "2026-10-14T09:31:00Z", wipedAt: "2026-10-20T00:00:00Z" }, body: undefined });
     expect(screen.getByText("Wiped")).toBeTruthy();
     expect(screen.getByText("No Data Available")).toBeTruthy();
+  });
+
+  it("shows why the body could not be loaded, with nothing to copy", () => {
+    renderPage({ body: { error: "Failed to load content" } });
+    expect(screen.getByText("Failed to load content")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Copy to clipboard" })).toBeNull();
   });
 
   it("draws an empty viewer while the body is on its way", () => {

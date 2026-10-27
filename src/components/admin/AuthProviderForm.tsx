@@ -192,14 +192,14 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               onChange={(e) => set("allowUnverifiedEmail", e.target.checked)}
             />
             {generalError && <Alert type="danger">{generalError}</Alert>}
-            <div className="flex justify-between sm:border-t sm:border-gray-200 sm:pt-4">
+            <div className="flex justify-between sm:border-t sm:border-subtle sm:pt-4">
               <Button type="submit" pending={save.pending}>
                 Save
               </Button>
               {valid && <TestButton state={testState} pending={test.pending} onTest={() => void test.run()} />}
             </div>
           </div>
-          <div className="flex flex-col gap-4 text-sm text-gray-700">
+          <div className="flex flex-col gap-4 text-sm text-body">
             <p>
               Allows users with existing accounts to login with an external OpenID Connect account that matches their
               email address.
@@ -210,13 +210,13 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               Connect support and it's well-known file see{" "}
               {docsLink("https://developers.google.com/identity/protocols/oauth2/openid-connect#discovery")}
             </p>
-            <div className="space-y-2 sm:border-t sm:border-gray-200 sm:pt-4">
+            <div className="space-y-2 sm:border-t sm:border-subtle sm:pt-4">
               <Heading size="sm">Redirect URI</Heading>
               <Card
                 muted
                 padding="sm"
                 id="redirect-uri-preview"
-                className={cn("font-mono", !valid && "cursor-not-allowed text-gray-400")}
+                className={cn("font-mono", !valid && "cursor-not-allowed text-faint")}
               >
                 {valid ? authRedirectUri(values) : <>{values.redirectHost}&hellip;</>}
               </Card>

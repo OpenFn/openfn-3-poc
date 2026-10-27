@@ -492,7 +492,7 @@ export default function CredentialFormModal({
             id="environment-name-input"
             label={
               <>
-                Environment name<span className="text-red-500"> *</span>
+                Environment name<span className="text-danger-500"> *</span>
                 <InfoTooltip title={environmentTooltip} />
               </>
             }
@@ -689,7 +689,7 @@ function OauthFields({
   if (env.pending) {
     // Lightning has no way out of this; a closed popup would otherwise leave the tab waiting for good.
     status = (
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-muted">
         Authenticating with {client.name}... <TextLink onClick={onSignIn}>Start again</TextLink>
       </p>
     );
@@ -728,7 +728,7 @@ function OauthFields({
             user info to verify. This app may not provide a user info endpoint, or your admin may not have configured it.
           </Alert>
         )}
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted">
           If your credential isn't working as expected, you can{" "}
           <TextLink onClick={onSignIn}>reauthenticate with {client.name}</TextLink>
         </p>
@@ -768,7 +768,7 @@ function OauthFields({
             <InfoTooltip title="Select permissions associated to your OAuth2 Token" />
           </Heading>
           {client.scopesDocUrl && (
-            <p className="text-xs text-gray-800">
+            <p className="text-xs text-strong">
               Learn more about {client.name} permissions{" "}
               <TextLink to={client.scopesDocUrl} external>
                 here

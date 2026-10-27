@@ -26,7 +26,7 @@ export function DetailList({
         id={id}
         className={cn(
           "text-sm",
-          layout === "rows" ? "divide-y divide-gray-200" : "grid grid-cols-2 gap-4 md:grid-cols-4",
+          layout === "rows" ? "divide-y divide-subtle" : "grid grid-cols-2 gap-4 md:grid-cols-4",
           className
         )}
       >
@@ -55,15 +55,15 @@ export function DetailItem({
   if (layout === "grid") {
     return (
       <div className={className}>
-        <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</dt>
-        <dd className={cn("mt-1 break-words text-gray-900", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
+        <dt className="text-xs font-medium uppercase tracking-wide text-muted">{label}</dt>
+        <dd className={cn("mt-1 break-words text-strong", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
       </div>
     );
   }
   return (
     <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
-      <dt className="font-medium text-gray-600">{label}</dt>
-      <dd className={cn("text-right text-gray-900", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
+      <dt className="font-medium text-muted">{label}</dt>
+      <dd className={cn("text-right text-strong", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
     </div>
   );
 }

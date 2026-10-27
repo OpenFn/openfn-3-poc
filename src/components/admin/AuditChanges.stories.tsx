@@ -7,7 +7,7 @@ const meta: Meta<typeof AuditChanges> = {
   component: AuditChanges,
   decorators: [
     (Story) => (
-      <table className="min-w-full bg-white">
+      <table className="min-w-full bg-surface">
         <tbody>
           <tr>
             <Story />

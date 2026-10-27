@@ -18,8 +18,8 @@ const ToastContext = createContext<ShowToast>(() => {});
 const DURATION_MS = 5000;
 
 const tones: Record<ToastTone, { box: string; icon: string }> = {
-  info: { box: "bg-blue-50 text-blue-800 ring-blue-200", icon: "hero-check-circle-solid text-blue-500" },
-  error: { box: "bg-red-50 text-red-800 ring-red-200", icon: "hero-exclamation-circle-solid text-red-500" },
+  info: { box: "bg-info-50 text-info-800 ring-info-200", icon: "hero-check-circle-solid text-info-500" },
+  error: { box: "bg-danger-50 text-danger-800 ring-danger-200", icon: "hero-exclamation-circle-solid text-danger-500" },
 };
 
 /**

@@ -46,7 +46,7 @@ export default function UserDeletionModal({
           </Button>
         }
       >
-        <div className="space-y-3 text-sm text-gray-600">
+        <div className="space-y-3 text-sm text-muted">
           <p>
             {isCurrentUser ? "Your account" : "This user"} cannot be deleted until their auditable activities have
             also been purged.
@@ -86,7 +86,7 @@ export default function UserDeletionModal({
       )}
       {email !== undefined && (
         <p>
-          To confirm, type <strong className="font-medium text-gray-900">{email}</strong> below.
+          To confirm, type <strong className="font-medium text-strong">{email}</strong> below.
         </p>
       )}
     </ConfirmModal>

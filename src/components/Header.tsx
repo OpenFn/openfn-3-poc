@@ -18,12 +18,12 @@ interface Props {
  */
 export default function Header({ title, breadcrumbs, children, loggedOut = false }: Props) {
   return (
-    <div className="flex-none bg-white shadow-xs border-b border-gray-200" data-ui="page-header" data-testid="top-bar">
+    <div className="flex-none bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">
         {breadcrumbs ?? (
           <h1
             className={cn(
-              "text-gray-900 flex items-center",
+              "text-strong flex items-center",
               loggedOut ? "text-3xl font-bold" : "text-xl font-semibold"
             )}
           >

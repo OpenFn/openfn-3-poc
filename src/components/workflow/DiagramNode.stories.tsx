@@ -5,7 +5,7 @@ import DiagramNode from "./DiagramNode";
 const meta: Meta<typeof DiagramNode> = {
   title: "Workflow/DiagramNode",
   component: DiagramNode,
-  decorators: [(Story) => <div className="p-10 h-64 bg-gray-100 relative"><Story /></div>],
+  decorators: [(Story) => <div className="p-10 h-64 bg-page relative"><Story /></div>],
   args: {
     id: "job-transform",
     shape: "rect",

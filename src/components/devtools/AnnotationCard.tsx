@@ -35,7 +35,7 @@ function IdList({ label, ids, onOpenId }: { label: string; ids: string[]; onOpen
   if (ids.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-1.5 text-xs">
-      <span className="text-gray-500">{label}</span>
+      <span className="text-muted">{label}</span>
       {ids.map((id) => (
         <Button key={id} theme="secondary" size="xs" className="font-mono text-xs" onClick={() => onOpenId?.(id)}>
           {id}
@@ -80,7 +80,7 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
           {inventory && <Pill color={statusColor(inventory.status)}>inventory: {inventory.status}</Pill>}
         </div>
         {inventory && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             {inventory.section} · <code>{inventory.route.replace(/`/g, "")}</code>
           </p>
         )}
@@ -110,7 +110,7 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
         <>
           {annotation.frontMatterRaw && (
             <Disclosure title="Front matter" defaultOpen={false} padded={false}>
-              <pre className="overflow-x-auto border-t border-gray-200 px-4 py-3 text-xs text-gray-600">{annotation.frontMatterRaw}</pre>
+              <pre className="overflow-x-auto border-t border-subtle px-4 py-3 text-xs text-muted">{annotation.frontMatterRaw}</pre>
             </Disclosure>
           )}
           <Markdown source={annotation.body} />

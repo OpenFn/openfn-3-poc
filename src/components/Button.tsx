@@ -19,27 +19,27 @@ const sizeClasses: Record<ButtonSize, string> = {
 const themeClasses: Record<ButtonTheme, { enabled: string; disabled: string }> = {
   primary: {
     enabled:
-      "bg-primary-600 hover:bg-primary-500 text-white focus-visible:outline-primary-600",
-    disabled: "bg-primary-300 text-white",
+      "bg-primary-600 hover:bg-primary-500 text-inverse focus-visible:outline-focus",
+    disabled: "bg-primary-300 text-inverse",
   },
   secondary: {
-    enabled: "bg-white hover:bg-gray-50 text-gray-900 ring-1 ring-gray-300 ring-inset focus-visible:outline-primary-600",
-    disabled: "bg-gray-50 text-gray-400 ring-1 ring-gray-200 ring-inset",
+    enabled: "bg-surface hover:bg-hover text-strong ring-1 ring-strong ring-inset focus-visible:outline-focus",
+    disabled: "bg-subtle text-faint ring-1 ring-subtle ring-inset",
   },
   danger: {
     enabled:
-      "bg-red-600 hover:bg-red-500 text-white focus-visible:outline-red-600",
-    disabled: "bg-red-300 text-white",
+      "bg-danger-600 hover:bg-danger-500 text-inverse focus-visible:outline-danger-600",
+    disabled: "bg-danger-300 text-inverse",
   },
   success: {
     enabled:
-      "bg-green-600 hover:bg-green-500 text-white focus-visible:outline-green-600",
-    disabled: "bg-green-300 text-white",
+      "bg-success-600 hover:bg-success-500 text-inverse focus-visible:outline-success-600",
+    disabled: "bg-success-300 text-inverse",
   },
   warning: {
     enabled:
-      "bg-yellow-600 hover:bg-yellow-500 text-white focus-visible:outline-yellow-600",
-    disabled: "bg-yellow-300 text-white",
+      "bg-warning-600 hover:bg-warning-500 text-inverse focus-visible:outline-warning-600",
+    disabled: "bg-warning-300 text-inverse",
   },
 };
 

@@ -25,9 +25,9 @@ function RowContent({ id, title, size }: { id: string; title: string; size: "sm"
   return (
     <>
       <AdaptorIcon name={pkg} size={size} />
-      <div className="text-gray-900">
+      <div className="text-strong">
         {title}
-        <div className="text-sm text-gray-500">Latest: {resolvedAdaptorVersion(pkg)}</div>
+        <div className="text-sm text-muted">Latest: {resolvedAdaptorVersion(pkg)}</div>
       </div>
     </>
   );

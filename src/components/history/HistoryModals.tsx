@@ -94,7 +94,7 @@ function BulkModal({
         )
       }
     >
-      <div className="space-y-3 text-sm text-gray-600">
+      <div className="space-y-3 text-sm text-muted">
         {confirm.error && <Alert type="danger">{errorMessage(confirm.error)}</Alert>}
         {children}
       </div>
@@ -103,8 +103,8 @@ function BulkModal({
           {button("selected", selectedLabel)}
           {button("all", allLabel)}
           <div className="relative col-span-2 flex justify-center" aria-hidden="true">
-            <div className="absolute inset-x-0 top-1/2 border-t border-gray-300" />
-            <span className="relative bg-white px-2 text-sm text-gray-500">OR</span>
+            <div className="absolute inset-x-0 top-1/2 border-t border-strong" />
+            <span className="relative bg-surface px-2 text-sm text-muted">OR</span>
           </div>
           <div className="col-span-2 grid">{back}</div>
         </div>

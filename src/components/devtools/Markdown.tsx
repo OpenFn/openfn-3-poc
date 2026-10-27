@@ -21,17 +21,17 @@ function gherkin(text: string) {
       if (trimmed.startsWith("@"))
         return `<span class="block mt-3 font-medium text-primary-600" ${pad}>${escape(trimmed)}</span>`;
       if (trimmed.startsWith("# Value:"))
-        return `<span class="block italic text-gray-600" ${pad}>${escape(trimmed.slice(2))}</span>`;
+        return `<span class="block italic text-muted" ${pad}>${escape(trimmed.slice(2))}</span>`;
       if (trimmed.startsWith("#"))
-        return `<span class="block text-gray-400 break-all" ${pad}>${escape(trimmed)}</span>`;
+        return `<span class="block text-faint break-all" ${pad}>${escape(trimmed)}</span>`;
       const match = trimmed.match(GHERKIN_KEYWORD);
       if (match) {
         const keyword = match[2]!;
         const rest = trimmed.slice(keyword.length);
         const heading = /:$/.test(keyword);
-        return `<span class="block ${heading ? "text-gray-900" : "text-gray-800"}" ${pad}><strong class="${heading ? "text-gray-900" : "text-primary-700"}">${keyword}</strong>${escape(rest)}</span>`;
+        return `<span class="block text-strong" ${pad}><strong class="${heading ? "text-strong" : "text-primary-700"}">${keyword}</strong>${escape(rest)}</span>`;
       }
-      return `<span class="block text-gray-700" ${pad}>${escape(trimmed)}</span>`;
+      return `<span class="block text-body" ${pad}>${escape(trimmed)}</span>`;
     })
     .join("");
 }
@@ -46,7 +46,7 @@ const marked = new Marked({
     },
     code({ text, lang }) {
       if (lang === "gherkin")
-        return `<div class="not-prose my-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed whitespace-pre-wrap">${gherkin(text)}</div>`;
+        return `<div class="not-prose my-4 rounded-md border border-subtle bg-subtle p-3 text-xs leading-relaxed whitespace-pre-wrap">${gherkin(text)}</div>`;
       return `<pre><code>${escape(text)}</code></pre>`;
     },
     link({ href, tokens }) {
@@ -64,8 +64,8 @@ export default function Markdown({ source, className }: { source: string; classN
     <div
       className={cn(
         "prose prose-sm max-w-none prose-headings:font-semibold prose-h2:text-base prose-h2:mt-6 prose-h3:text-sm",
-        "prose-code:before:content-none prose-code:after:content-none prose-code:bg-gray-100 prose-code:rounded prose-code:px-1 prose-code:font-normal",
-        "prose-pre:bg-gray-800 prose-pre:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:text-xs prose-a:text-primary-600",
+        "prose-code:before:content-none prose-code:after:content-none prose-code:bg-sunken prose-code:rounded prose-code:px-1 prose-code:font-normal",
+        "prose-pre:bg-code prose-pre:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:text-xs prose-a:text-primary-600",
         className
       )}
       dangerouslySetInnerHTML={{ __html: html }}

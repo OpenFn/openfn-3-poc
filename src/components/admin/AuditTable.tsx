@@ -11,7 +11,7 @@ import AuditChanges from "./AuditChanges";
 function TwoLine({ label, sub }: { label: string; sub: string }) {
   return (
     <>
-      <div className="truncate text-gray-900">{label}</div>
+      <div className="truncate text-strong">{label}</div>
       <div className="truncate text-xs">{sub}</div>
     </>
   );
@@ -45,7 +45,7 @@ export default function AuditTable({
     >
       {events.map((audit) => (
         <Fragment key={audit.id}>
-          <Tr className="border-t border-gray-200">
+          <Tr className="border-t border-subtle">
             <Td>
               <DateTime value={audit.insertedAt} />
             </Td>

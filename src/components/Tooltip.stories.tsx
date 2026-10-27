@@ -25,7 +25,7 @@ export const Copy: Story = {
     content: (
       <>
         2026-10-14 08:30:07 UTC
-        <span className="block text-xs text-gray-400">Click to copy timestamp</span>
+        <span className="block text-xs text-faint">Click to copy timestamp</span>
       </>
     ),
     children: <span className="cursor-pointer">today at 8:30:07 AM</span>,

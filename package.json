@@ -7,7 +7,8 @@
     "node": "^22.12.0 || >=24"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/theme/tokens.css"
   },
   "scripts": {
     "dev": "vite",

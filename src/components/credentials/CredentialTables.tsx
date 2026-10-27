@@ -130,7 +130,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
                 <ProjectBadges names={credential.projects.map((p) => p.name)} />
               </Td>
               <Td className="wrap-break-word max-w-48">
-                {credential.externalId ? <Code>{credential.externalId}</Code> : <span className="text-gray-400">-</span>}
+                {credential.externalId ? <Code>{credential.externalId}</Code> : <span className="text-faint">-</span>}
               </Td>
               <Td>
                 <Tooltip content={credential.environments.join(", ")}>
@@ -172,7 +172,7 @@ export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, a
                 <Code>{kc.path}</Code>
               </Td>
               <Td className="wrap-break-word max-w-60">
-                {kc.defaultCredential ? kc.defaultCredential.name : <span className="text-gray-400">None</span>}
+                {kc.defaultCredential ? kc.defaultCredential.name : <span className="text-faint">None</span>}
               </Td>
               {showOwner && <Td className="wrap-break-word max-w-60">{kc.ownerEmail}</Td>}
               <Td actions>{actions?.(kc)}</Td>

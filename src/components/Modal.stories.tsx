@@ -31,6 +31,6 @@ export const Bare: Story = {
   args: {
     bare: true,
     size: "xl",
-    children: <div className="h-64 rounded-xl bg-gray-50 p-6 text-sm text-gray-500">A modal that lays out its own content.</div>,
+    children: <div className="h-64 rounded-xl bg-subtle p-6 text-sm text-muted">A modal that lays out its own content.</div>,
   },
 };

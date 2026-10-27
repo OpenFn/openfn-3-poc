@@ -4,11 +4,11 @@ import { cn } from "../utils/cn";
 export type HeadingSize = "xl" | "lg" | "md" | "sm" | "eyebrow";
 
 const sizes: Record<HeadingSize, string> = {
-  xl: "text-3xl font-bold text-gray-900",
-  lg: "text-lg font-semibold text-gray-900",
-  md: "text-base font-semibold text-gray-900",
-  sm: "text-sm font-semibold text-gray-900",
-  eyebrow: "text-xs font-medium uppercase tracking-wide text-gray-500",
+  xl: "text-3xl font-bold text-strong",
+  lg: "text-lg font-semibold text-strong",
+  md: "text-base font-semibold text-strong",
+  sm: "text-sm font-semibold text-strong",
+  eyebrow: "text-xs font-medium uppercase tracking-wide text-muted",
 };
 
 /**

@@ -47,7 +47,7 @@ export default function FilterChip({
       data-variant={active ? "active" : "default"}
       className={cn(
         "inline-flex items-center gap-x-1 rounded-full border text-sm font-medium transition-colors",
-        active ? "border-primary-200 bg-primary-50 text-primary-700" : "border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200",
+        active ? "border-primary-200 bg-primary-50 text-primary-700" : "border-subtle bg-sunken text-body hover:bg-emphasis",
         clearable && "pr-1.5"
       )}
     >
@@ -130,7 +130,7 @@ export function FilterDateRange({
   const id = useId();
   return (
     <div className="space-y-3 px-4 py-3">
-      <div className="text-sm text-gray-500">{title}</div>
+      <div className="text-sm text-muted">{title}</div>
       <TextInput
         id={`${id}-after`}
         type="datetime-local"

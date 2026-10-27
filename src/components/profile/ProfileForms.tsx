@@ -64,7 +64,7 @@ export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onS
       <Select
         label={
           <>
-            Contact preference<span className="text-red-500"> *</span>
+            Contact preference<span className="text-danger-500"> *</span>
             <InfoTooltip title={contactPreferenceTooltip} />
           </>
         }

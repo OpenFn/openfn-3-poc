@@ -113,7 +113,7 @@ export default function WorkflowsTable({
             <Tr key={wf.id} id={`workflow-${wf.id}`} onClick={() => navigate(`/projects/${projectId}/w/${wf.id}`)}>
               <Td className="max-w-60">
                 <Tooltip content={on ? wf.name : `${wf.name} (disabled)`}>
-                  <p className={cn("workflow-name truncate font-medium", on ? "text-gray-900" : "text-gray-400")}>
+                  <p className={cn("workflow-name truncate font-medium", on ? "text-strong" : "text-faint")}>
                     {wf.name}
                   </p>
                 </Tooltip>
@@ -183,7 +183,7 @@ function toggleTooltip(triggerType: string, enabled: boolean, lifecycle: boolean
 function Count({ value, to, children }: { value: number; to: string; children: ReactNode }) {
   return (
     <>
-      <div className="text-lg">{value > 0 ? <TextLink to={to}>{value}</TextLink> : <span className="text-gray-400">0</span>}</div>{" "}
+      <div className="text-lg">{value > 0 ? <TextLink to={to}>{value}</TextLink> : <span className="text-faint">0</span>}</div>{" "}
       <div className="mt-1 text-xs">{value > 0 ? children : "N/A"}</div>
     </>
   );

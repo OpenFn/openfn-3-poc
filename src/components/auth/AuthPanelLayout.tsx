@@ -24,11 +24,11 @@ export default function AuthPanelLayout({
     <section
       data-ui="page-body"
       className={cn(
-        "flex min-h-screen flex-col items-center gap-4 bg-gray-50 px-6 py-8",
+        "flex min-h-screen flex-col items-center gap-4 bg-subtle px-6 py-8",
         align === "centered" && "justify-center lg:py-0"
       )}
     >
-      <OpenFnLogoCollapsed className="h-16 w-16 text-black" />
+      <OpenFnLogoCollapsed className="h-16 w-16 text-strong" />
       <Heading as="h1" size="xl">
         {title}
       </Heading>
@@ -69,5 +69,5 @@ export function HavingProblems({ children }: { children: ReactNode }) {
 
 /** Helper text under a panel's submit button. */
 export function AuthPanelHint({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-gray-500">{children}</p>;
+  return <p className="text-sm text-muted">{children}</p>;
 }

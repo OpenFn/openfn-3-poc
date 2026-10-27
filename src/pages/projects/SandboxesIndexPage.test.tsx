@@ -46,7 +46,7 @@ function renderPage(props: Partial<SandboxesIndexPageProps> = {}) {
     onPreviewMerge: vi.fn(),
     onMergeSandbox: vi.fn().mockResolvedValue(undefined),
   };
-  render(
+  const page = (more: Partial<SandboxesIndexPageProps>) => (
     <RouterProvider value={router}>
       <ToastProvider>
         <SandboxesIndexPage
@@ -61,13 +61,16 @@ function renderPage(props: Partial<SandboxesIndexPageProps> = {}) {
           form={null}
           {...handlers}
           {...props}
+          {...more}
         />
       </ToastProvider>
     </RouterProvider>
   );
-  return { ...handlers, navigate: router.navigate as ReturnType<typeof vi.fn> };
+  const { rerender } = render(page({}));
+  return { ...handlers, navigate: router.navigate as ReturnType<typeof vi.fn>, rerender: (more: Partial<SandboxesIndexPageProps>) => rerender(page(more)) };
 }
 
+const DAY = 86_400_000;
 const card = (id: string) => document.getElementById(`sandbox-card-${id}`)!;
 const action = (kind: string, id: string) => document.querySelector(`#${kind}-sandbox-${id} button`) as HTMLButtonElement;
 const deferred = () => {
@@ -88,6 +91,11 @@ describe("SandboxesIndexPage", () => {
     expect(within(section).getByText("old-import")).toBeTruthy();
     expect(within(section).getByRole("button", { name: "Restore" })).toBeTruthy();
     expect(within(section).queryByText("fhir-mapping")).toBeNull();
+  });
+
+  it.each(["", "  "])("shows 'main' for a root whose environment is %j", (env) => {
+    renderPage({ root: { ...root, env } });
+    expect(document.getElementById("env-badge-p1")!.textContent).toBe("main");
   });
 
   it("gives a root that isn't a sandbox no actions, and a sandbox root its actions", () => {
@@ -163,8 +171,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.submit(document.getElementById("confirm-delete-sandbox-form")!);
       expect(onDeleteSandbox).not.toHaveBeenCalled();
       fireEvent.change(screen.getByLabelText(/Sandbox name/), { target: { value: "fhir-mapping" } });
-      // The disabled button sits in a tooltip wrapper, so it's a new element once enabled.
-      expect((within(dialog).getByRole("button", { name: "Delete sandbox" }) as HTMLButtonElement).disabled).toBe(false);
+      expect(submit.disabled).toBe(false);
     });
 
     it("sends the typed name and closes once the host has scheduled it", async () => {
@@ -191,6 +198,14 @@ describe("SandboxesIndexPage", () => {
       expect(screen.getByRole("dialog").textContent).toContain("After deletion, you'll be redirected to openhie-project.");
     });
 
+    it("says '1 day' for a one-day grace period", () => {
+      renderPage({ gracePeriodDays: 1 });
+      fireEvent.click(action("delete", "s1"));
+      const text = screen.getByRole("dialog").textContent;
+      expect(text).toContain("retained for 1 day before");
+      expect(text).not.toContain("1 days");
+    });
+
     it("says 'the configured grace period' when the host has no number", () => {
       renderPage({ gracePeriodDays: null, sandboxes: [row("s1", "fhir-mapping", { activeDescendantCount: 1 })] });
       fireEvent.click(action("delete", "s1"));
@@ -200,27 +215,10 @@ describe("SandboxesIndexPage", () => {
     });
 
     it("closes if the host's list no longer has the sandbox", () => {
-      const props = {
-        onCloseForm: vi.fn(),
-        onCreateSandbox: vi.fn(),
-        onUpdateSandbox: vi.fn(),
-        onDeleteSandbox: vi.fn(),
-        onCancelDeletion: vi.fn(),
-        onPreviewMerge: vi.fn(),
-        onMergeSandbox: vi.fn(),
-        project: { id: "p1", parentId: null, color: null },
-        projectLabel: "openhie-project",
-        root,
-        rootIsSandbox: false,
-        newHref: "/projects/p1/sandboxes/new",
-        createBlockedReason: null,
-        gracePeriodDays: 7,
-        form: null,
-      };
-      const { rerender } = render(<SandboxesIndexPage {...props} sandboxes={[live]} />);
+      const { rerender } = renderPage({ sandboxes: [live] });
       fireEvent.click(action("delete", "s1"));
       expect(screen.getByRole("dialog")).toBeTruthy();
-      rerender(<SandboxesIndexPage {...props} sandboxes={[]} />);
+      rerender({ sandboxes: [] });
       expect(screen.queryByRole("dialog")).toBeNull();
     });
   });
@@ -239,13 +237,21 @@ describe("SandboxesIndexPage", () => {
       expect(action("cancel-deletion", "s4").getAttribute("aria-busy")).toBeNull();
     });
 
-    it("says a purge date less than a day past is today, as Lightning truncates the day count", () => {
+    it.each([
+      ["5 days ahead", 5 * DAY, " (in 5 days)"],
+      ["a day and 2 minutes ahead", DAY + 2 * 60_000, " (in 1 day)"],
+      ["2 hours ahead", 2 * 3_600_000, " (today)"],
+      ["12 hours past", -12 * 3_600_000, " (today)"],
+      ["2 days past", -2 * DAY, ""],
+    ])("counts whole days to a purge date %s, as Lightning truncates the day count", (_, offset, suffix) => {
       vi.useFakeTimers({ toFake: ["Date"] });
-      vi.setSystemTime(new Date("2026-10-21T12:00:00Z"));
+      const now = new Date("2026-10-21T12:00:00Z");
+      vi.setSystemTime(now);
       try {
-        renderPage({ sandboxes: [live, gone] });
+        const scheduledDeletion = new Date(now.getTime() + offset).toISOString();
+        renderPage({ sandboxes: [live, { ...gone, scheduledDeletion }] });
         expect(document.querySelector("#sandbox-card-s2 [aria-disabled]")!.getAttribute("aria-description")).toBe(
-          "Scheduled for deletion on " + formatUtcDate(gone.scheduledDeletion!) + " (today). Cancel the deletion to restore it."
+          "Scheduled for deletion on " + formatUtcDate(scheduledDeletion) + suffix + ". Cancel the deletion to restore it."
         );
       } finally {
         vi.useRealTimers();
@@ -336,6 +342,13 @@ describe("SandboxesIndexPage", () => {
       expect(text).toContain("2 of 4 selected");
       expect(text).toContain("restored from the sandbox list for 7 days");
       expect(text).toContain("Its 2 child sandboxes will also be deleted.");
+    });
+
+    it("disables select-all for no workflows, and draws no credential or collection panel for none", async () => {
+      await openMerge({ onPreviewMerge: vi.fn().mockResolvedValue(preview({ workflows: [], credentials: [], collectionsToAdd: [] })) });
+      expect((document.getElementById("merge-select-all-workflows") as HTMLInputElement).disabled).toBe(true);
+      expect(document.getElementById("merge-select-all-credentials")).toBeNull();
+      expect(document.getElementById("merge-select-all-collections-to-add")).toBeNull();
     });
 
     it("sends the target, the ticked workflows and credentials, and the unticked collections, then closes", async () => {
@@ -471,9 +484,18 @@ describe("SandboxesIndexPage", () => {
       fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }));
       fireEvent.click(action("branch-rewire", "s1"));
       await screen.findByText("Workflows to merge");
+      expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", null);
       await pickOption(target(), "other-sandbox");
       text = screen.getByRole("dialog").textContent;
       expect(text).toContain("counterparts in other-sandbox.");
+    });
+
+    it("says 'child sandbox' for a row with one child", () => {
+      renderPage({ sandboxes: [row("s1", "fhir-mapping", { activeDescendantCount: 1 })], onPreviewMerge: vi.fn(() => new Promise<MergePreviewResult>(() => {})) });
+      fireEvent.click(action("branch-rewire", "s1"));
+      const text = screen.getByRole("dialog").textContent;
+      expect(text).toContain("Its child sandbox will also be deleted.");
+      expect(text).not.toContain("Its 1 child");
     });
 
     it("shows a failed first preview and holds Merge", async () => {
@@ -485,27 +507,10 @@ describe("SandboxesIndexPage", () => {
     });
 
     it("closes if the host's list no longer has the sandbox", async () => {
-      const props = {
-        onCloseForm: vi.fn(),
-        onCreateSandbox: vi.fn(),
-        onUpdateSandbox: vi.fn(),
-        onDeleteSandbox: vi.fn(),
-        onCancelDeletion: vi.fn(),
-        onPreviewMerge: vi.fn().mockResolvedValue(preview()),
-        onMergeSandbox: vi.fn(),
-        project: { id: "p1", parentId: null, color: null },
-        projectLabel: "openhie-project",
-        root,
-        rootIsSandbox: false,
-        newHref: "/projects/p1/sandboxes/new",
-        createBlockedReason: null,
-        gracePeriodDays: 7,
-        form: null,
-      };
-      const { rerender } = render(<SandboxesIndexPage {...props} sandboxes={[live]} />);
+      const { rerender } = renderPage({ sandboxes: [live], onPreviewMerge: vi.fn().mockResolvedValue(preview()) });
       fireEvent.click(action("branch-rewire", "s1"));
       await screen.findByText("Workflows to merge");
-      rerender(<SandboxesIndexPage {...props} sandboxes={[]} />);
+      rerender({ sandboxes: [] });
       expect(screen.queryByRole("dialog")).toBeNull();
     });
 

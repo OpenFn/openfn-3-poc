@@ -42,9 +42,9 @@ export default function HistorySearchBar({
       >
         <SearchInput value={value} onChange={setValue} onClear={() => onSearch("")} placeholder="Search work orders..." />
       </form>
-      <span className="text-sm text-gray-500">by</span>
+      <span className="text-sm text-muted">by</span>
       <div id="search_button_group" className="flex items-center gap-2">
-        <div className="inline-flex gap-0.5 rounded-md bg-white p-1 ring-1 ring-inset ring-gray-300">
+        <div className="inline-flex gap-0.5 rounded-md bg-surface p-1 ring-1 ring-inset ring-strong">
           {fields.map((f) => (
             <Tooltip key={f.id} content={f.label} side="top">
               <IconButton

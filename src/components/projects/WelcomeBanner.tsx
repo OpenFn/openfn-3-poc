@@ -48,7 +48,7 @@ export default function WelcomeBanner({
     <div className="mb-2 min-h-25 pt-6" id="welcome-banner-typewriter">
       <h1 className="text-2xl font-medium">
         {h1}
-        {typingHeading && <span className="typewriter-cursor animate-pulse text-gray-500">|</span>}
+        {typingHeading && <span className="typewriter-cursor animate-pulse text-muted">|</span>}
       </h1>
       <p id="welcome-banner-content" className="mb-6 mt-4">
         {done ? (
@@ -66,7 +66,7 @@ export default function WelcomeBanner({
         ) : (
           <>
             {p}
-            {!typingHeading && <span className="animate-pulse text-gray-500">|</span>}
+            {!typingHeading && <span className="animate-pulse text-muted">|</span>}
           </>
         )}
       </p>

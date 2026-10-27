@@ -18,9 +18,9 @@ interface Props {
 
 function OptionCard({ icon, title, description, onClick, testId }: { icon: string; title: string; description: string; onClick: () => void; testId: string }) {
   return (
-    <Card as="button" data-testid={testId} onClick={onClick} padding="lg" className="h-full text-sm text-gray-600">
-      <div className="mb-3 w-fit rounded-lg bg-gray-100 p-2">
-        <span className={cn("block h-5 w-5 text-gray-700", icon)} />
+    <Card as="button" data-testid={testId} onClick={onClick} padding="lg" className="h-full text-sm text-muted">
+      <div className="mb-3 w-fit rounded-lg bg-sunken p-2">
+        <span className={cn("block h-5 w-5 text-body", icon)} />
       </div>
       <Heading size="sm" as="p">
         {title}
@@ -41,7 +41,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
     <div
       role="region"
       aria-labelledby="landing-screen-heading"
-      className="absolute inset-0 z-10 flex items-center justify-center bg-gray-100"
+      className="absolute inset-0 z-10 flex items-center justify-center bg-page"
       data-testid="landing-screen"
       data-ui="page-body"
       data-annotation="workflow-editor-new"
@@ -73,7 +73,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
                 }}
                 placeholder="e.g. Sync new KoboToolbox submissions into Postgres"
                 rows={4}
-                className="block w-full resize-none border-none bg-transparent p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+                className="block w-full resize-none border-none bg-transparent p-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
               />
               <div className="flex items-center justify-between px-3 py-2">
                 <AIDisclaimerFooter muted />
@@ -101,7 +101,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
             onClick={onBrowseTemplates}
           />
         </div>
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-muted">
           or{" "}
           <TextLink onClick={onImportYAML}>import a YAML file manually</TextLink>
         </p>

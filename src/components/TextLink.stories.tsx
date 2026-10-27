@@ -19,7 +19,7 @@ export const Danger: Story = { args: { to: undefined, onClick: () => {}, variant
 export const Plain: Story = {
   args: { variant: "plain", to: "/users/log_in", children: "Log in" },
   render: (args) => (
-    <p className="text-xs text-gray-700">
+    <p className="text-xs text-body">
       <TextLink {...args} />
     </p>
   ),

@@ -8,6 +8,7 @@ import type { PageInfo, SortState } from "../../types/lists";
 import { activeStates } from "../../constants";
 import { cn } from "../../utils/cn";
 import WorkOrderTableRow from "./WorkOrderTableRow";
+import { allTicked } from "../../utils/history";
 
 /** The columns History sorts by (`filters[sort_by]`). */
 export type WorkOrderSortKey = "inserted_at" | "last_activity";
@@ -17,7 +18,7 @@ function Filler({ message, pulse = false }: { message: string; pulse?: boolean }
   return (
     <Tr>
       <Td colSpan={9}>
-        <div className={cn("py-3 text-center text-gray-500", pulse && "animate-pulse")}>{message}</div>
+        <div className={cn("py-3 text-center text-muted", pulse && "animate-pulse")}>{message}</div>
       </Td>
     </Tr>
   );
@@ -73,7 +74,7 @@ export default function WorkOrdersTable({
 }) {
   const selectable = rows.filter((w) => !w.dataclipWiped);
   const selected = rows.filter((w) => selectedIds.includes(w.id));
-  const allSelected = rows.length > 0 && selected.length === rows.length;
+  const allSelected = allTicked(rows, selectedIds);
   const partial = selected.length > 0 && !allSelected;
 
   const canCancel = selected.length > 0 && selected.every((w) => w.state === "pending");
@@ -112,7 +113,7 @@ export default function WorkOrdersTable({
                 className="disabled:opacity-50"
               />
               {selected.length > 0 && (
-                <div className="absolute left-full top-1/2 ml-3 flex -translate-y-1/2 gap-1 whitespace-nowrap bg-gray-50">
+                <div className="absolute left-full top-1/2 ml-3 flex -translate-y-1/2 gap-1 whitespace-nowrap bg-subtle">
                   {bulkButton(
                     "Cancel",
                     canCancel,

@@ -21,12 +21,12 @@ export function Table({
   id?: string;
 }) {
   return (
-    <div id={id} data-ui="table" className="shadow ring-1 ring-black/5 sm:rounded-lg bg-gray-50">
-      <table className={cn("min-w-full", divide && "divide-y divide-gray-200")}>
+    <div id={id} data-ui="table" className="shadow ring-1 ring-black/5 sm:rounded-lg bg-subtle">
+      <table className={cn("min-w-full", divide && "divide-y divide-subtle")}>
         <thead>{header}</thead>
-        <tbody className={cn("bg-white", divide && "divide-y divide-gray-200")}>{children}</tbody>
+        <tbody className={cn("bg-surface", divide && "divide-y divide-subtle")}>{children}</tbody>
       </table>
-      {footer && <div className={cn(divide && "border-t border-gray-200")}>{footer}</div>}
+      {footer && <div className={cn(divide && "border-t border-subtle")}>{footer}</div>}
     </div>
   );
 }
@@ -55,7 +55,7 @@ export function Tr({
       onClick={onClick && ((e) => !clickedControl(e) && onClick())}
       className={cn(
         "transition-colors duration-150",
-        "has-[td]:hover:bg-gray-50",
+        "has-[td]:hover:bg-hover",
         onClick && "cursor-pointer",
         "last:rounded-b-lg",
         "[&>td:first-child]:py-4 [&>td:first-child]:pr-3 [&>td:first-child]:pl-4 [&>td:first-child]:sm:pl-6",
@@ -106,7 +106,7 @@ export function Th({
       <span
         className={cn(
           "ml-2 flex-none rounded-sm",
-          sortDirection ? "bg-gray-100 text-gray-900 group-hover:bg-gray-200" : "invisible text-gray-400 group-hover:visible"
+          sortDirection ? "bg-sunken text-strong group-hover:bg-emphasis" : "invisible text-faint group-hover:visible"
         )}
       >
         <span className={cn(sortDirection === "asc" ? "hero-chevron-up" : "hero-chevron-down", "h-5 w-5")} />
@@ -117,7 +117,7 @@ export function Th({
     <th
       scope="col"
       colSpan={colSpan}
-      className={cn("text-sm font-semibold text-gray-900 select-none whitespace-nowrap", alignClasses[align], className)}
+      className={cn("text-sm font-semibold text-strong select-none whitespace-nowrap", alignClasses[align], className)}
     >
       {sortHref ? (
         <Link to={sortHref} className="group inline-flex items-center">
@@ -147,7 +147,7 @@ export function Td({
   actions?: boolean;
 }) {
   return (
-    <td className={cn("text-sm text-gray-500 first:rounded-bl-lg last:rounded-br-lg", align && alignClasses[align], className)} {...rest}>
+    <td className={cn("text-sm text-muted first:rounded-bl-lg last:rounded-br-lg", align && alignClasses[align], className)} {...rest}>
       {actions ? <div className="flex items-center justify-end gap-2">{children}</div> : children}
     </td>
   );
@@ -186,16 +186,16 @@ export function EmptyState({
   const plain = variant === "plain";
   const body = (
     <>
-      {icon && <span className={cn(icon, "mx-auto block text-gray-400", plain ? "mb-2 h-8 w-8" : "h-12 w-12")} />}
-      {buttonText && <span className="mt-2 block text-xs font-semibold text-gray-600">{buttonText}</span>}
-      {title && <span className={cn("block font-medium text-gray-900", plain ? "text-sm" : "mt-2 text-xs")}>{title}</span>}
-      {message && <div className={cn(plain ? "mt-1 text-sm text-gray-500" : "mt-2 text-xs text-gray-500")}>{message}</div>}
+      {icon && <span className={cn(icon, "mx-auto block text-faint", plain ? "mb-2 h-8 w-8" : "h-12 w-12")} />}
+      {buttonText && <span className="mt-2 block text-xs font-semibold text-muted">{buttonText}</span>}
+      {title && <span className={cn("block font-medium text-strong", plain ? "text-sm" : "mt-2 text-xs")}>{title}</span>}
+      {message && <div className={cn(plain ? "mt-1 text-sm text-muted" : "mt-2 text-xs text-muted")}>{message}</div>}
       {children && <div className="mt-2">{children}</div>}
     </>
   );
   const classes = cn(
     "relative block w-full text-center",
-    plain ? "px-4 py-8" : "rounded-lg border-2 border-dashed border-gray-300 p-4",
+    plain ? "px-4 py-8" : "rounded-lg border-2 border-dashed border-strong p-4",
     className
   );
   if (buttonText && !plain) {
@@ -207,7 +207,7 @@ export function EmptyState({
         disabled={disabled}
         data-ui="empty-state"
         data-variant={variant}
-        className={cn(classes, "hover:border-gray-400 disabled:hover:border-gray-300 focus:outline-none")}
+        className={cn(classes, "hover:border-emphasis disabled:hover:border-strong focus:outline-none")}
       >
         {body}
       </button>

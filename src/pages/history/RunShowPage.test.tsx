@@ -200,7 +200,7 @@ describe("RunShowPage", () => {
   });
 
   it("keeps Input and Output closed until a step is selected, then opens them through the hash", () => {
-    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } });
+    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { text: '{\n  "x": 1\n}' } } });
     const input = screen.getByRole("tab", { name: "Input" });
     expect(input.getAttribute("aria-disabled")).not.toBe("true");
     fireEvent.click(input);
@@ -211,6 +211,12 @@ describe("RunShowPage", () => {
     expect(screen.getByText("Nothing yet")).toBeTruthy();
   });
 
+  it("shows why a step's data could not be loaded, with nothing to copy", () => {
+    renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { error: "Dataclip not found" } } }, "#input");
+    expect(screen.getByText("Dataclip not found")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Copy to clipboard" })).toBeNull();
+  });
+
   it("starts on the tab in the URL hash", async () => {
     renderPage({ selectedStepId: "step-a", outputDataclip: { id: DC_OUT, wiped: true } }, "#output");
     expect(screen.getByRole("tab", { name: "Output" }).getAttribute("aria-selected")).toBe("true");
@@ -219,7 +225,7 @@ describe("RunShowPage", () => {
   });
 
   it("goes back to Log when the URL names no tab, and step links keep the tab that is open", () => {
-    const { goTo } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } }, "#input");
+    const { goTo } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { text: '{\n  "x": 1\n}' } } }, "#input");
     expect(screen.getByRole("tab", { name: "Input" }).getAttribute("aria-selected")).toBe("true");
     const b = document.querySelector("[data-step-id='step-b']") as HTMLElement;
     expect(within(b).getByRole("link", { name: /Post to OpenHIM/ }).getAttribute("href")).toBe("?step=step-b#input");
@@ -229,7 +235,7 @@ describe("RunShowPage", () => {
   });
 
   it("adds no history entry when the open tab is clicked again", () => {
-    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { x: 1 } } }, "#input");
+    const { router } = renderPage({ selectedStepId: "step-a", inputDataclip: { id: DC_IN, wiped: false, body: { text: '{\n  "x": 1\n}' } } }, "#input");
     fireEvent.click(screen.getByRole("tab", { name: "Input" }));
     expect(router.navigate).not.toHaveBeenCalled();
   });

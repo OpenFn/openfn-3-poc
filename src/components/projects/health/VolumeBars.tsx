@@ -97,7 +97,7 @@ export default function VolumeBars({
   return (
     <>
       <div className={`${FRAME} flex`} aria-hidden="true">
-        <div className="flex w-11 shrink-0 flex-col text-xs text-gray-500">
+        <div className="flex w-11 shrink-0 flex-col text-xs text-muted">
           <div className="relative flex-1">
             {ticks.map((t, i) => (
               <span key={i} className="absolute right-2 translate-y-1/2" style={{ bottom: `${(t / ceiling) * 100}%` }}>
@@ -109,16 +109,16 @@ export default function VolumeBars({
         </div>
         <div className="flex flex-1 flex-col">
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
-          <div className="relative flex flex-1 items-end gap-[1%] border-b border-gray-100" onMouseLeave={() => setHovered(null)}>
+          <div className="relative flex flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
             {ticks.slice(1).map((t, i) => (
-              <div key={i} className="pointer-events-none absolute inset-x-0 border-t border-gray-100" style={{ bottom: `${(t / ceiling) * 100}%` }} />
+              <div key={i} className="pointer-events-none absolute inset-x-0 border-t border-subtle" style={{ bottom: `${(t / ceiling) * 100}%` }} />
             ))}
             {rows.map((r, i) => {
               let base = ceiling;
               return (
                 <div
                   key={r.at}
-                  className={cn("relative flex h-full flex-1 justify-center", hovered === i && "bg-gray-50")}
+                  className={cn("relative flex h-full flex-1 justify-center", hovered === i && "bg-subtle")}
                   onMouseEnter={() => setHovered(i)}
                 >
                   <svg viewBox={`0 0 1 ${ceiling}`} preserveAspectRatio="none" className="h-full w-4/5 max-w-16">
@@ -137,17 +137,17 @@ export default function VolumeBars({
             })}
             {tip && hovered !== null && (
               <div
-                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-gray-200 bg-white text-xs shadow-lg"
+                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-subtle bg-surface text-xs shadow-lg"
                 // Beside the bar, on the side with more room.
                 style={hovered < n / 2 ? { left: `${((hovered + 1) / n) * 100}%` } : { right: `${((n - hovered) / n) * 100}%` }}
               >
-                <p className="border-b border-gray-100 px-3 py-2 font-medium text-gray-900">{rangeLabel(tip.at, hours, timezone)}</p>
-                <ul className="flex flex-col gap-1.5 px-3 py-2 text-gray-700">
+                <p className="border-b border-subtle px-3 py-2 font-medium text-strong">{rangeLabel(tip.at, hours, timezone)}</p>
+                <ul className="flex flex-col gap-1.5 px-3 py-2 text-body">
                   {totals.map(({ key, label, color }) => (
                     <li key={key} className="flex items-center gap-2">
                       <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
                       <span className="grow pr-4">{label}</span>
-                      <span className="font-medium tabular-nums text-gray-900">{formatNumber(tip[key])}</span>
+                      <span className="font-medium tabular-nums text-strong">{formatNumber(tip[key])}</span>
                     </li>
                   ))}
                 </ul>
@@ -155,7 +155,7 @@ export default function VolumeBars({
             )}
           </div>
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
-          <div className="flex h-5 gap-[1%] pt-1 text-xs text-gray-500">
+          <div className="flex h-5 gap-[1%] pt-1 text-xs text-muted">
             {rows.map((r, i) => (
               <span key={r.at} className="flex-1 truncate text-center">
                 {(n - 1 - i) % every === 0 ? tickLabel(r.at, hours, timezone) : ""}

@@ -31,8 +31,8 @@ const sizes: Record<IconButtonSize, { button: string; icon: string }> = {
 };
 
 const tones = {
-  default: "text-gray-500 hover:bg-gray-100 hover:text-gray-700",
-  danger: "text-red-600 hover:bg-red-50 hover:text-red-700",
+  default: "text-muted hover:bg-hover hover:text-body",
+  danger: "text-danger-600 hover:bg-danger-50 hover:text-danger-700",
 };
 
 /**
@@ -58,7 +58,7 @@ export default function IconButton({
   const s = sizes[size];
   const classes = cn(
     "inline-flex shrink-0 items-center justify-center rounded-md transition-colors cursor-pointer",
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
     "disabled:cursor-not-allowed disabled:opacity-50",
     active ? "bg-primary-50 text-primary-600" : tones[tone],
     s.button,
@@ -85,7 +85,7 @@ export default function IconButton({
     );
   }
   return (
-    <Tooltip content={hint} disabled={rest.disabled}>
+    <Tooltip content={hint} disabled={!!rest.disabled}>
       <button ref={ref} type={type} {...rest} {...common}>
         {content}
       </button>

@@ -13,9 +13,9 @@ describe("Toggle", () => {
     expect(openTooltips()).toEqual(["Only owners can change this"]);
   });
 
-  it("adds no wrapper to a disabled switch with nothing to say", () => {
+  it("adds no hover wrapper to a disabled switch with nothing to say", () => {
     render(<Toggle checked disabled />);
-    expect(screen.getByRole("switch").parentElement!.tagName).toBe("DIV");
+    expect(screen.getByRole("switch").parentElement!.className).toBe("contents");
   });
 
   it("leaves an enabled switch's tooltip to the Tooltip, with no title box on top", () => {

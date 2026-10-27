@@ -46,7 +46,7 @@ export default function RunShowPageReplica() {
 
   const stepDataclip = (id: string | null | undefined): StepDataclip | null => {
     const dc = findDataclip(id ?? undefined);
-    return dc ? { id: dc.id, wiped: dc.wiped, body: dc.body } : null;
+    return dc ? { id: dc.id, wiped: dc.wiped, body: { text: typeof dc.body === "string" ? dc.body : JSON.stringify(dc.body, null, 2) } } : null;
   };
 
   return (

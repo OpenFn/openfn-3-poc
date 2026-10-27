@@ -24,7 +24,7 @@ export default function InfoTooltip({
       <button
         type="button"
         className={cn(
-          "relative ml-1 cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
+          "relative ml-1 cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
           className,
         )}
         aria-label={title}

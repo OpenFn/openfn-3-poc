@@ -39,10 +39,10 @@ export default function AdaptorDisplay({ adaptor, credentialName = null, onEdit,
         ) : (
           <div className="flex items-center gap-2 opacity-50">
             <AdaptorIcon name={adaptor} size="sm" />
-            <span className="truncate font-medium text-gray-500">{adaptorDisplayName(adaptor)}</span>
+            <span className="truncate font-medium text-muted">{adaptorDisplayName(adaptor)}</span>
           </div>
         )}
-        <span className={cn("text-xs whitespace-nowrap", isReadOnly ? "text-gray-400" : "text-gray-500")}>
+        <span className={cn("text-xs whitespace-nowrap", isReadOnly ? "text-faint" : "text-muted")}>
           {version === "latest" ? "latest" : `v${version}`}
         </span>
         {hasCredential && (

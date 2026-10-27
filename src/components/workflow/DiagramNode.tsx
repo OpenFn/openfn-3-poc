@@ -3,12 +3,13 @@ import { cn } from "../../utils/cn";
 import Button from "../Button";
 import { NODE_SIZE, STROKE, nodeShapeStyle, type NodeRunState, EDGE_COLOR, EDGE_COLOR_SELECTED } from "./diagramGeometry";
 import Tooltip from "../Tooltip";
+import { NODE_RUN_ICON } from "../../theme/runStateColours";
 
-const RUN_ICONS: Record<string, [icon: string, color: string]> = {
-  running: ["hero-arrow-path-solid animate-spin", "text-blue-500"],
-  success: ["hero-check-circle-solid", "text-green-500"],
-  fail: ["hero-x-circle-solid", "text-red-500"],
-  crash: ["hero-x-circle-solid", "text-orange-800"],
+const RUN_ICONS: Record<string, string> = {
+  running: "hero-arrow-path-solid animate-spin",
+  success: "hero-check-circle-solid",
+  fail: "hero-x-circle-solid",
+  crash: "hero-x-circle-solid",
 };
 
 interface Props {
@@ -78,9 +79,9 @@ export default function DiagramNode({
             <Tooltip content={runningHint}>
               <div className="absolute -left-2 -top-2 pointer-events-auto z-10" role={runningHint && "img"} aria-label={runningHint}>
                 <div className="relative w-8 h-8">
-                  <div className="absolute inset-0 w-6 h-6 ml-1 mt-1 bg-white rounded-full" />
-                  <div className={cn("relative flex justify-center items-center w-8 h-8 rounded-full", run[1])}>
-                    <span className={cn(run[0], "w-full h-full")} />
+                  <div className="absolute inset-0 w-6 h-6 ml-1 mt-1 bg-surface rounded-full" />
+                  <div className={cn("relative flex justify-center items-center w-8 h-8 rounded-full", runState && NODE_RUN_ICON[runState])}>
+                    <span className={cn(run, "w-full h-full")} />
                   </div>
                 </div>
               </div>
@@ -94,7 +95,7 @@ export default function DiagramNode({
                 className="absolute -top-2 flex gap-2 items-center z-10"
                 style={{ left: "calc(100% - 24px)" }}
               >
-                <div className="flex justify-center items-center w-7 h-7 rounded-full text-gray-50 border-gray-700 bg-gray-600">
+                <div className="flex justify-center items-center w-7 h-7 rounded-full text-inverse bg-inverse">
                   <span className="hero-play-solid w-3 h-3" />
                 </div>
               </div>
@@ -153,7 +154,7 @@ export default function DiagramNode({
         <div className="flex flex-col mt-8 absolute left-[116px] top-0 pointer-events-none min-w-[275px]">
           {/* eslint-disable-next-line no-restricted-syntax -- diagram geometry: the label is placed against the node */}
           <p className="line-clamp-2 text-base max-w-[220px] text-ellipsis overflow-hidden">{label}</p>
-          {sublabel && <p className="line-clamp-2 text-sm text-gray-500">{sublabel}</p>}
+          {sublabel && <p className="line-clamp-2 text-sm text-muted">{sublabel}</p>}
         </div>
       </div>
       {onAddPath && (

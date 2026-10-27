@@ -71,7 +71,7 @@ export default function EditorHeader({
   children,
 }: Props) {
   return (
-    <div className="relative z-50 flex h-20 flex-none items-center gap-2 border-b border-gray-200 bg-white text-sm shadow-xs sm:px-4">
+    <div className="relative z-50 flex h-20 flex-none items-center gap-2 border-b border-subtle bg-surface text-sm shadow-xs sm:px-4">
       <div className="flex min-w-0 items-center">
         <ProjectBreadcrumbs
           project={project}
@@ -81,7 +81,7 @@ export default function EditorHeader({
             <span className="flex items-center gap-2">
               <Tooltip content={workflowName}>
                 {/* eslint-disable-next-line no-restricted-syntax -- debt: a plain text button; Button has no text theme */}
-                <button type="button" onClick={onTitleClick} className="max-w-64 truncate hover:text-gray-700">
+                <button type="button" onClick={onTitleClick} className="max-w-64 truncate hover:text-body">
                   {workflowName}
                 </button>
               </Tooltip>

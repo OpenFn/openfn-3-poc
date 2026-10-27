@@ -21,7 +21,7 @@ describe("UserMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /Amy Admin/ }));
     const link = screen.getByRole("menuitem", { name: "Turn off in your profile" });
     // Focus stays on the menu, so the active item needs its own ring.
-    expect(link.className).toContain("data-focus:outline-primary-600");
+    expect(link.className).toContain("data-focus:outline-focus");
     fireEvent.click(link);
     expect(router.navigate).toHaveBeenCalledWith("/profile", { replace: false });
   });

@@ -42,12 +42,12 @@ export default function PickerButton({
       className={cn(
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
         isSandbox
-          ? "border-transparent text-white hover:opacity-90"
-          : "border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+          ? "border-transparent text-inverse hover:opacity-90"
+          : "border-strong bg-surface text-body hover:border-emphasis hover:bg-hover"
       )}
       style={isSandbox ? { backgroundColor: color ?? "var(--color-primary-600)" } : undefined}
     >
-      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} text-white/80` : `${icon} text-gray-500`)} />
+      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} text-white/80` : `${icon} text-muted`)} />
       <span>
         {isSandbox && parts.length > 1 ? (
           <>
@@ -63,7 +63,7 @@ export default function PickerButton({
           label
         )}
       </span>
-      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? "text-white/80" : "text-gray-400")} />
+      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? "text-white/80" : "text-faint")} />
     </button>
   );
   return <Tooltip content={truncated ? parts.join(" > ") : undefined}>{button}</Tooltip>;

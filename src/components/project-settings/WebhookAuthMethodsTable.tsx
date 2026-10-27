@@ -47,15 +47,15 @@ export default function WebhookAuthMethodsTable({ authMethods, canWrite, onCreat
         const summary = linkedUsageSummary(m);
         return (
           <Tr key={m.id} id={m.id}>
-            <Td className="max-w-60 truncate text-gray-900">{m.name}</Td>
-            <Td className="text-gray-900">{typeLabel[m.authType]}</Td>
+            <Td className="max-w-60 truncate text-strong">{m.name}</Td>
+            <Td className="text-strong">{typeLabel[m.authType]}</Td>
             <Td>
               {summary ? (
                 <TextLink id={`display_linked_usage_link_${m.id}`} onClick={() => onShowUsage(m)}>
                   {summary}
                 </TextLink>
               ) : (
-                <span className="italic text-gray-300">No associated triggers or channels...</span>
+                <span className="italic text-faint">No associated triggers or channels...</span>
               )}
             </Td>
             <Td actions>

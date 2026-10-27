@@ -1,15 +1,23 @@
-import { useMemo } from "react";
+import type { DataclipBody } from "../../types/history";
 import CodeViewer from "../CodeViewer";
 import CopyButton from "../CopyButton";
+import { EmptyState } from "../Table";
 
 /**
  * A dataclip body in the dark code viewer (react/components/CodeViewer.tsx,
  * DataclipViewer.tsx): pretty-printed JSON in Monaco with a copy button in
- * the top-right corner. The body is stringified once per value, so a parent
- * re-rendering (a run page receiving logs) costs nothing here.
+ * the top-right corner. A body that could not be loaded shows its message
+ * instead, with nothing to copy; undefined is an empty viewer, still loading.
  */
-export default function JsonViewer({ value, ariaLabel = "Dataclip" }: { value: unknown; ariaLabel?: string }) {
-  const content = useMemo(() => (typeof value === "string" ? value : JSON.stringify(value, null, 2)), [value]);
+export default function JsonViewer({ body, ariaLabel = "Dataclip" }: { body: DataclipBody | undefined; ariaLabel?: string }) {
+  if (body && "error" in body) {
+    return (
+      <div className="flex h-full items-center">
+        <EmptyState variant="plain" icon="hero-exclamation-triangle" title={body.error} />
+      </div>
+    );
+  }
+  const content = body?.text ?? "";
 
   return (
     <div className="h-full relative">

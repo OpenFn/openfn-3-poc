@@ -138,9 +138,9 @@ export default function MergeSandboxModal({
       }
     >
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-body">
           <span>Merge</span>
-          <Pill square color="gray" className="text-sm text-gray-900">
+          <Pill square color="gray" className="text-sm text-strong">
             {sandboxName}
           </Pill>
           <span>into</span>
@@ -160,9 +160,9 @@ export default function MergeSandboxModal({
             }}
           />
         </div>
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-body">
           The workflows you select below will overwrite their counterparts in{" "}
-          <strong className="font-medium text-gray-900">{targetName}</strong>. Any conflicting changes in the target are lost.
+          <strong className="font-medium text-strong">{targetName}</strong>. Any conflicting changes in the target are lost.
         </p>
       </div>
 
@@ -261,9 +261,9 @@ function TickList({
   const all = rows.length > 0 && rows.every((r) => selected.has(r.id));
   const some = rows.some((r) => selected.has(r.id));
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-      <div className="flex items-center gap-3 border-b border-gray-200 bg-gray-50 px-3 py-2">
-        <div className="flex-1 font-medium text-gray-900">
+    <div className="overflow-hidden rounded-lg border border-subtle bg-surface">
+      <div className="flex items-center gap-3 border-b border-subtle bg-subtle px-3 py-2">
+        <div className="flex-1 font-medium text-strong">
           <Checkbox
             id={id}
             label={title}
@@ -273,13 +273,13 @@ function TickList({
             onChange={() => onChange(all ? new Set() : new Set(rows.map((r) => r.id)))}
           />
         </div>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-muted">
           {selected.size} of {rows.length} selected
         </span>
       </div>
-      <ul className="max-h-48 divide-y divide-gray-100 overflow-y-auto">
+      <ul className="max-h-48 divide-y divide-subtle overflow-y-auto">
         {rows.map((r) => (
-          <li key={r.id} className="px-3 py-2 hover:bg-gray-50">
+          <li key={r.id} className="px-3 py-2 hover:bg-hover">
             <Checkbox
               label={
                 <span className="flex items-center gap-2">

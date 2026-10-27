@@ -25,7 +25,7 @@ export default function BackupCodesCard({
 }) {
   const { copied, copy } = useCopy(codes.map((c) => c.code).join("\n\n"));
   return (
-    <Card padding="none" className="divide-y divide-gray-300">
+    <Card padding="none" className="divide-y divide-strong">
       <div className="p-6">
         <SectionHeader
           title="Backup Codes"
@@ -40,7 +40,7 @@ export default function BackupCodesCard({
         {codes.map((c) => (
           <div key={c.code} className="text-center tracking-widest">
             {c.usedAt ? (
-              <span className="text-sm text-gray-300">
+              <span className="text-sm text-faint">
                 <span className="line-through">{c.code}</span>
                 <InfoTooltip title={`Code used on ${c.usedAt.slice(0, 19).replace("T", " ")}`} />
               </span>

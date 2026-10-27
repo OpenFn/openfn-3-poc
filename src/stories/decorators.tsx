@@ -26,7 +26,7 @@ export const withRouter = withRouterAt("/");
  * several cards (often as a fragment), e.g. the project settings panels.
  */
 export const withGrayPanel: Decorator = (Story) => (
-  <div className="space-y-4 bg-gray-100 p-6">
+  <div className="space-y-4 bg-page p-6">
     <Story />
   </div>
 );
@@ -38,7 +38,7 @@ export const withGrayPanel: Decorator = (Story) => (
 export const withSidePanel =
   (height = "h-150"): Decorator =>
   (Story) => (
-    <div className={cn("flex justify-end bg-gray-100", height)}>
+    <div className={cn("flex justify-end bg-page", height)}>
       <Story />
     </div>
   );
@@ -47,7 +47,7 @@ export const withSidePanel =
 export const withWhitePanel =
   (width = "w-96"): Decorator =>
   (Story) => (
-    <div className={cn("bg-white p-6", width)}>
+    <div className={cn("bg-surface p-6", width)}>
       <Story />
     </div>
   );
@@ -59,7 +59,7 @@ export const withWhitePanel =
 export const withCanvas =
   (height: string): Decorator =>
   (Story) => (
-    <div className={cn("relative bg-gray-100", height)}>
+    <div className={cn("relative bg-page", height)}>
       <Story />
     </div>
   );

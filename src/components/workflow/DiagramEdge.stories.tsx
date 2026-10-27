@@ -4,7 +4,7 @@ import DiagramEdge from "./DiagramEdge";
 const meta: Meta<typeof DiagramEdge> = {
   title: "Workflow/DiagramEdge",
   component: DiagramEdge,
-  decorators: [(Story) => <div className="relative h-96 bg-gray-100"><div className="absolute left-40 top-4"><Story /></div></div>],
+  decorators: [(Story) => <div className="relative h-96 bg-page"><div className="absolute left-40 top-4"><Story /></div></div>],
   args: { id: "e1", source: { x: 0, y: 0 }, target: { x: 0, y: 260 }, conditionType: "on_job_success" },
 };
 export default meta;

@@ -10,7 +10,7 @@ import TextLink from "../TextLink";
 
 type Data = LiveDashboardData;
 
-const info = <span className="hero-information-circle h-4 w-4 text-gray-400" />;
+const info = <span className="hero-information-circle h-4 w-4 text-faint" />;
 
 function Stat({ label, value, hasInfo = false, className }: { label: string; value: ReactNode; hasInfo?: boolean; className?: string }) {
   return (
@@ -30,13 +30,13 @@ function Limit({ label, used, limit }: { label: string; used: number; limit: num
           {label} {info}
         </span>
         <span>
-          <span className="mr-3 text-gray-400">
+          <span className="mr-3 text-faint">
             {used} / {limit}
           </span>
           <span className="font-semibold">{pct.toFixed(1)}%</span>
         </span>
       </div>
-      <div className="mt-3 h-4 overflow-hidden rounded-sm bg-gray-200">
+      <div className="mt-3 h-4 overflow-hidden rounded-sm bg-emphasis">
         <div className="h-full bg-blue-400" style={{ width: `${Math.max(pct, 0.3)}%` }} />
       </div>
     </Card>
@@ -57,7 +57,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
     { label: "Dashboard", value: data.versions.dashboard, className: "from-blue-500 to-blue-600" },
   ];
   return (
-    <div className="min-h-screen bg-gray-100 text-sm text-gray-700">
+    <div className="min-h-screen bg-page text-sm text-body">
       <Alert type="warning" className="rounded-none">
         <div className="flex justify-between gap-2">
           <span>
@@ -67,7 +67,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
           <TextLink to="/settings/projects">Back to Lightning</TextLink>
         </div>
       </Alert>
-      <div className="h-28 bg-primary-900 text-white">
+      <div className="h-28 bg-primary-900 text-inverse">
         <div className="mx-auto flex max-w-6xl justify-between pt-3">
           <h1 className="mt-8 text-3xl">Phoenix LiveDashboard</h1>
           <div className="flex flex-col items-end gap-2">
@@ -97,7 +97,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
             <Card padding="lg">{data.systemInfo}</Card>
             <div className="grid grid-cols-3 gap-6 pt-3">
               {versions.map((v) => (
-                <Stat key={v.label} {...v} className={cn("bg-gradient-to-br text-white", v.className)} />
+                <Stat key={v.label} {...v} className={cn("bg-gradient-to-br text-inverse", v.className)} />
               ))}
               <Stat label="Uptime" value={data.uptime} />
               <Stat label="Total input" value={data.totalInput} hasInfo />

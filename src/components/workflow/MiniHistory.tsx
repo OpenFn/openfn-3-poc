@@ -11,7 +11,7 @@ import RunBadge from "./RunBadge";
 import { formatDuration, formatRelative, uuidOf } from "../../utils/format";
 import Tooltip from "../Tooltip";
 
-const Dot = () => <span className="text-gray-800">&bull;</span>;
+const Dot = () => <span className="text-strong">&bull;</span>;
 
 /** The stack icon linking to the workflow's full history. */
 function FullHistoryLink({ to, id }: { to: string; id?: string }) {
@@ -69,13 +69,13 @@ export default function MiniHistory({
 
   const list =
     history.length === 0 ? (
-      <div className="flex flex-col items-center p-8 text-center text-gray-500">
+      <div className="flex flex-col items-center p-8 text-center text-muted">
         <span className="hero-rectangle-stack mb-2 h-8 w-8 opacity-50" />
         <p className="text-sm font-medium">No related history</p>
-        <p className="mt-1 text-xs text-gray-400">Why not run it a few times to see some history?</p>
+        <p className="mt-1 text-xs text-faint">Why not run it a few times to see some history?</p>
       </div>
     ) : (
-      <div className="divide-y divide-gray-100 text-xs">
+      <div className="divide-y divide-subtle text-xs">
         {history.map(({ workOrder, runs }) => {
           const selected = runs.some((r) => r.id === selectedRunId);
           const isExpanded = expanded === workOrder.id;
@@ -86,7 +86,7 @@ export default function MiniHistory({
           return (
             <div key={workOrder.id}>
               <div
-                className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-gray-50"
+                className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-hover"
                 data-testid={`work-order-${workOrder.id}`}
                 onClick={expand}
               >
@@ -108,7 +108,7 @@ export default function MiniHistory({
                     onClick={(e) => e.stopPropagation()}
                   />
                   <Dot />
-                  <span className="text-gray-500">{formatRelative(workOrder.lastActivity)}</span>
+                  <span className="text-muted">{formatRelative(workOrder.lastActivity)}</span>
                 </div>
                 <StatePill labelMode="raw" state={workOrder.state} />
               </div>
@@ -119,7 +119,7 @@ export default function MiniHistory({
                     <div
                       key={run.id}
                       className={cn(
-                        "flex cursor-pointer items-center justify-between gap-2 border-l-2 px-3 py-1.5 hover:bg-gray-50",
+                        "flex cursor-pointer items-center justify-between gap-2 border-l-2 px-3 py-1.5 hover:bg-hover",
                         runSelected ? "border-l-primary-500 bg-primary-50" : "border-l-transparent"
                       )}
                       onClick={(e) => {
@@ -157,7 +157,7 @@ export default function MiniHistory({
                         {run.startedAt && run.finishedAt && (
                           <>
                             <Dot />
-                            <span className="text-gray-400">{formatDuration(run.startedAt, run.finishedAt)}</span>
+                            <span className="text-faint">{formatDuration(run.startedAt, run.finishedAt)}</span>
                           </>
                         )}
                       </div>
@@ -173,8 +173,8 @@ export default function MiniHistory({
 
   if (variant === "panel") {
     return (
-      <div className="flex h-full flex-col bg-white" data-annotation="workflow-editor-versions-and-promote">
-        <div className="flex items-center gap-1 border-b border-gray-200 bg-gray-50 px-3 py-2">
+      <div className="flex h-full flex-col bg-surface" data-annotation="workflow-editor-versions-and-promote">
+        <div className="flex items-center gap-1 border-b border-subtle bg-subtle px-3 py-2">
           <Heading size="sm">Run History</Heading>
           <FullHistoryLink to={historyHref} />
           <IconButton icon="hero-x-mark" label="Back to landing" size="sm" className="ml-auto mr-2" onClick={onBack} />
@@ -195,7 +195,7 @@ export default function MiniHistory({
     >
         <div
           className={cn(
-            "flex cursor-pointer items-center justify-between gap-3 border-gray-200 bg-gray-50 px-3 py-2 text-gray-400 hover:bg-gray-100",
+            "flex cursor-pointer items-center justify-between gap-3 border-subtle bg-subtle px-3 py-2 text-faint hover:bg-sunken",
             !collapsed && "border-b"
           )}
           onClick={onToggle}
@@ -212,7 +212,7 @@ export default function MiniHistory({
           <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />
         </div>
         {collapsed && selectedRun && (
-          <div className="border-t border-gray-200 px-3 py-2">
+          <div className="border-t border-subtle px-3 py-2">
             <RunBadge runId={selectedRun.id} onClose={onDeselectRun} />
           </div>
         )}

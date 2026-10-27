@@ -16,7 +16,7 @@ export default function DateTime({
   format?: "relative" | "relative_detailed" | "time_only";
   className?: string;
 }) {
-  if (!value) return <span className={cn("text-gray-400", className)}>--</span>;
+  if (!value) return <span className={cn("text-faint", className)}>--</span>;
   const utc = formatUtc(value);
   const text =
     format === "time_only"
@@ -31,7 +31,7 @@ export default function DateTime({
       content={
         <>
           {utc}
-          <span className="block text-xs text-gray-400">Click to copy timestamp</span>
+          <span className="block text-xs text-faint">Click to copy timestamp</span>
         </>
       }
     >
@@ -45,7 +45,7 @@ export default function DateTime({
           e.currentTarget.click();
         }}
         className={cn(
-          "cursor-pointer select-none rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
+          "cursor-pointer select-none rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
           className,
         )}
       >

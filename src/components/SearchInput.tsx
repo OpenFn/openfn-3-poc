@@ -28,7 +28,7 @@ export default function SearchInput({ value, onChange, onClear, label, placehold
     <div className={cn("relative", className)}>
       <span
         className={cn(
-          "hero-magnifying-glass pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400",
+          "hero-magnifying-glass pointer-events-none absolute top-1/2 -translate-y-1/2 text-faint",
           sm ? "left-3 h-4 w-4" : "left-3 h-5 w-5"
         )}
       />
@@ -40,7 +40,7 @@ export default function SearchInput({ value, onChange, onClear, label, placehold
         aria-label={label ?? placeholder}
         data-ui="field"
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-        className={controlClasses(false, cn("placeholder:text-gray-400", sm ? "py-1.5 pl-9 pr-9" : "py-2 pl-10 pr-10"))}
+        className={controlClasses(false, cn("placeholder:text-faint", sm ? "py-1.5 pl-9 pr-9" : "py-2 pl-10 pr-10"))}
         {...rest}
       />
       {value !== "" && (

@@ -25,7 +25,7 @@ function Section({ title, description, className, children }: { title: string; d
       <Heading size="sm" className="mb-2">
         {title}
       </Heading>
-      {description && <p className="mb-3 text-sm text-gray-600">{description}</p>}
+      {description && <p className="mb-3 text-sm text-muted">{description}</p>}
       {children}
     </div>
   );
@@ -71,7 +71,7 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
           onChange={(e) => onChange({ concurrency: e.target.value === "" ? null : Number(e.target.value) })}
         />
         {concurrencyDisabled && (
-          <p className="mt-2 text-xs italic text-gray-500">
+          <p className="mt-2 text-xs italic text-muted">
             Parallel execution of runs is disabled for this project. This setting will have no effect. You can modify your Project
             Concurrency setting on the <TextLink to={`/projects/${projectId}/settings`}>project setup</TextLink> page.
           </p>
@@ -80,7 +80,7 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
       <Section
         title="Reset Workflow"
         description="Discard all uncommitted changes and restore the workflow to its latest saved snapshot. This action cannot be undone."
-        className="border-t border-gray-200 pt-6"
+        className="border-t border-subtle pt-6"
       >
         <Button theme="danger" onClick={() => setConfirmReset(true)}>
           Reset to Latest Snapshot

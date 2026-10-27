@@ -14,7 +14,7 @@ import IconButton from "./IconButton";
 
 export function Label({ htmlFor, className, children }: { htmlFor?: string | undefined; className?: string | undefined; children: ReactNode }) {
   return (
-    <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-gray-800", className)}>
+    <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-strong", className)}>
       {children}
     </label>
   );
@@ -52,10 +52,10 @@ export function Field({ id, label, required, hint, errors = [], className, child
       {label && (
         <Label htmlFor={id} className="mb-2 block">
           {label}
-          {required && <span data-ui="required" className="text-red-500"> *</span>}
+          {required && <span data-ui="required" className="text-danger-500"> *</span>}
         </Label>
       )}
-      {hint && <small data-ui="hint" className="mb-2 block text-xs text-gray-600">{hint}</small>}
+      {hint && <small data-ui="hint" className="mb-2 block text-xs text-muted">{hint}</small>}
       {children}
       {errors.map((e) => (
         <FieldError key={e}>{e}</FieldError>
@@ -213,7 +213,7 @@ export function Select({
           className={controlClasses(errors.length > 0, cn("grid grid-cols-1 border py-2 pl-3 pr-2 text-left", className))}
         >
           <span className="col-start-1 row-start-1 truncate pr-6">{items.find(([, v]) => v === value)?.[0] ?? prompt ?? "\u00a0"}</span>
-          <span className="hero-chevron-up-down col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
+          <span className="hero-chevron-up-down col-start-1 row-start-1 size-5 self-center justify-self-end text-muted sm:size-4" />
         </ListboxButton>
         <ListboxOptions
           anchor={{ to: "bottom start", gap: 4 }}
@@ -226,10 +226,11 @@ export function Select({
             <ListboxOption
               key={v}
               value={v}
-              className="group relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900 data-focus:bg-primary-600 data-focus:text-white"
+              // The same highlight and selected look as MenuItem.
+              className="group relative cursor-default select-none py-2 pl-8 pr-4 text-body data-focus:bg-hover data-focus:text-strong"
             >
-              <span className="block truncate group-data-selected:font-semibold">{l}</span>
-              <span className="hero-check invisible absolute inset-y-0 left-1.5 my-auto size-5 text-primary-600 group-data-focus:text-white group-data-selected:visible" />
+              <span className="block truncate group-data-selected:font-medium group-data-selected:text-strong">{l}</span>
+              <span className="hero-check invisible absolute inset-y-0 left-1.5 my-auto size-5 text-primary-600 group-data-selected:visible" />
             </ListboxOption>
           ))}
         </ListboxOptions>
@@ -240,7 +241,7 @@ export function Select({
 
 type ChoiceProps = { label: ReactNode; hint?: ReactNode; ref?: Ref<HTMLInputElement> } & Omit<InputHTMLAttributes<HTMLInputElement>, "type">;
 
-const choiceClasses = "h-4 w-4 border-gray-300 text-primary-600 focus:ring-primary-600 transition duration-200 cursor-pointer disabled:cursor-not-allowed";
+const choiceClasses = "h-4 w-4 border-strong text-primary-600 focus:ring-focus transition duration-200 cursor-pointer disabled:cursor-not-allowed";
 
 /** A checkbox with its label to the right. `indeterminate` shows a dash, e.g. a partly-selected "select all". */
 export function Checkbox({ label, hint, className, indeterminate = false, ref, ...rest }: ChoiceProps & { indeterminate?: boolean }) {
@@ -259,11 +260,11 @@ export function Radio({ label, hint, className, ...rest }: ChoiceProps) {
 
 function Choice({ label, hint, className, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
   return (
-    <label className={cn("flex gap-2 text-sm leading-6 text-gray-700", hint ? "items-start" : "items-center")}>
+    <label className={cn("flex gap-2 text-sm leading-6 text-body", hint ? "items-start" : "items-center")}>
       <input data-ui="choice" className={cn(choiceClasses, hint && "mt-1", className)} {...rest} />
       <span>
         {label}
-        {hint && <span className="block text-xs text-gray-500">{hint}</span>}
+        {hint && <span className="block text-xs text-muted">{hint}</span>}
       </span>
     </label>
   );

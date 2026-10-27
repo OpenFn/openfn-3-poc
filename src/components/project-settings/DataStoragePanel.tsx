@@ -36,9 +36,9 @@ const toPeriod = (v: string) => (v === "" ? null : Number(v));
 /** One setting: its name, an explanation, then the control. `dimmed` fades the text when it doesn't apply. */
 function Setting({ title, dimmed = false, description, children }: { title: string; dimmed?: boolean; description: ReactNode; children: ReactNode }) {
   return (
-    <div className={cn("space-y-3 text-sm", dimmed && "text-gray-300")}>
+    <div className={cn("space-y-3 text-sm", dimmed && "text-faint")}>
       <div>
-        <Heading as="h4" size="sm" className={cn(dimmed && "text-gray-300")}>
+        <Heading as="h4" size="sm" className={cn(dimmed && "text-faint")}>
           {title}
         </Heading>
         <p className="mt-1">{description}</p>
@@ -111,7 +111,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               {...form.fieldProps("historyRetentionPeriod")}
             />
           </Setting>
-          <hr className="border-gray-300" />
+          <hr className="border-strong" />
           <Setting
             title="Input/Output Data Storage Policy"
             description={
@@ -151,7 +151,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               </Alert>
             )}
           </Setting>
-          <hr className="border-gray-300" />
+          <hr className="border-strong" />
           <Setting
             title="Input/Output Data Retention Period"
             dimmed={noHistory || eraseAll}

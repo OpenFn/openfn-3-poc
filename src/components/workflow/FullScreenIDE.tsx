@@ -84,8 +84,8 @@ export default function FullScreenIDE({
   const adaptor = job?.adaptor ?? "@openfn/language-common@latest";
 
   return (
-    <div className="absolute inset-0 z-49 flex flex-col bg-white" data-annotation="workflow-editor-ide">
-      <div className="flex flex-none items-center justify-between gap-2 border-b border-gray-200 px-4 py-2">
+    <div className="absolute inset-0 z-49 flex flex-col bg-surface" data-annotation="workflow-editor-ide">
+      <div className="flex flex-none items-center justify-between gap-2 border-b border-subtle px-4 py-2">
         <div className="flex min-w-0 flex-1 items-center gap-3 *:shrink-0">
           <JobSelector currentJob={job} jobs={jobs} onChange={onSelectJob} />
           {job && (
@@ -122,21 +122,21 @@ export default function FullScreenIDE({
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className={cn("flex h-full min-w-0 bg-gray-100", vertical && "flex-col", panelState && !runStrip ? "w-7/10" : "flex-1")}>
+        <div className={cn("flex h-full min-w-0 bg-page", vertical && "flex-col", panelState && !runStrip ? "w-7/10" : "flex-1")}>
           <div className={cn("overflow-hidden", docsCollapsed ? "flex-1" : vertical ? "h-3/5" : "w-3/5")}>
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
             ) : (
-              <div className="mx-auto max-w-md p-8 text-center text-sm text-gray-600">
+              <div className="mx-auto max-w-md p-8 text-center text-sm text-muted">
                 <p>The job you're trying to view didn't exist in this version of the workflow.</p>
-                <p className="mt-2 text-gray-500">You can change versions or select another job.</p>
+                <p className="mt-2 text-muted">You can change versions or select another job.</p>
               </div>
             )}
           </div>
           {!docsCollapsed && (
             <>
-              <div className={cn("shrink-0 bg-gray-200", vertical ? "h-1" : "w-1")} />
-              <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+              <div className={cn("shrink-0 bg-emphasis", vertical ? "h-1" : "w-1")} />
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-surface">
                 <Tabs
                   variant="pill"
                   fill
@@ -170,8 +170,8 @@ export default function FullScreenIDE({
 
         {panelState && (
           <>
-            <div className="w-1 shrink-0 bg-gray-200" />
-            <div className={cn("h-full min-w-0 border-l border-gray-200 bg-gray-50", runStrip ? "w-10" : "flex-1")}>
+            <div className="w-1 shrink-0 bg-emphasis" />
+            <div className={cn("h-full min-w-0 border-l border-subtle bg-subtle", runStrip ? "w-10" : "flex-1")}>
               {panelState === "run-viewer" && runCollapsed && followRunId ? (
                 <div className="flex h-full flex-col items-center gap-3 overflow-hidden pt-3">
                   <Tooltip content="Expand run panel">
@@ -192,8 +192,8 @@ export default function FullScreenIDE({
                           setRunCollapsed(false);
                         }}
                         className={cn(
-                          "whitespace-nowrap rounded p-1 text-xs hover:bg-gray-200",
-                          runTab === t ? "text-primary-600 font-medium" : "text-gray-500"
+                          "whitespace-nowrap rounded p-1 text-xs hover:bg-emphasis",
+                          runTab === t ? "text-primary-600 font-medium" : "text-muted"
                         )}
                       >
                         {t === "log" ? "Logs" : t === "input" ? "Input" : "Output"}
@@ -220,7 +220,7 @@ export default function FullScreenIDE({
                       <IconButton icon="hero-chevron-right" label="Collapse panel" size="sm" onClick={() => setRunCollapsed(true)} />
                     </div>
                   )}
-                  <div className="flex-1 overflow-hidden bg-white">{rightPanel}</div>
+                  <div className="flex-1 overflow-hidden bg-surface">{rightPanel}</div>
                 </div>
               )}
             </div>
