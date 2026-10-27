@@ -72,15 +72,15 @@ interface MenuItemProps {
 export function MenuItem({ icon, to, href, onClick, selected, tone = "default", disabled = false, description, children }: MenuItemProps) {
   const className = cn(
     "group flex w-full items-start gap-x-3 px-4 py-2 text-left text-sm cursor-pointer",
-    "data-focus:bg-gray-100 data-focus:outline-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
-    tone === "danger" ? "text-red-600" : "text-gray-700 data-focus:text-gray-900"
+    "data-focus:bg-hover data-focus:outline-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
+    tone === "danger" ? "text-danger-600" : "text-body data-focus:text-strong"
   );
   const content = (
     <>
-      {icon && <span className={cn(icon, "mt-0.5 h-4 w-4 shrink-0", tone === "danger" ? "text-red-500" : "text-gray-400")} />}
+      {icon && <span className={cn(icon, "mt-0.5 h-4 w-4 shrink-0", tone === "danger" ? "text-danger-500" : "text-faint")} />}
       <span className="min-w-0 flex-1">
-        <span className={cn("block", selected && "font-medium text-gray-900")}>{children}</span>
-        {description && <span className="mt-0.5 block text-xs text-gray-500">{description}</span>}
+        <span className={cn("block", selected && "font-medium text-strong")}>{children}</span>
+        {description && <span className="mt-0.5 block text-xs text-muted">{description}</span>}
       </span>
       {selected && <span className="hero-check mt-0.5 h-4 w-4 shrink-0 text-primary-600" />}
     </>
@@ -117,7 +117,7 @@ export function MenuLink({ to, children }: { to: string; children: ReactNode }) 
     <HeadlessMenuItem
       as={Link}
       to={to}
-      className="font-medium underline underline-offset-2 data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary-600"
+      className="font-medium underline underline-offset-2 data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-focus"
     >
       {children}
     </HeadlessMenuItem>
@@ -129,7 +129,7 @@ export function MenuSection({ heading, children }: { heading?: ReactNode; childr
   return (
     <HeadlessMenuSection>
       {heading && (
-        <HeadlessMenuHeading className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <HeadlessMenuHeading className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-muted">
           {heading}
         </HeadlessMenuHeading>
       )}
@@ -144,5 +144,5 @@ export function MenuHeader({ children }: { children: ReactNode }) {
 }
 
 export function MenuDivider() {
-  return <MenuSeparator className="my-1 h-px bg-gray-100" />;
+  return <MenuSeparator className="my-1 h-px bg-emphasis" />;
 }

@@ -53,8 +53,8 @@ export default function WorkspaceCard({
       muted={!!deleted}
       // The whole card shows the focus outline when its name area is reached by keyboard.
       className={cn(
-        "flex overflow-hidden has-[[role=button]:focus-visible]:outline-2 has-[[role=button]:focus-visible]:outline-offset-2 has-[[role=button]:focus-visible]:outline-primary-600",
-        deleted ? "opacity-75" : "hover:bg-gray-50"
+        "flex overflow-hidden has-[[role=button]:focus-visible]:outline-2 has-[[role=button]:focus-visible]:outline-offset-2 has-[[role=button]:focus-visible]:outline-focus",
+        deleted ? "opacity-75" : "hover:bg-hover"
       )}
     >
       <div className={cn("w-3 shrink-0", deleted && "opacity-60")} style={{ backgroundColor: color }} />
@@ -76,7 +76,7 @@ export default function WorkspaceCard({
         {/* Only on the name: around the badges too, it would open with their own tooltips. */}
         <Tooltip content={deleted ? deletionTooltip(deleted) : undefined}>
           <div className="min-w-0">
-            <Heading size="lg" className={cn("truncate", deleted && "text-gray-500 line-through")}>
+            <Heading size="lg" className={cn("truncate", deleted && "text-muted line-through")}>
               {workspace.name}
             </Heading>
           </div>

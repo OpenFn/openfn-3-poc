@@ -58,12 +58,12 @@ export default function Card({
       data-annotation={annotation}
       className={cn(
         "rounded-lg",
-        dashed ? "border-2 border-dashed border-gray-300" : "border border-gray-200",
-        muted ? "bg-gray-50" : !dashed && "bg-white shadow-xs",
+        dashed ? "border-2 border-dashed border-strong" : "border border-subtle",
+        muted ? "bg-subtle" : !dashed && "bg-surface shadow-xs",
         paddings[padding],
         hasHeader && "space-y-4",
         Tag === "button" &&
-          "block w-full text-left transition-shadow hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
+          "block w-full text-left transition-shadow hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
         className
       )}
     >

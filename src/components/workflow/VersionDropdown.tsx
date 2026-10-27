@@ -31,7 +31,7 @@ export default function VersionDropdown({ snapshots, pinnedVersion, onVersionSel
             type="button"
             className={cn(
               "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium",
-              isLatest ? "bg-primary-100 text-primary-800 hover:bg-primary-200" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+              isLatest ? "bg-primary-100 text-primary-800 hover:bg-primary-200" : "bg-warning-100 text-warning-800 hover:bg-warning-200"
             )}
           >
             {isLatest ? "latest" : `v${pinnedVersion}`}
@@ -41,7 +41,7 @@ export default function VersionDropdown({ snapshots, pinnedVersion, onVersionSel
       >
         {snapshots.length === 0 ? (
           <MenuHeader>
-            <span className="text-gray-500">No versions available</span>
+            <span className="text-muted">No versions available</span>
           </MenuHeader>
         ) : (
           <>

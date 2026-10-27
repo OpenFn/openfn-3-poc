@@ -24,16 +24,16 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
             e.currentTarget.click();
           }
         }}
-        className={cn("group flex min-w-0 cursor-pointer items-center gap-1.5 text-gray-500 hover:text-gray-700", className)}
+        className={cn("group flex min-w-0 cursor-pointer items-center gap-1.5 text-muted hover:text-body", className)}
       >
-        {icon && <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-gray-300" />}
+        {icon && <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-faint" />}
         <span className="flex min-w-0 font-mono text-xs">
           <span className="shrink-0">{scheme}</span>
           <span className="truncate" style={{ direction: "rtl", textAlign: "left" }}>
             {rest}
           </span>
         </span>
-        <span className="hero-clipboard-document h-4 w-4 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover:opacity-100" />
+        <span className="hero-clipboard-document h-4 w-4 shrink-0 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
     </Tooltip>
   );

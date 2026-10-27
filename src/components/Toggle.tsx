@@ -41,19 +41,19 @@ export default function Toggle({ checked, onChange, label, note, description, di
       onClick={() => onChange?.(!checked)}
       className={cn(
         "relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2",
-        checked ? "bg-primary-600" : "bg-gray-200",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
+        checked ? "bg-primary-600" : "bg-emphasis",
         "disabled:cursor-not-allowed disabled:opacity-50"
       )}
     >
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none inline-flex h-5 w-5 items-center justify-center rounded-full bg-white shadow transition duration-200 ease-in-out",
+          "pointer-events-none inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface shadow transition duration-200 ease-in-out",
           checked ? "translate-x-5" : "translate-x-0"
         )}
       >
-        <span className={cn("h-4 w-4", checked ? "hero-check-micro text-primary-600" : "hero-x-mark-micro text-gray-400")} />
+        <span className={cn("h-4 w-4", checked ? "hero-check-micro text-primary-600" : "hero-x-mark-micro text-faint")} />
       </span>
     </button>
   );
@@ -65,13 +65,13 @@ export default function Toggle({ checked, onChange, label, note, description, di
         </Tooltip>
         <input type="checkbox" name={name} checked={checked} readOnly tabIndex={-1} aria-hidden="true" className="hidden" />
         {label && (
-          <span id={labelId} className="text-sm text-gray-500">
-            <span className="font-medium text-gray-900">{label}</span>
+          <span id={labelId} className="text-sm text-muted">
+            <span className="font-medium text-strong">{label}</span>
             {note && <> {note}</>}
           </span>
         )}
       </div>
-      {description && <p className="text-sm text-gray-500">{description}</p>}
+      {description && <p className="text-sm text-muted">{description}</p>}
     </div>
   );
 }

@@ -48,8 +48,8 @@ function TypeOption({ selected, icon, children, onSelect }: { selected: boolean;
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-xs",
-        selected && "outline-2 outline-offset-2 outline-primary-600"
+        "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-subtle bg-surface p-2 text-sm shadow-xs",
+        selected && "outline-2 outline-offset-2 outline-focus"
       )}
     >
       {/* eslint-disable-next-line no-restricted-syntax -- visually hidden radio; the card around it is the control */}
@@ -144,10 +144,10 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
             value={reauthValues.password}
             onChange={(e) => setReauthValues({ ...reauthValues, password: e.target.value })}
           />
-          <div className="flex items-center gap-2 text-gray-500">
-            <hr className="flex-1 border-gray-300" />
+          <div className="flex items-center gap-2 text-muted">
+            <hr className="flex-1 border-strong" />
             OR
-            <hr className="flex-1 border-gray-300" />
+            <hr className="flex-1 border-strong" />
           </div>
           <TextInput
             id="user_code"

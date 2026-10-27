@@ -12,7 +12,8 @@ const meta: Meta<typeof SearchList> = {
   component: SearchList,
   decorators: [
     (Story) => (
-      <div className="w-lg rounded-xl bg-white shadow-lg ring-1 ring-gray-700/10">
+      // eslint-disable-next-line no-restricted-syntax -- the same faint gray-700 ring as Modal; no named colour is a tint
+      <div className="w-lg rounded-xl bg-surface shadow-lg ring-1 ring-gray-700/10">
         <Story />
       </div>
     ),
@@ -62,13 +63,13 @@ export const SmallWithSections: Story = {
             { key: "in-project", heading: "Adaptors in this project", items: matches.filter((a) => inUse.includes(a.id)) },
             { key: "all", heading: "All adaptors", items: matches.filter((a) => !inUse.includes(a.id)) },
           ]}
-          header={matches.length === 0 && <p className="text-sm text-gray-500">Nothing matches "{query}".</p>}
+          header={matches.length === 0 && <p className="text-sm text-muted">Nothing matches "{query}".</p>}
           getKey={(a) => a.id}
           query={query}
           onQueryChange={setQuery}
           onSelect={() => {}}
           placeholder="Search for an adaptor to connect..."
-          renderItem={(a) => <span className="text-gray-900">{a.name}</span>}
+          renderItem={(a) => <span className="text-strong">{a.name}</span>}
         />
       </div>
     );

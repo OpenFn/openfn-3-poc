@@ -102,9 +102,14 @@ not **how** it's built.
   system. Don't port those splits. Build every page from the primitives
   below, and when two Lightning screens style the same thing differently,
   pick one treatment in the primitive rather than copying both.
-- One neutral scale: `gray-*`. No `slate`, `zinc` or `secondary`. Brand
-  colour is `primary-*` (indigo; don't write `indigo-*`). `info`, `success`,
-  `danger`, `warning` are defined in `src/index.css`.
+- Colours are named for what they're for: `text-strong`, `text-body`,
+  `text-muted`, `text-faint`, `bg-surface`, `bg-subtle`, `border-subtle` and
+  the rest in `src/theme/tokens.css`. Brand is `primary-*` (indigo; don't
+  write `indigo-*`); status is `danger`, `success`, `warning` and `info`, at
+  the same shades as red, green, yellow and blue. Raw palette classes and hex
+  are lint errors outside the few files that are about colour (tags in Pill,
+  run states in `src/theme/runStateColours.ts`, chart palettes). Stories are
+  not linted for colour.
 - Icons are Heroicons as CSS classes: `<span className="hero-folder h-5 w-5" />`,
   with `-solid`, `-mini` and `-micro` suffixes. No icon packages.
 - Use `cn()` from `src/utils/cn.ts` for conditional classes.

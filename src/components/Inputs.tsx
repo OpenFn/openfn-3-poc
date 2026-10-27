@@ -12,7 +12,7 @@ import IconButton from "./IconButton";
 
 export function Label({ htmlFor, className, children }: { htmlFor?: string | undefined; className?: string | undefined; children: ReactNode }) {
   return (
-    <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-gray-800", className)}>
+    <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-strong", className)}>
       {children}
     </label>
   );
@@ -50,10 +50,10 @@ export function Field({ id, label, required, hint, errors = [], className, child
       {label && (
         <Label htmlFor={id} className="mb-2 block">
           {label}
-          {required && <span data-ui="required" className="text-red-500"> *</span>}
+          {required && <span data-ui="required" className="text-danger-500"> *</span>}
         </Label>
       )}
-      {hint && <small data-ui="hint" className="mb-2 block text-xs text-gray-600">{hint}</small>}
+      {hint && <small data-ui="hint" className="mb-2 block text-xs text-muted">{hint}</small>}
       {children}
       {errors.map((e) => (
         <FieldError key={e}>{e}</FieldError>
@@ -150,7 +150,7 @@ export function Select({
 
 type ChoiceProps = { label: ReactNode; hint?: ReactNode; ref?: Ref<HTMLInputElement> } & Omit<InputHTMLAttributes<HTMLInputElement>, "type">;
 
-const choiceClasses = "h-4 w-4 border-gray-300 text-primary-600 focus:ring-primary-600 transition duration-200 cursor-pointer disabled:cursor-not-allowed";
+const choiceClasses = "h-4 w-4 border-strong text-primary-600 focus:ring-focus transition duration-200 cursor-pointer disabled:cursor-not-allowed";
 
 /** A checkbox with its label to the right. `indeterminate` shows a dash, e.g. a partly-selected "select all". */
 export function Checkbox({ label, hint, className, indeterminate = false, ref, ...rest }: ChoiceProps & { indeterminate?: boolean }) {
@@ -169,11 +169,11 @@ export function Radio({ label, hint, className, ...rest }: ChoiceProps) {
 
 function Choice({ label, hint, className, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
   return (
-    <label className={cn("flex gap-2 text-sm leading-6 text-gray-700", hint ? "items-start" : "items-center")}>
+    <label className={cn("flex gap-2 text-sm leading-6 text-body", hint ? "items-start" : "items-center")}>
       <input data-ui="choice" className={cn(choiceClasses, hint && "mt-1", className)} {...rest} />
       <span>
         {label}
-        {hint && <span className="block text-xs text-gray-500">{hint}</span>}
+        {hint && <span className="block text-xs text-muted">{hint}</span>}
       </span>
     </label>
   );

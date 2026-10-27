@@ -42,7 +42,7 @@ export default function ColorPalette({
               className="sr-only"
             />
             <span className="flex h-12 w-12 items-center justify-center rounded-xs md:h-14 md:w-14" style={{ backgroundColor: hex }} aria-hidden="true">
-              {hex === current && <span className="hero-check h-6 w-6 text-white drop-shadow-lg" />}
+              {hex === current && <span className="hero-check h-6 w-6 text-inverse drop-shadow-lg" />}
             </span>
           </label>
         ))}

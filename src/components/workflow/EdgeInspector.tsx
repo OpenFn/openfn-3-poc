@@ -78,7 +78,7 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
                     <span
                       role="img"
                       aria-label="Expression contains potentially unsafe functions"
-                      className="hero-exclamation-triangle h-4 w-4 text-yellow-600"
+                      className="hero-exclamation-triangle h-4 w-4 text-warning-600"
                     />
                   </Tooltip>
                 )}
@@ -87,10 +87,10 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
             value={expression}
             onChange={(e) => onChange({ conditionExpression: e.target.value })}
             placeholder="eg: !state.error"
-            className="h-24 bg-gray-700 font-mono text-gray-200"
+            className="h-24 bg-code font-mono text-code"
           />
           <Disclosure variant="inline" defaultOpen={false} title="How to write expressions">
-            <div className="space-y-1 text-xs text-gray-600">
+            <div className="space-y-1 text-xs text-muted">
               <p>Use the state from the previous step to decide whether this step should run.</p>
               <p>Must be a single JavaScript expression with `state` in scope.</p>
               <p>
@@ -104,7 +104,7 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
           </Disclosure>
         </div>
       )}
-      {fromTrigger && <p className="text-xs italic text-gray-600">This path will be active if its trigger is enabled</p>}
+      {fromTrigger && <p className="text-xs italic text-muted">This path will be active if its trigger is enabled</p>}
       <ConfirmModal
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}

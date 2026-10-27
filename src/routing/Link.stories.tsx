@@ -5,7 +5,7 @@ import { withRouterAt } from "../stories/decorators";
 /** Shows where the router is, so you can see each click navigate. */
 function Here() {
   const { pathname, search, hash } = useRouter().useLocation();
-  return <p className="mb-4 font-mono text-xs text-gray-500">At {`${pathname}${search}${hash}`}</p>;
+  return <p className="mb-4 font-mono text-xs text-muted">At {`${pathname}${search}${hash}`}</p>;
 }
 
 const meta: Meta<typeof Link> = {

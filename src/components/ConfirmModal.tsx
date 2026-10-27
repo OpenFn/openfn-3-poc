@@ -73,7 +73,7 @@ export default function ConfirmModal({
       title={title}
       size="sm"
       formId={formId ?? fallbackId}
-      formClassName="text-sm text-gray-600 space-y-3"
+      formClassName="text-sm text-muted space-y-3"
       onSubmit={() => onConfirm(typed)}
       submitLabel={confirmLabel}
       submitTheme={tone}

@@ -139,7 +139,7 @@ function Panel<T>({ query, card = false, children }: { query: HealthQuery<T>; ca
   const status = query.error ? (
     <Alert type="danger">{query.error}</Alert>
   ) : (
-    <div className={`${FRAME} flex items-center justify-center text-gray-400`} aria-busy="true">
+    <div className={`${FRAME} flex items-center justify-center text-faint`} aria-busy="true">
       <Spinner size="md" label="Loading…" />
     </div>
   );
@@ -147,4 +147,4 @@ function Panel<T>({ query, card = false, children }: { query: HealthQuery<T>; ca
 }
 
 /** The small gray note at the right of a card's title. */
-const meta = (text: string) => <span className="text-xs text-gray-500">{text}</span>;
+const meta = (text: string) => <span className="text-xs text-muted">{text}</span>;

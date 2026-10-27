@@ -18,7 +18,7 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
   return (
     <div className="ml-1 space-y-4 overflow-auto text-sm">
       <div>
-        <Heading size="lg" as="h1" className="mb-2 text-gray-700">
+        <Heading size="lg" as="h1" className="mb-2 text-body">
           {pkg} ({version})
         </Heading>
         <p>
@@ -35,7 +35,7 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
         </p>
       </div>
       <Disclosure variant="inline" defaultOpen={false} title="Editor tips & shortcuts">
-        <div className="border-l-4 border-gray-300 pl-2">
+        <div className="border-l-4 border-strong pl-2">
           <p className="mb-2">
             Most adaptors provide intelligent code suggestions to the editor. Start typing and press TAB or ENTER to accept a
             suggestion, or ESC to cancel
@@ -58,8 +58,8 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
               <p>{fn.description}</p>
               {fn.example && (
                 <>
-                  <p className="mt-2 text-gray-700">Example</p>
-                  <pre className="mx-4 mt-1 overflow-x-auto rounded-md border-2 border-gray-200 bg-gray-100 py-2 pr-8 pl-4 font-mono text-xs text-gray-800">
+                  <p className="mt-2 text-body">Example</p>
+                  <pre className="mx-4 mt-1 overflow-x-auto rounded-md border-2 border-subtle bg-sunken py-2 pr-8 pl-4 font-mono text-xs text-strong">
                     {fn.example}
                   </pre>
                 </>

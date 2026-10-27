@@ -9,7 +9,7 @@ const steps = stepsOf(run);
 const meta: Meta<typeof RunViewerPanel> = {
   title: "Workflow/RunViewerPanel",
   component: RunViewerPanel,
-  decorators: [withRouter, (Story) => <div className="w-[520px] h-[700px] bg-white"><Story /></div>],
+  decorators: [withRouter, (Story) => <div className="w-[520px] h-[700px] bg-surface"><Story /></div>],
   args: {
     projectId: "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa",
     run,

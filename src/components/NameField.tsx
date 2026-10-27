@@ -54,14 +54,14 @@ export default function NameField({
         {...rest}
       />
       {!(hideBadgeOnError && errors.length > 0) && name !== "" && (
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-muted">
           <NameBadge name={name}>{badgeLabel}</NameBadge>
         </p>
       )}
       {!(hideBadgeOnError && errors.length > 0) && name === "" && exampleName && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-faint">
           {badgeLabel}
-          <span className="ml-1 rounded-md border border-gray-200 bg-gray-50 p-1 font-mono text-xs">{exampleName}</span>.
+          <span className="ml-1 rounded-md border border-subtle bg-subtle p-1 font-mono text-xs">{exampleName}</span>.
         </p>
       )}
     </div>

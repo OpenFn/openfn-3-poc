@@ -22,5 +22,5 @@ export const CustomInput: Story = { args: { title: "Pick a custom input", initia
 export const FromEdge: Story = { args: { title: "Run Workflow", fromEdge: true } };
 export const Embedded: Story = {
   args: { mode: "embedded", onClosePanel: () => {} },
-  decorators: [(Story) => <div className="w-[420px] h-full bg-white"><Story /></div>],
+  decorators: [(Story) => <div className="w-[420px] h-full bg-surface"><Story /></div>],
 };

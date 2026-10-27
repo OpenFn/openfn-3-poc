@@ -41,14 +41,15 @@ export default function Modal({ open, onClose, title, description, children, foo
     <Dialog open={open} onClose={onClose} transition className="relative z-200" data-ui="modal">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-closed:opacity-0"
+        className="fixed inset-0 bg-overlay backdrop-blur-xs transition-opacity duration-200 ease-out data-closed:opacity-0"
       />
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
             className={cn(
-              "relative w-full rounded-xl bg-white text-left shadow-lg shadow-gray-700/10 ring-1 ring-gray-700/10",
+              // eslint-disable-next-line no-restricted-syntax -- a faint gray-700 tint on the ring and shadow, as Lightning's modal; no named colour is a tint
+              "relative w-full rounded-xl bg-surface text-left shadow-lg shadow-gray-700/10 ring-1 ring-gray-700/10",
               "transition duration-200 ease-out data-closed:translate-y-2 data-closed:opacity-0",
               !bare && "py-6",
               sizes[size],
@@ -63,12 +64,12 @@ export default function Modal({ open, onClose, title, description, children, foo
                   <>
                     <header className="flex items-start justify-between gap-4 px-6">
                       <div>
-                        <DialogTitle className="text-lg font-semibold leading-5 text-gray-800">{title}</DialogTitle>
-                        {description && <Description className="mt-2 text-sm text-gray-600">{description}</Description>}
+                        <DialogTitle className="text-lg font-semibold leading-5 text-strong">{title}</DialogTitle>
+                        {description && <Description className="mt-2 text-sm text-muted">{description}</Description>}
                       </div>
                       <CloseButton size="sm" className="-m-0.5 p-0.5" onClick={onClose} />
                     </header>
-                    <div className="my-4 h-0.5 bg-gray-100" />
+                    <div className="my-4 h-0.5 bg-emphasis" />
                   </>
                 )}
                 <section className="px-6">{children}</section>

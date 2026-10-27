@@ -131,7 +131,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
           }
         >
           {sort.rows.map(({ user, role }) => (
-            <Tr key={user.id} className={cn(role === "" && "text-gray-500 opacity-60")}>
+            <Tr key={user.id} className={cn(role === "" && "text-muted opacity-60")}>
               <Td>{fullName(user)}</Td>
               <Td>{user.email}</Td>
               {(["", ...ROLES] as Role[]).map((r) => (

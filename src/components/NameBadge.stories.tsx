@@ -5,7 +5,7 @@ const meta: Meta<typeof NameBadge> = {
   title: "Shared/NameBadge",
   component: NameBadge,
   args: { name: "my-project", children: "Your project will be named" },
-  decorators: [(Story) => <small className="block text-xs text-gray-600"><Story /></small>],
+  decorators: [(Story) => <small className="block text-xs text-muted"><Story /></small>],
 };
 export default meta;
 type Story = StoryObj<typeof NameBadge>;

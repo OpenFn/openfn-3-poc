@@ -426,7 +426,7 @@ export default function HistoryWorkOrdersPage({
         />
 
         {filters.searchTerm && (
-          <div className="m-2 truncate text-sm text-gray-500">
+          <div className="m-2 truncate text-sm text-muted">
             {page.totalEntries}
             {capped && "+"} work orders with runs matching "{filters.searchTerm}"
             {capped && <span className="text-xs"> (try more specific filters)</span>}

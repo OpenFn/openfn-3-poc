@@ -50,7 +50,7 @@ export default function DiagramMiniMap({ graph, viewport, canvasSize, onCenter }
 
   return (
     <div
-      className="absolute right-4 bottom-4 z-5 border-2 border-gray-200 bg-white"
+      className="absolute right-4 bottom-4 z-5 border-2 border-subtle bg-surface"
       onPointerDown={(e) => e.stopPropagation()}
     >
       <svg
@@ -69,9 +69,10 @@ export default function DiagramMiniMap({ graph, viewport, canvasSize, onCenter }
           if (!p) return null;
           return (
             <g key={t.id}>
+              {/* eslint-disable-next-line no-restricted-syntax -- Lightning's minimap node stroke (React Flow's default), kept for parity */}
               <circle cx={p.x + 60} cy={p.y + 60} r={60} fill="white" stroke="#ccc" strokeWidth={8} />
               <foreignObject x={p.x + 30} y={p.y + 30} width={60} height={60}>
-                <span className={`${t.type === "cron" ? "hero-clock" : "hero-globe-alt"} block h-full w-full text-gray-500`} />
+                <span className={`${t.type === "cron" ? "hero-clock" : "hero-globe-alt"} block h-full w-full text-muted`} />
               </foreignObject>
             </g>
           );
@@ -82,6 +83,7 @@ export default function DiagramMiniMap({ graph, viewport, canvasSize, onCenter }
           const icon = adaptorIconUrl(j.adaptor);
           return (
             <g key={j.id}>
+              {/* eslint-disable-next-line no-restricted-syntax -- Lightning's minimap node stroke (React Flow's default), kept for parity */}
               <rect x={p.x} y={p.y} width={120} height={120} fill="white" stroke="#ccc" strokeWidth={8} rx={20} />
               {icon && <image x={p.x + 20} y={p.y + 20} width={80} height={80} href={icon} />}
             </g>
@@ -90,6 +92,7 @@ export default function DiagramMiniMap({ graph, viewport, canvasSize, onCenter }
         <path
           d={`M${x - offset},${y - offset}h${w + offset * 2}v${h + offset * 2}h${-w - offset * 2}z
               M${view.x},${view.y}h${view.width}v${view.height}h${-view.width}z`}
+          // eslint-disable-next-line no-restricted-syntax -- React Flow's minimap mask, kept for parity
           fill="rgba(240, 240, 240, 0.6)"
           fillRule="evenodd"
           pointerEvents="none"

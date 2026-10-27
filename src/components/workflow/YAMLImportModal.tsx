@@ -42,7 +42,7 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
       </div>
       <div className="h-80">
         {mode === "upload" ? (
-          <Card dashed padding="none" className="relative h-full hover:border-gray-400">
+          <Card dashed padding="none" className="relative h-full hover:border-emphasis">
             {/* eslint-disable-next-line no-restricted-syntax -- file input stretched over the drop zone, which is the control */}
             <input
               id="workflow-file"
@@ -59,11 +59,11 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
                   });
               }}
             />
-            <label htmlFor="workflow-file" className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2 text-xs text-gray-500">
-              <span className="mb-1 rounded-xl bg-gray-100 p-3">
-                <span className="hero-arrow-up-tray block size-6 text-gray-800" />
+            <label htmlFor="workflow-file" className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2 text-xs text-muted">
+              <span className="mb-1 rounded-xl bg-sunken p-3">
+                <span className="hero-arrow-up-tray block size-6 text-strong" />
               </span>
-              <p className="text-sm text-gray-600">Upload or drop a YAML file.</p>
+              <p className="text-sm text-muted">Upload or drop a YAML file.</p>
               <p className="*:font-medium *:text-primary-500">
                 <span>YML</span> or <span>YAML</span>, up to 8MB
               </p>

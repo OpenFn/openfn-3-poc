@@ -8,10 +8,10 @@ import type { SsoProvider } from "../../types/auth";
 export default function SsoLogin({ provider }: { provider: SsoProvider }) {
   return (
     <>
-      <div className="flex items-center gap-2 text-xs text-gray-700">
-        <hr className="flex-1 border-gray-200" />
+      <div className="flex items-center gap-2 text-xs text-body">
+        <hr className="flex-1 border-subtle" />
         or
-        <hr className="flex-1 border-gray-200" />
+        <hr className="flex-1 border-subtle" />
       </div>
       <Button theme="secondary" href={provider.handlerUrl} tooltip={provider.name} className="w-full">
         <span className="hero-identification h-4 w-4" />

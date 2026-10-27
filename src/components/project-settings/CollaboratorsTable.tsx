@@ -70,7 +70,7 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
               {c.firstName} {c.lastName}
             </div>
             <div className="text-xs">{c.email}</div>
-            {c.isCurrentUser && <em className="text-xs text-gray-400">Well hello, you!</em>}
+            {c.isCurrentUser && <em className="text-xs text-faint">Well hello, you!</em>}
           </Td>
           <Td>{capitalize(c.role)}</Td>
           <Td>

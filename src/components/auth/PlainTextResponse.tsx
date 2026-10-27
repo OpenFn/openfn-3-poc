@@ -5,6 +5,6 @@
  */
 export default function PlainTextResponse({ children }: { children: string }) {
   return (
-    <pre className="min-h-screen whitespace-pre-wrap break-words bg-white p-2 text-sm text-black">{children}</pre>
+    <pre className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-sm text-strong">{children}</pre>
   );
 }

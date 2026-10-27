@@ -27,7 +27,7 @@ type Story = StoryObj<typeof SettingsMenu>;
 /** The button as it sits in the bottom-right corner of the app. */
 export const Default: Story = {
   render: () => (
-    <div className="h-screen w-full bg-gray-50 p-8 text-sm text-gray-700">
+    <div className="h-screen w-full bg-subtle p-8 text-sm text-body">
       The settings button lives in the bottom-right corner.
       <SettingsMenu />
     </div>
@@ -37,7 +37,7 @@ export const Default: Story = {
 /** The open menu: the annotations panel switch and the themes. */
 export const Open: Story = {
   render: () => (
-    <div className="h-screen w-full bg-gray-50 p-8">
+    <div className="h-screen w-full bg-subtle p-8">
       <SettingsMenu />
     </div>
   ),

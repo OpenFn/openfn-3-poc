@@ -61,8 +61,8 @@ export const WithSectionsAndHeader: Story = {
     children: (
       <>
         <MenuHeader>
-          <p className="text-gray-500">Signed in as</p>
-          <p className="truncate font-medium text-gray-900">amy@openfn.org</p>
+          <p className="text-muted">Signed in as</p>
+          <p className="truncate font-medium text-strong">amy@openfn.org</p>
         </MenuHeader>
         <MenuDivider />
         <MenuSection heading="Account">
@@ -86,7 +86,7 @@ export const WithInlineLink: Story = {
     children: (
       <>
         <div className="bg-amber-50 px-4 py-3">
-          <p className="text-xs text-gray-600">You're using features that are still being built.</p>
+          <p className="text-xs text-muted">You're using features that are still being built.</p>
           <p className="mt-1.5 text-xs text-amber-700">
             <MenuLink to="/profile">Turn off in your profile</MenuLink>
           </p>

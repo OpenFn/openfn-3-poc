@@ -37,7 +37,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
   const step = steps.find((s) => s.id === selectedStepId) ?? null;
   const clip = (id: string | null | undefined) => dataclips.find((d) => d.id === id);
 
-  const empty = (text: string) => <p className="flex h-full items-center justify-center p-12 text-center text-gray-500">{text}</p>;
+  const empty = (text: string) => <p className="flex h-full items-center justify-center p-12 text-center text-muted">{text}</p>;
   const dataView = (id: string | null | undefined, emptyFinished: string) => {
     if (!step) return empty(`Select a step to view ${activeTab} data`);
     const d = clip(id);
@@ -48,8 +48,8 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
 
   return (
     <div className={cn("flex h-full flex-col", mismatch && "opacity-50")} data-annotation="workflow-editor-run-viewer">
-      <div className="flex h-2/5 max-h-72 min-h-40 border-b-4 border-gray-200 *:w-1/2 *:overflow-auto *:p-4">
-        <div className="border-r border-gray-200">
+      <div className="flex h-2/5 max-h-72 min-h-40 border-b-4 border-subtle *:w-1/2 *:overflow-auto *:p-4">
+        <div className="border-r border-subtle">
           <DetailList>
             <DetailItem label="Work Order">
               <UuidChip
@@ -77,7 +77,7 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
             <InfoTooltip title="This run may not have executed all steps in the workflow. Only the steps that were executed in this specific run are shown here." />
           </Heading>
           {steps.length === 0 ? (
-            <p className="py-4 text-center text-gray-500">No steps yet</p>
+            <p className="py-4 text-center text-muted">No steps yet</p>
           ) : (
             <ul aria-label="Execution steps" className="space-y-2">
               {steps.map((s) => {
@@ -90,12 +90,12 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
                       onClick={() => onSelectStep(s)}
                       className={cn(
                         "flex w-full items-center gap-3 rounded border-r-4 p-2 text-left text-sm",
-                        selected ? "border-primary-500 bg-primary-50 font-semibold" : "border-transparent hover:border-gray-300 hover:bg-gray-50"
+                        selected ? "border-primary-500 bg-primary-50 font-semibold" : "border-transparent hover:border-strong hover:bg-hover"
                       )}
                     >
                       <StepIcon reason={s.exitReason} />
                       <span className="min-w-0 flex-1 truncate">{s.jobName}</span>
-                      <span className="shrink-0 text-xs text-gray-500">{formatElapsed(s.startedAt, s.finishedAt)}</span>
+                      <span className="shrink-0 text-xs text-muted">{formatElapsed(s.startedAt, s.finishedAt)}</span>
                     </button>
                   </li>
                 );

@@ -18,7 +18,7 @@ function Filler({ message, pulse = false }: { message: string; pulse?: boolean }
   return (
     <Tr>
       <Td colSpan={9}>
-        <div className={cn("py-3 text-center text-gray-500", pulse && "animate-pulse")}>{message}</div>
+        <div className={cn("py-3 text-center text-muted", pulse && "animate-pulse")}>{message}</div>
       </Td>
     </Tr>
   );
@@ -113,7 +113,7 @@ export default function WorkOrdersTable({
                 className="disabled:opacity-50"
               />
               {selected.length > 0 && (
-                <div className="absolute left-full top-1/2 ml-3 flex -translate-y-1/2 gap-1 whitespace-nowrap bg-gray-50">
+                <div className="absolute left-full top-1/2 ml-3 flex -translate-y-1/2 gap-1 whitespace-nowrap bg-subtle">
                   {bulkButton(
                     "Cancel",
                     canCancel,

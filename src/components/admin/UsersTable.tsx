@@ -21,7 +21,7 @@ const sortMap: Record<SortKey, (u: User) => SortValue> = {
 
 const searchFields: ((u: User) => string)[] = [(u) => u.firstName, (u) => u.lastName, (u) => u.email, (u) => u.role];
 
-const checkIcon = <span className="hero-check-circle-solid w-6 h-6 text-gray-500" />;
+const checkIcon = <span className="hero-check-circle-solid w-6 h-6 text-muted" />;
 
 /**
  * The admin users table (user_live/components.ex `users_table`): a filter
@@ -94,7 +94,7 @@ export default function UsersTable({
           </Tr>
         ))}
       </Table>
-      <p className="mt-6 text-gray-700">
+      <p className="mt-6 text-body">
         *Note that a <code>superuser</code> can access <em>everything</em> in a Lightning installation across all
         projects, including this page. Most day-to-day user management (adding and removing collaborators) will be
         done by project "admins" via the project settings page.

@@ -16,7 +16,7 @@ export default function AdaptorIcon({ name, size = "md" }: { name: string; size?
   const url = adaptorIconUrl(name);
   if (!url) {
     return (
-      <div className={cn(sizeClasses[size], "flex items-center justify-center rounded-md bg-gray-200 text-xs font-semibold text-gray-500")}>
+      <div className={cn(sizeClasses[size], "flex items-center justify-center rounded-md bg-emphasis text-xs font-semibold text-muted")}>
         {short[0]?.toUpperCase() || "?"}
       </div>
     );

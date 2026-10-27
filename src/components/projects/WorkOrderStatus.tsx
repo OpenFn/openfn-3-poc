@@ -2,32 +2,7 @@ import type { WorkOrderDisplayState } from "../../types/workflows";
 import { cn } from "../../utils/cn";
 import DateTime from "../DateTime";
 import { capitalize } from "../../utils/format";
-
-const DOT: Record<WorkOrderDisplayState, string> = {
-  rejected: "bg-gray-300",
-  pending: "bg-gray-600",
-  running: "bg-blue-600",
-  success: "bg-green-600",
-  failed: "bg-red-600",
-  crashed: "bg-orange-600",
-  cancelled: "bg-gray-500",
-  killed: "bg-yellow-600",
-  exception: "bg-gray-300 border-2 border-gray-800",
-  lost: "bg-gray-300 border-2 border-gray-800",
-};
-
-const TEXT: Record<WorkOrderDisplayState, string> = {
-  rejected: "text-gray-600",
-  pending: "text-gray-500",
-  running: "text-blue-500",
-  success: "text-green-500",
-  failed: "text-red-500",
-  crashed: "text-orange-500",
-  cancelled: "text-gray-500",
-  killed: "text-yellow-800",
-  exception: "text-gray-600",
-  lost: "text-gray-600",
-};
+import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "../../theme/runStateColours";
 
 const LABEL: Partial<Record<WorkOrderDisplayState, string>> = { pending: "Enqueued" };
 
@@ -48,7 +23,7 @@ export default function WorkOrderStatus({
   if (!state) {
     return (
       <div className="flex items-center gap-x-2">
-        <span className="h-2 w-2 rounded-full bg-gray-200" />
+        <span className="h-2 w-2 rounded-full bg-emphasis" />
         <span className="italic">Nothing {period}</span>
       </div>
     );

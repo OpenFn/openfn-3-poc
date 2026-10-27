@@ -87,12 +87,12 @@ export default function ManualRunPanel({
 
   const tabContent = (
     <>
-      {tab === "empty" && <p className="px-6 pt-4 pb-8 text-center text-gray-500">Use an empty JSON object as the input for this run.</p>}
+      {tab === "empty" && <p className="px-6 pt-4 pb-8 text-center text-muted">Use an empty JSON object as the input for this run.</p>}
       {tab === "custom" && (
         <div className={cn("flex h-full flex-col", embedded ? "pt-2" : "pt-3")}>
           <div className="shrink-0 px-3">
-            <Card dashed padding="sm" className="mt-2 flex flex-col items-center text-sm/6 text-gray-600">
-              <span className="hero-cloud-arrow-up size-8 text-gray-300" />
+            <Card dashed padding="sm" className="mt-2 flex flex-col items-center text-sm/6 text-muted">
+              <span className="hero-cloud-arrow-up size-8 text-faint" />
               <p className="mt-2">
                 <label className="link font-semibold">
                   {/* eslint-disable-next-line no-restricted-syntax -- hidden file input; the label around it is the control */}
@@ -111,7 +111,7 @@ export default function ManualRunPanel({
               </p>
               <p className="text-xs/5">JSON, up to 8MB</p>
             </Card>
-            <div className="flex items-center gap-2 py-2 text-sm text-gray-500 *:h-px *:flex-1 *:bg-gray-300" aria-hidden="true">
+            <div className="flex items-center gap-2 py-2 text-sm text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">
               <span />
               OR
               <span />
@@ -144,7 +144,7 @@ export default function ManualRunPanel({
                   as="button"
                   padding="none"
                   onClick={() => setSelected(clip)}
-                  className="group flex items-center justify-between gap-2 rounded-md px-3 py-2 shadow-none hover:border-primary-600 hover:bg-gray-100 hover:shadow-none"
+                  className="group flex items-center justify-between gap-2 rounded-md px-3 py-2 shadow-none hover:border-primary-600 hover:bg-hover hover:shadow-none"
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     {i === 0 ? (
@@ -167,7 +167,7 @@ export default function ManualRunPanel({
             ) : (
               <p className="text-center">No dataclips match the filter.</p>
             )}
-            {visible.length > 0 && <p className="text-center text-gray-600">Search results are limited to the 10 most recent matches for this step.</p>}
+            {visible.length > 0 && <p className="text-center text-muted">Search results are limited to the 10 most recent matches for this step.</p>}
           </div>
         </div>
       )}
@@ -182,7 +182,7 @@ export default function ManualRunPanel({
             <Heading>{selected.name || "Unnamed"}</Heading>
             <IconButton icon="hero-pencil" label="Rename" size="sm" />
           </div>
-          <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+          <div className="mt-1 flex items-center gap-2 text-xs text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
             <span>•</span>
             <span>{formatLocalDate(selected.insertedAt)}</span>
@@ -196,7 +196,7 @@ export default function ManualRunPanel({
     </div>
   );
 
-  const edgeMessage = <p className="flex h-full items-center justify-center text-gray-600">Select a Step or Trigger to start a Run from</p>;
+  const edgeMessage = <p className="flex h-full items-center justify-center text-muted">Select a Step or Trigger to start a Run from</p>;
 
   const run = () => onRun(selected ? { kind: "existing", dataclipId: selected.id } : { kind: tab, body });
 

@@ -37,7 +37,7 @@ export const Top: Story = {
     align: "top",
     children: (
       <AuthPanel>
-        <p className="text-sm text-gray-600">Panel</p>
+        <p className="text-sm text-muted">Panel</p>
       </AuthPanel>
     ),
   },

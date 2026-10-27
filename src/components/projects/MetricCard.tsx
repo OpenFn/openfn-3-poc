@@ -24,7 +24,7 @@ export default function MetricCard({
       </Heading>
       <div className="mt-2 text-3xl font-bold">{value}</div>{" "}
       {(suffix || link) && (
-        <div className="mt-1 flex items-baseline justify-between gap-2 text-xs text-gray-500">
+        <div className="mt-1 flex items-baseline justify-between gap-2 text-xs text-muted">
           <div>{suffix}</div>
           {link}
         </div>

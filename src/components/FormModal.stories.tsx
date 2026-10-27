@@ -34,7 +34,7 @@ export const Danger: Story = {
     size: "sm",
     submitLabel: "Delete account",
     submitTheme: "danger",
-    formClassName: "space-y-3 text-sm text-gray-600",
+    formClassName: "space-y-3 text-sm text-muted",
     children: <TextInput id="scheduled_deletion_email" label="User email" />,
   },
 };

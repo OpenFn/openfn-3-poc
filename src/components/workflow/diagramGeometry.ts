@@ -1,4 +1,5 @@
 import type { EdgeConditionType, Position, WorkflowGraph } from "../../types/workflow-graph";
+import { NODE_RUN_BORDER, NODE_RUN_FILL } from "../../theme/runStateColours";
 
 /**
  * Geometry shared by the hand-rolled diagram (Lightning draws it with
@@ -18,9 +19,11 @@ export const FIT_PADDING = 0.3;
 export const MIN_ZOOM = 0.2;
 export const MAX_ZOOM = 1;
 
+/* eslint-disable no-restricted-syntax -- Lightning's edge greys (workflow-diagram/styles.ts), kept for parity; the marker and SVG attributes take them as literals */
 export const EDGE_COLOR = "#b1b1b7";
 export const EDGE_COLOR_DISABLED = "#E1E1E1";
 export const EDGE_COLOR_DIDNT_RUN = "#dfe0e3";
+/* eslint-enable no-restricted-syntax */
 // The primary-tinted colours are theme variables (src/theme/theme.css holds
 // Lightning's hex values), so a theme can recolour the canvas. Use them in
 // `style`, not SVG presentation attributes.
@@ -28,6 +31,7 @@ export const EDGE_COLOR_SELECTED = "var(--ui-diagram-selected)";
 export const EDGE_COLOR_NEIGHBOUR = "var(--ui-diagram-neighbour)";
 export const EDGE_COLOR_NEIGHBOUR_DIDNT_RUN = "var(--ui-diagram-neighbour-faded)";
 export const EDGE_COLOR_SELECTED_DISABLED = "var(--ui-diagram-selected-disabled)";
+// eslint-disable-next-line no-restricted-syntax -- Lightning's error colour (workflow-diagram/styles.ts), kept for parity
 export const ERROR_COLOR = "#ef4444";
 
 export type NodeRunState = "success" | "fail" | "crash" | "running" | null;
@@ -119,23 +123,10 @@ export function edgeColor({
   return selected ? EDGE_COLOR_SELECTED_DISABLED : EDGE_COLOR_DISABLED;
 }
 
-const RUN_BORDER: Record<string, string> = {
-  success: "#00a63e",
-  fail: "#e7000b",
-  crash: "#f54a00",
-  running: "#3b82f6",
-};
-const RUN_FILL: Record<string, string> = {
-  success: "#dcfce7",
-  fail: "#ffe2e2",
-  crash: "#ffedd4",
-  running: "#dbeafe",
-};
-
 /** styles.ts nodeIconStyles: stroke and fill for a node shape. */
 export function nodeShapeStyle(selected: boolean, runState: NodeRunState) {
   return {
-    stroke: selected ? EDGE_COLOR_SELECTED : runState ? RUN_BORDER[runState] : EDGE_COLOR,
-    fill: runState ? RUN_FILL[runState] : "white",
+    stroke: selected ? EDGE_COLOR_SELECTED : runState ? NODE_RUN_BORDER[runState] : EDGE_COLOR,
+    fill: runState ? NODE_RUN_FILL[runState] : "white",
   };
 }

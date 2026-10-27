@@ -115,8 +115,8 @@ export default function LogViewer({
   }
 
   return (
-    <div className="flex flex-col grow rounded-md bg-gray-700 font-mono text-gray-200 @container overflow-hidden">
-      <div className="flex h-6 flex-row-reverse items-center border-b border-gray-500 px-2 @md:h-8">
+    <div className="flex flex-col grow rounded-md bg-code font-mono text-code @container overflow-hidden">
+      <div className="flex h-6 flex-row-reverse items-center border-b border-emphasis px-2 @md:h-8">
         <LogLevelFilter selected={level} onChange={changeLevel} />
       </div>
       <div className={cn("flex grow", className)}>

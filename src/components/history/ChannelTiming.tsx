@@ -116,20 +116,20 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
           {ttfbPct ? (
             <div className="relative mt-1.5 h-4">
               <div
-                className="absolute flex items-center gap-1 whitespace-nowrap font-mono font-medium text-gray-600"
+                className="absolute flex items-center gap-1 whitespace-nowrap font-mono font-medium text-muted"
                 style={{ left: `clamp(0px, calc(${ttfbPct}% - 36px), calc(100% - 110px))` }}
               >
-                <span className="hero-arrow-up-mini h-3 w-3 text-gray-500" />
+                <span className="hero-arrow-up-mini h-3 w-3 text-muted" />
                 TTFB: {formatUs(data.ttfbUs)} ms
               </div>
             </div>
           ) : null}
-          <div className="mt-1 flex justify-between font-mono text-gray-500">
+          <div className="mt-1 flex justify-between font-mono text-muted">
             <span>0 ms</span>
             <span>{formatUs(data.totalUs)} ms</span>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-gray-500">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted">
           {data.segments.map((s) => (
             <span key={s.label} className="inline-flex items-center gap-1.5">
               <span className={cn("h-2.5 w-2.5 rounded-sm", s.color)} />
@@ -138,11 +138,11 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
           ))}
           {showOverhead && (
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-2.5 w-3 rounded-sm border border-gray-200" style={{ background: hatch }} />
+              <span className="h-2.5 w-3 rounded-sm border border-subtle" style={{ background: hatch }} />
               Proxy overhead
             </span>
           )}
-          {hasTtfb && <span className="ml-auto font-mono text-gray-400">TTFB: {formatUs(data.ttfbUs)} ms</span>}
+          {hasTtfb && <span className="ml-auto font-mono text-faint">TTFB: {formatUs(data.ttfbUs)} ms</span>}
         </div>
       </div>
     </Disclosure>

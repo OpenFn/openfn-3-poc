@@ -33,7 +33,7 @@ export default function UserMenu({ user }: { user: MenuUser }) {
           <button
             type="button"
             data-ui="account-trigger"
-            className="user-menu-trigger flex h-10 w-full items-center rounded-lg bg-white/10 text-sm font-medium text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+            className="user-menu-trigger flex h-10 w-full items-center rounded-lg bg-white/10 text-sm font-medium text-inverse transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
             <div className="user-menu-content flex w-full min-w-0 items-center">
               <UserAvatar firstName={user.firstName} lastName={user.lastName} className="shrink-0" />
@@ -47,16 +47,16 @@ export default function UserMenu({ user }: { user: MenuUser }) {
         }
       >
         <MenuHeader>
-          <p className="text-gray-700">Signed in as</p>
-          <p className="truncate font-medium text-gray-900">{user.email}</p>
+          <p className="text-body">Signed in as</p>
+          <p className="truncate font-medium text-strong">{user.email}</p>
         </MenuHeader>
         {user.experimentalFeatures && (
           <div className="bg-amber-50 px-4 py-3">
-            <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
+            <p className="flex items-center gap-1.5 text-sm font-medium text-strong">
               <span className="hero-wrench-screwdriver-mini h-4 w-4 text-amber-600" />
               Experimental features on
             </p>
-            <p className="mt-0.5 text-xs text-gray-600">
+            <p className="mt-0.5 text-xs text-muted">
               You're using features that are still being built. Things may work differently for you than for your
               teammates.
             </p>

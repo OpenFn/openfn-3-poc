@@ -66,7 +66,7 @@ export default function WorkOrderTableRow({
     <>
       <Tr
         id={`toggle_details_for_${wo.id}`}
-        className={selected ? "bg-gray-50" : "bg-white"}
+        className={selected ? "bg-subtle" : "bg-surface"}
         onClick={runs.length ? () => setExpanded((e) => !e) : undefined}
       >
         <Td className="!pr-1">
@@ -82,7 +82,7 @@ export default function WorkOrderTableRow({
               <Checkbox
                 id={`select_${wo.id}`}
                 label={<span className="sr-only">Select work order</span>}
-                className="disabled:bg-gray-100"
+                className="disabled:bg-subtle"
                 checked={false}
                 disabled
                 onChange={() => {}}
@@ -98,11 +98,11 @@ export default function WorkOrderTableRow({
             <TextLink
               to={wo.workflowHref}
               variant="plain"
-              className="workflow-name block max-w-50 truncate text-gray-900 hover:text-primary-600"
+              className="workflow-name block max-w-50 truncate text-strong hover:text-primary-600"
               title={
                 <>
                   {wo.workflowName}
-                  <span className="block text-xs text-gray-400">Click to view</span>
+                  <span className="block text-xs text-faint">Click to view</span>
                 </>
               }
             >
@@ -110,7 +110,7 @@ export default function WorkOrderTableRow({
             </TextLink>
           ) : (
             <Tooltip content={wo.workflowName}>
-              <span className="workflow-name block max-w-50 truncate text-gray-900">{wo.workflowName}</span>
+              <span className="workflow-name block max-w-50 truncate text-strong">{wo.workflowName}</span>
             </Tooltip>
           )}
         </Td>
@@ -147,7 +147,7 @@ export default function WorkOrderTableRow({
                   icon="hero-x-mark-mini"
                   label="Cancel pending run"
                   size="sm"
-                  className="hover:text-red-500"
+                  className="hover:text-danger-500"
                   onClick={onCancel}
                 />
               )}
@@ -172,7 +172,7 @@ export default function WorkOrderTableRow({
                   <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="sm" disabled />
                 ))}
               <Pill>{runs.length}</Pill>
-              <span className={cn(expanded ? "hero-chevron-up" : "hero-chevron-down", "size-4 text-gray-400")} />
+              <span className={cn(expanded ? "hero-chevron-up" : "hero-chevron-down", "size-4 text-faint")} />
             </>
           )}
         </Td>
@@ -180,7 +180,7 @@ export default function WorkOrderTableRow({
       {expanded && (
         <Tr>
           <Td colSpan={9} className="!p-0">
-            <div className="flex flex-col gap-3 bg-gray-100 p-3">
+            <div className="flex flex-col gap-3 bg-sunken p-3">
               {runs.map((run, i) => {
                 const index = runs.length - i;
                 if (index !== runs.length && !showPrevious) return null;

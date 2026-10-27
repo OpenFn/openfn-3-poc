@@ -80,7 +80,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
       action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
     >
       {show && (
-        <div className="space-y-5 border-t border-gray-300 pt-5 text-sm">
+        <div className="space-y-5 border-t border-strong pt-5 text-sm">
           {enabled && !setup && (
             <p>
               You have configured an authentication app to get two-factor authentication codes.{" "}
@@ -91,7 +91,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
           )}
 
           {setup && (
-            <div className="space-y-2 text-gray-500">
+            <div className="space-y-2 text-muted">
               <Heading>Authenticator app</Heading>
               <p>
                 Authenticator apps and browser extensions like 1Password, Authy etc. generate one-time passwords that
@@ -130,7 +130,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 </div>
               </form>
               <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
-                <code className="text-sm text-gray-600">{setup.secret}</code>
+                <code className="text-sm text-muted">{setup.secret}</code>
               </Modal>
             </div>
           )}
