@@ -24,7 +24,7 @@ export const Default: Story = {
     >
       {users.map((u) => (
         <Tr key={u.id} onClick={() => {}}>
-          <Td className="text-gray-900">{fullName(u)}</Td>
+          <Td className="text-strong">{fullName(u)}</Td>
           <Td>{u.email}</Td>
           <Td>{u.role}</Td>
         </Tr>

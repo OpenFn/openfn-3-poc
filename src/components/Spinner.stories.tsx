@@ -11,7 +11,7 @@ type Story = StoryObj<typeof Spinner>;
 export const Default: Story = {};
 export const Sizes: Story = {
   render: () => (
-    <div className="flex items-center gap-4 text-gray-500">
+    <div className="flex items-center gap-4 text-muted">
       <Spinner size="xs" />
       <Spinner size="sm" />
       <Spinner size="md" />
@@ -21,7 +21,7 @@ export const Sizes: Story = {
 };
 export const WithText: Story = {
   render: () => (
-    <p className="flex items-center gap-2 text-sm text-gray-500">
+    <p className="flex items-center gap-2 text-sm text-muted">
       <Spinner /> Loading work orders…
     </p>
   ),

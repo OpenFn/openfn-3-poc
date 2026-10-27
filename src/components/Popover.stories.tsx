@@ -32,7 +32,7 @@ export const AlignedEnd: Story = { args: { align: "end" } };
 export const WithClose: Story = {
   args: {
     children: (close: () => void) => (
-      <div className="space-y-3 text-sm text-gray-700">
+      <div className="space-y-3 text-sm text-body">
         <p>Panels can close themselves once a choice is made.</p>
         <Button size="sm" onClick={close}>
           Apply

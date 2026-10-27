@@ -183,6 +183,9 @@ export default defineConfig([
     files: ['src/pages/**/*.test.tsx', 'src/components/*/**/*.test.tsx'],
     rules: { 'no-restricted-syntax': consumerRules([]) },
   },
+  // Stories are checked for colour too. Hex stays allowed: it is data there (sandbox colours, chart values).
+  { files: ['src/**/*.stories.tsx'], rules: { 'no-restricted-syntax': ['error', ...colourRules({ literals: false })] } },
+  { files: ['src/components/Menu.stories.tsx'], rules: { 'no-restricted-syntax': ['error', ...colourRules({ literals: false, amber: true })] } },
   // The amber notices (support user, experimental):
   {
     files: ['src/components/shell/UserMenu.tsx', 'src/components/shell/Sidebar.tsx'],

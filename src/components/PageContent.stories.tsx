@@ -10,7 +10,7 @@ export const Default: StoryObj = {
     <div className="h-96">
       <PageContent header={<Header title="Projects" />}>
         <Centered>
-          <p className="text-sm text-gray-500">Page body</p>
+          <p className="text-sm text-muted">Page body</p>
         </Centered>
       </PageContent>
     </div>

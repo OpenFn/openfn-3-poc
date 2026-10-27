@@ -12,7 +12,7 @@ export default meta;
 const Body = () => (
   <PageContent header={<Header title="Page" />}>
     <Centered>
-      <p className="text-sm text-gray-500">Page body</p>
+      <p className="text-sm text-muted">Page body</p>
     </Centered>
   </PageContent>
 );
