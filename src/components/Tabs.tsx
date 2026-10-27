@@ -99,7 +99,7 @@ export default function Tabs<T extends string>({
           );
         }
         return (
-          <Tooltip key={tab.id} content={tab.disabled ? tab.disabledReason : undefined} disabled={tab.disabled}>
+          <Tooltip key={tab.id} content={tab.disabled ? tab.disabledReason : undefined} disabled={!!tab.disabled}>
             <button type="button" {...shared} disabled={tab.disabled} onClick={() => onChange?.(tab.id)}>
               {content}
             </button>

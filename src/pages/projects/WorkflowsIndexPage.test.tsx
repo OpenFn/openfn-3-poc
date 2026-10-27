@@ -109,12 +109,12 @@ describe("WorkflowsIndexPage", () => {
     fireEvent.click(screen.getByRole("switch", { name: "This workflow is inactive (manual runs only)" }));
     expect(onToggle).toHaveBeenCalledWith("wf-2", true);
 
-    fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
+    fireEvent.click(within(rowOf("Intake")).getByRole("button", { name: "Delete" }));
     expect(screen.getByRole("dialog").textContent).toContain("Are you sure you'd like to delete this workflow?");
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }));
     expect(onDelete).not.toHaveBeenCalled();
 
-    fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
+    fireEvent.click(within(rowOf("Intake")).getByRole("button", { name: "Delete" }));
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" }));
     await waitFor(() => expect(onDelete).toHaveBeenCalledWith("wf-1"));
     expect(onDelete).toHaveBeenCalledTimes(1);
@@ -122,7 +122,7 @@ describe("WorkflowsIndexPage", () => {
 
   it("keeps the delete confirm open with the host's refusal", async () => {
     renderPage({ onDelete: vi.fn().mockRejectedValue(new Error("Workflow has active runs")) });
-    fireEvent.click(rowOf("Intake").querySelector("button:last-child")!);
+    fireEvent.click(within(rowOf("Intake")).getByRole("button", { name: "Delete" }));
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" }));
     await waitFor(() => expect(within(screen.getByRole("dialog")).getByRole("alert").textContent).toContain("Workflow has active runs"));
   });
