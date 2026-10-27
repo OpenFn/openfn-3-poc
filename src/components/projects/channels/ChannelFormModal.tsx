@@ -78,7 +78,7 @@ export default function ChannelFormModal({
         hint={<HintWithLink href={`${settingsHref}#webhook_security`}>Credentials that you can use to access this channel</HintWithLink>}
       >
         {authMethodOptions.length === 0 ? (
-          <p className="italic text-xs text-gray-400">No webhook auth methods available.</p>
+          <p className="italic text-xs text-faint">No webhook auth methods available.</p>
         ) : (
           <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             {authMethodOptions.map((wam) => (

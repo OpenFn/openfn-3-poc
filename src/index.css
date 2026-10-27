@@ -3,9 +3,12 @@
 @plugin "@tailwindcss/typography";
 @plugin "../tailwind/heroicons.js";
 
+/* The named colours (text-muted, bg-surface, border-subtle…) and info. */
+@import "./theme/tokens.css";
+
 /* Semantic palette names from Lightning (assets/css/app.css): primary is
-   indigo, plus info / success / danger / warning. Neutrals are plain
-   `gray-*`: there's one neutral scale, no slate, zinc or secondary. */
+   indigo, plus success / danger / warning (info is in theme/tokens.css).
+   Neutrals are named in theme/tokens.css. */
 @theme {
   --color-primary-50: var(--color-indigo-50);
   --color-primary-100: var(--color-indigo-100);
@@ -19,18 +22,6 @@
   --color-primary-900: var(--color-indigo-900);
   --color-primary-950: var(--color-indigo-950);
 
-
-  --color-info-50: var(--color-sky-50);
-  --color-info-100: var(--color-sky-100);
-  --color-info-200: var(--color-sky-200);
-  --color-info-300: var(--color-sky-300);
-  --color-info-400: var(--color-sky-400);
-  --color-info-500: var(--color-sky-500);
-  --color-info-600: var(--color-sky-600);
-  --color-info-700: var(--color-sky-700);
-  --color-info-800: var(--color-sky-800);
-  --color-info-900: var(--color-sky-900);
-  --color-info-950: var(--color-sky-950);
 
   --color-success-50: var(--color-green-50);
   --color-success-100: var(--color-green-100);
@@ -89,11 +80,11 @@
       hover:underline hover:underline-offset-2
       whitespace-nowrap
       inline-block
-      text-primary-400 hover:text-primary-500
+      text-link hover:text-link-hover
       /* disabled state */
       disabled:cursor-not-allowed
-      disabled:text-gray-400
-      disabled:hover:text-gray-400
+      disabled:text-faint
+      disabled:hover:text-faint
       disabled:hover:no-underline
       disabled:opacity-60;
 }
@@ -109,13 +100,13 @@
       font-mono
       p-1
       rounded-md
-      text-gray-500
-      bg-gray-100
-      hover:bg-gray-200;
+      text-muted
+      bg-sunken
+      hover:bg-emphasis;
 }
 
 @utility link-danger {
-  @apply text-red-700 hover:text-red-600;
+  @apply text-danger-700 hover:text-danger-600;
 }
 
 /* The side menu, then the theme tokens and the data-theme overrides
@@ -133,7 +124,7 @@
 /* CodeViewer's step bar, in Monaco's line-decorations column. Lightning's
    app.css has the same rule under the same name. */
 .log-viewer-highlighted {
-  background-color: var(--color-yellow-400);
+  background-color: var(--color-warning-400);
   margin-left: 0.25rem;
   width: 0.125rem !important;
 }

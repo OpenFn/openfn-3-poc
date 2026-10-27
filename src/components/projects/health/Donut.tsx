@@ -71,6 +71,7 @@ export default function Donut({
               angle += (s.value / total) * 360;
               return (
                 <Link key={s.key} to={s.href} tabIndex={-1}>
+                  {/* eslint-disable-next-line no-restricted-syntax -- the gap between slices, as Lightning's chart draws it */}
                   <path d={arc(from, angle)} fill={s.color} stroke="#fff" strokeWidth={2} className="cursor-pointer">
                     <title>{`${s.label}: ${formatNumber(s.value)} (${percent(s.value, total)})`}</title>
                   </path>
@@ -80,8 +81,8 @@ export default function Donut({
           )}
         </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-semibold text-gray-900">{middle.value}</span>
-          <span className="text-xs text-gray-500">{middle.label}</span>
+          <span className="text-2xl font-semibold text-strong">{middle.value}</span>
+          <span className="text-xs text-muted">{middle.label}</span>
         </div>
       </div>
       <ul className={LEGEND}>
@@ -90,7 +91,7 @@ export default function Donut({
             <TextLink to={href} variant="plain" className="flex items-center gap-1.5">
               <span aria-hidden="true" className={DOT} style={{ backgroundColor: color }} />
               <span className="capitalize">{label}</span>{" "}
-              <span className="font-medium tabular-nums text-gray-900">{formatNumber(value)}</span>{" "}
+              <span className="font-medium tabular-nums text-strong">{formatNumber(value)}</span>{" "}
               <span className="sr-only">({percent(value, total)})</span>
             </TextLink>
           </li>

@@ -41,13 +41,13 @@ export default function StepFailureBars({
             <div className="flex items-baseline justify-between gap-4 text-sm">
               <div className="flex min-w-0 flex-col gap-1">
                 <Tooltip content={label}>
-                  <span className={cn("truncate", key === NO_STEP ? "italic text-gray-500" : "text-gray-900")}>{label}</span>
+                  <span className={cn("truncate", key === NO_STEP ? "italic text-muted" : "text-strong")}>{label}</span>
                 </Tooltip>
-                {adaptor && <span className="truncate font-mono text-xs text-gray-500">{adaptorLabel(adaptor)}</span>}
+                {adaptor && <span className="truncate font-mono text-xs text-muted">{adaptorLabel(adaptor)}</span>}
               </div>
-              <span className="shrink-0 font-medium tabular-nums text-gray-900">{formatNumber(count)}</span>
+              <span className="shrink-0 font-medium tabular-nums text-strong">{formatNumber(count)}</span>
             </div>
-            <div aria-hidden="true" className="h-1.5 rounded-full bg-gray-100">
+            <div aria-hidden="true" className="h-1.5 rounded-full bg-emphasis">
               <div
                 className="h-1.5 rounded-full"
                 style={{ width: `${(count / max) * 100}%`, backgroundColor: key === NO_STEP ? UNATTRIBUTED : FAILED }}

@@ -46,7 +46,7 @@ export default function ChannelRequestsTable({
                 {shortUuid(r.requestId)}
               </TextLink>
             </Td>
-            <Td className="text-gray-700">{r.requestPath || "—"}</Td>
+            <Td className="text-body">{r.requestPath || "—"}</Td>
             <Td>
               <TextLink to={`/projects/${projectId}/history/channels?filters[channel_id]=${r.channelId}`}>{r.channelName}</TextLink>
             </Td>

@@ -145,8 +145,8 @@ export default function RunShowPage({
         <Centered className="@container/main h-full">
           <DetailList id="run-loading" className="animate-pulse @5xl/main:w-1/3">
             {["w-16", "w-12", "w-12"].map((w, i) => (
-              <DetailItem key={i} label={<span className={`inline-block h-3 ${w} rounded-full bg-gray-300`} />}>
-                <span className="inline-block h-3 w-24 rounded-full bg-gray-300" />
+              <DetailItem key={i} label={<span className={`inline-block h-3 ${w} rounded-full bg-emphasis`} />}>
+                <span className="inline-block h-3 w-24 rounded-full bg-emphasis" />
               </DetailItem>
             ))}
           </DetailList>

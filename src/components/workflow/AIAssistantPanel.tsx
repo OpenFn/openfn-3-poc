@@ -62,10 +62,10 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
     <aside
       data-testid="ai-assistant-panel"
       data-annotation="workflow-editor-ai-assistant"
-      className="flex h-full w-100 flex-none flex-col overflow-hidden border-l border-gray-200 bg-white"
+      className="flex h-full w-100 flex-none flex-col overflow-hidden border-l border-subtle bg-surface"
       aria-label="AI Assistant"
     >
-      <div className="flex h-20 flex-none items-center gap-2 border-b border-gray-200 px-6 shadow-xs">
+      <div className="flex h-20 flex-none items-center gap-2 border-b border-subtle px-6 shadow-xs">
         <img src={assetUrl("images/logo.svg")} alt="OpenFn" className="size-6" />
         <Heading as="h2" className="flex-1">
           Assistant
@@ -88,7 +88,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
           <MenuItem icon="hero-document-text" href="https://www.openfn.org/ai">
             <span className="inline-flex items-center gap-2">
               Responsible AI Policy
-              <span className="hero-arrow-top-right-on-square h-4 w-4 text-gray-400" />
+              <span className="hero-arrow-top-right-on-square h-4 w-4 text-faint" />
             </span>
           </MenuItem>
         </Menu>
@@ -110,14 +110,14 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             {messages.map((m) =>
               m.role === "user" ? (
                 <div key={m.id} className="flex justify-end">
-                  <div className="max-w-5/6 whitespace-pre-wrap rounded-2xl bg-gray-100 px-4 py-2.5 text-gray-900">{m.content}</div>
+                  <div className="max-w-5/6 whitespace-pre-wrap rounded-2xl bg-sunken px-4 py-2.5 text-strong">{m.content}</div>
                 </div>
               ) : (
-                <div key={m.id} className="leading-relaxed text-gray-800">
+                <div key={m.id} className="leading-relaxed text-strong">
                   <p className="whitespace-pre-wrap">{m.content}</p>
                   {m.code && (
                     <Card padding="none" className="mt-3 overflow-hidden">
-                      <div className="flex items-center gap-2 border-b border-gray-200 bg-gray-50 px-3 py-1.5">
+                      <div className="flex items-center gap-2 border-b border-subtle bg-subtle px-3 py-1.5">
                         <Heading size="eyebrow" as="p" className="flex-1">
                           Job code
                         </Heading>
@@ -126,7 +126,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                         </CopyButton>
                         <Button size="xs">Add</Button>
                       </div>
-                      <pre className="overflow-x-auto bg-gray-700 p-3 font-mono text-xs text-gray-200">{m.code}</pre>
+                      <pre className="overflow-x-auto bg-code p-3 font-mono text-xs text-code">{m.code}</pre>
                     </Card>
                   )}
                 </div>
@@ -135,11 +135,11 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
           </div>
         ) : sessions.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
-            <div className="mb-2 rounded-full bg-gray-100 p-5">
-              <span className="hero-chat-bubble-left-right block h-10 w-10 text-gray-400" />
+            <div className="mb-2 rounded-full bg-sunken p-5">
+              <span className="hero-chat-bubble-left-right block h-10 w-10 text-faint" />
             </div>
             <Heading size="lg">No conversations yet</Heading>
-            <p className="max-w-70 text-sm text-gray-600">Start chatting below to create your first conversation</p>
+            <p className="max-w-70 text-sm text-muted">Start chatting below to create your first conversation</p>
           </div>
         ) : (
           <div className="flex h-full flex-col">
@@ -162,12 +162,12 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                       setSessionId(s.id);
                       setView("chat");
                     }}
-                    className="w-full rounded-lg p-3 text-left hover:bg-gray-50"
+                    className="w-full rounded-lg p-3 text-left hover:bg-hover"
                   >
                     <Heading size="sm" as="h4" className="mb-1.5 truncate">
                       {s.title}
                     </Heading>
-                    <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+                    <div className="flex items-center justify-between gap-3 text-xs text-muted">
                       {formatSessionAge(s.updatedAt)}
                       <Pill>{s.messages.length}</Pill>
                     </div>
@@ -179,14 +179,14 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
         )}
       </div>
 
-      <div className="flex-none border-t border-gray-200 p-4">
+      <div className="flex-none border-t border-subtle p-4">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             send();
           }}
         >
-          <div className={cn("rounded-xl border-2", input.trim() ? "border-primary-300" : "border-gray-200 hover:border-gray-300")}>
+          <div className={cn("rounded-xl border-2", input.trim() ? "border-primary-300" : "border-subtle hover:border-strong")}>
             {/* eslint-disable-next-line no-restricted-syntax -- debt: chat composer; TextArea has no borderless variant (also LandingScreen) */}
             <textarea
               data-testid="chat-input"
@@ -200,7 +200,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
               }}
               placeholder={view === "chat" ? "Ask a follow-up question..." : "Ask me anything about this workflow..."}
               rows={1}
-              className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
               style={{ height: 52 }}
             />
             <div className="flex items-center justify-between gap-3 px-3 pb-2">
@@ -228,7 +228,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             <li>Answer questions about OpenFn and adaptors</li>
             <li>Suggest improvements to your code</li>
           </ul>
-          <p className="text-gray-600">Messages are saved unencrypted to the OpenFn database and may be monitored for quality control.</p>
+          <p className="text-muted">Messages are saved unencrypted to the OpenFn database and may be monitored for quality control.</p>
           <Heading size="sm" as="h4" className="pt-2">
             Using The Assistant Safely
           </Heading>

@@ -59,7 +59,7 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
       >
         {rows.map((collection) => (
           <Tr key={collection.id} id={`collections-table-row-${collection.id}`}>
-            <Td className="max-w-60 wrap-break-word text-gray-800">{collection.name}</Td>
+            <Td className="max-w-60 wrap-break-word text-strong">{collection.name}</Td>
             <Td className="max-w-100 wrap-break-word">{collection.projectName}</Td>
             <Td className="max-w-100 wrap-break-word">{formatBytes(collection.byteSizeSum)}</Td>
             <Td actions>

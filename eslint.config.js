@@ -28,12 +28,59 @@ const designRules = [
   },
 ]
 
+// Colours are named for what they're for (src/theme/tokens.css). Each message
+// names what to use instead. White and black with an alpha (`black/5`,
+// `white/10`) are allowed: they tint whatever is behind them.
+const WB = '(?:white|black)(?![\\w\\x2f-])'
+const UTIL = '(?:bg|text|border(?:-[trblxyse])?|ring|ring-offset|outline|divide|fill|stroke|from|to|via|placeholder|shadow|decoration|caret|accent)'
+const OTHER = ['amber', 'orange', 'purple', 'pink', 'sky', 'teal', 'emerald', 'lime', 'cyan', 'violet', 'fuchsia', 'rose']
+const banned = (re, message) => [
+  { selector: `Literal[value=/${re}/]`, message },
+  { selector: `TemplateElement[value.raw=/${re}/]`, message },
+]
+const tokens = 'See src/theme/tokens.css.'
+const colourRules = ({ palette = true, literals = true, amber = false } = {}) => [
+  ...(palette
+    ? [
+        ...banned(
+          `\\btext-(?:gray-\\d|${WB})`,
+          `Raw text colour: use text-strong (gray-900/800), text-body (700), text-muted (600/500), text-faint (400/300), text-code (on bg-code) or text-inverse (white). ${tokens}`
+        ),
+        ...banned(
+          `\\bbg-(?:gray-\\d|${WB})`,
+          `Raw background: use bg-surface (white), bg-subtle (gray-50), bg-hover (gray-50, hover on white), bg-page or bg-sunken (100), bg-emphasis (200/300), bg-code (700), bg-inverse (800) or bg-overlay. ${tokens}`
+        ),
+        ...banned(
+          `\\b(?:border(?:-[trblxyse])?|divide|ring|outline)-(?:gray-\\d|${WB})`,
+          `Raw border colour: use border-subtle (gray-100/200), border-strong (300) or border-emphasis (400/500). divide-* and ring-* take the same names; focus is outline-focus or ring-focus. ${tokens}`
+        ),
+        ...banned(
+          `\\b${UTIL}-(?:red|green|yellow|blue)-\\d`,
+          'Raw status colour: keep the shade and use the status name: red is danger, green is success, yellow is warning, blue is info (bg-red-50 becomes bg-danger-50).'
+        ),
+        ...banned(
+          `\\b${UTIL}-(?:${OTHER.filter((f) => !amber || f !== 'amber').join('|')})-\\d|\\b(?:fill|stroke|from|to|via|placeholder|shadow|decoration)-(?:gray-\\d|${WB})`,
+          `Raw palette colour: a tag takes a Pill colour, a run state comes from src/theme/runStateColours.ts, and a chart keeps its palette in its own allow-listed file. Icons take fill-current or stroke-current with a text-* name; placeholders take placeholder:text-faint. ${tokens}`
+        ),
+      ]
+    : []),
+  ...(literals
+    ? banned(
+        '(?:^|[\\s(,\\[:])#[0-9a-fA-F]{3,8}\\b|rgba?\\(|--color-(?:gray|red|green|yellow|blue|white|black)\\b',
+        `Colour literal: use a named colour class, or its variable in a style (var(--text-color-muted), var(--background-color-surface)). A canvas or Monaco value that copies Lightning is disabled on its line with the reason. ${tokens}`
+      )
+    : []),
+]
+
 // Pages and feature components compose primitives (src/components/*.tsx).
 const rawControl = {
   selector: 'JSXOpeningElement[name.name=/^(button|input|select|textarea|table)$/]',
   message:
     'Raw control: use Button, IconButton, the Inputs controls or Table. If this element deliberately is not that control, disable it with a reason.',
 }
+
+const srcRules = (colours) => ['error', ...designRules, ...colours, liveViewAttribute]
+const consumerRules = (colours) => [...srcRules(colours), rawControl]
 
 // Every eslint-disable says why, after ` -- `, so a reviewer can judge it.
 const local = {
@@ -108,12 +155,38 @@ export default defineConfig([
     // Stories set fixed canvas sizes, so they're left out.
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': ['error', ...designRules, liveViewAttribute] },
+    rules: { 'no-restricted-syntax': srcRules(colourRules()) },
   },
   {
     files: ['src/pages/**/*.tsx', 'src/components/*/**/*.tsx'],
     ignores: ['**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': ['error', ...designRules, liveViewAttribute, rawControl] },
+    rules: { 'no-restricted-syntax': consumerRules(colourRules()) },
+  },
+  // Raw palette colours, confined to the files that are about colour.
+  // Tag colours:
+  { files: ['src/components/Pill.tsx'], rules: { 'no-restricted-syntax': srcRules(colourRules({ palette: false })) } },
+  // The theme files and the run-state map:
+  { files: ['src/theme/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
+  // Monaco's theme, the sandbox colours (user data) and the health charts' palette:
+  {
+    files: ['src/components/monacoTheme.ts', 'src/constants.ts', 'src/components/projects/health/palette.ts'],
+    rules: { 'no-restricted-syntax': srcRules(colourRules({ literals: false })) },
+  },
+  // Chart palettes:
+  {
+    files: ['src/components/history/ChannelTiming.tsx', 'src/components/admin/LiveDashboardHome.tsx'],
+    rules: { 'no-restricted-syntax': consumerRules([]) },
+  },
+  // Tests and fixtures hold data (sandbox colours) and query chart classes:
+  { files: ['src/**/*.test.{ts,tsx}', 'src/mock-data/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
+  {
+    files: ['src/pages/**/*.test.tsx', 'src/components/*/**/*.test.tsx'],
+    rules: { 'no-restricted-syntax': consumerRules([]) },
+  },
+  // The amber notices (support user, experimental):
+  {
+    files: ['src/components/shell/UserMenu.tsx', 'src/components/shell/Sidebar.tsx'],
+    rules: { 'no-restricted-syntax': consumerRules(colourRules({ amber: true })) },
   },
   {
     // The router adapter is the one place that reads the browser URL.

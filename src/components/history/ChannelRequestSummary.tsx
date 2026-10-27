@@ -14,7 +14,7 @@ import CopyButton from "../CopyButton";
 function Group({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <section className={className}>
-      <Heading size="eyebrow" as="h4" className="mb-3 border-b border-gray-100 pb-1.5">
+      <Heading size="eyebrow" as="h4" className="mb-3 border-b border-subtle pb-1.5">
         {title}
       </Heading>
       {children}
@@ -57,7 +57,7 @@ export default function ChannelRequestSummary({
             <Heading size="eyebrow" as="span">
               Request
             </Heading>
-            <span className="font-mono text-gray-900">{shortUuid(request.id)}</span>
+            <span className="font-mono text-strong">{shortUuid(request.id)}</span>
             <CopyButton value={request.id} label="Copy request ID" size="sm" />
           </span>
         </div>
@@ -68,7 +68,7 @@ export default function ChannelRequestSummary({
           <DetailList layout="grid" className="md:grid-cols-2">
             <DetailItem label="IP">{request.clientIdentity || "—"}</DetailItem>
             <DetailItem label="Auth">
-              <span className="hero-shield-check mr-1 h-4 w-4 text-gray-400" />
+              <span className="hero-shield-check mr-1 h-4 w-4 text-faint" />
               {request.clientAuth}
             </DetailItem>
           </DetailList>
@@ -79,7 +79,7 @@ export default function ChannelRequestSummary({
               {channel.destinationUrl}
             </DetailItem>
             <DetailItem label="Auth">
-              <span className="hero-key mr-1 h-4 w-4 text-gray-400" />
+              <span className="hero-key mr-1 h-4 w-4 text-faint" />
               {request.destinationAuth}
             </DetailItem>
           </DetailList>

@@ -57,7 +57,7 @@ export default function WorkspaceList({
       <div className="space-y-3">
         {card(root, !rootIsSandbox)}
         {active.length === 0 && scheduled.length === 0 ? (
-          <Card dashed className="space-y-3 py-8 text-center text-sm text-gray-500">
+          <Card dashed className="space-y-3 py-8 text-center text-sm text-muted">
             <p className="text-base font-medium">No sandboxes found</p>
             <p>
               {createBlockedReason ?? (

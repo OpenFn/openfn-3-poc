@@ -35,7 +35,7 @@ export default function SettingsMenu() {
             label="Open settings"
             title="Settings"
             data-ui="settings-trigger"
-            className="h-12 w-12 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 hover:text-white"
+            className="h-12 w-12 rounded-full bg-inverse text-inverse shadow-lg hover:bg-inverse/90"
           />
         }
       >
@@ -53,7 +53,7 @@ export default function SettingsMenu() {
               label="Annotations panel"
               description="Show the behaviour annotation for whatever you hover over."
             />
-            <fieldset className="space-y-2 border-t border-gray-200 pt-4">
+            <fieldset className="space-y-2 border-t border-subtle pt-4">
               <Heading as="div" size="eyebrow">
                 Theme
               </Heading>
@@ -79,7 +79,7 @@ export default function SettingsMenu() {
 function ThemeName({ theme }: { theme: ThemeMeta }) {
   const dark = theme.mode === "dark";
   return (
-    <span className="flex items-center gap-2 font-medium text-gray-900">
+    <span className="flex items-center gap-2 font-medium text-strong">
       <span className="grid grid-cols-2 gap-0.5" aria-hidden="true">
         {theme.swatches.map((color, i) => (
           <span key={i} className="h-2 w-2 rounded-xs" style={{ background: color }} />
@@ -90,7 +90,8 @@ function ThemeName({ theme }: { theme: ThemeMeta }) {
         <span
           role="img"
           aria-label={dark ? "Dark" : "Light"}
-          className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-gray-200")}
+          // eslint-disable-next-line no-restricted-syntax -- the theme picker's mode dot shows a dark theme, it is a swatch, not UI
+          className={cn("h-2 w-2 rounded-full border", dark ? "border-gray-900 bg-gray-900" : "border-strong bg-emphasis")}
         />
       </Tooltip>
     </span>

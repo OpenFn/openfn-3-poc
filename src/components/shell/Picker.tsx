@@ -69,7 +69,7 @@ const VIEW_ALL = { id: "__view_all__" } as const;
 type Row = PickerItem | typeof VIEW_ALL;
 const isViewAll = (row: Row): row is typeof VIEW_ALL => row === VIEW_ALL;
 
-const iconClasses = (active: boolean) => cn("shrink-0 group-hover:text-white/70", active ? "text-white/70" : "text-gray-400");
+const iconClasses = (active: boolean) => cn("shrink-0 group-hover:text-white/70", active ? "text-white/70" : "text-faint");
 
 /**
  * Lightning's command-palette picker (assets/js/picker/Picker.tsx), used as
@@ -139,7 +139,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
         onSelect={go}
         placeholder={placeholder}
         inputAddon={
-          <kbd className="hidden items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 ring-1 ring-gray-300 sm:inline-flex">
+          <kbd className="hidden items-center gap-1 rounded px-2 py-1 text-xs text-faint ring-1 ring-strong sm:inline-flex">
             <span>{isMac ? "⌘" : "Ctrl"}</span>
             <span>P</span>
           </kbd>
@@ -159,7 +159,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
                   <span
                     className={cn(
                       "hero-arrow-turn-down-right mr-2 h-4 w-4 shrink-0 group-hover:text-white/50",
-                      active ? "text-white/50" : "text-gray-300"
+                      active ? "text-white/50" : "text-faint"
                     )}
                   />
                 </>
@@ -167,7 +167,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
               <span className={cn(row.icon ?? (row.isSandbox ? "hero-beaker" : "hero-folder"), "mr-2 h-5 w-5", iconClasses(active))} />
               <span className={cn("grow truncate", selected && "font-semibold")}>{row.label}</span>
               {selected && (
-                <span className={cn("hero-check ml-3 h-5 w-5 shrink-0 group-hover:text-white", active ? "text-white" : "text-primary-600")} />
+                <span className={cn("hero-check ml-3 h-5 w-5 shrink-0 group-hover:text-inverse", active ? "text-inverse" : "text-primary-600")} />
               )}
             </>
           )

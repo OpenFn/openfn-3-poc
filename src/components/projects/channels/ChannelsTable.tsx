@@ -53,12 +53,12 @@ export default function ChannelsTable({
       >
         {channels.map((channel) => (
           <Tr key={channel.id} id={`channel-${channel.id}`}>
-            <Td className={cn("max-w-60 font-medium wrap-break-word", channel.enabled ? "text-gray-900" : "text-gray-400")}>
+            <Td className={cn("max-w-60 font-medium wrap-break-word", channel.enabled ? "text-strong" : "text-faint")}>
               {channel.name}
             </Td>
             <Td className="max-w-80">
-              <div className="flex items-center gap-1.5 font-mono text-gray-600">
-                <span className="hero-arrow-right-start-on-rectangle h-4 w-4 shrink-0 text-gray-400" />
+              <div className="flex items-center gap-1.5 font-mono text-muted">
+                <span className="hero-arrow-right-start-on-rectangle h-4 w-4 shrink-0 text-faint" />
                 <span className="min-w-0 wrap-break-word">{channel.destinationUrl}</span>
               </div>
               <ProxyUrlCopy url={channel.proxyUrl} icon className="mt-1" />
@@ -81,7 +81,7 @@ export default function ChannelsTable({
                   tooltip={channel.enabled ? undefined : `${channel.name} (disabled)`}
                 />
               ) : (
-                <span className={channel.enabled ? "text-gray-700" : "text-gray-400"}>
+                <span className={channel.enabled ? "text-body" : "text-faint"}>
                   {channel.enabled ? "Enabled" : "Disabled"}
                 </span>
               )}

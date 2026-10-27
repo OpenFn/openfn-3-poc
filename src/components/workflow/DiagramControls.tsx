@@ -32,7 +32,7 @@ export default function DiagramControls({
 }: Props) {
   return (
     <div
-      className="absolute bottom-4 left-4 z-5 flex flex-col divide-y divide-gray-100 rounded-md bg-white shadow-sm *:rounded-none"
+      className="absolute bottom-4 left-4 z-5 flex flex-col divide-y divide-subtle rounded-md bg-surface shadow-sm *:rounded-none"
       onPointerDown={(e) => e.stopPropagation()}
     >
       <IconButton icon="hero-plus" label="Zoom In" onClick={onZoomIn} />

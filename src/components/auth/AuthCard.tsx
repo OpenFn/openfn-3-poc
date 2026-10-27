@@ -32,7 +32,7 @@ export default function AuthCard({
  */
 export function AuthFooterLinks({ left, right, divider = false }: { left?: ReactNode; right?: ReactNode; divider?: boolean }) {
   return (
-    <div className={cn("flex justify-between text-xs text-gray-700", divider && "sm:border-t sm:border-gray-200 sm:pt-5")}>
+    <div className={cn("flex justify-between text-xs text-body", divider && "sm:border-t sm:border-subtle sm:pt-5")}>
       <div>{left}</div>
       <div>{right}</div>
     </div>

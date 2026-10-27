@@ -61,7 +61,7 @@ export default function ConfigureAdaptorModal({
           <Field className="col-span-2" label={<>Adaptor<InfoTooltip title={ADAPTOR_HELP} /></>}>
             <Card padding="sm" className="flex items-center gap-2">
               <AdaptorIcon name={adaptor} size="md" />
-              <span className="flex-1 truncate font-medium text-gray-900">{adaptorDisplayName(adaptor)}</span>
+              <span className="flex-1 truncate font-medium text-strong">{adaptorDisplayName(adaptor)}</span>
               <Button theme="secondary" size="sm" onClick={onChangeAdaptor} aria-label="Change adaptor">
                 Change
               </Button>
@@ -82,25 +82,25 @@ export default function ConfigureAdaptorModal({
             {needsCredentials && <TextLink className="text-sm font-medium">New Credential</TextLink>}
           </div>
           {!needsCredentials ? (
-            <Card muted padding="lg" className="text-center text-sm text-gray-600">
+            <Card muted padding="lg" className="text-center text-sm text-muted">
               This adaptor does not require credentials.
             </Card>
           ) : shown.length === 0 ? (
             <Card padding="lg" className="text-center">
-              <p className="mb-3 text-gray-500">No credentials found in this project</p>
+              <p className="mb-3 text-muted">No credentials found in this project</p>
               <TextLink className="text-sm font-medium">Create a new credential</TextLink>
             </Card>
           ) : (
-            <Card padding="none" className="max-h-48 divide-y divide-gray-200 overflow-y-auto">
+            <Card padding="none" className="max-h-48 divide-y divide-subtle overflow-y-auto">
               {shown.map((c) => {
                 const selected = c.name === credentialName;
                 return (
-                  <div key={c.id} className="flex items-start justify-between gap-3 p-4 hover:bg-gray-50">
+                  <div key={c.id} className="flex items-start justify-between gap-3 p-4 hover:bg-hover">
                     <Radio
                       name="credential"
                       checked={selected}
                       onChange={() => onCredentialChange(c.name)}
-                      label={<span className="font-medium text-gray-900">{c.name}</span>}
+                      label={<span className="font-medium text-strong">{c.name}</span>}
                       hint={
                         <span className="flex items-center gap-1 text-sm">
                           <span className="hero-user-solid h-4 w-4" />

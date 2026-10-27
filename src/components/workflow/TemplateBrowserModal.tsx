@@ -25,7 +25,7 @@ function TemplateSummary({ template, lines }: { template: WorkflowTemplate; line
       <Heading size="sm" as="p" className="truncate">
         {template.name}
       </Heading>
-      <p className={`mt-0.5 text-gray-500 ${lines}`}>{template.description}</p>
+      <p className={`mt-0.5 text-muted ${lines}`}>{template.description}</p>
     </div>
   );
 }
@@ -45,7 +45,7 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
       <div className="flex h-[70vh] max-h-160 gap-6 text-sm">
         <div className="w-76 shrink-0 overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-white pb-2">
+          <div className="sticky top-0 z-10 bg-surface pb-2">
             <SearchInput value={query} onChange={setQuery} placeholder="Search templates" size="sm" />
           </div>
           <div className="flex flex-col gap-2">
@@ -55,12 +55,12 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
                 as="button"
                 onClick={() => setPreviewedId(t.id)}
                 aria-pressed={t.id === previewedId}
-                className={t.id === previewedId ? "border-gray-500" : "hover:bg-gray-50"}
+                className={t.id === previewedId ? "border-emphasis" : "hover:bg-hover"}
               >
                 <TemplateSummary template={t} lines="line-clamp-3" />
               </Card>
             ))}
-            {visible.length === 0 && <p className="py-2 text-gray-500">No saved templates match your search.</p>}
+            {visible.length === 0 && <p className="py-2 text-muted">No saved templates match your search.</p>}
           </div>
         </div>
         <Card muted padding="none" className="flex min-w-0 flex-1 flex-col overflow-clip">
@@ -68,11 +68,11 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
             {previewed ? (
               <WorkflowDiagram key={previewed.id} graph={templateGraph(previewed, projectId)} selection={null} onSelect={() => {}} preview />
             ) : (
-              <p className="flex h-full items-center justify-center text-gray-500">Select a template to preview it.</p>
+              <p className="flex h-full items-center justify-center text-muted">Select a template to preview it.</p>
             )}
           </div>
           {previewed && (
-            <div className="flex items-center justify-between gap-14 bg-white p-4">
+            <div className="flex items-center justify-between gap-14 bg-surface p-4">
               <TemplateSummary template={previewed} lines="line-clamp-2" />
               <Button className="shrink-0" onClick={() => onCreate(previewed)}>
                 Create

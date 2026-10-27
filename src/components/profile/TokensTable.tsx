@@ -52,7 +52,7 @@ export default function TokensTable({ tokens, onGenerate }: { tokens: ApiToken[]
           <span className="hero-finger-print h-12 w-12" />
           <div className="flex-1">
             <Heading size="sm">No Personal Access Tokens</Heading>
-            <p className="mt-1 text-sm text-gray-500">Get started by creating a new access token.</p>
+            <p className="mt-1 text-sm text-muted">Get started by creating a new access token.</p>
           </div>
           <Button id="generate_new_token" onClick={onGenerate}>
             <span className="hero-plus h-5 w-5" />

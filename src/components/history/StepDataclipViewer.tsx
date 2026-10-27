@@ -44,7 +44,7 @@ export default function StepDataclipViewer({
     return runFinished ? (
       <div className="m-2 p-12 text-center">No {inputOrOutput} state could be saved for this run.</div>
     ) : (
-      <div className="rounded-md bg-gray-700 p-12 text-center font-mono text-xs text-gray-200 @md:text-base">
+      <div className="rounded-md bg-code p-12 text-center font-mono text-xs text-code @md:text-base">
         <TextPingLoader>Nothing yet</TextPingLoader>
       </div>
     );

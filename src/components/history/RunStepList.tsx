@@ -47,7 +47,7 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
               to={`?step=${step.id}${hash}`}
               className={cn(
                 "flex items-center gap-3 border-r-4 text-sm",
-                selected ? "border-primary-500 font-semibold" : "border-transparent hover:border-gray-300"
+                selected ? "border-primary-500 font-semibold" : "border-transparent hover:border-strong"
               )}
             >
               <StepIcon reason={step.exitReason} errorType={step.errorType ?? null} />
@@ -65,7 +65,7 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
                   role="link"
                   tabIndex={0}
                   aria-label="Inspect Step"
-                  className="ml-1 inline-flex cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  className="ml-1 inline-flex cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                   onClick={open}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") open(e);
@@ -74,7 +74,7 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
                   <span className="hero-document-magnifying-glass-mini h-5 w-5" aria-hidden="true" />
                 </span>
                 </Tooltip>
-                <span className="grow whitespace-nowrap text-right text-gray-500">
+                <span className="grow whitespace-nowrap text-right text-muted">
                   <ElapsedTime startedAt={step.startedAt} finishedAt={step.finishedAt} />
                 </span>
               </span>

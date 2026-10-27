@@ -37,11 +37,11 @@ export default function AuditChanges({ audit }: { audit: AuditEvent }) {
               <span className="font-semibold">{key}</span>&nbsp;{" "}
               {old !== null && (
                 <>
-                  <span className="text-gray-500 line-through">{show(old)}</span>{" "}
-                  <span className="hero-arrow-right mx-2 h-4 w-4 text-gray-400" />{" "}
+                  <span className="text-muted line-through">{show(old)}</span>{" "}
+                  <span className="hero-arrow-right mx-2 h-4 w-4 text-faint" />{" "}
                 </>
               )}
-              <span className="text-gray-900">{show(next)}</span>
+              <span className="text-strong">{show(next)}</span>
             </li>
           ))}
         </Card>
@@ -50,7 +50,7 @@ export default function AuditChanges({ audit }: { audit: AuditEvent }) {
         <Card muted padding="sm" as="ul" className="space-y-2">
           {bodies.map(([env, body]) => (
             <li key={env}>
-              <span className="font-semibold">body:{env}</span>&nbsp; <span className="text-gray-700">{body}</span>
+              <span className="font-semibold">body:{env}</span>&nbsp; <span className="text-body">{body}</span>
             </li>
           ))}
         </Card>

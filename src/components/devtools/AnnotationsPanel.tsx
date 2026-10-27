@@ -21,16 +21,16 @@ export default function AnnotationsPanel() {
     <aside
       data-devtools
       style={{ width: ANNOTATIONS_PANEL_WIDTH }}
-      className="fixed inset-y-0 right-0 z-9998 flex flex-col border-l border-gray-200 bg-white shadow-xl"
+      className="fixed inset-y-0 right-0 z-9998 flex flex-col border-l border-subtle bg-surface shadow-xl"
       aria-label="Annotations"
     >
-      <div className="flex h-20 flex-none items-center justify-between gap-2 border-b border-gray-200 px-5">
+      <div className="flex h-20 flex-none items-center justify-between gap-2 border-b border-subtle px-5">
         <div className="min-w-0">
           <Heading as="p" size="sm">
             Annotations
           </Heading>
           <Tooltip content={ANNOTATIONS_BRANCH}>
-            <p className="truncate text-xs text-gray-500">
+            <p className="truncate text-xs text-muted">
               {pinnedId ? "Pinned" : "Following the mouse"} · copy of {ANNOTATIONS_BRANCH}
             </p>
           </Tooltip>
@@ -47,7 +47,7 @@ export default function AnnotationsPanel() {
       </div>
 
       {pinnedId === null && currentId !== pageId && pageId && (
-        <p className="flex-none border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs">
+        <p className="flex-none border-b border-subtle bg-subtle px-5 py-2 text-xs">
           <TextLink onClick={() => pin(pageId)}>
             Page: <code>{pageId}</code>
           </TextLink>
@@ -64,7 +64,7 @@ export default function AnnotationsPanel() {
             onOpenId={pin}
           />
         ) : (
-          <p className="text-sm text-gray-500">This page isn't in the inventory, and nothing under the mouse is annotated.</p>
+          <p className="text-sm text-muted">This page isn't in the inventory, and nothing under the mouse is annotated.</p>
         )}
       </div>
     </aside>

@@ -20,7 +20,7 @@ export default function SectionHeader({ title, subtitle, action, permissionsSect
     <div className="flex items-start justify-between gap-4">
       <div>
         <Heading>{title}</Heading>
-        {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
+        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
         {permissionsSection && (
           <p className="mt-2 text-sm text-danger-700">
             Role based permissions: You cannot modify this project's {permissionsSection}

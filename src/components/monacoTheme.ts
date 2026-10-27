@@ -5,6 +5,7 @@ import type { Monaco } from "@monaco-editor/react";
  * token it styles. Exported so Lightning's own editors use it too: change a
  * colour here and every editor and viewer follows.
  */
+// Hex, not tokens: Monaco paints its own canvas and only takes hex strings.
 export function setUpMonaco(monaco: Monaco) {
   monaco.editor.defineTheme("default", {
     base: "vs-dark",

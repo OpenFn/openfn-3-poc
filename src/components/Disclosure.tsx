@@ -31,16 +31,16 @@ interface Props {
  */
 export default function Disclosure({ id, title, titleRight, note, defaultOpen = true, variant = "card", padded = true, children }: Props) {
   const chevron = (size: string) => (
-    <span className={cn("hero-chevron-down-mini shrink-0 text-gray-400 transition-transform group-data-open:rotate-0 -rotate-90", size)} />
+    <span className={cn("hero-chevron-down-mini shrink-0 text-faint transition-transform group-data-open:rotate-0 -rotate-90", size)} />
   );
 
   if (variant === "inline") {
     return (
       <HeadlessDisclosure as="div" id={id} defaultOpen={defaultOpen}>
-        <DisclosureButton className="group flex items-center gap-1.5 text-sm font-medium text-gray-800">
+        <DisclosureButton className="group flex items-center gap-1.5 text-sm font-medium text-strong">
           {chevron("h-3.5 w-3.5")}
           {title}
-          {note && <span className="text-xs text-gray-400">({note})</span>}
+          {note && <span className="text-xs text-faint">({note})</span>}
           {titleRight}
         </DisclosureButton>
         <DisclosurePanel className="mt-2">{children}</DisclosurePanel>
@@ -50,7 +50,7 @@ export default function Disclosure({ id, title, titleRight, note, defaultOpen = 
 
   if (variant === "section") {
     return (
-      <HeadlessDisclosure as="div" id={id} defaultOpen={defaultOpen} className="border-t border-gray-100">
+      <HeadlessDisclosure as="div" id={id} defaultOpen={defaultOpen} className="border-t border-subtle">
         <DisclosureButton className="group flex w-full items-center gap-2 px-4 py-2.5">
           <Heading size="eyebrow" as="p">
             {title}

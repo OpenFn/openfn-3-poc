@@ -64,13 +64,13 @@ const looks = {
     section: "",
     heading: "px-4 py-2",
     option:
-      "group flex cursor-pointer select-none items-center px-4 py-3 text-gray-900 hover:bg-primary-600 hover:text-white data-focus:bg-primary-600 data-focus:text-white",
+      "group flex cursor-pointer select-none items-center px-4 py-3 text-strong hover:bg-primary-600 hover:text-inverse data-focus:bg-primary-600 data-focus:text-inverse",
   },
   sm: {
     list: "max-h-96 space-y-4 overflow-y-auto",
     section: "space-y-1",
     heading: "px-3 py-2",
-    option: "flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-left hover:bg-gray-100 data-focus:bg-gray-100",
+    option: "flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-left hover:bg-hover data-focus:bg-hover",
   },
 };
 
@@ -141,8 +141,8 @@ export default function SearchList<T>({
     <Combobox value={initialActive ?? null} onChange={(item: T | null) => item !== null && onSelect(item)} immediate>
       <div data-ui="search-list" data-size={size} className={cn(size === "sm" && "flex flex-col gap-3")}>
         {size === "lg" ? (
-          <div className="flex items-center border-b border-gray-200 px-4">
-            <span className="hero-magnifying-glass h-5 w-5 shrink-0 text-gray-400" />
+          <div className="flex items-center border-b border-subtle px-4">
+            <span className="hero-magnifying-glass h-5 w-5 shrink-0 text-faint" />
             <ComboboxInput
               {...inputProps}
               type="text"
@@ -151,7 +151,7 @@ export default function SearchList<T>({
               placeholder={placeholder}
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
-              className="w-full border-0 py-4 pl-3 pr-4 text-base text-gray-900 placeholder:text-gray-400 focus:ring-0"
+              className="w-full border-0 py-4 pl-3 pr-4 text-base text-strong placeholder:text-faint focus:ring-0"
             />
             {inputAddon}
           </div>
@@ -169,7 +169,7 @@ export default function SearchList<T>({
               shownBefore = true;
               return (
                 <Fragment key={section.key}>
-                  {divider && <div role="separator" className="my-2 border-t border-gray-200" />}
+                  {divider && <div role="separator" className="my-2 border-t border-subtle" />}
                   <div role="group" className={look.section}>
                     {section.heading && (
                       <Heading size="eyebrow" className={look.heading}>

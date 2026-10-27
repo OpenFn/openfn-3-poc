@@ -38,7 +38,7 @@ export function TriggerTypeBadge({ type = "webhook" }: { type?: "webhook" | "cro
 }
 
 function ReadOnlyField({ id, label, value }: { id: string; label: string; value: string }) {
-  return <TextInput id={id} label={label} value={value} readOnly className="text-gray-500" />;
+  return <TextInput id={id} label={label} value={value} readOnly className="text-muted" />;
 }
 
 /** "Webhook URL" with its help text, over the URL box(es). */
@@ -66,16 +66,16 @@ function WizardBreadcrumb({ step, onChoose }: { step: "choose" | "configure"; on
   return (
     <nav aria-label="Wizard steps" className="flex items-center gap-1.5 text-xs">
       {step === "configure" && onChoose ? (
-        <TextLink onClick={onChoose} className="text-gray-400 hover:text-gray-600">
+        <TextLink onClick={onChoose} className="text-faint hover:text-muted">
           Choose
         </TextLink>
       ) : (
-        <span className={step === "choose" ? "font-semibold text-gray-900 underline" : "text-gray-400"}>Choose</span>
+        <span className={step === "choose" ? "font-semibold text-strong underline" : "text-faint"}>Choose</span>
       )}
-      <span aria-hidden="true" className="text-gray-300">
+      <span aria-hidden="true" className="text-faint">
         ›
       </span>
-      <span className={step === "configure" ? "font-semibold text-gray-900 underline" : "text-gray-400"}>Configure</span>
+      <span className={step === "configure" ? "font-semibold text-strong underline" : "text-faint"}>Configure</span>
     </nav>
   );
 }
@@ -174,14 +174,14 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         {draft.type === "webhook" ? (
           <>
             <WebhookUrlField>
-              <Card padding="sm" className="break-all font-mono text-xs text-gray-600">
+              <Card padding="sm" className="break-all font-mono text-xs text-muted">
                 {webhookUrl(draft.id)}
               </Card>
             </WebhookUrlField>
             <div className="space-y-2">
               <Label className="block">Response</Label>
               {[IMMEDIATELY, ON_COMPLETE].map((o) => (
-                <Card key={o.value} padding="sm" className="hover:bg-gray-50">
+                <Card key={o.value} padding="sm" className="hover:bg-hover">
                   <Radio
                     name="webhook-reply"
                     label={o.label}
@@ -230,18 +230,18 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
             <Pill>Default</Pill>
             <CopyButton value={url} label="Copy Default URL" size="sm" />
           </div>
-          <div className="mt-1 break-all font-mono text-xs text-gray-600">{url}</div>
+          <div className="mt-1 break-all font-mono text-xs text-muted">{url}</div>
         </Card>
       </WebhookUrlField>
       <Disclosure variant="inline" defaultOpen={false} title="Authentication" note={trigger.hasAuthMethod ? "1 configured" : "none configured"}>
         {trigger.hasAuthMethod ? (
           <div className="flex items-center gap-2 text-xs">
-            <span className="hero-shield-check-micro h-4 w-4 text-green-600" />
-            <span className="font-medium text-gray-700">CommCare webhook key</span>
-            <span className="text-gray-400">(API Key)</span>
+            <span className="hero-shield-check-micro h-4 w-4 text-success-600" />
+            <span className="font-medium text-body">CommCare webhook key</span>
+            <span className="text-faint">(API Key)</span>
           </div>
         ) : (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             No authentication configured.{" "}
             <TextLink onClick={startEdit} className="font-medium">
               Add authentication
@@ -250,7 +250,7 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         )}
       </Disclosure>
       <Disclosure variant="inline" defaultOpen={false} title="Response">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted">
           {response.shortDescription}{" "}
           <TextLink to="https://docs.openfn.org/documentation/build/triggers#webhook-responses" external>
             learn more

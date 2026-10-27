@@ -42,7 +42,7 @@ export default function InspectorLayout({
     <div className="pointer-events-auto w-screen max-w-md p-6" data-testid={testId} data-annotation={annotation}>
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
       <Card padding="none" className={cn("flex flex-col", fixedHeight ? "h-150" : "max-h-[calc(100vh-8rem)]")}>
-        <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
           <div className="flex items-center gap-2">
             {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="sm" onClick={onBack ?? onClose} />}
             <Heading as="h2">{title}</Heading>
@@ -51,7 +51,7 @@ export default function InspectorLayout({
         </div>
         <div className={cn("flex-1 overflow-y-auto", !bare && "space-y-6 p-6")}>{children}</div>
         {footer && (
-          <div className="border-t border-gray-200 px-6 py-4" data-testid="inspector-footer">
+          <div className="border-t border-subtle px-6 py-4" data-testid="inspector-footer">
             {footer}
           </div>
         )}

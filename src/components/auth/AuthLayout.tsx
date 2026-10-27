@@ -6,12 +6,12 @@ import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
 /** The dark top bar with the boxed Fn logo (Lightning's `LayoutComponents.nav`). */
 export function AuthNav() {
   return (
-    <nav className="bg-gray-800" data-ui="auth-nav">
+    <nav className="bg-inverse" data-ui="auth-nav">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <OpenFnLogoCollapsed className="h-8 w-8 text-white" />
+              <OpenFnLogoCollapsed className="h-8 w-8 text-inverse" />
             </div>
           </div>
         </div>

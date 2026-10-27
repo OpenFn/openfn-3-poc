@@ -45,6 +45,11 @@ const dupes = [...seen.values()].filter((n) => n > 1).reduce((a, n) => a + n, 0)
 const primNames = prims.map((f) => f.path.replace(/^components\/|\.tsx?$/g, ''))
 const primImports = count(consumers, /from ['"](?:\.\.\/)+components\/(?!.*\/)[A-Za-z]+['"]|from ['"]\.\.\/[A-Z][A-Za-z]+['"]/g)
 
+// Palette shades, not the named colours (src/theme/tokens.css) or the brand
+// and status scales. White and black with an alpha are allowed.
+const rawPalette =
+  /\b(?:bg|text|border(?:-[trblxyse])?|ring|outline|divide|fill|stroke|from|to|via|placeholder|shadow|decoration)-(?:(?:gray|red|green|yellow|blue|amber|orange|purple|pink|sky)-\d|(?:white|black)(?![\w/-]))/g
+
 const rows = [
   ['Source lines (non-blank, excl. stories/mock-data)', loc(files)],
   ['  in primitives', loc(prims)],
@@ -60,6 +65,7 @@ const rows = [
   ['Raw <button> in features + pages', count(consumers, /<button\b/g)],
   ['Raw <input>/<select>/<textarea> in features + pages', count(consumers, /<(input|select|textarea)\b/g)],
   ['Raw <table> in features + pages', count(consumers, /<table\b/g)],
+  ['Raw palette classes in features + pages', count(consumers, rawPalette)],
   ['Primitive imports in features + pages', primImports],
 ]
 const w = Math.max(...rows.map((r) => r[0].length))

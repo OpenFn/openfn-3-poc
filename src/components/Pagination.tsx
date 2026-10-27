@@ -12,7 +12,7 @@ interface Props {
 }
 
 const edge =
-  "relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50";
+  "relative inline-flex items-center px-2 py-2 border border-strong bg-surface text-sm font-medium text-muted hover:bg-hover";
 const box = "relative inline-flex items-center px-4 py-2 border text-sm font-medium";
 
 /**
@@ -43,9 +43,9 @@ export default function Pagination({ page, actions }: Props) {
   const pageHref = (n: number) => href({ page: n > 1 ? String(n) : null });
 
   return (
-    <div data-ui="pagination" className="bg-white px-4 py-3 flex items-center justify-between sm:px-6 rounded-b-lg">
+    <div data-ui="pagination" className="bg-surface px-4 py-3 flex items-center justify-between sm:px-6 rounded-b-lg">
       <div className="flex items-center space-x-4">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-body">
           {totalEntries === 0 ? (
             "No results found"
           ) : (
@@ -66,7 +66,7 @@ export default function Pagination({ page, actions }: Props) {
         )}
         {pageWindow(number, totalPages).map((n, i) =>
           n === "…" ? (
-            <span key={`gap-${i}`} className={cn(box, "bg-white border-gray-300 text-gray-500")}>
+            <span key={`gap-${i}`} className={cn(box, "bg-surface border-strong text-muted")}>
               …
             </span>
           ) : (
@@ -79,7 +79,7 @@ export default function Pagination({ page, actions }: Props) {
                 box,
                 n === number
                   ? "z-10 bg-primary-50 border-primary-500 text-primary-600"
-                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                  : "bg-surface border-strong text-muted hover:bg-hover"
               )}
             >
               {n}

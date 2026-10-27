@@ -64,15 +64,15 @@ function Signature({ signature }: { signature: ErrorSignature }) {
   const color = state && FAILURE_COLORS[state];
   return (
     <div className="space-y-1.5">
-      <p className="flex items-center gap-2 font-medium text-gray-900 capitalize">
+      <p className="flex items-center gap-2 font-medium text-strong capitalize">
         {color && <span aria-hidden="true" className={DOT} style={{ backgroundColor: color }} />}
         {state ?? errorTypeOf(signature)}
       </p>
-      <p className="border-l-2 border-gray-300 pl-2 font-mono text-gray-900" style={{ borderColor: color }}>
+      <p className="border-l-2 border-strong pl-2 font-mono text-strong" style={{ borderColor: color }}>
         {signature.exit_reason}:{errorTypeOf(signature)}
         {signature.step_name && ` @ ${signature.step_name}`}
       </p>
-      {signature.adaptor && <p className="font-mono text-gray-500">{adaptorLabel(signature.adaptor)}</p>}
+      {signature.adaptor && <p className="font-mono text-muted">{adaptorLabel(signature.adaptor)}</p>}
     </div>
   );
 }

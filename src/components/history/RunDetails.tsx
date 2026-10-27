@@ -57,10 +57,10 @@ export function StepListItem({
   onRetry: () => void;
 }) {
   return (
-    <div id={`step-${step.id}`} role="row" className={cn("flex items-center text-xs text-gray-500 hover:bg-white", step.cloned && "opacity-50")}>
+    <div id={`step-${step.id}`} role="row" className={cn("flex items-center text-xs text-muted hover:bg-surface", step.cloned && "opacity-50")}>
       <div role="cell" className="flex flex-1 items-center gap-2 py-2 pl-4">
         <StepIcon reason={step.exitReason} errorType={step.errorType} />
-        <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-gray-800 hover:text-primary-500">
+        <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-strong hover:text-primary-500">
           {step.jobName}
         </TextLink>
         {step.cloned && (
@@ -136,7 +136,7 @@ export function RunCard({
   const steps = run.steps;
   return (
     <Card id={`run_${run.id}`} padding="none" className="overflow-hidden">
-      <div className="flex items-center bg-gray-200 text-xs">
+      <div className="flex items-center bg-emphasis text-xs">
         <div className="flex flex-1 items-center gap-1 py-2 pl-4">
           Run
           <TextLink to={run.href} title={run.id} className="font-mono">
@@ -170,13 +170,13 @@ export function RunCard({
               icon="hero-x-mark-mini"
               label="Cancel this run"
               size="sm"
-              className="hover:text-red-500"
+              className="hover:text-danger-500"
               onClick={onCancel}
             />
           )}
         </div>
       </div>
-      <div role="rowgroup" id={`run-${run.id}`} className={cn("bg-gray-100", steps.length && "border-t border-gray-300")}>
+      <div role="rowgroup" id={`run-${run.id}`} className={cn("bg-sunken", steps.length && "border-t border-strong")}>
         {steps.map((step) => (
           <StepListItem key={step.id} step={step} canRunWorkflow={canRunWorkflow} dataStorageHref={dataStorageHref} onRetry={() => onRetryStep(step.id)} />
         ))}

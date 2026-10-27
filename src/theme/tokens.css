@@ -1,0 +1,68 @@
+/*
+ * Named colours: say what a colour is for, not which shade it is.
+ *
+ * Each name lives in the namespace of the one property it is for, so the classes read plainly (`text-muted`, `bg-surface`,
+ * `border-subtle`) and a name can't be used for the wrong job: there is no
+ * `text-surface`. Border names are ring names too. `divide-*` reads the
+ * border names.
+ *
+ * Plain `@theme`, not `@theme inline`: the names point at the palette
+ * variables, so a theme that remaps `--color-gray-*` (Light, GDS) still
+ * reaches them.
+ *
+ * Lightning compiles our sources with its own app.css, so it imports this
+ * file too (`@import '@openfn/ui/tokens.css'`). Without it, `text-muted`
+ * silently produces no CSS there.
+ *
+ * Brand and status keep their scales: `primary`, `danger`, `success`,
+ * `warning` and `info`. Raw palette classes are kept only in a few confined
+ * files (eslint.config.js lists them).
+ */
+@theme {
+  /* Text */
+  --text-color-strong: var(--color-gray-900); /* headings, labels, body copy on white */
+  --text-color-body: var(--color-gray-700); /* secondary text, panel copy */
+  --text-color-muted: var(--color-gray-500); /* hints, descriptions, meta */
+  --text-color-faint: var(--color-gray-400); /* icons, placeholders, disabled */
+  --text-color-inverse: var(--color-white); /* on dark or on brand */
+  --text-color-link: var(--color-primary-400);
+  --text-color-link-hover: var(--color-primary-500);
+  --text-color-code: var(--color-gray-200); /* on the dark code background */
+
+  /* Backgrounds */
+  --background-color-page: var(--color-gray-100);
+  --background-color-surface: var(--color-white); /* card, panel, input */
+  --background-color-subtle: var(--color-gray-50); /* panel header, muted card, disabled control */
+  --background-color-sunken: var(--color-gray-100); /* chip, avatar, inline code, tab track */
+  --background-color-hover: var(--color-gray-50); /* hover and keyboard highlight on white */
+  --background-color-emphasis: var(--color-gray-200); /* tracks, rules, skeletons, hover on sunken */
+  --background-color-inverse: var(--color-gray-800); /* dark badge, dark nav */
+  --background-color-overlay: color-mix(in oklab, var(--color-gray-900) 60%, transparent);
+  --background-color-code: var(--color-gray-700); /* log, dataclip and code viewers */
+
+  /* Borders (and rings) */
+  --border-color-subtle: var(--color-gray-200); /* cards, tables, dividers */
+  --border-color-strong: var(--color-gray-300); /* inputs, buttons, dashed, hr */
+  --border-color-emphasis: var(--color-gray-400); /* hover and focus on controls, selected */
+  --ring-color-subtle: var(--color-gray-200);
+  --ring-color-strong: var(--color-gray-300);
+  --ring-color-emphasis: var(--color-gray-400);
+
+  /* Focus */
+  --ring-color-focus: var(--color-primary-600);
+  --outline-color-focus: var(--color-primary-600);
+
+  /* info is blue, which is what both apps draw for alerts, toasts and
+     "running". */
+  --color-info-50: var(--color-blue-50);
+  --color-info-100: var(--color-blue-100);
+  --color-info-200: var(--color-blue-200);
+  --color-info-300: var(--color-blue-300);
+  --color-info-400: var(--color-blue-400);
+  --color-info-500: var(--color-blue-500);
+  --color-info-600: var(--color-blue-600);
+  --color-info-700: var(--color-blue-700);
+  --color-info-800: var(--color-blue-800);
+  --color-info-900: var(--color-blue-900);
+  --color-info-950: var(--color-blue-950);
+}
