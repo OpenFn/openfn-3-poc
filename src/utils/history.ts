@@ -1,9 +1,9 @@
 /**
  * Pure helpers over history records: log filtering, channel request events,
- * failure counts and the workflows-index metric cards. No fixture access.
+ * failure counts, work order selection and the workflows-index metric cards. No fixture access.
  */
 import type { ChannelEvent } from "../types/channels";
-import type { LogLine } from "../types/history";
+import type { LogLine, WorkOrderRow } from "../types/history";
 import type { ProjectMetrics } from "../types/workflows";
 import { FAILURE_STATES, type WorkOrderStateCounts } from "../types/workflow-health";
 
@@ -75,3 +75,9 @@ export function projectMetricsFor(stats: WorkflowCounts[]): ProjectMetrics {
     },
   };
 }
+
+/** Whether every row that can be ticked is, so a row with a wiped input doesn't keep select-all part-ticked. */
+export const allTicked = (rows: WorkOrderRow[], ids: string[]) => {
+  const selectable = rows.filter((w) => !w.dataclipWiped);
+  return selectable.length > 0 && selectable.every((w) => ids.includes(w.id));
+};

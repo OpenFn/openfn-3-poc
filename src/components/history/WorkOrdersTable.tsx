@@ -8,6 +8,7 @@ import type { PageInfo, SortState } from "../../types/lists";
 import { activeStates } from "../../constants";
 import { cn } from "../../utils/cn";
 import WorkOrderTableRow from "./WorkOrderTableRow";
+import { allTicked } from "../../utils/history";
 
 /** The columns History sorts by (`filters[sort_by]`). */
 export type WorkOrderSortKey = "inserted_at" | "last_activity";
@@ -73,7 +74,7 @@ export default function WorkOrdersTable({
 }) {
   const selectable = rows.filter((w) => !w.dataclipWiped);
   const selected = rows.filter((w) => selectedIds.includes(w.id));
-  const allSelected = rows.length > 0 && selected.length === rows.length;
+  const allSelected = allTicked(rows, selectedIds);
   const partial = selected.length > 0 && !allSelected;
 
   const canCancel = selected.length > 0 && selected.every((w) => w.state === "pending");

@@ -435,6 +435,17 @@ describe("HistoryWorkOrdersPage", () => {
     expect((document.getElementById("select_all") as HTMLInputElement).disabled).toBe(true);
   });
 
+  it("counts the page as all ticked with a wiped row on it, and clears it on the next click", async () => {
+    renderPage({ rows: [row("a"), row("b"), row("x", { dataclipWiped: true })], page: many });
+    const all = document.getElementById("select_all") as HTMLInputElement;
+    await userEvent.click(all);
+    expect([all.checked, all.indeterminate]).toEqual([true, false]);
+    expect(matching(await bulkOffers("Retry"))).toHaveLength(1);
+
+    await userEvent.click(all);
+    expect(["a", "b"].map((id) => (document.getElementById(`select_${id}`) as HTMLInputElement).checked)).toEqual([false, false]);
+  });
+
   it("says every kind of search in words", async () => {
     const { rerender } = renderPage({ page: many });
     await userEvent.click(document.getElementById("select_all")!);
