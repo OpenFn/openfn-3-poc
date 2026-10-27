@@ -71,6 +71,15 @@ describe("Tooltip", () => {
     expect(screen.getByRole("button").getAttribute("aria-description")).toBe("Contact an editor or admin to sync.");
   });
 
+  it("keeps the same button when the control is enabled and disabled again", () => {
+    const { rerender } = render(<Tooltip content="Type the name first" disabled><button disabled>Delete</button></Tooltip>);
+    const button = screen.getByRole("button");
+    rerender(<Tooltip content={undefined} disabled={false}><button>Delete</button></Tooltip>);
+    expect(screen.getByRole("button")).toBe(button);
+    rerender(<Tooltip content="Type the name first" disabled><button disabled>Delete</button></Tooltip>);
+    expect(screen.getByRole("button")).toBe(button);
+  });
+
   it("shows the tooltip around a child with no text of its own", async () => {
     render(
       <Tooltip content="Outer">

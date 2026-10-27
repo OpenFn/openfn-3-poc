@@ -85,7 +85,7 @@ export default function IconButton({
     );
   }
   return (
-    <Tooltip content={hint} disabled={rest.disabled}>
+    <Tooltip content={hint} disabled={!!rest.disabled}>
       <button ref={ref} type={type} {...rest} {...common}>
         {content}
       </button>

@@ -37,7 +37,7 @@ export default function Tooltip({
   content,
   copy,
   side = "bottom",
-  disabled = false,
+  disabled,
   interactive = false,
 }: {
   children: ReactElement;
@@ -79,32 +79,37 @@ export default function Tooltip({
     useRole(context, { enabled, role: "tooltip" }),
   ]);
 
-  const child = (
-    disabled && content ? (
-      // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
-      // swallows the click, since a disabled control's click does nothing (not even a clickable row's).
-      <span className="inline-flex cursor-not-allowed *:pointer-events-none" onClick={(e) => e.stopPropagation()}>
-        {/* The tooltip can't open from a disabled control, so the reason goes on it for screen readers. */}
-        {typeof content === "string" ? cloneElement(children as ReactElement<{ "aria-description"?: string }>, { "aria-description": content }) : children}
-      </span>
-    ) : (
-      children
-    )
-  ) as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void }>;
-  const ref = useMergeRefs([setReference, child.props.ref]);
+  // The tree is the same whether the control is disabled or not (a `disabled` prop that is passed adds
+  // the wrapper), so enabling a control never remounts it.
+  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void }>;
+  const wrap = disabled !== undefined;
+  const onWrapper = !!disabled && !!content;
+  // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
+  // swallows the click, since a disabled control's click does nothing (not even a clickable row's).
+  const base = onWrapper ? { onClick: (e: SyntheticEvent) => e.stopPropagation() } : child.props;
+  const ref = useMergeRefs([setReference, onWrapper ? undefined : child.props.ref]);
   // Like Lightning's Copy hook, the click copies and goes no further, even inside a link or a clickable row.
   const onClick = (e: SyntheticEvent) => {
-    child.props.onClick?.(e);
+    base.onClick?.(e);
     if (copy === undefined) return;
     e.preventDefault();
     e.stopPropagation();
     copyNow();
     setOpen(false); // "Copied!" holds it open, then it hides.
   };
+  const referenceProps = getReferenceProps({ ...base, ref, onClick });
+  const trigger = wrap ? (
+    <span className={onWrapper ? "inline-flex cursor-not-allowed *:pointer-events-none" : "contents"} {...(onWrapper ? referenceProps : {})}>
+      {/* The tooltip can't open from a disabled control, so the reason goes on it for screen readers. */}
+      {cloneElement(child, onWrapper ? (typeof content === "string" ? { "aria-description": content } : {}) : referenceProps)}
+    </span>
+  ) : (
+    cloneElement(child, referenceProps)
+  );
 
   return (
     <>
-      {cloneElement(child, getReferenceProps({ ...child.props, ref, onClick }))}
+      {trigger}
       {context.open && (
         <FloatingPortal>
           {/* z-300: the same layer as Menu and Popover panels, above modals. Clicks go through it to whatever is underneath, unless it is interactive. */}
