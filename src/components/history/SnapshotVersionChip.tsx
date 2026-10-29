@@ -11,7 +11,7 @@ export default function SnapshotVersionChip({ version, tooltip }: { version: str
     <Tooltip content={tooltip}>
       {/* Pill takes no ref, so this span is the tooltip's trigger. */}
       <span aria-label={tooltip}>
-        <Pill square color={version === "latest" ? "primary" : "yellow"}>
+        <Pill square tone="warning" color={version === "latest" ? "primary" : undefined}>
           {version}
         </Pill>
       </span>

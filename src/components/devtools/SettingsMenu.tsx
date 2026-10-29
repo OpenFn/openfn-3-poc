@@ -54,7 +54,7 @@ export default function SettingsMenu() {
               description="Show the behaviour annotation for whatever you hover over."
             />
             <fieldset className="space-y-2 border-t border-subtle pt-4">
-              <Heading as="div" size="eyebrow">
+              <Heading as="div" variant="eyebrow">
                 Theme
               </Heading>
               {themes.map((theme) => (
@@ -63,7 +63,7 @@ export default function SettingsMenu() {
                   name="theme"
                   checked={theme.id === themeId}
                   onChange={() => setTheme(theme.id)}
-                  label={<ThemeName theme={theme} />}
+                  label={<ThemeName meta={theme} />}
                   hint={theme.description}
                 />
               ))}
@@ -76,16 +76,16 @@ export default function SettingsMenu() {
 }
 
 /** The theme's colour swatches, its name, and a light / dark dot. */
-function ThemeName({ theme }: { theme: ThemeMeta }) {
-  const dark = theme.mode === "dark";
+function ThemeName({ meta }: { meta: ThemeMeta }) {
+  const dark = meta.mode === "dark";
   return (
     <span className="flex items-center gap-2 font-medium text-strong">
       <span className="grid grid-cols-2 gap-0.5" aria-hidden="true">
-        {theme.swatches.map((color, i) => (
+        {meta.swatches.map((color, i) => (
           <span key={i} className="h-2 w-2 rounded-xs" style={{ background: color }} />
         ))}
       </span>
-      {theme.name}
+      {meta.name}
       <Tooltip content={dark ? "Dark" : "Light"}>
         <span
           role="img"

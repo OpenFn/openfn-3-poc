@@ -54,7 +54,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <Label htmlFor="build-with-ai-input">Build with AI</Label>
-              <Pill color="green">
+              <Pill tone="success">
                 <span className="hero-sparkles-micro h-3 w-3" />
                 Recommended
               </Pill>
@@ -76,7 +76,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
                 className="block w-full resize-none border-none bg-transparent p-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
               />
               <div className="flex items-center justify-between px-3 py-2">
-                <AIDisclaimerFooter muted />
+                <AIDisclaimerFooter variant="muted" />
                 <Button variant="plain" size="sm" onClick={() => valid && onBuildWithAI(prompt)} disabled={!valid} icon="hero-arrow-right" iconPosition="right">
                   Build it
                 </Button>

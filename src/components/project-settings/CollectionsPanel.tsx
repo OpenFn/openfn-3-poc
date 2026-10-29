@@ -54,7 +54,7 @@ export default function CollectionsPanel({ collections: { collections, canManage
           </Button>
         }
       />
-      {sandbox && <SandboxSettingsBanner variant="editable" />}
+      {sandbox && <SandboxSettingsBanner scope="editable" />}
 
       {action?.kind === "new" && (
         <CollectionFormModal

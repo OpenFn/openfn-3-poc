@@ -5,7 +5,7 @@ import { Outlet, useLocation, useParams } from "react-router-dom";
 import { findProject, projects } from "../../mock-data/projects";
 // eslint-disable-next-line no-restricted-imports -- wiring: the shell reads the signed-in user, their permissions and instance info for the header and sidebar.
 import { useCurrentUser, useInstanceInfo, usePermissions } from "../../session/session";
-import Sidebar, { type SidebarVariant } from "./Sidebar";
+import Sidebar, { type SidebarMenu } from "./Sidebar";
 import Picker from "./Picker";
 import { buildProjectPickerItems } from "./projectPickerItems";
 
@@ -24,7 +24,7 @@ export default function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const toggle = useCallback(() => setCollapsed((c) => !c), []);
 
-  const variant: SidebarVariant = pathname.startsWith("/settings")
+  const menu: SidebarMenu = pathname.startsWith("/settings")
     ? "admin"
     : project
       ? "project"
@@ -33,13 +33,12 @@ export default function AppShell() {
   return (
     <main className="flex h-screen">
       <Sidebar
-        variant={variant}
+        menu={menu}
         project={project}
         user={user}
         canAccessAdmin={canAccessAdmin}
         adminEmail={adminEmail}
         releaseLabel={releaseLabel}
-        theme={variant === "admin" ? "sudo-variant" : "primary-theme"}
         collapsed={collapsed}
         onToggle={toggle}
       />

@@ -23,13 +23,13 @@ export default meta;
 type Story = StoryObj<typeof SearchList>;
 
 /** Command-palette look: full-width rows that turn primary. Arrow keys wrap. */
-export const Large: Story = {
+export const Palette: Story = {
   render: function Render() {
     const [query, setQuery] = useState("");
     const items = projects.filter((p) => matchesQuery(query, p.name));
     return (
       <SearchList<Project>
-        size="lg"
+        variant="palette"
         items={items}
         getKey={(p) => p.id}
         isSelected={(p) => p.id === projects[0]!.id}
@@ -50,7 +50,7 @@ export const Large: Story = {
 };
 
 /** Field look with headed sections and a header row (shown when nothing matches). */
-export const SmallWithSections: Story = {
+export const Field: Story = {
   render: function Render() {
     const [query, setQuery] = useState("");
     const inUse = ["http", "dhis2"];
@@ -58,7 +58,7 @@ export const SmallWithSections: Story = {
     return (
       <div className="p-4">
         <SearchList<Adaptor>
-          size="sm"
+          variant="field"
           sections={[
             { key: "in-project", heading: "Adaptors in this project", items: matches.filter((a) => inUse.includes(a.id)) },
             { key: "all", heading: "All adaptors", items: matches.filter((a) => !inUse.includes(a.id)) },

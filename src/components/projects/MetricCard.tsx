@@ -19,7 +19,7 @@ export default function MetricCard({
 }) {
   return (
     <Card>
-      <Heading as="h2" size="eyebrow" className="truncate">
+      <Heading as="h2" variant="eyebrow" className="truncate">
         {title}
       </Heading>
       <div className="mt-2 text-3xl font-bold">{value}</div>{" "}

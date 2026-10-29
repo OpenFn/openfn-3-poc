@@ -52,7 +52,7 @@ export default function Disclosure({ id, title, titleRight, note, defaultOpen = 
     return (
       <HeadlessDisclosure as="div" id={id} defaultOpen={defaultOpen} className="border-t border-subtle">
         <DisclosureButton className="group flex w-full items-center gap-2 px-4 py-2.5">
-          <Heading size="eyebrow" as="p">
+          <Heading variant="eyebrow" as="p">
             {title}
           </Heading>
           {titleRight}

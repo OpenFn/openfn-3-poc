@@ -13,7 +13,7 @@ export const Rows: Story = {
         8a1f3c2e
       </DetailItem>
       <DetailItem label="Status">
-        <Pill color="green">Success</Pill>
+        <Pill tone="success">Success</Pill>
       </DetailItem>
       <DetailItem label="Duration">4 s</DetailItem>
     </DetailList>

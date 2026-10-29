@@ -1,4 +1,4 @@
-import type { StepExitReason } from "../types/history";
+import type { RunState, StepExitReason, WorkOrderState } from "../types/history";
 import type { WorkOrderDisplayState } from "../types/workflows";
 
 /**
@@ -7,6 +7,24 @@ import type { WorkOrderDisplayState } from "../types/workflows";
  * an icon and orange-500 as text): parity first, unify at the redesign. A
  * status grey is a status, not a neutral, so the greys here stay raw palette.
  */
+
+/** A work-order or run state pill (run_live/components.ex `state_pill`
+ * chip_styles), on Pill's tag shades. Goes in Pill's `className`. */
+export const STATE_PILL: Record<WorkOrderState | RunState | "running", string> = {
+  rejected: "bg-danger-100 text-danger-700",
+  pending: "bg-gray-100 text-gray-700",
+  running: "bg-info-100 text-info-700",
+  available: "bg-gray-100 text-gray-700",
+  claimed: "bg-info-100 text-info-700",
+  started: "bg-info-100 text-info-700",
+  success: "bg-success-100 text-success-700",
+  failed: "bg-danger-100 text-danger-700",
+  crashed: "bg-orange-100 text-orange-700",
+  cancelled: "bg-gray-100 text-gray-700",
+  killed: "bg-warning-100 text-warning-800",
+  exception: "bg-gray-800 text-white",
+  lost: "bg-gray-800 text-white",
+};
 
 /** The work-order dot (DashboardComponents.state_card). */
 export const WORK_ORDER_DOT: Record<WorkOrderDisplayState, string> = {

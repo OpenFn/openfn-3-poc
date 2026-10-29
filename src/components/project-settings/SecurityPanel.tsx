@@ -28,7 +28,7 @@ export default function SecurityPanel({ security, parent, onSetRequiresMfa }: Pr
         subtitle="View and manage security settings for this project."
         permissionsSection={canEditProject || sandbox ? undefined : "multi-factor authentication settings."}
       />
-      {sandbox && <SandboxSettingsBanner variant="inherited" parent={parent} />}
+      {sandbox && <SandboxSettingsBanner scope="inherited" parent={parent} />}
       <Card
         title={<span id="mfa-label">Multi-Factor Authentication</span>}
         description={

@@ -36,3 +36,9 @@ goes back to Lightning's way.
 - **Icon buttons have no hover background.** Hover darkens the icon only, so
   it looks the same on white and grey surfaces. Some Lightning icon buttons
   add a grey square on hover, others don't.
+
+## Tags
+
+- **A timed-out channel request is a warning (yellow).** Lightning draws the
+  Timeout state pill orange (`channel_state_pill`); the replica puts channel
+  states on Pill's tones, which have no orange.

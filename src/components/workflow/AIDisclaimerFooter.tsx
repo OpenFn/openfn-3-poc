@@ -1,8 +1,9 @@
 import { cn } from "../../utils/cn";
 import TextLink from "../TextLink";
 
-/** "Please use AI responsibly. Never share PII." (AIDisclaimerFooter.tsx). */
-export default function AIDisclaimerFooter({ muted = false }: { muted?: boolean }) {
+/** "Please use AI responsibly. Never share PII." (AIDisclaimerFooter.tsx). `muted` is the quieter one, without the icon. */
+export default function AIDisclaimerFooter({ variant = "default" }: { variant?: "default" | "muted" }) {
+  const muted = variant === "muted";
   return (
     <div className="flex items-center gap-1.5" data-testid="ai-disclaimer-footer">
       {!muted && <span className="hero-shield-exclamation h-3.5 w-3.5 shrink-0 text-warning-500" />}

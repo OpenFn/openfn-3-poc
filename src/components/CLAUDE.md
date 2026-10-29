@@ -48,14 +48,18 @@ the same name on every component:
 | Prop | Answers | Values |
 |---|---|---|
 | `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
-| `variant` | How loud is it? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Pill `subtle`, `solid`; Tabs `line`, `pill` |
-| `size` | How big is it? | `sm`, `md`, `lg` |
+| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Pill `subtle`, `solid`; Tabs `line`, `pill`; Heading `default`, `eyebrow`; SearchList `palette`, `field` |
+| `size` | How big is it? | `xs`, `sm`, `md`, `lg`, `xl`. Each component takes the steps it needs, and a step means the same size on every component that shares it |
 
 - Meaning only goes in `tone`. `danger` is never a `variant`, so
   `<Button tone="danger">` and `<Pill tone="danger" variant="solid">`.
 - `variant` never carries meaning, and `tone` never carries loudness.
 - No other names for these: not `theme`, `type`, `color`, `appearance` or
   `kind`. `color` stays only on Pill's tag colours, which mean nothing.
+  Lint rejects them on our components (`eslint.config.js`, `propNames`).
+- Modal's sizes are widths, a separate scale from control heights.
+- A prop that picks content rather than a look takes a content name:
+  Sidebar's `menu`, SandboxSettingsBanner's `scope`.
 
 ## Tooltips
 

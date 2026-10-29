@@ -83,7 +83,7 @@ export default function CollaborationPanel({
           </Button>
         }
       />
-      {sandbox && <SandboxSettingsBanner variant="local" />}
+      {sandbox && <SandboxSettingsBanner scope="local" />}
       {/* settings.ex `support_access_toggle`: only people who can edit the project see it. */}
       {canEditProject && (
         <div className="flex items-center">

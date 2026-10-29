@@ -124,7 +124,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
     // eslint-disable-next-line no-restricted-syntax -- sized to the viewport
     <Modal open={isOpen} onClose={closePicker} bare className="mt-[15vh] self-start overflow-hidden">
       <SearchList<Row>
-        size="lg"
+        variant="palette"
         listId="picker-options"
         sections={[
           { key: "all", items: [VIEW_ALL] },
