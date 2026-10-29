@@ -594,7 +594,7 @@ html[data-theme="gds"] {
 
   /* Links: always underlined, in GOV.UK link blue. The colour is set by
      re-pointing the tokens the `link` utility reads, not the `color`
-     property, so `variant="danger"` (link-danger, red) and per-call
+     property, so `tone="danger"` (link-danger, red) and per-call
      colour classes still win. */
   [data-ui="link"] {
     --color-primary-400: var(--ui-link);
