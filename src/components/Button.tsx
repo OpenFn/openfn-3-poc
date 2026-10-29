@@ -101,7 +101,6 @@ export default function Button({
     "data-ui": "button",
     "data-variant": variant,
     "data-tone": tone,
-    "data-pending": pending || undefined,
     "aria-busy": pending || undefined,
   };
   const content = (
