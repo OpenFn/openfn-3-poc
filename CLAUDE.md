@@ -79,9 +79,10 @@ wrapper.
   (`src/annotations/viewIds.ts`). Put `data-annotation` on any sub-panel that
   has its own inventory or shared id. To update, replace the folder with the
   branch's current `annotations/` and update SOURCE.md.
-- `docs/issues/` — known fixes, one file each (the repo has no issue
-  tracker). Delete the file in the PR that fixes it; add one when you find
-  something you won't fix now.
+- `docs/lightning-differences.md` — where the replica looks or behaves
+  differently from Lightning on purpose.
+- Known fixes and open questions live in Lucy's project tracker, not the
+  repo. Don't add files for them here.
 
 ## Matching Lightning
 
