@@ -118,7 +118,7 @@ export default function WorkflowHealth({
       )}
 
       <section className="space-y-3">
-        <Heading as="h2" size="eyebrow">
+        <Heading as="h2" variant="eyebrow">
           Triage - grouped by failure type
         </Heading>
         <Panel query={failures} card>

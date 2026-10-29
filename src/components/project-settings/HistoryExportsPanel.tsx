@@ -11,7 +11,7 @@ export default function HistoryExportsPanel({ exports, sandbox }: { exports: His
         title="History exports"
         subtitle="View export status and download work order history for this project."
       />
-      {sandbox && <SandboxSettingsBanner variant="local" />}
+      {sandbox && <SandboxSettingsBanner scope="local" />}
       <HistoryExportsTable exports={exports} />
     </>
   );

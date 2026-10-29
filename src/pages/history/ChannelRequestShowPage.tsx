@@ -169,7 +169,7 @@ export default function ChannelRequestShowPage({
               <DetailItem label="Config Version">
                 {request.snapshot.lockVersion}
                 {configChanged && (
-                  <Pill color="yellow" className="ml-2">
+                  <Pill tone="warning" className="ml-2">
                     Config changed
                   </Pill>
                 )}

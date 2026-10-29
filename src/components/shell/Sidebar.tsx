@@ -7,14 +7,11 @@ import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
 import Tooltip from "../Tooltip";
 
 /** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
-export type SidebarVariant = "project" | "profile" | "admin";
-
-/** The colour scheme, Lightning's `side_menu_theme`: the project menu is primary, the admin menu slate. */
-export type SidebarTheme = "primary-theme" | "sudo-variant";
+export type SidebarMenu = "project" | "profile" | "admin";
 
 export interface SidebarProps {
-  variant: SidebarVariant;
-  /** Required for the project variant. */
+  menu: SidebarMenu;
+  /** Required for the project menu. */
   project?: { id: string } | undefined;
   user: MenuUser;
   /** Superusers get the Admin menu in place of the support links. */
@@ -25,7 +22,6 @@ export interface SidebarProps {
   adminEmail: string;
   /** Release label under the logo. */
   releaseLabel: string;
-  theme?: SidebarTheme;
   collapsed: boolean;
   onToggle: () => void;
 }
@@ -153,14 +149,13 @@ export function SidebarLogo({ releaseLabel, collapsed = false }: { releaseLabel:
  * we are.
  */
 export default function Sidebar({
-  variant,
+  menu,
   project,
   user,
   canAccessAdmin,
   sysInfo = true,
   adminEmail,
   releaseLabel,
-  theme = "primary-theme",
   collapsed,
   onToggle,
 }: SidebarProps) {
@@ -174,6 +169,9 @@ export default function Sidebar({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onToggle]);
+
+  // Lightning's `side_menu_theme`: the admin menu is slate, the others primary.
+  const theme = menu === "admin" ? "sudo-variant" : "primary-theme";
 
   return (
     <>
@@ -189,12 +187,12 @@ export default function Sidebar({
           <UserMenu user={user} />
         </div>
         <nav id="side-menu" className={cn("flex min-h-0 flex-1 flex-col", theme)}>
-          <div className={cn("flex min-h-0 flex-1 flex-col overflow-y-auto", variant !== "admin" && "py-4")}>
-            {variant === "admin" ? (
+          <div className={cn("flex min-h-0 flex-1 flex-col overflow-y-auto", menu !== "admin" && "py-4")}>
+            {menu === "admin" ? (
               <AdminItems />
             ) : (
               <>
-                {variant === "project" && project ? <ProjectItems project={project} user={user} /> : <ProfileItems />}
+                {menu === "project" && project ? <ProjectItems project={project} user={user} /> : <ProfileItems />}
                 <div className="grow" />
                 <FooterItems canAccessAdmin={canAccessAdmin} sysInfo={sysInfo} adminEmail={adminEmail} />
               </>

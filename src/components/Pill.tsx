@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
 import Tooltip from "./Tooltip";
+import type { Tone } from "./tone";
 
-export type PillColor = "gray" | "red" | "orange" | "yellow" | "green" | "blue" | "primary" | "purple" | "pink" | "dark";
+/** Tag colours, for tags that mean nothing (dataclip types, HTTP methods). Meaning goes in `tone`. */
+export type PillColor = "gray" | "red" | "orange" | "yellow" | "green" | "blue" | "primary" | "purple" | "pink";
 
 const colorClasses: Record<PillColor, string> = {
   gray: "bg-gray-100 text-gray-700",
@@ -14,18 +16,27 @@ const colorClasses: Record<PillColor, string> = {
   primary: "bg-primary-100 text-primary-700",
   purple: "bg-purple-100 text-purple-700",
   pink: "bg-pink-100 text-pink-700",
-  dark: "bg-gray-800 text-white",
+};
+
+const toneClasses: Record<Tone, string> = {
+  neutral: "bg-gray-100 text-gray-700",
+  info: "bg-info-100 text-info-700",
+  success: "bg-success-100 text-success-700",
+  warning: "bg-warning-100 text-warning-800",
+  danger: "bg-danger-100 text-danger-700",
 };
 
 /**
  * A small tag (Lightning's components/pills.ex `pill`): states, types,
- * versions, selected items. `square` gives it rounded-md corners, `mono`
- * the code font, and `onRemove` an x button.
+ * versions, selected items. Always pale. `tone` says what it means; `color`
+ * is only for tags that mean nothing. `square` gives it
+ * rounded-md corners, `mono` the code font, and `onRemove` an x button.
  */
 export default function Pill({
   id,
   "aria-label": ariaLabel,
-  color = "gray",
+  tone,
+  color,
   square = false,
   mono = false,
   title,
@@ -36,7 +47,6 @@ export default function Pill({
 }: {
   id?: string;
   "aria-label"?: string;
-  color?: PillColor;
   square?: boolean;
   mono?: boolean;
   /** Hover text. */
@@ -47,17 +57,29 @@ export default function Pill({
   removeLabel?: string;
   className?: string | undefined;
   children: ReactNode;
-}) {
+} & (
+  | {
+      /** Leave it off for a plain grey tag. */
+      tone?: Tone | undefined;
+      color?: never;
+    }
+  | {
+      /** A tag colour that means nothing. Takes the place of `tone`. */
+      color?: PillColor | undefined;
+      tone?: never;
+    }
+)) {
   const pill = (
     <span
       id={id}
       aria-label={ariaLabel}
       data-ui="tag"
+      data-tone={color ? undefined : tone}
       className={cn(
         "inline-flex items-center gap-1 whitespace-nowrap px-2 py-0.5 text-xs font-medium",
         square ? "rounded-md" : "rounded-full",
         mono && "font-mono",
-        colorClasses[color],
+        color ? colorClasses[color] : toneClasses[tone ?? "neutral"],
         onRemove && "pr-1",
         className
       )}

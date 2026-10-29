@@ -136,7 +136,7 @@ export default function WorkflowsTable({
               </Td>
               <Td>
                 {lifecycle && !isSandbox ? (
-                  <Pill color={s.state === "live" ? "green" : "gray"}>{s.state === "live" ? "Live" : "Draft"}</Pill>
+                  <Pill tone={s.state === "live" ? "success" : "neutral"}>{s.state === "live" ? "Live" : "Draft"}</Pill>
                 ) : (
                   <Toggle
                     id={wf.id}

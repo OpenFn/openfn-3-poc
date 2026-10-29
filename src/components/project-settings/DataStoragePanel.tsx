@@ -75,7 +75,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
         subtitle="View or modify data storage settings for this project."
         permissionsSection={canEdit ? undefined : "data storage settings."}
       />
-      {sandbox && <SandboxSettingsBanner variant="local" />}
+      {sandbox && <SandboxSettingsBanner scope="local" />}
       <Card>
         <form
           id="retention-settings-form"

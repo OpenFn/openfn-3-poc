@@ -306,7 +306,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
           >
             {pinnedVersion !== null && (
               <span className="ml-3" data-annotation="workflow-editor-versions-and-promote">
-                <Pill color="yellow">Read-only</Pill>
+                <Pill tone="warning">Read-only</Pill>
               </span>
             )}
           </EditorHeader>

@@ -1,26 +1,11 @@
 import type { RunState, WorkOrderState } from "../../types/history";
 import type { ChannelRequestState } from "../../types/channels";
-import Pill, { type PillColor } from "../Pill";
+import Pill from "../Pill";
+import type { Tone } from "../tone";
+import { STATE_PILL } from "../../theme/runStateColours";
 import { capitalize } from "../../utils/format";
 
 type State = WorkOrderState | RunState | "running";
-
-// run_live/components.ex `state_pill` chip_styles, mapped onto Pill colours.
-const chipColors: Record<State, PillColor> = {
-  rejected: "red",
-  pending: "gray",
-  running: "blue",
-  available: "gray",
-  claimed: "blue",
-  started: "blue",
-  success: "green",
-  failed: "red",
-  crashed: "orange",
-  cancelled: "gray",
-  killed: "yellow",
-  exception: "dark",
-  lost: "dark",
-};
 
 /** `display_text_from_state`. */
 function stateLabel(state: State): string {
@@ -42,26 +27,27 @@ function stateLabel(state: State): string {
 
 /**
  * A work order or run state pill (run_live/components.ex `state_pill`).
- * `labelMode="raw"` shows the state itself, capitalised, as the canvas's
- * MiniHistory does ("Pending" rather than "Enqueued").
+ * Run states have more colours than the tones, so theirs come from
+ * src/theme/runStateColours.ts. `labelMode="raw"` shows the state itself,
+ * capitalised, as the canvas's MiniHistory does ("Pending" rather than "Enqueued").
  */
 export default function StatePill({ state, labelMode = "display" }: { state: State; labelMode?: "display" | "raw" }) {
-  return <Pill color={chipColors[state]}>{labelMode === "raw" ? capitalize(state) : stateLabel(state)}</Pill>;
+  return <Pill className={STATE_PILL[state]}>{labelMode === "raw" ? capitalize(state) : stateLabel(state)}</Pill>;
 }
 
-const channelConfig: Record<ChannelRequestState, { text: string; color: PillColor }> = {
-  pending: { text: "In Progress", color: "blue" },
-  success: { text: "Success", color: "green" },
-  failed: { text: "Failed", color: "red" },
-  timeout: { text: "Timeout", color: "orange" },
-  error: { text: "Error", color: "red" },
+const channelConfig: Record<ChannelRequestState, { text: string; tone: Tone }> = {
+  pending: { text: "In Progress", tone: "info" },
+  success: { text: "Success", tone: "success" },
+  failed: { text: "Failed", tone: "danger" },
+  timeout: { text: "Timeout", tone: "warning" },
+  error: { text: "Error", tone: "danger" },
 };
 
 /** A channel request state pill (`channel_state_pill`). `title` is its hover text. */
 export function ChannelStatePill({ state, title }: { state: ChannelRequestState; title?: string | undefined }) {
-  const { text, color } = channelConfig[state];
+  const { text, tone } = channelConfig[state];
   return (
-    <Pill color={color} title={title}>
+    <Pill tone={tone} title={title}>
       {text}
     </Pill>
   );

@@ -148,7 +148,7 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
             />
           }
         />
-        {sandbox && <SandboxSettingsBanner variant="editable" />}
+        {sandbox && <SandboxSettingsBanner scope="editable" />}
         {/* The page props carry the credential actions; the tab's data comes after, so its `credentials` list wins. */}
         <CredentialIndex
           {...props}

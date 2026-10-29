@@ -26,7 +26,7 @@ interface Props<T> {
   items?: T[];
   sections?: SearchListSection<T>[];
   getKey: (item: T) => string;
-  /** The row's content. The row itself (padding, highlight) comes from `size`. */
+  /** The row's content. The row itself (padding, highlight) comes from `variant`. */
   renderItem: (item: T, state: SearchListItemState) => ReactNode;
   /** Accessible name for a row, when its content isn't enough. */
   getLabel?: (item: T) => string;
@@ -41,16 +41,16 @@ interface Props<T> {
   emptyState?: ReactNode;
   /** Content between the search box and the rows, e.g. an alert. */
   header?: ReactNode;
-  /** Extra content at the end of the search box (lg only), e.g. a keyboard hint. */
+  /** Extra content at the end of the search box (palette only), e.g. a keyboard hint. */
   inputAddon?: ReactNode;
   /** The row highlighted when the list opens; the first row otherwise. */
   initialActive?: T | undefined;
   /**
-   * `lg`: a command palette: a borderless search row over full-width rows
+   * `palette`: a command palette: a borderless search row over full-width rows
    * that turn primary when highlighted, sections divided by a rule.
-   * `sm`: a search field over rounded rows that turn gray, headed sections.
+   * `field`: a search field over rounded rows that turn gray, headed sections.
    */
-  size?: "sm" | "lg";
+  variant?: "palette" | "field";
   /** id of the list (the combobox's `aria-controls`). */
   listId?: string;
   /** Accessible name for the list. */
@@ -59,14 +59,14 @@ interface Props<T> {
 }
 
 const looks = {
-  lg: {
+  palette: {
     list: "max-h-80 overflow-y-auto py-2",
     section: "",
     heading: "px-4 py-2",
     option:
       "group flex cursor-pointer select-none items-center px-4 py-3 text-strong hover:bg-primary-600 hover:text-inverse data-focus:bg-primary-600 data-focus:text-inverse",
   },
-  sm: {
+  field: {
     list: "max-h-96 space-y-4 overflow-y-auto",
     section: "space-y-1",
     heading: "px-3 py-2",
@@ -103,12 +103,12 @@ export default function SearchList<T>({
   header,
   inputAddon,
   initialActive,
-  size = "lg",
+  variant = "palette",
   listId,
   listLabel,
   autoFocus = true,
 }: Props<T>) {
-  const look = looks[size];
+  const look = looks[variant];
   const listRef = useRef<HTMLDivElement>(null);
   const sections: SearchListSection<T>[] = sectionsProp ?? [{ key: "items", items: items ?? [] }];
   const total = sections.reduce((n, s) => n + s.items.length, 0);
@@ -139,8 +139,8 @@ export default function SearchList<T>({
   return (
     // `value` only seeds the highlight: Headless UI opens on the row matching it.
     <Combobox value={initialActive ?? null} onChange={(item: T | null) => item !== null && onSelect(item)} immediate>
-      <div data-ui="search-list" data-size={size} className={cn(size === "sm" && "flex flex-col gap-3")}>
-        {size === "lg" ? (
+      <div data-ui="search-list" data-variant={variant} className={cn(variant === "field" && "flex flex-col gap-3")}>
+        {variant === "palette" ? (
           <div className="flex items-center border-b border-subtle px-4">
             <span className="hero-magnifying-glass h-5 w-5 shrink-0 text-faint" />
             <ComboboxInput
@@ -165,14 +165,14 @@ export default function SearchList<T>({
           ) : (
             sections.map((section) => {
               if (section.items.length === 0 && !section.empty) return null;
-              const divider = size === "lg" && shownBefore && section.items.length > 0;
+              const divider = variant === "palette" && shownBefore && section.items.length > 0;
               shownBefore = true;
               return (
                 <Fragment key={section.key}>
                   {divider && <div role="separator" className="my-2 border-t border-subtle" />}
                   <div role="group" className={look.section}>
                     {section.heading && (
-                      <Heading size="eyebrow" className={look.heading}>
+                      <Heading variant="eyebrow" className={look.heading}>
                         {section.heading}
                       </Heading>
                     )}
