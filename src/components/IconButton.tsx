@@ -20,7 +20,7 @@ type Props = Omit<ComponentProps<typeof Button>, "children" | "icon" | "size" | 
   );
 
 const sizes: Record<IconButtonSize, { button: string; icon: string }> = {
-  // 24px, 32px, 40px.
+  // 24px, 32px, 40px. IconButton sets its own size, so it clears Button's minimum height.
   sm: { button: "p-1", icon: "h-4 w-4" },
   md: { button: "p-1.5", icon: "h-5 w-5" },
   lg: { button: "p-2", icon: "h-6 w-6" },
@@ -43,7 +43,7 @@ export default function IconButton({ icon, label, size = "md", tooltip, active, 
       aria-label={label}
       aria-pressed={active}
       tooltip={tooltip === false ? undefined : (tooltip ?? label)}
-      className={cn("shrink-0", s.button, className)}
+      className={cn("min-h-0 shrink-0", s.button, className)}
     >
       {null}
     </Button>

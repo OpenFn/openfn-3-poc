@@ -9,11 +9,13 @@ export type ButtonVariant = "primary" | "secondary" | "plain";
 export type ButtonTone = Extract<Tone, "danger" | "success">;
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
+// The minimum height is a text button's height (28, 32, 36, 40px), so a button holding only an
+// icon is as tall as the text buttons beside it. A minimum, so a label that wraps still fits.
 const sizeClasses: Record<ButtonSize, string> = {
-  xs: "px-2 py-1",
-  sm: "px-2.5 py-1.5",
-  md: "px-3 py-2",
-  lg: "px-3.5 py-2.5",
+  xs: "min-h-7 px-2 py-1",
+  sm: "min-h-8 px-2.5 py-1.5",
+  md: "min-h-9 px-3 py-2",
+  lg: "min-h-10 px-3.5 py-2.5",
 };
 
 const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-4 w-4", lg: "h-5 w-5" };
