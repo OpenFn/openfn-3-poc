@@ -48,16 +48,18 @@ the same name on every component:
 | Prop | Answers | Values |
 |---|---|---|
 | `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
-| `variant` | How loud is it? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Pill `subtle`, `solid`; Tabs `line`, `pill` |
-| `size` | How big is it? | `sm`, `md`, `lg` |
+| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Tabs `line`, `pill`; Heading `default`, `eyebrow`; SearchList `palette`, `field`; Text's type styles, `body-md` to `code-sm` (`.claude/rules/type.md`) |
+| `size` | How big is it? | `xs`, `sm`, `md`, `lg`, `xl`. Each component takes the steps it needs. Button and IconButton share one height per step, so they line up side by side; other components' steps are their own for now |
 
 - Meaning only goes in `tone`. `danger` is never a `variant`, so
-  `<Button tone="danger">` and `<Pill tone="danger" variant="solid">`.
+  `<Button tone="danger">` and `<Pill tone="danger">`.
 - `variant` never carries meaning, and `tone` never carries loudness.
 - No other names for these: not `theme`, `type`, `color`, `appearance` or
   `kind`. `color` stays only on Pill's tag colours, which mean nothing.
-- One exception: `Text`'s `variant` is its named type style (`body-sm`,
-  `code-md`), not loudness. See `.claude/rules/type.md`.
+  Lint rejects them on our components (`eslint.config.js`, `propNames`).
+- Modal's sizes are widths, a separate scale from control heights.
+- A prop that picks content rather than a look takes a content name:
+  Sidebar's `menu`, SandboxSettingsBanner's `scope`.
 
 ## Tooltips
 

@@ -8,16 +8,14 @@ import { shortUuid, uuidOf } from "../../utils/format";
 export default function RunBadge({
   runId,
   onClose,
-  variant = "default",
   className,
 }: {
   runId: string;
   onClose?: (() => void) | undefined;
-  variant?: "default" | "warning";
   className?: string;
 }) {
   return (
-    <Pill color={variant === "default" ? "blue" : "yellow"} onRemove={onClose} className={className}>
+    <Pill tone="info" onRemove={onClose} className={className}>
       Run {shortUuid(uuidOf(runId), 7)}
     </Pill>
   );

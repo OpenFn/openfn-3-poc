@@ -15,7 +15,7 @@ import CopyButton from "../CopyButton";
 function Group({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <section className={className}>
-      <Heading size="eyebrow" as="h4" className="mb-3 border-b border-subtle pb-1.5">
+      <Heading variant="eyebrow" as="h4" className="mb-3 border-b border-subtle pb-1.5">
         {title}
       </Heading>
       {children}
@@ -49,13 +49,13 @@ export default function ChannelRequestSummary({
         />
         <Text as="div" variant="body-sm" className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1.5">
-            <Heading size="eyebrow" as="span">
+            <Heading variant="eyebrow" as="span">
               Channel
             </Heading>
             <TextLink to={`/projects/${channel.projectId}/channels/${channel.id}/edit`}>{channel.name}</TextLink>
           </span>
           <span className="flex items-center gap-1.5">
-            <Heading size="eyebrow" as="span">
+            <Heading variant="eyebrow" as="span">
               Request
             </Heading>
             <span className="font-mono text-strong">{shortUuid(request.id)}</span>

@@ -29,7 +29,7 @@ export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onC
       align="end"
       className="w-32"
       trigger={
-        // eslint-disable-next-line no-restricted-syntax -- debt: a text-only menu trigger; Button has no plain text theme
+        // eslint-disable-next-line no-restricted-syntax -- debt: a text-only menu trigger on the dark log panel; Button has no look for dark surfaces
         <button
           type="button"
           aria-label="Log level"

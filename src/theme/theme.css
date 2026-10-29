@@ -635,6 +635,10 @@ html[data-theme="gds"] {
     --color-indigo-700: var(--color-indigo-800);
     --color-purple-700: var(--color-purple-800);
     --color-pink-700: var(--color-pink-800);
+    /* The tone names resolve at the root, so re-point them too. */
+    --color-danger-700: var(--color-red-800);
+    --color-success-700: var(--color-green-800);
+    --color-info-700: var(--color-blue-800);
     border-radius: 0;
   }
 

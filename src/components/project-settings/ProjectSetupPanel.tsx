@@ -49,7 +49,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
         }
         permissionsSection={canEditProject ? undefined : "basic settings, but you can export a copy."}
       />
-      {sandbox && <SandboxSettingsBanner variant="local" />}
+      {sandbox && <SandboxSettingsBanner scope="local" />}
       <Card
         title={sandbox ? "Sandbox Identity" : "Project Identity"}
         description={

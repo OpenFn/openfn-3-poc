@@ -189,22 +189,22 @@ export default function MergeSandboxModal({
               badges: (
                 <>
                   {w.isChanged && !w.isNew && !w.isDeleted && (
-                    <Pill color="green" title="This workflow has been modified in the sandbox">
+                    <Pill tone="success" title="This workflow has been modified in the sandbox">
                       Changed
                     </Pill>
                   )}
                   {w.isDiverged && (
-                    <Pill color="yellow" title="This workflow was modified in the target project - this change will be lost">
+                    <Pill tone="warning" title="This workflow was modified in the target project - this change will be lost">
                       Diverged
                     </Pill>
                   )}
                   {w.isNew && (
-                    <Pill color="blue" title="This workflow doesn't exist in the target — it will be created">
+                    <Pill tone="info" title="This workflow doesn't exist in the target — it will be created">
                       New
                     </Pill>
                   )}
                   {w.isDeleted && (
-                    <Pill color="red" title="This workflow was deleted in the sandbox — selecting it will delete it from the target">
+                    <Pill tone="danger" title="This workflow was deleted in the sandbox — selecting it will delete it from the target">
                       Deleted in sandbox
                     </Pill>
                   )}

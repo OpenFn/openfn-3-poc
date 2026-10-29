@@ -10,5 +10,4 @@ export default meta;
 type Story = StoryObj<typeof RunBadge>;
 
 export const Default: Story = {};
-export const Warning: Story = { args: { variant: "warning" } };
 export const NoClose: Story = { args: { onClose: undefined } };

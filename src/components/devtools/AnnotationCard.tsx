@@ -3,7 +3,8 @@ import Button from "../Button";
 import Disclosure from "../Disclosure";
 import Heading from "../Heading";
 import IconButton from "../IconButton";
-import Pill, { type PillColor } from "../Pill";
+import Pill from "../Pill";
+import type { Tone } from "../tone";
 import { EmptyState } from "../Table";
 import TextLink from "../TextLink";
 import Markdown from "./Markdown";
@@ -17,18 +18,18 @@ interface Props {
   inventoryHref?: string;
 }
 
-const statusColors: Record<string, PillColor> = {
-  "not-started": "gray",
-  todo: "gray",
-  "in-progress": "yellow",
-  migrated: "green",
-  done: "green",
-  "done-with-decides": "blue",
-  cut: "red",
+const statusTones: Record<string, Tone> = {
+  "not-started": "neutral",
+  todo: "neutral",
+  "in-progress": "warning",
+  migrated: "success",
+  done: "success",
+  "done-with-decides": "info",
+  cut: "danger",
 };
 
-function statusColor(status: string): PillColor {
-  return statusColors[status] ?? (status.startsWith("batch-") ? "yellow" : "gray");
+function statusTone(status: string): Tone {
+  return statusTones[status] ?? (status.startsWith("batch-") ? "warning" : "neutral");
 }
 
 function IdList({ label, ids, onOpenId }: { label: string; ids: string[]; onOpenId?: ((id: string) => void) | undefined }) {
@@ -76,8 +77,8 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
             {id}
           </Pill>
           {annotation && <Pill color="primary">{annotation.folder.replace(/s$/, "")}</Pill>}
-          {status && <Pill color={statusColor(status)}>{status}</Pill>}
-          {inventory && <Pill color={statusColor(inventory.status)}>inventory: {inventory.status}</Pill>}
+          {status && <Pill tone={statusTone(status)}>{status}</Pill>}
+          {inventory && <Pill tone={statusTone(inventory.status)}>inventory: {inventory.status}</Pill>}
         </div>
         {inventory && (
           <p className="text-xs text-muted">

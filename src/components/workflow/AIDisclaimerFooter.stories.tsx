@@ -6,4 +6,4 @@ export default meta;
 type Story = StoryObj<typeof AIDisclaimerFooter>;
 
 export const Default: Story = {};
-export const Muted: Story = { args: { muted: true } };
+export const Muted: Story = { args: { variant: "muted" } };

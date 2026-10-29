@@ -3,6 +3,7 @@ import { cn } from "../../utils/cn";
 import Card from "../Card";
 import { DetailItem, DetailList } from "../DetailList";
 import Pill, { type PillColor } from "../Pill";
+import type { Tone } from "../tone";
 import { formatBinaryBytes as formatBytes } from "../../utils/format";
 import CopyButton from "../CopyButton";
 import { EmptyState } from "../Table";
@@ -38,18 +39,18 @@ export function RequestPathDisplay({ event }: { event: ChannelEvent | undefined 
   );
 }
 
-function statusColor(status: number | null | undefined): PillColor {
-  if (status == null || status < 200) return "gray";
-  if (status >= 500) return "red";
-  if (status >= 400) return "yellow";
-  if (status >= 300) return "blue";
-  return "green";
+function statusTone(status: number | null | undefined): Tone {
+  if (status == null || status < 200) return "neutral";
+  if (status >= 500) return "danger";
+  if (status >= 400) return "warning";
+  if (status >= 300) return "info";
+  return "success";
 }
 
 /** An HTTP status code chip, coloured by class (`status_code_display`, `status_code_badge`). */
 export function StatusCodeBadge({ status }: { status: number | null | undefined }) {
   return (
-    <Pill square mono color={statusColor(status)} className="font-bold">
+    <Pill square mono tone={statusTone(status)} className="font-bold">
       {status ?? "—"}
     </Pill>
   );

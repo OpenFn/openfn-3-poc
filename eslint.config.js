@@ -10,6 +10,9 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 // `// eslint-disable-next-line no-restricted-syntax -- <why>`. A reason that
 // starts `debt:` is one we mean to fix: `grep -rn "debt:" src` lists them.
 const offScale = 'neutral scale is gray-*, brand is primary-*. See CLAUDE.md, Matching Lightning.'
+const propNames =
+  'Prop name: say meaning with `tone`, loudness with `variant` and size with `size`, not theme, color, type, kind or appearance. `color` is only for Pill tags that mean nothing. See src/components/CLAUDE.md, Prop names.'
+const lookWords = 'primary|secondary|plain|subtle|solid|muted|neutral|info|success|warning|danger|error'
 const designRules = [
   {
     selector: 'Literal[value=/\\b(slate|zinc|indigo|neutral|stone|secondary)-\\d/]',
@@ -25,6 +28,27 @@ const designRules = [
       ':matches(JSXAttribute[name.name=/[cC]lassName$/], CallExpression[callee.name="cn"]) :matches(Literal[value=/-\\[[^\\]]*\\](?!:)/], TemplateElement[value.raw=/-\\[[^\\]]*\\](?!:)/])',
     message:
       "Arbitrary Tailwind value: use Tailwind's scale. Real geometry (a diagram, a chart) is the exception; disable it with a reason.",
+  },
+  // Prop names (src/components/CLAUDE.md): meaning is `tone`, loudness
+  // `variant`, size `size`. Checked on our own components (capitalised JSX);
+  // Monaco's `Editor` and `DiffEditor` take a real `theme`. Native `type` (submit, email) and
+  // a content `type` (cron, credential) pass; only a look word is caught.
+  // Kept simple: values in braces, dotted names and story args aren't checked.
+  {
+    selector: 'JSXOpeningElement[name.name=/^[A-Z]/]:not([name.name=/^(Diff)?Editor$/]) > JSXAttribute[name.name=/^(theme|kind|appearance)$/]',
+    message: propNames,
+  },
+  {
+    selector: 'JSXOpeningElement[name.name=/^[A-Z]/]:not([name.name="Pill"]) > JSXAttribute[name.name="color"][value.type="Literal"]',
+    message: propNames,
+  },
+  {
+    selector: `JSXOpeningElement[name.name=/^[A-Z]/] > JSXAttribute[name.name="type"][value.value=/^(${lookWords})$/]`,
+    message: propNames,
+  },
+  {
+    selector: 'JSXAttribute[name.name="variant"][value.value=/^(neutral|info|success|warning|danger|error)$/]',
+    message: propNames,
   },
 ]
 

@@ -46,7 +46,7 @@ export default function AdaptorDisplay({ adaptor, credentialName = null, onEdit,
           {version === "latest" ? "latest" : `v${version}`}
         </span>
         {hasCredential && (
-          <Pill color="green" title={credentialName} aria-label={`Credential connected: ${credentialName}`} className="max-w-40">
+          <Pill tone="success" title={credentialName} aria-label={`Credential connected: ${credentialName}`} className="max-w-40">
             <span className="hero-key h-3 w-3 shrink-0" />
             <span className="truncate">{credentialName}</span>
           </Pill>

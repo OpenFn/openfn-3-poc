@@ -37,6 +37,15 @@ goes back to Lightning's way.
   it looks the same on white and grey surfaces. Some Lightning icon buttons
   add a grey square on hover, others don't.
 
+## Tags
+
+- **A timed-out channel request is a warning (yellow).** Lightning draws the
+  Timeout state pill orange (`channel_state_pill`); the replica puts channel
+  states on Pill's tones, which have no orange.
+- **Exception and Lost run states are pale grey.** Lightning draws them dark
+  grey with white text (`state_pill`); the replica keeps every status pill
+  pale, so a list never mixes pale and solid.
+
 ## Type
 
 - **The waiting messages in the log and dataclip viewers stay 12px.**

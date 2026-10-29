@@ -13,7 +13,7 @@ const meta: Meta<typeof Disclosure> = {
 export default meta;
 type Story = StoryObj<typeof Disclosure>;
 
-export const Card: Story = { args: { titleRight: <Pill color="green">200</Pill> } };
+export const Card: Story = { args: { titleRight: <Pill tone="success">200</Pill> } };
 export const StartsClosed: Story = { args: { defaultOpen: false } };
 export const Section: Story = {
   args: { variant: "section", title: "Headers" },

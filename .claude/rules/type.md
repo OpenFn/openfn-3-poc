@@ -17,7 +17,7 @@ found 44 combinations of size, weight and spacing.
 - **`Heading`** for anything that titles what follows it. `as` is its place
   in the outline (`h1`–`h6`), `size` is its look. Pick the level for the
   outline, never for the size. The small capitals above a section are
-  `Heading size="eyebrow"`.
+  `Heading variant="eyebrow"`.
 - **`Text`** for every other piece of text. Its `variant` is a named style,
   a role at a size:
 
@@ -30,8 +30,8 @@ found 44 combinations of size, weight and spacing.
 | `code-md` | 14px mono | An id or path in 14px copy |
 | `code-sm` | 12px mono | Hashes, byte sizes, log lines |
 
-On `Text`, `variant` names the type style. It's the one exception to Prop
-names (`src/components/CLAUDE.md`), which uses `variant` for loudness.
+`variant` is the one prop: it picks which of `Text`'s looks, as Prop names
+(`src/components/CLAUDE.md`) uses it on every component.
 
 ## How to use them
 

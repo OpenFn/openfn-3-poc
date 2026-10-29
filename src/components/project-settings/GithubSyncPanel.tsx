@@ -127,7 +127,7 @@ export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, o
           canInstall ? undefined : `version control configuration${canInitiateSync ? " but you can initiate a sync." : "."}`
         }
       />
-      {sandbox && <SandboxSettingsBanner variant="local" />}
+      {sandbox && <SandboxSettingsBanner scope="local" />}
       {body}
       <p>
         Need to learn more about GitHub Sync? See{" "}

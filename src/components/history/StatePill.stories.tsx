@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { withWhitePanel } from "../../stories/decorators";
 import StatePill, { ChannelStatePill } from "./StatePill";
 
-const meta = { title: "History/StatePill", component: StatePill } satisfies Meta<typeof StatePill>;
+const meta = { title: "History/StatePill", component: StatePill, decorators: [withWhitePanel("w-auto")] } satisfies Meta<typeof StatePill>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
