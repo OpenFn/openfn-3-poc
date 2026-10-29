@@ -111,8 +111,9 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
               tooltip={c.removeBlockedReason ?? undefined}
               disabled={c.removeBlockedReason !== null}
               onClick={() => onRemove(c)}
+              icon="hero-minus-circle"
             >
-              <span className="hero-minus-circle h-5 w-5" /> Remove Collaborator
+              Remove Collaborator
             </Button>
           </Td>
         </Tr>

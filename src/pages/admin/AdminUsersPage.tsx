@@ -33,8 +33,7 @@ export default function AdminUsersPage({ users, deleteUser, onCancelDeletion, on
     <PageContent
       header={
         <Header title="Users">
-          <Button to="/settings/users/new">
-            <span className="hero-plus-solid h-4 w-4" />
+          <Button to="/settings/users/new" icon="hero-plus-solid">
             New User
           </Button>
         </Header>

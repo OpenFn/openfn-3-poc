@@ -51,12 +51,10 @@ export default function BackupCodesCard({
         ))}
       </div>
       <div className="flex items-center justify-center gap-4 p-6">
-        <Button variant="secondary" size="lg" onClick={onPrint}>
-          <span className="hero-printer h-5 w-5" />
+        <Button variant="secondary" size="lg" onClick={onPrint} icon="hero-printer">
           Print Codes
         </Button>
-        <Button id="copy-codes-button" variant="secondary" size="lg" onClick={copy}>
-          <span className="hero-document-duplicate h-5 w-5" />
+        <Button id="copy-codes-button" variant="secondary" size="lg" onClick={copy} icon="hero-document-duplicate">
           Copy Codes
         </Button>
         {copied && (

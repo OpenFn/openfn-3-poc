@@ -16,7 +16,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: "px-3.5 py-2.5",
 };
 
-const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-5 w-5", lg: "h-5 w-5" };
+const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-4 w-4", lg: "h-5 w-5" };
 
 // Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
 // text on nothing, with a background on hover and while pressed (`aria-pressed`). Disabled is
