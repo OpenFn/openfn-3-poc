@@ -137,40 +137,44 @@ everywhere. Reach for these first:
 
 | Need | Use |
 |---|---|
-| An action | `Button` (`to` for routes, `href` for plain links; `icon` for a leading icon; `variant="plain"` for text with no fill; `size="xs" variant="secondary"` for table row actions; `tone="danger"` for destructive ones; `pending` while its request runs) |
-| A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
-| A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard; `useActions` for one per row, `latest` when only the newest answer counts); `Spinner` for anything loading |
-| A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` (shows the choice at once, puts back the saved value if the save fails) |
-| An icon-only action | `IconButton` (a square `Button`, `variant="plain"` unless you say otherwise; always give it a `label`, which is also its tooltip; `tooltip` to say more, `tooltip={false}` for none; `active` for a toggle that's on) |
-| The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
+| An action | `Button` (`size="xs" variant="secondary"` for table row actions) |
+| A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (never disable submit for invalid values) |
+| A request in flight | `useAction` from `utils/useAction.ts` (`useActions` for one per row); `Spinner` for anything loading |
+| A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` |
+| An icon-only action | `IconButton` (always give it a `label`) |
+| The X that closes a modal, toast or panel | `CloseButton` |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
-| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row; `Select` is every dropdown, styled and keyboard navigable on Headless UI's Listbox, with `prompt` shown while nothing is chosen, and tests pick from it with `pickOption` in `src/test/select.ts`); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
-| A name that becomes a URL-safe slug | `NameField` (input plus the "will be named" badge) |
-| A dialog | `Modal` (`size`, or `bare` for custom layouts) |
-| A dialog around one form | `FormModal` (`formId`, async `onSubmit`, `submitLabel`; Enter submits, Cancel is built in, pending and failure shown) |
-| Confirming one action | `ConfirmModal`; `confirmation` adds a type-to-confirm field |
+| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
+| A name that becomes a URL-safe slug | `NameField` |
+| A dialog | `Modal` |
+| A dialog around one form | `FormModal` |
+| Confirming one action | `ConfirmModal` |
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
-| A floating panel (filters, details) | `Popover` (`panelProps` puts `data-annotation` on the portalled panel; Menu takes it too) |
+| A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
-| Show / hide a section | `Disclosure` (`card`, `section` or `inline`) |
-| Switching views | `Tabs` (`line` or `pill`, horizontal or vertical, buttons or route links) |
-| Picking one value from a few | `SegmentedControl` (a radio group drawn as Tabs' pill track; `disabledReason` shows a Tooltip) |
+| Show / hide a section | `Disclosure` |
+| Switching views | `Tabs` |
+| Picking one value from a few | `SegmentedControl` |
 | Searching or filtering a list | `SearchInput` |
-| A status chip, badge or tag | `Pill` (`color`, `square`, `mono`; `onRemove` makes it removable) |
-| Any bordered panel, tile or card | `Card` (`title`/`description`/`action` give it a header; `padding`, `muted`, `dashed`) |
-| A heading inside a page | `Heading` (`size` xl/lg/md/sm/eyebrow, `as` for the level) |
-| Labelled values | `DetailList` + `DetailItem` (`rows` or `grid`) |
-| A timestamp | `DateTime` (hover shows UTC, click copies it) |
-| A tooltip | `Tooltip` (`copy` makes a click copy that text and say "Copied!"; `disabled` when the child is a disabled control, so a wrapper takes its hover and swallows the click); `InfoTooltip` for the faded info icon next to a label |
-| A short work order, run or dataclip id | `UuidChip` (`to` links it, `length={7}` in the workflow editor) |
-| An on/off switch | `Toggle` (`note` adds gray text after the label) |
-| An inline link | `TextLink` (`variant="danger"` for destructive ones) |
-| Read-only code, a log or a dataclip | `CodeViewer` (Monaco; `ariaLabel`, `language`, `highlighted`, `revealLine`) |
-| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (dashed box, or `variant="plain"` for centred text inside a card or list; `title`, `children` below the message) (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`; `<Th actions />` and `<Td actions>` for the row-actions column, `align` for right/centre) |
-| Sorting and filtering a table in the browser | `useTableSort` (or `useSort` for state only, when rows are sorted elsewhere) from `useTableSort.ts` |
+| A status chip, badge or tag | `Pill` |
+| Any bordered panel, tile or card | `Card` |
+| A heading inside a page | `Heading` |
+| Labelled values | `DetailList` + `DetailItem` |
+| A timestamp | `DateTime` |
+| A tooltip | `Tooltip`; `InfoTooltip` for the faded info icon next to a label |
+| A short work order, run or dataclip id | `UuidChip` |
+| An on/off switch | `Toggle` |
+| An inline link | `TextLink` |
+| Read-only code, a log or a dataclip | `CodeViewer` |
+| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
+| Sorting and filtering a table in the browser | `useTableSort` from `useTableSort.ts` |
 | "Projects (3)" above a table, with its buttons | `TableTitle` |
 | A status message | `Alert` |
 | Page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
+
+Props are documented on each component (its comments and types) and shown in
+its stories, so they stay in step with the code. Read the component before
+using it.
 
 Primitives expose their look to the themes through `data-ui` (and
 `data-variant` for the variant, `data-tone` for the tone). Theme CSS targets those hooks, never
