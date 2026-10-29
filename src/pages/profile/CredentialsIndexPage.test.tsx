@@ -5,6 +5,7 @@ import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
 import type { CredentialRow, OauthClientRow } from "../../types/credentials";
 import { RequestError } from "../../utils/errors";
+import { pickOption } from "../../test/select";
 import CredentialsIndexPage, { type CredentialsIndexPageProps } from "./CredentialsIndexPage";
 
 const dhis2: CredentialRow = {
@@ -149,7 +150,7 @@ describe("CredentialsIndexPage", () => {
     expect(onLoadCredentialSchema).toHaveBeenCalledWith("dhis2");
     fireEvent.change(document.getElementById("credential-name")!, { target: { value: "New DHIS2" } });
     fireEvent.change(document.getElementById("credential-body-hostUrl")!, { target: { value: "https://dhis2.example.org" } });
-    fireEvent.change(document.getElementById("project-credentials-list-new")!, { target: { value: "p2" } });
+    await pickOption(document.getElementById("project-credentials-list-new")!, "dhis2-project");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Save Credential" }));
     await waitFor(() =>
       expect(onCreateCredential).toHaveBeenCalledWith({

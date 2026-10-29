@@ -144,7 +144,7 @@ everywhere. Reach for these first:
 | An icon-only action | `IconButton` (always give it a `label`; `to`/`href` for icon links, `external` to open `href` in a new tab, `tone="danger"`, or pass an SVG element as `icon`) |
 | The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
-| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
+| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row; `Select` is every dropdown, styled and keyboard navigable on Headless UI's Listbox, with `prompt` shown while nothing is chosen, and tests pick from it with `pickOption` in `src/test/select.ts`); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
 | A name that becomes a URL-safe slug | `NameField` (input plus the "will be named" badge) |
 | A dialog | `Modal` (`size`, or `bare` for custom layouts) |
 | A dialog around one form | `FormModal` (`formId`, async `onSubmit`, `submitLabel`; Enter submits, Cancel is built in, pending and failure shown) |
@@ -177,7 +177,7 @@ Primitives expose their look to the themes through `data-ui` (and
 element selectors or utility classes, so a new primitive or variant needs its
 hook, and the GDS theme is worth a look after styling changes.
 
-Dialogs, menus and popovers sit on Headless UI (`@headlessui/react`), which
+Dialogs, menus, popovers and selects sit on Headless UI (`@headlessui/react`), which
 handles focus, keyboard and positioning. `Tooltip` sits on Floating UI
 (`@floating-ui/react`), the library under Headless UI. Don't hand-roll `fixed inset-0`
 overlays, click-outside handlers or `absolute` dropdown panels.

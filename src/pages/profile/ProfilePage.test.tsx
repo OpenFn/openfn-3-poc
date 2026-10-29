@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
 import { RequestError } from "../../utils/errors";
+import { pickOption } from "../../test/select";
 import ProfilePage, { type ProfilePageProps } from "./ProfilePage";
 import { tooltipOf } from "../../test/tooltip";
 
@@ -74,7 +75,7 @@ describe("ProfilePage", () => {
       renderPage({ onSaveBasicInfo });
       const basic = form("basic-info-form");
       type(basic.getByLabelText(/First name/), "Ann");
-      type(basic.getByRole("combobox"), "any");
+      await pickOption(basic.getByRole("button", { name: /^Contact preference/ }), "Anytime");
       fireEvent.submit(document.getElementById("basic-info-form")!);
       await waitFor(() => expect(onSaveBasicInfo).toHaveBeenCalledWith({ firstName: "Ann", lastName: "Admin", contactPreference: "any" }));
       expect(await basic.findByText("can't be blank")).toBeTruthy();

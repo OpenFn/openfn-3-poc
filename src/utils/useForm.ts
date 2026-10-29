@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { RequestError } from "./errors";
 import { useAction } from "./useAction";
 
@@ -108,8 +108,8 @@ export function useForm<V extends object>({ initial, validate, clearOnSave = fal
     fieldProps: <K extends StringKeys<V>>(field: K) => ({
       value: values[field] as string,
       errors: errors[field],
-      // NameField calls onChange with the typed string, the inputs with an event.
-      onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | string) =>
+      // NameField calls onChange with the typed string, the inputs and Select with an event.
+      onChange: (e: { target: { value: string } } | string) =>
         set(field, (typeof e === "string" ? e : e.target.value) as V[K]),
       onBlur: () => setTouched((t) => ({ ...t, [field]: true })),
     }),

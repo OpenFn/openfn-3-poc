@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
 import type { ChannelForm, ChannelRow } from "../../types/channels";
 import { RequestError } from "../../utils/errors";
+import { pickOption } from "../../test/select";
 import ChannelsIndexPage from "./ChannelsIndexPage";
 
 const rows: ChannelRow[] = [
@@ -135,30 +136,31 @@ describe("ChannelsIndexPage", () => {
     expect(router.navigate).toHaveBeenCalledWith("/projects/p1/channels/new");
   });
 
-  it("shows the empty state, the stat cards and the form's options and links", () => {
+  it("shows the empty state, the stat cards and the form's options and links", async () => {
     // A hash router, so the links must go through it to stay in the app.
     renderPage({ channels: [], totalChannels: 0, totalRequests: 0, form: options }, (to) => "#" + to);
     expect(screen.getByText("No channels found.")).toBeTruthy();
     expect(screen.getByText("Total Channels")).toBeTruthy();
     expect(screen.getByText("Total Requests")).toBeTruthy();
     expect(screen.getByPlaceholderText("https://")).toBeTruthy();
-    const select = screen.getByLabelText("Destination Credential") as HTMLSelectElement;
-    expect(Array.from(select.options).map((o) => [o.text, o.value])).toEqual([
-      ["None", ""],
-      ["My API Key", "pc1"],
-    ]);
     const links = screen.getAllByRole("link", { name: "Add New" });
     expect(links.map((a) => [a.getAttribute("href"), a.getAttribute("target")])).toEqual([
       ["#/projects/p1/settings#credentials", "_blank"],
       ["#/projects/p1/settings#webhook_security", "_blank"],
     ]);
+    const select = screen.getByRole("button", { name: /^Destination Credential/ });
+    expect(select.textContent).toBe("None");
+    await act(async () => {
+      fireEvent.click(select);
+    });
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["None", "My API Key"]);
   });
 
   it("saves what was entered in the new channel form; the host closes it", async () => {
     const { router, onSave } = renderPage({ form: options });
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "new-channel" } });
     fireEvent.change(screen.getByLabelText("Destination URL"), { target: { value: "https://example.com/destination" } });
-    fireEvent.change(screen.getByLabelText(/Destination Credential/), { target: { value: "pc1" } });
+    await pickOption(screen.getByRole("button", { name: /^Destination Credential/ }), "My API Key");
     fireEvent.click(screen.getByLabelText("API Key Auth"));
     fireEvent.submit(document.getElementById("channel-form-new")!);
 
@@ -211,7 +213,7 @@ describe("ChannelsIndexPage", () => {
     renderPage({ form });
     expect(screen.getByRole("dialog").textContent).toContain("Edit Channel");
     expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("lab-results");
-    expect((screen.getByLabelText(/Destination Credential/) as HTMLSelectElement).value).toBe("pc1");
+    expect(screen.getByRole("button", { name: /^Destination Credential/ }).textContent).toBe("My API Key");
     expect((screen.getByLabelText("API Key Auth") as HTMLInputElement).checked).toBe(true);
     expect(document.getElementById("channel-form-c1")).toBeTruthy();
     expect(screen.getByRole("dialog").textContent).toContain("lightning.example.com/channels/c1");

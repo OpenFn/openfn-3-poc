@@ -149,7 +149,7 @@ export default function MergeSandboxModal({
             aria-label="Target project"
             fieldClassName="max-w-64 flex-1"
             options={(preview?.targets ?? []).map((t) => ({ label: t.name, value: t.id }))}
-            // With no target yet, a prompt holds the empty value, so picking any real target is a change.
+            // With no target yet the prompt shows, and picking any real target is a change.
             {...(s.shown === null && { prompt: "Select a project" })}
             value={s.shown ?? ""}
             disabled={!preview}
