@@ -133,14 +133,14 @@ export function BodyViewer({
               {contentTypeLabel(ct)}
             </Pill>
           )}
-          <CopyButton value={preview} label="Copy body" size="sm" className="bg-white/80" />
+          <CopyButton value={preview} label="Copy body" size="xs" className="bg-white/80" />
         </div>
         <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all p-3 pr-20 font-mono text-body">{preview}</pre>
       </Card>
       {hash && (
         <div className="flex items-center gap-2 pt-1">
           <span className="font-mono">SHA256: {hash.slice(0, 16)}...</span>
-          <CopyButton value={hash} label="Copy hash" size="sm" />
+          <CopyButton value={hash} label="Copy hash" size="xs" />
         </div>
       )}
       {size != null && size > previewBytes && (

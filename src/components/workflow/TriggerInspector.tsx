@@ -227,7 +227,7 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         <Card padding="sm">
           <div className="flex items-center justify-between gap-2">
             <Pill>Default</Pill>
-            <CopyButton value={url} label="Copy Default URL" size="sm" />
+            <CopyButton value={url} label="Copy Default URL" size="xs" />
           </div>
           <div className="mt-1 break-all font-mono text-xs text-muted">{url}</div>
         </Card>

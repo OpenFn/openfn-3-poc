@@ -20,7 +20,7 @@ export default function CopyButton({
   value: string;
   /** Accessible name and tooltip of the icon-only button. */
   label?: string;
-  /** `xs` only applies with children; the icon button is `sm` at its smallest. */
+  /** Button's size; the icon-only button is a square of the same height. */
   size?: ButtonSize;
   id?: string;
   className?: string;
@@ -38,7 +38,7 @@ export default function CopyButton({
   // The icon button says "Copied!" in its tooltip, as Lightning's Copy hook does.
   return (
     <Tooltip content={label} copy={value}>
-      <IconButton id={id} icon="hero-clipboard-document" label={label} tooltip={false} size={size === "xs" ? "sm" : size} className={className} />
+      <IconButton id={id} icon="hero-clipboard-document" label={label} tooltip={false} size={size} className={className} />
     </Tooltip>
   );
 }

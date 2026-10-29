@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
-import IconButton from "./IconButton";
 import Tooltip from "./Tooltip";
 
 export type PillColor = "gray" | "red" | "orange" | "yellow" | "green" | "blue" | "primary" | "purple" | "pink" | "dark";
@@ -65,13 +64,17 @@ export default function Pill({
     >
       {children}
       {onRemove && (
-        <IconButton
-          icon="hero-x-mark-mini"
-          label={removeLabel}
-          size="sm"
-          className="p-0 text-current opacity-60 hover:bg-black/10 hover:text-current hover:opacity-100"
-          onClick={onRemove}
-        />
+        // Part of the chip, in its colour and smaller than any button size, so the pill draws it.
+        <Tooltip content={removeLabel}>
+          <button
+            type="button"
+            aria-label={removeLabel}
+            onClick={onRemove}
+            className="inline-flex rounded-full text-current opacity-60 hover:bg-black/10 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+          >
+            <span className="hero-x-mark-mini h-4 w-4" aria-hidden="true" />
+          </button>
+        </Tooltip>
       )}
     </span>
   );

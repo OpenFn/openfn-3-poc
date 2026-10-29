@@ -21,7 +21,7 @@ export default function JsonViewer({ body, ariaLabel = "Dataclip" }: { body: Dat
 
   return (
     <div className="h-full relative">
-      {content && <CopyButton value={content} size="sm" className="absolute top-3 right-3 z-10" />}
+      {content && <CopyButton value={content} size="xs" className="absolute top-3 right-3 z-10" />}
       <CodeViewer value={content} language="json" ariaLabel={ariaLabel} />
     </div>
   );
