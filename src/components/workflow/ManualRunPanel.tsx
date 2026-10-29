@@ -134,7 +134,7 @@ export default function ManualRunPanel({
             <Button>Search</Button>
             <IconButton icon="hero-calendar-days" label="Filter by date created" />
             <IconButton icon="hero-rectangle-group" label="Filter by type" />
-            <IconButton icon="hero-tag" label="Named only" active={namedOnly} aria-pressed={namedOnly} onClick={() => setNamedOnly((n) => !n)} />
+            <IconButton icon="hero-tag" label="Named only" active={namedOnly} onClick={() => setNamedOnly((n) => !n)} />
           </div>
           <div className="flex flex-col gap-3 overflow-auto">
             {visible.length ? (

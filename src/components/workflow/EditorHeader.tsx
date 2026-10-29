@@ -94,7 +94,7 @@ export default function EditorHeader({
 
       <div className="ml-auto flex items-center gap-2">
         <Toggle checked={enabled} onChange={onEnabledChange} tooltip={enabled ? "Disable workflow" : "Enable workflow"} />
-        <IconButton icon="hero-adjustments-vertical" label="Workflow settings" active={settingsOpen} aria-pressed={settingsOpen} onClick={onSettingsClick} />
+        <IconButton icon="hero-adjustments-vertical" label="Workflow settings" active={settingsOpen} onClick={onSettingsClick} />
         {canRun && <NewRunButton onClick={onRun} onRunWithCustomInputClick={onRunWithCustomInput} disabled={runDisabled} text={runLabel} />}
         <SaveButton onClick={onSave} hasChanges={hasChanges} label={saveLabel} />
       </div>

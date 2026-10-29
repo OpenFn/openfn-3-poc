@@ -1,19 +1,44 @@
-# Button and Pill variants for the four hand-built buttons
+# Buttons styled outside Button
 
-`Button` only has solid themes, so four buttons that look different are built by hand:
+Button's looks are `primary`, `secondary` and `plain`, with `tone`
+(CLAUDE.md, Prop names). Some buttons still draw their own look.
 
-- `src/components/workflow/EditorHeader.tsx:77`: the workflow name in the editor header, plain text that renames on click.
-- `src/components/history/LogViewer.tsx:31`: the log-level menu trigger (icon, level, chevron).
-- `src/components/workflow/VersionDropdown.tsx:29`: the "latest" / "v3" menu trigger, styled to look like a `Pill`.
-- `src/components/shell/PickerButton.tsx:34`: the project picker. It's a secondary button, except in a sandbox, where it takes the sandbox colour at runtime.
+## Built by hand (marked `debt:`)
 
-All four are marked `debt:`.
+- `src/components/workflow/EditorHeader.tsx:84`: the workflow name in the
+  editor header, bare text that renames on click.
+- `src/components/history/LogViewer.tsx:31`: the log-level menu trigger (icon,
+  level, chevron) on the dark log background.
+- `src/components/workflow/VersionDropdown.tsx:29`: the "latest" / "v3" menu
+  trigger, styled to look like a `Pill`.
+- `src/components/shell/PickerButton.tsx:34`: the project picker. It's a
+  secondary button, except in a sandbox, where it takes the sandbox colour at
+  runtime.
 
-**Fix.**
-- A `plain` theme on `Button` (text only, hover colour) for the first two.
-- Let `Pill` render as a button (or take an `onClick`), so a menu trigger can be a `Pill`.
-- Let `Button` take a custom background colour for the sandbox picker, or give it a `sandbox` theme that reads the colour from a CSS variable.
+`plain` doesn't fit the first two: it has button padding and a hover
+background, and these are bare text (no padding, no background; the log one
+fades in on hover). Either they take a look of their own, or they become
+`plain` buttons and look a little different from Lightning.
 
-Each one needs its `data-variant` hook and a story. Check the GDS theme after.
+For the other two: let `Pill` render as a button (or take an `onClick`), and
+give `Button` a way to take the sandbox colour from a CSS variable.
 
-**Done when** all four disable comments are gone.
+## IconButtons recoloured through `className`
+
+IconButton has one look per `variant` and `tone`; these callers change it.
+
+- `Pill.tsx:72`: the remove X takes the pill's text colour.
+- `FilterChip.tsx:70`: a round, primary-coloured X.
+- `WorkOrderTableRow.tsx:150` and `RunDetails.tsx:173`: the cancel X, grey
+  then red on hover (`tone="danger"` is red throughout).
+- `WorkOrderTableRow.tsx:161` and `RunDetails.tsx:35`: retry, primary on hover.
+- `WorkOrdersTable.tsx:163`: tilts and turns primary on hover.
+- `MiniHistory.tsx:98`: primary while selected.
+- `devtools/SettingsMenu.tsx:38`: the round dark settings button (devtools,
+  not Lightning).
+
+Each one either becomes an existing look, or the look moves into Button for
+everyone.
+
+**Done when** every `debt:` above is gone and no IconButton sets a colour in
+`className`.
