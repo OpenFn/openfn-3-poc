@@ -143,4 +143,26 @@ describe("Tooltip", () => {
     expect(openTooltips()).toEqual(["Copied!"]);
     expect(onRowClick).not.toHaveBeenCalled();
   });
+
+  it("doesn't repeat a control's name as its description", async () => {
+    render(
+      <>
+        <Tooltip content="Delete">
+          <button aria-label="Delete">x</button>
+        </Tooltip>
+        <Tooltip content="Close IDE (Esc)">
+          <button aria-label="Close IDE">x</button>
+        </Tooltip>
+        <Tooltip content="Run" disabled>
+          <button aria-label="Run" disabled>x</button>
+        </Tooltip>
+      </>
+    );
+    await hover(screen.getByRole("button", { name: "Delete" }));
+    expect(openTooltips()).toEqual(["Delete"]);
+    expect(screen.getByRole("button", { name: "Delete" }).getAttribute("aria-describedby")).toBeNull();
+    await hover(screen.getByRole("button", { name: "Close IDE" }));
+    expect(screen.getByRole("button", { name: "Close IDE" }).getAttribute("aria-describedby")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Run" }).getAttribute("aria-description")).toBeNull();
+  });
 });
