@@ -1,6 +1,7 @@
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import { useTableSort, type SortValue } from "../useTableSort";
 import Button from "../Button";
+import IconButton from "../IconButton";
 import type { CollectionRow } from "../../types/project-settings";
 import { formatBytes } from "../../utils/format";
 
@@ -57,18 +58,15 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
           <Td>{c.name}</Td>
           <Td>{formatBytes(c.byteSizeSum)}</Td>
           <Td actions>
-            <Button
+            <IconButton
               id={`preview-collection-${c.id}-button`}
               variant="secondary"
               size="xs"
-              aria-label="Preview collection"
-              tooltip="Preview collection"
+              icon="hero-eye"
+              label="Preview collection"
               pending={previewingId === c.id}
               onClick={() => onPreview(c)}
-              icon="hero-eye"
-            >
-              {null}
-            </Button>
+            />
             <Button id={`download-collection-${c.id}-button`} variant="secondary" size="xs" href={c.downloadHref}>
               Download
             </Button>
