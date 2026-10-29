@@ -43,3 +43,4 @@ export const Expanded: Story = { args: { ...base, workOrder: row("wo-1"), defaul
 export const TwoRunsExpanded: Story = { args: { ...base, workOrder: row("wo-2"), defaultExpanded: true } };
 export const Selected: Story = { args: { ...base, workOrder: row("wo-4"), selected: true } };
 export const Rejected: Story = { args: { ...base, workOrder: row("wo-5") } };
+export const Pending: Story = { args: { ...base, workOrder: { ...row("wo-1"), state: "pending" } } };

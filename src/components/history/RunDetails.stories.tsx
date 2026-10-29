@@ -25,6 +25,7 @@ export const FailedRun: Story = {
   args: { ...base, run: run("run-2", "wf-referrals"), index: 1, total: 2 },
 };
 export const Running: Story = { args: { ...base, run: run("run-4"), index: 1, total: 1 } };
+export const Queued: Story = { args: { ...base, run: { ...run("run-4"), state: "available" }, index: 1, total: 1 } };
 
 export const OneStep: Story = {
   args: { ...base, run: run("run-1"), index: 1, total: 1 },
