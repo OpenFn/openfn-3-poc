@@ -5,20 +5,20 @@ Button's looks are `primary`, `secondary` and `plain`, with `tone`
 
 ## Built by hand (marked `debt:`)
 
-- `src/components/workflow/EditorHeader.tsx:84`: the workflow name in the
+- `src/components/workflow/EditorHeader.tsx:83`: the workflow name in the
   editor header, bare text that renames on click.
 - `src/components/history/LogViewer.tsx:31`: the log-level menu trigger (icon,
   level, chevron) on the dark log background.
 - `src/components/workflow/VersionDropdown.tsx:29`: the "latest" / "v3" menu
   trigger, styled to look like a `Pill`.
-- `src/components/shell/PickerButton.tsx:34`: the project picker. It's a
+- `src/components/shell/PickerButton.tsx:35`: the project picker. It's a
   secondary button, except in a sandbox, where it takes the sandbox colour at
   runtime.
 
-`plain` doesn't fit the first two: it has button padding and a hover
-background, and these are bare text (no padding, no background; the log one
-fades in on hover). Either they take a look of their own, or they become
-`plain` buttons and look a little different from Lightning.
+`plain` nearly fits the first two: it's text with no background, darkening
+on hover. What's left is its padding, which these don't have (and the log one
+fades in on hover rather than darkening). Either they become `plain` buttons
+and sit a few pixels wider than Lightning's, or `plain` loses its padding.
 
 For the other two: let `Pill` render as a button (or take an `onClick`), and
 give `Button` a way to take the sandbox colour from a CSS variable.
