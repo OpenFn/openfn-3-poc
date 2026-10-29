@@ -210,7 +210,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                 data-testid="send-message-button"
                 icon="hero-paper-airplane-solid"
                 label="Send message"
-                active={!!input.trim()}
+                variant="primary"
                 disabled={!input.trim()}
               />
             </div>

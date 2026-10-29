@@ -16,7 +16,7 @@ function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStor
   if (step.inputWiped)
     return (
       <WipedTooltip message={zeroPersistenceMessage} dataStorageHref={dataStorageHref}>
-        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} title="" disabled />
+        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} tooltip={false} disabled />
       </WipedTooltip>
     );
   if (step.jobDeleted)

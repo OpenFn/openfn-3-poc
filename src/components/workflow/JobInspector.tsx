@@ -49,11 +49,11 @@ export default function JobInspector({
     <InspectorFooter
       leftButtons={
         <>
-          <IconButton icon="hero-arrows-pointing-out" label="Code" title="Open code editor ( ⌘ E )" onClick={onOpenEditor} />
+          <IconButton icon="hero-arrows-pointing-out" label="Code" tooltip="Open code editor ( ⌘ E )" onClick={onOpenEditor} />
           <IconButton
             icon="hero-trash"
             label="Delete"
-            title={canDelete ? "Delete this job" : "You can't delete a step that other steps depend on"}
+            tooltip={canDelete ? "Delete this job" : "You can't delete a step that other steps depend on"}
             onClick={() => setConfirmDelete(true)}
             disabled={!canDelete}
           />

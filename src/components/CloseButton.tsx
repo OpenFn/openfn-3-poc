@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import IconButton from "./IconButton";
 
-type Props = Omit<ComponentProps<typeof IconButton>, "icon" | "label" | "title"> & {
+type Props = Omit<ComponentProps<typeof IconButton>, "icon" | "label" | "tooltip" | "variant" | "tone"> & {
   /** Accessible name, e.g. "Close panel". */
   label?: string;
 };
@@ -12,5 +12,5 @@ type Props = Omit<ComponentProps<typeof IconButton>, "icon" | "label" | "title">
  * first Escape away from a modal.
  */
 export default function CloseButton({ label = "Close", ...rest }: Props) {
-  return <IconButton icon="hero-x-mark" label={label} title="" {...rest} />;
+  return <IconButton icon="hero-x-mark" label={label} tooltip={false} {...rest} />;
 }

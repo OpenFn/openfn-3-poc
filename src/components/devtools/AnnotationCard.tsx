@@ -64,7 +64,7 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
           {annotation && (
             <IconButton
               href={annotation.url}
-              external
+              target="_blank"
               icon="hero-arrow-top-right-on-square"
               label="Open on GitHub"
               size="sm"

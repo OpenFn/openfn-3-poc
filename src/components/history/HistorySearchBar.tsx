@@ -50,9 +50,8 @@ export default function HistorySearchBar({
               <IconButton
                 icon={f.icon}
                 label={f.label}
-                title=""
+                tooltip={false}
                 active={selected.includes(f.id)}
-                aria-pressed={selected.includes(f.id)}
                 onClick={() => onToggle(f.id)}
               />
             </Tooltip>

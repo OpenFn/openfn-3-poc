@@ -38,7 +38,7 @@ export default function CopyButton({
   // The icon button says "Copied!" in its tooltip, as Lightning's Copy hook does.
   return (
     <Tooltip content={label} copy={value}>
-      <IconButton id={id} icon="hero-clipboard-document" label={label} title="" size={size === "xs" ? "sm" : size} className={className} />
+      <IconButton id={id} icon="hero-clipboard-document" label={label} tooltip={false} size={size === "xs" ? "sm" : size} className={className} />
     </Tooltip>
   );
 }

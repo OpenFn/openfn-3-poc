@@ -60,7 +60,7 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    */
   pending?: boolean;
   /** A hero icon class (e.g. `hero-plus`) shown before the label, sized to the button, or an icon element of your own. The spinner takes its place while `pending`. */
-  icon?: string | ReactElement | undefined;
+  icon?: ReactNode;
   ref?: Ref<HTMLButtonElement>;
   children: ReactNode;
 }

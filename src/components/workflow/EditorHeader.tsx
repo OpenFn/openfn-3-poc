@@ -102,7 +102,7 @@ export default function EditorHeader({
       <IconButton
         icon="hero-chat-bubble-left-right"
         label={aiOpen ? "Close AI Assistant" : "Open AI Assistant"}
-        title={`${aiOpen ? "Close AI Assistant" : "Open AI Assistant"} (⌘ K)`}
+        tooltip={`${aiOpen ? "Close AI Assistant" : "Open AI Assistant"} (⌘ K)`}
         active={aiOpen}
         size="lg"
         className="ml-2 rounded-full"

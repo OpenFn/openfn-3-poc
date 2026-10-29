@@ -33,7 +33,7 @@ export default function SettingsMenu() {
           <IconButton
             icon="hero-cog-6-tooth"
             label="Open settings"
-            title="Settings"
+            tooltip="Settings"
             data-ui="settings-trigger"
             className="h-12 w-12 rounded-full bg-inverse text-inverse shadow-lg hover:bg-inverse/90"
           />

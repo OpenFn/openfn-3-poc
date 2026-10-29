@@ -96,7 +96,7 @@ export default function FullScreenIDE({
           <IconButton
             icon="hero-document-text"
             label="Docs"
-            title="Show adaptor documentation"
+            tooltip="Show adaptor documentation"
             size="sm"
             active={docsTab === "docs" && !docsCollapsed}
             onClick={() => showDocs("docs")}
@@ -104,7 +104,7 @@ export default function FullScreenIDE({
           <IconButton
             icon="hero-sparkles"
             label="Metadata"
-            title="Show metadata explorer"
+            tooltip="Show metadata explorer"
             size="sm"
             active={docsTab === "metadata" && !docsCollapsed}
             onClick={() => showDocs("metadata")}
@@ -118,7 +118,7 @@ export default function FullScreenIDE({
         {(panelState === "run-viewer" || panelState === "create-run") && (
           <RunRetryButton isRetryable={panelState === "run-viewer" && isRetryable} onRun={onRun} onRetry={onRetry} />
         )}
-        <IconButton icon="hero-x-mark" label="Close IDE" title="Close IDE (Esc)" onClick={onClose} />
+        <IconButton icon="hero-x-mark" label="Close IDE" tooltip="Close IDE (Esc)" onClick={onClose} />
       </div>
 
       <div className="flex flex-1 overflow-hidden">

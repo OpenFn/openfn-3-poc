@@ -166,7 +166,7 @@ export default function WorkOrderTableRow({
                   />
                 ) : canRunWorkflow ? (
                   <WipedTooltip message={zeroPersistence} dataStorageHref={dataStorageHref}>
-                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} title="" size="sm" disabled />
+                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} tooltip={false} size="sm" disabled />
                   </WipedTooltip>
                 ) : (
                   <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="sm" disabled />
