@@ -20,9 +20,10 @@ type Props = Omit<ComponentProps<typeof Button>, "children" | "icon" | "size" | 
   );
 
 const sizes: Record<IconButtonSize, { button: string; icon: string }> = {
-  sm: { button: "p-0.5", icon: "h-4 w-4" },
-  md: { button: "p-1", icon: "h-5 w-5" },
-  lg: { button: "p-1.5", icon: "h-6 w-6" },
+  // 24px, 32px, 40px.
+  sm: { button: "p-1", icon: "h-4 w-4" },
+  md: { button: "p-1.5", icon: "h-5 w-5" },
+  lg: { button: "p-2", icon: "h-6 w-6" },
 };
 
 /**
