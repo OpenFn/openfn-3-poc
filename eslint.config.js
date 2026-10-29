@@ -103,6 +103,14 @@ const rawControl = {
     'Raw control: use Button, IconButton, the Inputs controls or Table. If this element deliberately is not that control, disable it with a reason.',
 }
 
+// Type size comes from Text or Heading (src/components/Text.tsx). Weight,
+// italic and mono stay classes: they emphasise text inside its size. Only the
+// history area is held to it so far.
+const typeRules = banned(
+  '\\b(?:text-(?:xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
+  'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/Text.tsx.'
+)
+
 const srcRules = (colours) => ['error', ...designRules, ...colours, liveViewAttribute]
 const consumerRules = (colours) => [...srcRules(colours), rawControl]
 
@@ -186,6 +194,11 @@ export default defineConfig([
     ignores: ['**/*.stories.tsx'],
     rules: { 'no-restricted-syntax': consumerRules(colourRules()) },
   },
+  {
+    files: ['src/components/history/**/*.tsx'],
+    ignores: ['**/*.stories.tsx', '**/*.test.tsx'],
+    rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules] },
+  },
   // Raw palette colours, confined to the files that are about colour.
   // Tag colours:
   { files: ['src/components/Pill.tsx'], rules: { 'no-restricted-syntax': srcRules(colourRules({ palette: false })) } },
@@ -198,9 +211,10 @@ export default defineConfig([
   },
   // Chart palettes:
   {
-    files: ['src/components/history/ChannelTiming.tsx', 'src/components/admin/LiveDashboardHome.tsx'],
-    rules: { 'no-restricted-syntax': consumerRules([]) },
+    files: ['src/components/history/ChannelTiming.tsx'],
+    rules: { 'no-restricted-syntax': [...consumerRules([]), ...typeRules] },
   },
+  { files: ['src/components/admin/LiveDashboardHome.tsx'], rules: { 'no-restricted-syntax': consumerRules([]) } },
   // Tests and fixtures hold data (sandbox colours) and query chart classes:
   { files: ['src/**/*.test.{ts,tsx}', 'src/mock-data/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
   {

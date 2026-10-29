@@ -3,6 +3,7 @@ import Disclosure from "../Disclosure";
 import { cn } from "../../utils/cn";
 import Pill from "../Pill";
 import { formatUs } from "../../utils/format";
+import Text from "../Text";
 import Tooltip from "../Tooltip";
 
 interface Segment {
@@ -88,7 +89,7 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
 
   return (
     <Disclosure variant="card" id="timing-section" title="Timing">
-      <div className="space-y-3 pt-1 text-xs">
+      <Text as="div" variant="body-sm" className="space-y-3 pt-1">
         <div className="relative">
           <div
             className="relative flex h-10 w-full items-center overflow-hidden rounded-lg p-1.5"
@@ -144,7 +145,7 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
           )}
           {hasTtfb && <span className="ml-auto font-mono text-faint">TTFB: {formatUs(data.ttfbUs)} ms</span>}
         </div>
-      </div>
+      </Text>
     </Disclosure>
   );
 }

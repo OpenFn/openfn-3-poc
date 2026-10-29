@@ -45,3 +45,10 @@ goes back to Lightning's way.
 - **Exception and Lost run states are pale grey.** Lightning draws them dark
   grey with white text (`state_pill`); the replica keeps every status pill
   pale, so a list never mixes pale and solid.
+
+## Type
+
+- **The waiting messages in the log and dataclip viewers stay 12px.**
+  Lightning grows them to 16px when the panel is wide
+  (`viewers.ex:106,277`), the only text it sizes by panel width. In the
+  replica every piece of text has one size, from `Text`.

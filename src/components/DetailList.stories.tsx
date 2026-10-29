@@ -20,6 +20,19 @@ export const Rows: Story = {
   ),
 };
 
+export const Small: Story = {
+  render: () => (
+    <DetailList size="sm" className="w-80">
+      <DetailItem label="content-type" mono>
+        application/json
+      </DetailItem>
+      <DetailItem label="user-agent" mono>
+        CommCareHQ
+      </DetailItem>
+    </DetailList>
+  ),
+};
+
 export const Grid: Story = {
   render: () => (
     <DetailList layout="grid">
