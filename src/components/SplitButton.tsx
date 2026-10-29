@@ -12,6 +12,8 @@ interface Props {
   menuLabel?: string;
   variant?: "primary" | "secondary";
   disabled?: boolean;
+  /** The main action is in flight: both halves are disabled and the main one shows a spinner. */
+  pending?: boolean;
   /** Hover text for the main action (often a keyboard shortcut). */
   tooltip?: string;
 }
@@ -20,17 +22,17 @@ interface Props {
  * A Button with a chevron that opens a Menu of related actions: the
  * editor's Run / Retry buttons.
  */
-export default function SplitButton({ children, onClick, menu, menuLabel = "More options", variant = "primary", disabled = false, tooltip }: Props) {
+export default function SplitButton({ children, onClick, menu, menuLabel = "More options", variant = "primary", disabled = false, pending = false, tooltip }: Props) {
   return (
     <div className="inline-flex rounded-md shadow-xs">
-      <Button variant={variant} onClick={onClick} disabled={disabled} tooltip={tooltip} className="rounded-r-none">
+      <Button variant={variant} onClick={onClick} disabled={disabled} pending={pending} tooltip={tooltip} className="rounded-r-none">
         {children}
       </Button>
       <Menu
         align="end"
         className="w-max"
         trigger={
-          <Button variant={variant} disabled={disabled} aria-label={menuLabel} className="-ml-px rounded-l-none px-2">
+          <Button variant={variant} disabled={disabled || pending} aria-label={menuLabel} className="-ml-px rounded-l-none px-2">
             <span className="hero-chevron-down h-4 w-4" aria-hidden="true" />
           </Button>
         }

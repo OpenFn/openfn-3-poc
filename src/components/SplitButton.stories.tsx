@@ -28,3 +28,4 @@ type Story = StoryObj<typeof SplitButton>;
 export const Primary: Story = {};
 export const Secondary: Story = { args: { variant: "secondary" } };
 export const Disabled: Story = { args: { disabled: true } };
+export const Pending: Story = { args: { pending: true, children: "Processing" } };
