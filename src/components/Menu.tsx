@@ -61,7 +61,7 @@ interface MenuItemProps {
   onClick?: (e: MouseEvent) => void;
   /** Marks the current choice with a check. */
   selected?: boolean;
-  tone?: "default" | "danger";
+  tone?: "danger" | undefined;
   disabled?: boolean | undefined;
   /** A muted line under the label. */
   description?: ReactNode;
@@ -69,7 +69,7 @@ interface MenuItemProps {
 }
 
 /** One row of a Menu: a button, router link or external link. */
-export function MenuItem({ icon, to, href, onClick, selected, tone = "default", disabled = false, description, children }: MenuItemProps) {
+export function MenuItem({ icon, to, href, onClick, selected, tone, disabled = false, description, children }: MenuItemProps) {
   const className = cn(
     "group flex w-full items-start gap-x-3 px-4 py-2 text-left text-sm cursor-pointer",
     "data-focus:bg-hover data-focus:outline-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
