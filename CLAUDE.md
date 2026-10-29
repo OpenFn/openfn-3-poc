@@ -101,7 +101,9 @@ not **how** it's built.
   the collaborative editor's React components and a half-started new design
   system. Don't port those splits. Build every page from the primitives
   below, and when two Lightning screens style the same thing differently,
-  pick one treatment in the primitive rather than copying both.
+  pick one treatment in the primitive rather than copying both. Where the replica
+  looks or behaves differently on purpose, list it in
+  [docs/lightning-differences.md](./docs/lightning-differences.md).
 - Colours are named for what they're for: `text-strong`, `text-body`,
   `text-muted`, `text-faint`, `bg-surface`, `bg-subtle`, `border-subtle` and
   the rest in `src/theme/tokens.css`. Brand is `primary-*` (indigo; don't

@@ -29,8 +29,6 @@ IconButton has one look per `variant` and `tone`; these callers change it.
 
 - `Pill.tsx:72`: the remove X takes the pill's text colour.
 - `FilterChip.tsx:70`: a round, primary-coloured X.
-- `WorkOrderTableRow.tsx:150` and `RunDetails.tsx:173`: the cancel X, grey
-  then red on hover (`tone="danger"` is red throughout).
 - `WorkOrderTableRow.tsx:161` and `RunDetails.tsx:35`: retry, primary on hover.
 - `WorkOrdersTable.tsx:163`: tilts and turns primary on hover.
 - `MiniHistory.tsx:98`: primary while selected.

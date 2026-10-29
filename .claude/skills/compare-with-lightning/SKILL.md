@@ -70,6 +70,8 @@ Neither one is enough alone. For each difference, decide which kind it is:
 - **Harness artifact**: a step that failed (listed in the report), a click
   that hit the wrong spot, or a page that hadn't finished loading. Fix the
   spec and re-run.
+- **Deliberate**: listed in `docs/lightning-differences.md`. Leave it, and
+  report it as deliberately left.
 - **Real difference**: wording, missing or extra controls, an action that
   behaves differently, raw fixture ids where Lightning shows UUIDs, no toast
   where Lightning shows one. These get fixed.
