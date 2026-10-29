@@ -40,7 +40,7 @@ export default function TokensTable({ tokens, onGenerate }: { tokens: ApiToken[]
                   icon="hero-trash"
                   tone="danger"
                   label="Delete token"
-                  className="-my-1"
+                  size="xs"
                 />
               </div>
             </Td>
