@@ -15,11 +15,13 @@
  *
  * A token swap can't reach everything (button shape, field borders,
  * focus states), so each theme may add a component layer. That layer
- * keys off the `data-ui` / `data-variant` hooks the primitives emit
+ * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
  * (button, link, field, form-group, label, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
  * page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.
+ * A toned button is still `data-variant="primary"`: a rule meant for the
+ * plain primary button needs `:not([data-tone])`.
  * The default theme has no component layer.
  *
  * ADDING A THEME: add an entry in `themes.ts`, then a token block here
@@ -191,10 +193,10 @@ html[data-theme="light"] {
     font-weight: 500;
     box-shadow: var(--shadow-sm);
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
-    &:is([data-variant="primary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
+    &[data-variant="primary"] {
       box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--shadow-sm);
     }
-    &[data-variant="primary"]:hover:not(:disabled) { background-color: var(--ui-brand-hover); }
+    &[data-variant="primary"]:not([data-tone]):hover:not(:disabled) { background-color: var(--ui-brand-hover); }
     /* Tailwind's ring is a box-shadow too, so the hairline is drawn here. */
     &[data-variant="secondary"] {
       box-shadow: 0 0 0 1px var(--color-gray-300), var(--shadow-sm);
@@ -482,9 +484,6 @@ html[data-theme="gds"] {
   --ui-button-bg: #0f7a52;            --ui-button-hover: #0b5c3e;            --ui-button-edge: #083d29;
   --ui-button-secondary-bg: #f3f3f3;  --ui-button-secondary-hover: #cecece;  --ui-button-secondary-edge: #858686;
   --ui-button-danger-bg: #ca3535;     --ui-button-danger-hover: #982828;     --ui-button-danger-edge: #651b1b;
-  /* GOV.UK has no amber button. A "warning" button is a destructive
-     one (its Warning button is red), so it shares the danger colours. */
-  --ui-button-warning-bg: #ca3535;    --ui-button-warning-hover: #982828;    --ui-button-warning-edge: #651b1b;
 
   /* Workflow canvas: GOV.UK blue for the selection and its neighbours. */
   --ui-diagram-selected: #1d70b8;
@@ -560,7 +559,7 @@ html[data-theme="gds"] {
   /* ---- Actions ----------------------------------------------- */
 
   /* Button: solid fill with a "pressable" bottom edge that sinks on press. */
-  [data-ui="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
+  [data-ui="button"]:is([data-variant="primary"], [data-variant="secondary"]) {
     --_bg: var(--ui-button-bg);
     --_hover: var(--ui-button-hover);
     --_edge: var(--ui-button-edge);
@@ -579,15 +578,10 @@ html[data-theme="gds"] {
       --_edge: var(--ui-button-secondary-edge);
       --_text: var(--ui-text);
     }
-    &[data-variant="danger"] {
+    &[data-tone="danger"] {
       --_bg: var(--ui-button-danger-bg);
       --_hover: var(--ui-button-danger-hover);
       --_edge: var(--ui-button-danger-edge);
-    }
-    &[data-variant="warning"] {
-      --_bg: var(--ui-button-warning-bg);
-      --_hover: var(--ui-button-warning-hover);
-      --_edge: var(--ui-button-warning-edge);
     }
     &:hover:not(:disabled) { background-color: var(--_hover); }
     &:active:not(:disabled) { top: 2px; }

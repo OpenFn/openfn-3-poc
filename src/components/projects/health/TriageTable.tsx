@@ -127,7 +127,7 @@ export default function TriageTable({
             <Td>{(s.error_type && TIPS[s.error_type]) || TIPS["default"]}</Td>
             <Td actions>
               {s.exit_reason && (
-                <Button theme="secondary" to={signatureUrl(projectId, workflowId, from, s)} className="whitespace-nowrap">
+                <Button variant="secondary" to={signatureUrl(projectId, workflowId, from, s)} className="whitespace-nowrap">
                   View history
                 </Button>
               )}

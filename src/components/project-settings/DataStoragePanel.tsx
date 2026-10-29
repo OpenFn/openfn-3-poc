@@ -169,7 +169,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
           </Setting>
           {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
           <div className="flex gap-1">
-            <Button theme="secondary" disabled={!canEdit} onClick={() => form.reset()}>
+            <Button variant="secondary" disabled={!canEdit} onClick={() => form.reset()}>
               Cancel
             </Button>
             <Button id="input-output-retention-period-submit-btn" type="submit" disabled={!canEdit} pending={form.pending}>

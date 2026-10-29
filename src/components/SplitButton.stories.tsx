@@ -26,5 +26,5 @@ export default meta;
 type Story = StoryObj<typeof SplitButton>;
 
 export const Primary: Story = {};
-export const Secondary: Story = { args: { theme: "secondary" } };
+export const Secondary: Story = { args: { variant: "secondary" } };
 export const Disabled: Story = { args: { disabled: true } };

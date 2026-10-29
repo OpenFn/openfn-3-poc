@@ -106,7 +106,7 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
           <Td actions>
             <Button
               id={`remove_project_user_${c.id}_button`}
-              theme="secondary"
+              variant="secondary"
               size="lg"
               tooltip={c.removeBlockedReason ?? undefined}
               disabled={c.removeBlockedReason !== null}

@@ -18,7 +18,7 @@ function Trigger() {
   return (
     <div className="flex gap-2">
       <Button onClick={() => toast("Project updated successfully")}>Show info</Button>
-      <Button theme="secondary" onClick={() => toast("Something went wrong", "error")}>
+      <Button variant="secondary" onClick={() => toast("Something went wrong", "error")}>
         Show error
       </Button>
     </div>

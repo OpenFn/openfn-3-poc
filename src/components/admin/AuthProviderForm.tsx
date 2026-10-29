@@ -29,20 +29,20 @@ interface Props {
 function TestButton({ state, pending, onTest }: { state: TestState; pending: boolean; onTest: () => void }) {
   if (state === "failed")
     return (
-      <Button theme="danger" id="test-button">
+      <Button tone="danger" id="test-button">
         <span className="hero-x-mark-solid h-4 w-4" />
         Failed
       </Button>
     );
   if (state === "success")
     return (
-      <Button theme="success" id="test-button">
+      <Button tone="success" id="test-button">
         <span className="hero-check-solid h-4 w-4" />
         Success
       </Button>
     );
   return (
-    <Button theme="secondary" id="test-button" onClick={onTest} pending={pending}>
+    <Button variant="secondary" id="test-button" onClick={onTest} pending={pending}>
       <span className="hero-beaker-solid h-4 w-4" />
       Test
     </Button>
@@ -230,7 +230,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
                 <Heading size="sm">Remove</Heading>
                 <p>Deletes the Authentication Configuration, and disables external authentication for Lightning.</p>
                 {remove.error && <Alert type="danger">{errorMessage(remove.error)}</Alert>}
-                <Button theme="danger" onClick={() => void remove.run()} pending={remove.pending}>
+                <Button tone="danger" onClick={() => void remove.run()} pending={remove.pending}>
                   <span className="hero-trash h-4 w-4" />
                   Remove
                 </Button>

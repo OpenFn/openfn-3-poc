@@ -3,8 +3,10 @@ import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
 import Tooltip from "./Tooltip";
+import type { Tone } from "./tone";
 
-export type ButtonTheme = "primary" | "secondary" | "danger" | "success" | "warning";
+export type ButtonVariant = "primary" | "secondary";
+export type ButtonTone = Extract<Tone, "danger" | "success">;
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -14,47 +16,30 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: "px-3.5 py-2.5",
 };
 
-// Lightning's new_inputs.ex button_theme_classes, enabled vs disabled. Each theme gives its focus
-// outline a colour; Lightning's secondary has none, so here it uses primary.
-const themeClasses: Record<ButtonTheme, { enabled: string; disabled: string }> = {
-  primary: {
-    enabled:
-      "bg-primary-600 hover:bg-primary-500 text-inverse focus-visible:outline-focus",
-    disabled: "bg-primary-300 text-inverse",
-  },
-  secondary: {
-    enabled: "bg-surface hover:bg-hover text-strong ring-1 ring-strong ring-inset focus-visible:outline-focus",
-    disabled: "bg-subtle text-faint ring-1 ring-subtle ring-inset",
-  },
-  danger: {
-    enabled:
-      "bg-danger-600 hover:bg-danger-500 text-inverse focus-visible:outline-danger-600",
-    disabled: "bg-danger-300 text-inverse",
-  },
-  success: {
-    enabled:
-      "bg-success-600 hover:bg-success-500 text-inverse focus-visible:outline-success-600",
-    disabled: "bg-success-300 text-inverse",
-  },
-  warning: {
-    enabled:
-      "bg-warning-600 hover:bg-warning-500 text-inverse focus-visible:outline-warning-600",
-    disabled: "bg-warning-300 text-inverse",
-  },
+// Lightning's button colours, keyed by the tone if there is one, else the variant. Each gives its
+// focus outline a colour; Lightning's secondary has none, so here it uses primary. Disabled is the
+// same colour at half strength for every look, with no hover.
+const lookClasses: Record<ButtonVariant | ButtonTone, string> = {
+  primary:
+    "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse focus-visible:outline-focus",
+  secondary:
+    "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset focus-visible:outline-focus",
+  danger:
+    "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse focus-visible:outline-danger-600",
+  success:
+    "bg-success-600 not-disabled:hover:bg-success-500 text-inverse focus-visible:outline-success-600",
 };
 
-function buttonClasses(theme: ButtonTheme, size: ButtonSize = "md", disabled = false, className?: string) {
+function buttonClasses(look: ButtonVariant | ButtonTone, size: ButtonSize = "md", className?: string) {
   return cn(
-    "rounded-md text-sm font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 phx-submit-loading:opacity-75 inline-flex items-center justify-center gap-x-1.5",
+    "rounded-md text-sm font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed disabled:opacity-50",
     sizeClasses[size],
-    themeClasses[theme][disabled ? "disabled" : "enabled"],
-    disabled && "cursor-not-allowed",
+    lookClasses[look],
     className
   );
 }
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: ButtonTheme;
+interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize | undefined;
   /** Render as a router link instead of a <button>. */
   to?: string;
@@ -77,15 +62,21 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
+// A tone colours the filled button only: nothing draws a red or green secondary.
+type Look =
+  | { variant?: "primary" | undefined; tone?: ButtonTone | undefined }
+  | { variant: "secondary"; tone?: never };
+
+type Props = BaseProps & Look;
+
 /**
- * The button: rounded-md, text-sm font-semibold, shadow-xs, with primary /
- * secondary / danger / success / warning themes and xs / sm / md / lg padding
- * (xs is the small row action in a table).
- * Pass `to` or `href` to get a link that looks the same. `pending` disables
- * it and shows a spinner while a request runs (STANDARDS.md pattern 1).
+ * Pass `to` or `href` to get a link that looks the same; disabled, it's a
+ * plain disabled button. `pending` disables it and shows a spinner while a
+ * request runs (STANDARDS.md pattern 1). `xs` is the table row action.
  */
 export default function Button({
-  theme = "primary",
+  variant = "primary",
+  tone,
   size = "md",
   to,
   href,
@@ -103,12 +94,13 @@ export default function Button({
   ...rest
 }: Props) {
   const disabled = disabledProp || pending;
-  const classes = buttonClasses(theme, size, disabled, className);
+  const classes = buttonClasses(tone ?? variant, size, className);
   const shared = {
     id,
     className: classes,
     "data-ui": "button",
-    "data-variant": theme,
+    "data-variant": variant,
+    "data-tone": tone,
     "data-pending": pending || undefined,
     "aria-busy": pending || undefined,
   };

@@ -121,7 +121,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 />
                 {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
                 <div className="flex gap-1">
-                  <Button theme="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
+                  <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
                     Cancel
                   </Button>
                   <Button type="submit" pending={form.pending}>
@@ -140,7 +140,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
               title="Recovery codes"
               subtitle="Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor authentication codes."
               action={
-                <Button theme="secondary" to={mfa.backupCodesHref}>
+                <Button variant="secondary" to={mfa.backupCodesHref}>
                   View
                 </Button>
               }

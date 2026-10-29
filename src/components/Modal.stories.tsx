@@ -15,7 +15,7 @@ const meta: Meta<typeof Modal> = {
     footer: (
       <>
         <Button>Create</Button>
-        <Button theme="secondary">Cancel</Button>
+        <Button variant="secondary">Cancel</Button>
       </>
     ),
   },

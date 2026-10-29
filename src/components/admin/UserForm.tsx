@@ -95,7 +95,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
           <Button id="save-user" type="submit" pending={form.pending}>
             Save
           </Button>
-          <Button theme="secondary" to={cancelTo}>
+          <Button variant="secondary" to={cancelTo}>
             Cancel
           </Button>
         </div>

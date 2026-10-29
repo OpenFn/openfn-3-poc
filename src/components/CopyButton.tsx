@@ -30,7 +30,7 @@ export default function CopyButton({
   const { copied, copy } = useCopy(value);
   if (children) {
     return (
-      <Button id={id} theme="secondary" size={size} onClick={copy} className={className}>
+      <Button id={id} variant="secondary" size={size} onClick={copy} className={className}>
         {copied ? "Copied!" : children}
       </Button>
     );

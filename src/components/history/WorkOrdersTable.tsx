@@ -91,7 +91,7 @@ export default function WorkOrdersTable({
   };
 
   const bulkButton = (label: string, enabled: boolean, onClick: () => void, disabledMsg: string) => (
-    <Button size="xs" theme="secondary" disabled={!enabled} tooltip={enabled ? undefined : disabledMsg} onClick={onClick}>
+    <Button size="xs" variant="secondary" disabled={!enabled} tooltip={enabled ? undefined : disabledMsg} onClick={onClick}>
       {label}
     </Button>
   );

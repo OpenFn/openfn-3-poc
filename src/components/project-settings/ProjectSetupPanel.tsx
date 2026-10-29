@@ -159,7 +159,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
               : "Deleting your project is irreversible"
           }
         >
-          <Button theme="danger" to={setup.deleteHref}>
+          <Button tone="danger" to={setup.deleteHref}>
             {sandbox ? "Delete sandbox" : "Delete project"}
           </Button>
         </Card>

@@ -27,7 +27,7 @@ export default function WorkflowCodePanel({ graph, onClose }: { graph: WorkflowG
         <InspectorFooter
           rightButtons={
             <>
-              <Button id="download-workflow-code-btn" theme="secondary" onClick={() => download(`${graph.name}.yaml`, yaml)}>
+              <Button id="download-workflow-code-btn" variant="secondary" onClick={() => download(`${graph.name}.yaml`, yaml)}>
                 Download
               </Button>
               <CopyButton id="copy-workflow-code-btn" value={yaml} className="min-w-24">

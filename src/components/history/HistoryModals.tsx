@@ -63,7 +63,6 @@ function BulkModal({
   };
   const button = (s: BulkScope, label: string) => (
     <Button
-      theme="primary"
       disabled={confirm.pending}
       pending={confirm.pending && scope === s}
       onClick={() => {
@@ -75,7 +74,7 @@ function BulkModal({
     </Button>
   );
   const back = (
-    <Button theme="secondary" onClick={close} disabled={confirm.pending}>
+    <Button variant="secondary" onClick={close} disabled={confirm.pending}>
       {backLabel}
     </Button>
   );

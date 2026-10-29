@@ -15,7 +15,7 @@ interface Props {
 export default function NewCredentialMenuButton({ id = "credential-options-menu-button", options = userCredentialMenuOptions }: Props) {
   return (
     <div id={id}>
-      <ButtonMenu label="Add new" theme="primary">
+      <ButtonMenu label="Add new" variant="primary">
         {options.map((o) => (
           <MenuItem key={o.target} disabled={o.disabled} onClick={() => showCredentialModal(o.target)}>
             {o.label}

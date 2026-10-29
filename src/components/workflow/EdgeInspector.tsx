@@ -44,7 +44,7 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
         <Toggle checked={edge.enabled} onChange={(enabled) => onChange({ enabled })} label="Enabled" tooltip="Enable or disable this path" />
       }
       rightButtons={
-        <Button theme="danger" tooltip="Delete this path" onClick={() => setConfirmDelete(true)}>
+        <Button tone="danger" tooltip="Delete this path" onClick={() => setConfirmDelete(true)}>
           Delete
         </Button>
       }

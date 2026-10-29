@@ -155,7 +155,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
           ))}
         </Table>
         <div className="mt-4 flex gap-1">
-          <Button theme="secondary" to={cancelTo}>
+          <Button variant="secondary" to={cancelTo}>
             Cancel
           </Button>
           <Button type="submit" pending={save.pending}>

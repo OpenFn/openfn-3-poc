@@ -148,12 +148,12 @@ export default function WorkflowsTable({
                 )}
               </Td>
               <Td actions>
-                <Button theme="secondary" size="xs" to={`/projects/${projectId}/w/${wf.id}/health`}>
+                <Button variant="secondary" size="xs" to={`/projects/${projectId}/w/${wf.id}/health`}>
                   Health
                 </Button>
                 {canDelete && (
                   <Button
-                    theme="secondary"
+                    variant="secondary"
                     size="xs"
                     onClick={() => setDeletingId(wf.id)}
                   >

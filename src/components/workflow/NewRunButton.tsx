@@ -37,7 +37,7 @@ export default function NewRunButton({
 
   if (!onRunWithCustomInputClick) {
     return (
-      <Button theme={variant} onClick={onClick} disabled={isDisabled} tooltip={tooltip}>
+      <Button variant={variant} onClick={onClick} disabled={isDisabled} tooltip={tooltip}>
         {content}
       </Button>
     );
@@ -45,7 +45,7 @@ export default function NewRunButton({
 
   return (
     <SplitButton
-      theme={variant}
+      variant={variant}
       onClick={onClick}
       disabled={isDisabled}
       tooltip={tooltip}

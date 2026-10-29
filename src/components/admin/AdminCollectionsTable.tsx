@@ -66,7 +66,7 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
               <Button
                 id={`edit-collection-${collection.id}-button`}
                 aria-label={`Edit ${collection.name}`}
-                theme="secondary"
+                variant="secondary"
                 size="xs"
                 onClick={() => onEdit(collection)}
               >
@@ -75,7 +75,7 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
               <Button
                 id={`delete-collection-${collection.id}-button`}
                 aria-label={`Delete ${collection.name}`}
-                theme="secondary"
+                variant="secondary"
                 size="xs"
                 onClick={() => onDelete(collection)}
               >

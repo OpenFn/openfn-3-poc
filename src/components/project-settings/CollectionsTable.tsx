@@ -59,7 +59,7 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
           <Td actions>
             <Button
               id={`preview-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
               pending={previewingId === c.id}
               onClick={() => onPreview(c)}
@@ -67,12 +67,12 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
               <span className="hero-eye h-4 w-4" aria-hidden="true" />
               <span className="sr-only">Preview collection</span>
             </Button>
-            <Button id={`download-collection-${c.id}-button`} theme="secondary" size="xs" href={c.downloadHref}>
+            <Button id={`download-collection-${c.id}-button`} variant="secondary" size="xs" href={c.downloadHref}>
               Download
             </Button>
             <Button
               id={`edit-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
               disabled={!canManage}
               onClick={() => onEdit(c)}
@@ -81,7 +81,7 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
             </Button>
             <Button
               id={`delete-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
               disabled={!canManage}
               onClick={() => onDelete(c)}

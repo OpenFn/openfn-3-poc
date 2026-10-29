@@ -10,7 +10,7 @@ const meta: Meta<typeof Menu> = {
   decorators: [withRouter, (Story) => <div className="flex justify-center p-8 pb-64"><Story /></div>],
   args: {
     trigger: (
-      <Button theme="secondary">
+      <Button variant="secondary">
         Options <span className="hero-chevron-down h-4 w-4" />
       </Button>
     ),
@@ -42,7 +42,7 @@ export const Choices: Story = {
   args: {
     align: "start",
     trigger: (
-      <Button theme="secondary">
+      <Button variant="secondary">
         Version: latest <span className="hero-chevron-down h-4 w-4" />
       </Button>
     ),

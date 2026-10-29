@@ -54,7 +54,7 @@ function EditFooter({ onEdit }: { onEdit: () => void }) {
   return (
     <InspectorFooter
       leftButtons={
-        <Button theme="secondary" onClick={onEdit} tooltip="Edit trigger">
+        <Button variant="secondary" onClick={onEdit} tooltip="Edit trigger">
           Edit
         </Button>
       }
@@ -90,7 +90,7 @@ function WizardFooter({ label, onPrimary, onCancel }: { label: string; onPrimary
   return onCancel ? (
     <InspectorFooter
       leftButtons={
-        <Button theme="secondary" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
       }

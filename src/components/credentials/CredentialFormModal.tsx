@@ -553,7 +553,7 @@ export default function CredentialFormModal({
           )}
         </div>
         {envs.length > 1 && (
-          <Button theme="secondary" size="sm" onClick={() => setConfirmingEnvDelete(true)}>
+          <Button variant="secondary" size="sm" onClick={() => setConfirmingEnvDelete(true)}>
             <span className="hero-trash h-4 w-4" />
             Delete environment
           </Button>

@@ -36,7 +36,7 @@ function SecretField({ id, value, type, revealed, onShow }: { id: string; value:
           Copy
         </CopyButton>
       ) : (
-        <Button id={buttonId} theme="secondary" className={buttonClass} onClick={onShow}>
+        <Button id={buttonId} variant="secondary" className={buttonClass} onClick={onShow}>
           Show
         </Button>
       )}
@@ -111,7 +111,7 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
               Done
             </Button>
             <Button
-              theme="secondary"
+              variant="secondary"
               onClick={() => {
                 setReauth(false);
                 setReauthValues({ password: "", code: "" });

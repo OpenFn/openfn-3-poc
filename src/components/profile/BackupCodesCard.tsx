@@ -51,11 +51,11 @@ export default function BackupCodesCard({
         ))}
       </div>
       <div className="flex items-center justify-center gap-4 p-6">
-        <Button theme="secondary" size="lg" onClick={onPrint}>
+        <Button variant="secondary" size="lg" onClick={onPrint}>
           <span className="hero-printer h-5 w-5" />
           Print Codes
         </Button>
-        <Button id="copy-codes-button" theme="secondary" size="lg" onClick={copy}>
+        <Button id="copy-codes-button" variant="secondary" size="lg" onClick={copy}>
           <span className="hero-document-duplicate h-5 w-5" />
           Copy Codes
         </Button>
@@ -70,7 +70,7 @@ export default function BackupCodesCard({
           title="Generate new backup codes"
           subtitle="When you generate new backup codes, you must copy or print the new codes. Your old codes won't work anymore."
           action={
-            <Button theme="secondary" size="lg" onClick={onRegenerate} pending={regenerating}>
+            <Button variant="secondary" size="lg" onClick={onRegenerate} pending={regenerating}>
               Generate new backup codes
             </Button>
           }

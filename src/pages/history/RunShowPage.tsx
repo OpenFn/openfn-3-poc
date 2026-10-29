@@ -213,7 +213,7 @@ export default function RunShowPage({
               </DetailItem>
               {run.state === "available" && canRunWorkflow && (
                 <DetailItem label="Action">
-                  <Button size="sm" theme="secondary" onClick={() => void cancel.run()} pending={cancel.pending}>
+                  <Button size="sm" variant="secondary" onClick={() => void cancel.run()} pending={cancel.pending}>
                     Cancel
                   </Button>
                 </DetailItem>

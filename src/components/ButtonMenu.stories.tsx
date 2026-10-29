@@ -29,7 +29,7 @@ export const RowActions: Story = {};
 export const AddNew: Story = {
   args: {
     label: "Add new",
-    theme: "primary",
+    variant: "primary",
     children: (
       <>
         <MenuItem>Credential</MenuItem>

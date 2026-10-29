@@ -77,7 +77,7 @@ export default function ProjectsTable({
             </Td>
             <Td>{project.lastUpdatedAt ? <DateTime value={project.lastUpdatedAt} /> : "N/A"}</Td>
             <Td actions>
-              <Button theme="secondary" size="xs" to={`/projects/${project.id}/history`}>
+              <Button variant="secondary" size="xs" to={`/projects/${project.id}/history`}>
                 History
               </Button>
             </Td>

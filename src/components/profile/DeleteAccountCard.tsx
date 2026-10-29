@@ -8,7 +8,7 @@ export default function DeleteAccountCard({ to }: { to: string }) {
       annotation="profile-delete-account"
       title="Delete account"
       action={
-        <Button theme="danger" to={to}>
+        <Button tone="danger" to={to}>
           Delete my account
         </Button>
       }

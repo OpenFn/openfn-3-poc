@@ -137,7 +137,7 @@ everywhere. Reach for these first:
 
 | Need | Use |
 |---|---|
-| An action | `Button` (`to` for routes, `href` for plain links; `size="xs" theme="secondary"` for table row actions; `pending` while its request runs) |
+| An action | `Button` (`to` for routes, `href` for plain links; `size="xs" variant="secondary"` for table row actions; `tone="danger"` for destructive ones; `pending` while its request runs) |
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
 | A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard; `useActions` for one per row, `latest` when only the newest answer counts); `Spinner` for anything loading |
 | A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` (shows the choice at once, puts back the saved value if the save fails) |
@@ -173,7 +173,7 @@ everywhere. Reach for these first:
 | Page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
 
 Primitives expose their look to the themes through `data-ui` (and
-`data-variant` for a variant or tone). Theme CSS targets those hooks, never
+`data-variant` for the variant, `data-tone` for the tone). Theme CSS targets those hooks, never
 element selectors or utility classes, so a new primitive or variant needs its
 hook, and the GDS theme is worth a look after styling changes.
 
@@ -204,6 +204,21 @@ around a primitive.
 - **Every rule has a test that fails without it.** Behaviour in a primitive
   is shared by every page, so test it in the primitive's own test file, not
   through each caller.
+
+**Prop names.** Three props say how a primitive looks, and each answers one
+question, with the same name on every component:
+
+| Prop | Answers | Values |
+|---|---|---|
+| `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
+| `variant` | How loud is it? | The component's own list, loudest first: Button `primary`, `secondary`; Pill `subtle`, `solid`; Tabs `line`, `pill` |
+| `size` | How big is it? | `sm`, `md`, `lg` |
+
+- Meaning only goes in `tone`. `danger` is never a `variant`, so
+  `<Button tone="danger">` and `<Pill tone="danger" variant="solid">`.
+- `variant` never carries meaning, and `tone` never carries loudness.
+- No other names for these: not `theme`, `type`, `color`, `appearance` or
+  `kind`. `color` stays only on Pill's tag colours, which mean nothing.
 
 **Feature components** (`src/components/<area>/`) are one panel or section
 of a page (`WorkOrdersTable`, `WebhookSecurityPanel`). They're often used
