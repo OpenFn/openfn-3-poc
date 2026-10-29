@@ -35,7 +35,7 @@ describe("useAction", () => {
     const { result } = renderHook(() => useAction(() => Promise.reject(new Error("The host is down")), { onError: "toast" }), { wrapper });
 
     await act(() => result.current.run());
-    expect(show).toHaveBeenCalledWith("The host is down", "error");
+    expect(show).toHaveBeenCalledWith("The host is down", "danger");
     expect(result.current.error?.message).toBe("The host is down");
   });
 

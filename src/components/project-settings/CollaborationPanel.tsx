@@ -61,7 +61,7 @@ export default function CollaborationPanel({
   const close = () => setModal(null);
   const canAdd = canAddProjectUser && addBlockedReason === null;
   const toast = useToast();
-  const supportAccessSwitch = useChosenValue(supportAccess, onSetSupportAccess, (e) => toast(errorMessage(e), "error"));
+  const supportAccessSwitch = useChosenValue(supportAccess, onSetSupportAccess, (e) => toast(errorMessage(e), "danger"));
 
   return (
     <>

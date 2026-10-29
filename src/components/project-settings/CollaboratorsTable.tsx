@@ -29,7 +29,7 @@ const digestSelectOptions = digestOptions.map((d) => [capitalize(d), d] as [stri
 /** A select the host saves on every change, showing the choice while it does. */
 function SavedSelect({ id, label, saved, options, onSave }: { id: string; label: string; saved: string; options: [string, string][]; onSave: (value: string) => Promise<void> }) {
   const toast = useToast();
-  const select = useChosenValue(saved, onSave, (e) => toast(errorMessage(e), "error"));
+  const select = useChosenValue(saved, onSave, (e) => toast(errorMessage(e), "danger"));
   return <Select id={id} aria-label={label} value={select.value} options={options} onChange={(e) => select.choose(e.target.value)} />;
 }
 

@@ -20,7 +20,7 @@ export default function SecurityPanel({ security, parent, onSetRequiresMfa }: Pr
   const { requiresMfa, canEditProject, canRequireMfa } = security;
   const sandbox = parent !== null;
   const toast = useToast();
-  const mfa = useChosenValue(requiresMfa, onSetRequiresMfa, (e) => toast(errorMessage(e), "error"));
+  const mfa = useChosenValue(requiresMfa, onSetRequiresMfa, (e) => toast(errorMessage(e), "danger"));
   return (
     <>
       <SectionHeader

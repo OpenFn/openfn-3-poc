@@ -249,7 +249,7 @@ export default function HistoryWorkOrdersPage({
   const { update, href } = useUrlParams();
   const toast = useToast();
   // The host announces success (its flash); a refusal or a lost connection is said here.
-  const failed = (error: unknown) => toast(errorMessage(error), "error");
+  const failed = (error: unknown) => toast(errorMessage(error), "danger");
   const [ticked, setTicked] = useState<string[]>([]);
   const [modal, setModal] = useState<null | "cancel" | "retry" | "retry-from" | "export">(null);
   // Remounts "Run from a specific step" on each open, so its job choice starts fresh.

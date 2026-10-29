@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../utils/cn";
 import CloseButton from "./CloseButton";
+import type { Tone } from "./tone";
 
-export type ToastTone = "info" | "error";
+export type ToastTone = Extract<Tone, "info" | "danger">;
 
 interface ToastItem {
   id: number;
@@ -19,7 +20,7 @@ const DURATION_MS = 5000;
 
 const tones: Record<ToastTone, { box: string; icon: string }> = {
   info: { box: "bg-info-50 text-info-800 ring-info-200", icon: "hero-check-circle-solid text-info-500" },
-  error: { box: "bg-danger-50 text-danger-800 ring-danger-200", icon: "hero-exclamation-circle-solid text-danger-500" },
+  danger: { box: "bg-danger-50 text-danger-800 ring-danger-200", icon: "hero-exclamation-circle-solid text-danger-500" },
 };
 
 /**
@@ -104,8 +105,8 @@ export function Toast({ tone = "info", children, onClose, timeout }: ToastProps)
         c.box
       )}
       data-ui="toast"
-      data-variant={tone}
-      role={tone === "error" ? "alert" : "status"}
+      data-tone={tone}
+      role={tone === "danger" ? "alert" : "status"}
       onClick={onClose}
       onKeyDown={(e) => {
         if (e.key === "Escape" && onClose) {

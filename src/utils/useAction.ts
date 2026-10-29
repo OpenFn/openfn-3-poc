@@ -115,7 +115,7 @@ export function useActions<Args extends unknown[], R = void>(
       if (!lands()) return false;
       settle({ pending: false, error });
       const { onError } = props.current.options;
-      if (onError === "toast") props.current.toast(errorMessage(error), "error");
+      if (onError === "toast") props.current.toast(errorMessage(error), "danger");
       else onError?.(error);
       return false;
     } finally {
