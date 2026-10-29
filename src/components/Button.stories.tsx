@@ -20,6 +20,8 @@ export const Success: Story = { args: {
 } };
 export const Disabled: Story = { args: { disabled: true, tooltip: "You don't have permission" } };
 export const Pending: Story = { args: { pending: true, children: "Saving" } };
+export const WithIcon: Story = { args: { icon: "hero-plus", children: "New project" } };
+export const Plain: Story = { args: { variant: "plain", children: "Show more" } };
 export const ExtraSmall: Story = { args: { size: "xs", children: "Edit" } };
 export const Small: Story = { args: { size: "sm", children: "Run" } };
 export const Large: Story = { args: { size: "lg", children: "Create project" } };
@@ -36,6 +38,8 @@ export const AllLooks: Story = {
           <Button variant="secondary" disabled={disabled}>Cancel</Button>
           <Button tone="danger" disabled={disabled}>Delete</Button>
           <Button tone="success" disabled={disabled}>Connect</Button>
+          <Button variant="plain" disabled={disabled}>More</Button>
+          <Button variant="plain" tone="danger" disabled={disabled}>Remove</Button>
         </div>
       ))}
     </div>

@@ -41,5 +41,13 @@ describe("Button", () => {
   it("takes a tone only on the filled button", () => {
     // @ts-expect-error -- a secondary button has no tone (CLAUDE.md, Prop names); typecheck fails if it gains one.
     void (<Button variant="secondary" tone="danger">Delete</Button>);
+    // @ts-expect-error -- a plain button is red or nothing.
+    void (<Button variant="plain" tone="success">Connect</Button>);
+  });
+
+  it("shows the spinner in place of its icon while pending", () => {
+    const { container } = render(<Button icon="hero-play-solid" pending>Run</Button>);
+    expect(screen.getByLabelText("Working")).toBeTruthy();
+    expect(container.querySelector(".hero-play-solid")).toBeNull();
   });
 });

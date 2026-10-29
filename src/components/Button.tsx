@@ -5,7 +5,7 @@ import Spinner from "./Spinner";
 import Tooltip from "./Tooltip";
 import type { Tone } from "./tone";
 
-export type ButtonVariant = "primary" | "secondary";
+export type ButtonVariant = "primary" | "secondary" | "plain";
 export type ButtonTone = Extract<Tone, "danger" | "success">;
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
@@ -16,23 +16,24 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: "px-3.5 py-2.5",
 };
 
-// Lightning's button colours, keyed by the tone if there is one, else the variant. Each gives its
-// focus outline a colour; Lightning's secondary has none, so here it uses primary. Disabled is the
-// same colour at half strength for every look, with no hover.
-const lookClasses: Record<ButtonVariant | ButtonTone, string> = {
-  primary:
-    "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse focus-visible:outline-focus",
-  secondary:
-    "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset focus-visible:outline-focus",
-  danger:
-    "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse focus-visible:outline-danger-600",
-  success:
-    "bg-success-600 not-disabled:hover:bg-success-500 text-inverse focus-visible:outline-success-600",
+const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-5 w-5", lg: "h-5 w-5" };
+
+// Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
+// text on nothing, with a background on hover and while pressed (`aria-pressed`). Disabled is
+// the same colour at half strength for every look, with no hover.
+const lookClasses = {
+  primary: "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse shadow-xs",
+  secondary: "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs",
+  plain:
+    "text-muted not-disabled:hover:bg-hover not-disabled:hover:text-body aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
+  danger: "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse shadow-xs",
+  success: "bg-success-600 not-disabled:hover:bg-success-500 text-inverse shadow-xs",
+  "plain-danger": "text-danger-600 not-disabled:hover:bg-danger-50 not-disabled:hover:text-danger-700",
 };
 
-function buttonClasses(look: ButtonVariant | ButtonTone, size: ButtonSize = "md", className?: string) {
+function buttonClasses(look: keyof typeof lookClasses, size: ButtonSize = "md", className?: string) {
   return cn(
-    "rounded-md text-sm font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed disabled:opacity-50",
+    "rounded-md text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed disabled:opacity-50",
     sizeClasses[size],
     lookClasses[look],
     className
@@ -58,21 +59,25 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * `ConfirmModal` manage it.
    */
   pending?: boolean;
+  /** A hero icon class (e.g. `hero-plus`) shown before the label, sized to the button, or an icon element of your own. The spinner takes its place while `pending`. */
+  icon?: string | ReactElement | undefined;
   ref?: Ref<HTMLButtonElement>;
   children: ReactNode;
 }
 
-// A tone colours the filled button only: nothing draws a red or green secondary.
-type Look =
+// Nothing draws a red or green secondary, or a green plain button.
+export type ButtonLook =
   | { variant?: "primary" | undefined; tone?: ButtonTone | undefined }
-  | { variant: "secondary"; tone?: never };
+  | { variant: "secondary"; tone?: never }
+  | { variant: "plain"; tone?: "danger" | undefined };
 
-type Props = BaseProps & Look;
+type Props = BaseProps & ButtonLook;
 
 /**
  * Pass `to` or `href` to get a link that looks the same; disabled, it's a
  * plain disabled button. `pending` disables it and shows a spinner while a
  * request runs (STANDARDS.md pattern 1). `xs` is the table row action.
+ * `variant="plain"` is text with no fill or border, IconButton's default.
  */
 export default function Button({
   variant = "primary",
@@ -89,12 +94,13 @@ export default function Button({
   download,
   target,
   rel,
+  icon,
   ref,
   children,
   ...rest
 }: Props) {
   const disabled = disabledProp || pending;
-  const classes = buttonClasses(tone ?? variant, size, className);
+  const classes = buttonClasses(variant === "plain" && tone ? "plain-danger" : (tone ?? variant), size, className);
   const shared = {
     id,
     className: classes,
@@ -105,7 +111,13 @@ export default function Button({
   };
   const content = (
     <>
-      {pending && <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />}
+      {pending ? (
+        <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />
+      ) : typeof icon === "string" ? (
+        <span className={cn(icon, iconClasses[size], "shrink-0")} aria-hidden="true" />
+      ) : (
+        icon
+      )}
       {children}
     </>
   );
@@ -119,14 +131,14 @@ export default function Button({
   if (to && !disabled) {
     return wrap(
       <Link to={to} {...link}>
-        {children}
+        {content}
       </Link>
     );
   }
   if (href && !disabled) {
     return wrap(
       <a href={href} download={download} {...link}>
-        {children}
+        {content}
       </a>
     );
   }
