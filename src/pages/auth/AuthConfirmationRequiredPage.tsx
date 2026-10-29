@@ -73,27 +73,27 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
           send the link there instead.
         </p>
         {resent?.status === "sent" && (
-          <Alert type="info" id="confirmation-email-sent">
+          <Alert tone="info" id="confirmation-email-sent">
             We have sent a new confirmation link to {email}.
           </Alert>
         )}
         {resent?.status === "throttled" && (
-          <Alert type="warning" id="confirmation-email-throttled">
+          <Alert tone="warning" id="confirmation-email-throttled">
             {resent.message}
           </Alert>
         )}
         {changed?.status === "requested" && (
-          <Alert type="info" id="email-change-requested">
+          <Alert tone="info" id="email-change-requested">
             We have sent confirmation instructions to {changed.email}.
           </Alert>
         )}
         {resent?.status === "failed" && (
-          <Alert type="danger" id="confirmation-email-failed">
+          <Alert tone="danger" id="confirmation-email-failed">
             We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance
             administrator.
           </Alert>
         )}
-        {resend.error && <Alert type="danger">{errorMessage(resend.error)}</Alert>}
+        {resend.error && <Alert tone="danger">{errorMessage(resend.error)}</Alert>}
         <Button id="resend-confirmation-email-button" onClick={() => void resend.run()} pending={resend.pending}>
           Resend confirmation email
         </Button>
@@ -108,12 +108,12 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
         >
           <Heading as="h2">Change email address</Heading>
           {changed?.status === "throttled" && (
-            <Alert type="warning" id="email-change-throttled">
+            <Alert tone="warning" id="email-change-throttled">
               You've asked us to change this address a few times recently. Check the inbox of the address you last
               entered; you can try another in a few minutes.
             </Alert>
           )}
-          {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
+          {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
           <TextInput id="user_email" name="email" type="email" label="New email address" required {...form.fieldProps("email")} />
           <PasswordInput
             id="user_current_password"

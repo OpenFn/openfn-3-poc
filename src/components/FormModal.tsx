@@ -86,7 +86,7 @@ export default function FormModal({
     >
       {before}
       {submit.error && (
-        <Alert type="danger" className="mb-4" id={`${formId}-error`}>
+        <Alert tone="danger" className="mb-4" id={`${formId}-error`}>
           {errorMessage(submit.error)}
         </Alert>
       )}

@@ -647,9 +647,9 @@ html[data-theme="gds"] {
     --_icon: var(--ui-brand);
     border: var(--ui-emphasis-border) solid var(--_tone);
     background-color: #ffffff;
-    &[data-variant="success"] { --_tone: var(--ui-success); --_icon: var(--ui-success); }
-    &[data-variant="warning"] { --_icon: var(--ui-text); }
-    &[data-variant="danger"]  { --_tone: var(--ui-error); --_icon: var(--ui-error); }
+    &[data-tone="success"] { --_tone: var(--ui-success); --_icon: var(--ui-success); }
+    &[data-tone="warning"] { --_icon: var(--ui-text); }
+    &[data-tone="danger"]  { --_tone: var(--ui-error); --_icon: var(--ui-error); }
     :is(h3, div, p) { color: var(--ui-text); }
     h3 { font-size: var(--text-base); line-height: var(--text-base--line-height); }
     [class*="hero-"] { color: var(--_icon); }

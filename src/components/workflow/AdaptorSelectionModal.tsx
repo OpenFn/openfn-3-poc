@@ -70,7 +70,7 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
         onSelect={pick}
         header={
           fallback && (
-            <Alert type="info">
+            <Alert tone="info">
               <p className="mb-1">
                 <span className="font-medium">No adaptor found</span> for "{query}"
               </p>

@@ -41,12 +41,12 @@ export default function WebhookAuthMethodDeleteModal({ authMethod, onCancel, onD
           : ". This cannot be undone, and it will be removed from everything listed below."}
       </p>
       {triggers.length > 0 && (
-        <Alert type="warning" header={`${countLabel(triggers.length, "workflow trigger")} will stop requiring authentication`}>
+        <Alert tone="warning" header={`${countLabel(triggers.length, "workflow trigger")} will stop requiring authentication`}>
           <UsageLinks refs={triggers} />
         </Alert>
       )}
       {channels.length > 0 && (
-        <Alert type="danger" header={`${countLabel(channels.length, "channel")} will accept unauthenticated requests`}>
+        <Alert tone="danger" header={`${countLabel(channels.length, "channel")} will accept unauthenticated requests`}>
           <UsageLinks refs={channels} sort />
           <p className="mt-2">
             These channels stay enabled and keep forwarding requests to their destination with the project

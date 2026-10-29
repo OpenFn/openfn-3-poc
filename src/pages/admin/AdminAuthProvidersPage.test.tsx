@@ -132,11 +132,11 @@ describe("AdminAuthProvidersPage", () => {
     fireEvent.submit(document.getElementById("auth-provider-form")!);
     await host.reject("onSave", new RequestError("Could not reach the provider."));
     const saveAlert = screen.getByText("Could not reach the provider.");
-    expect(saveAlert.closest("[data-ui=alert]")!.getAttribute("data-variant")).toBe("danger");
+    expect(saveAlert.closest("[data-ui=alert]")!.getAttribute("data-tone")).toBe("danger");
     fireEvent.click(screen.getByRole("button", { name: "Remove" }));
     await host.reject("onRemove", new RequestError("You are not authorized to perform this action."));
     const removeAlert = screen.getByText("You are not authorized to perform this action.");
-    expect(removeAlert.closest("[data-ui=alert]")!.getAttribute("data-variant")).toBe("danger");
+    expect(removeAlert.closest("[data-ui=alert]")!.getAttribute("data-tone")).toBe("danger");
   });
 
   it("puts the host's field errors on their fields", async () => {

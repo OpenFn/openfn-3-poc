@@ -111,8 +111,8 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
           Manage project users
         </Heading>
 
-        {ownerError && <Alert type="danger">{ownerError}</Alert>}
-        {otherError && <Alert type="danger">{otherError}</Alert>}
+        {ownerError && <Alert tone="danger">{ownerError}</Alert>}
+        {otherError && <Alert tone="danger">{otherError}</Alert>}
 
         <SearchInput value={sort.filter} onChange={sort.setFilter} placeholder="Filter users..." className="mb-4 max-w-sm" />
 

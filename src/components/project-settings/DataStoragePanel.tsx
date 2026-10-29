@@ -143,7 +143,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               ))}
             </div>
             {form.values.retentionPolicy !== "retain_all" && (
-              <Alert type="warning" header="Heads Up!">
+              <Alert tone="warning" header="Heads Up!">
                 <p>
                   When enabled, you will no longer be able to retry workflow runs, and channel request/response
                   payloads will not be stored.
@@ -167,7 +167,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               {...form.fieldProps("dataclipRetentionPeriod")}
             />
           </Setting>
-          {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
+          {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
           <div className="flex gap-1">
             <Button variant="secondary" disabled={!canEdit} onClick={() => form.reset()}>
               Cancel

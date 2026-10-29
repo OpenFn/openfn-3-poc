@@ -35,7 +35,7 @@ export default function AuthTwoFactorPage() {
     <AuthPanelLayout title="Two-factor authentication">
       <AuthPanel>
         <AuthPanelTitle>{method === "backup_code" ? "Backup Code" : "Authentication Code"}</AuthPanelTitle>
-        {q.has("error") && <Alert type="danger">{authMessages.invalidTwoFactorCode}</Alert>}
+        {q.has("error") && <Alert tone="danger">{authMessages.invalidTwoFactorCode}</Alert>}
         <form onSubmit={onSubmit} className="space-y-4">
           <TextInput
             id="user_code"

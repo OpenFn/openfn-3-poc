@@ -119,7 +119,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                   placeholder="XXXXXX"
                   {...form.fieldProps("code")}
                 />
-                {form.error && <Alert type="danger">{errorMessage(form.error)}</Alert>}
+                {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
                 <div className="flex gap-1">
                   <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
                     Cancel

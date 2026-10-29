@@ -94,7 +94,7 @@ function BulkModal({
       }
     >
       <div className="space-y-3 text-sm text-muted">
-        {confirm.error && <Alert type="danger">{errorMessage(confirm.error)}</Alert>}
+        {confirm.error && <Alert tone="danger">{errorMessage(confirm.error)}</Alert>}
         {children}
       </div>
       {allLabel && (

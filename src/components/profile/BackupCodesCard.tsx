@@ -32,7 +32,7 @@ export default function BackupCodesCard({
           subtitle="Keep your backup codes as safe as your password. We recommend saving them with a password manager."
         />
       </div>
-      <Alert type="warning">
+      <Alert tone="warning">
         Keep your recovery codes in a safe spot. These codes are the last resort for accessing your account in case
         you lose your authenticator device.
       </Alert>
@@ -60,7 +60,7 @@ export default function BackupCodesCard({
           Copy Codes
         </Button>
         {copied && (
-          <Alert id="codes-copied-alert" type="success" className="p-2">
+          <Alert id="codes-copied-alert" tone="success" className="p-2">
             Copied!
           </Alert>
         )}

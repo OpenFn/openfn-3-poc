@@ -48,7 +48,7 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
           users.
         </p>
         {form.error && (
-          <Alert type="danger" className="mt-4">
+          <Alert tone="danger" className="mt-4">
             {errorMessage(form.error)}
           </Alert>
         )}

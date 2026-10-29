@@ -65,7 +65,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
         />
         <Toggle id="user_support_user" name="support_user" checked={values.supportUser} onChange={(v) => set("supportUser", v)} label="Support User" />
         {values.supportUser && (
-          <Alert id="heads-up-description" type="warning" header="Heads Up!">
+          <Alert id="heads-up-description" tone="warning" header="Heads Up!">
             <p>This user will be able to access ALL projects that have support access enabled</p>
           </Alert>
         )}
@@ -86,7 +86,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
         )}
 
         {form.error && (
-          <Alert type="danger" className="mt-4">
+          <Alert tone="danger" className="mt-4">
             {errorMessage(form.error)}
           </Alert>
         )}

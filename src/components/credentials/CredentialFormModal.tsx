@@ -427,7 +427,7 @@ export default function CredentialFormModal({
       before={
         schema === "oauth" &&
         !client && (
-          <Alert type="danger" header="OAuth client not found" className="mb-4">
+          <Alert tone="danger" header="OAuth client not found" className="mb-4">
             <p>The associated Oauth client for this credential cannot be found. Create a new client or contact your administrator.</p>
           </Alert>
         )
@@ -457,7 +457,7 @@ export default function CredentialFormModal({
         description="Different credential values for each environment (dev, staging, production, etc.)"
       >
         {form.errors.environments.length > 0 && (
-          <Alert type="danger" id="credential-environments-errors">
+          <Alert tone="danger" id="credential-environments-errors">
             {form.errors.environments.map((e) => (
               <p key={e}>{e}</p>
             ))}
@@ -696,7 +696,7 @@ function OauthFields({
   } else if (env.answer?.error) {
     status = (
       <>
-        <Alert type="danger" header={`Couldn't sign in with ${client.name}`}>
+        <Alert tone="danger" header={`Couldn't sign in with ${client.name}`}>
           {env.answer.error}
         </Alert>
         {signInButton("Try again")}
@@ -706,7 +706,7 @@ function OauthFields({
     // oauth_error_formatter.ex `:scope_changed`. Save waits until it's signed in again.
     status = (
       <>
-        <Alert type="warning" header="Reauthentication Required">
+        <Alert tone="warning" header="Reauthentication Required">
           <p>You've changed the permissions for this credential.</p>
           <p className="mt-2 text-sm">Please reauthenticate with {client.name} to apply these changes.</p>
         </Alert>
@@ -717,13 +717,13 @@ function OauthFields({
     status = (
       <>
         {userInfo ? (
-          <Alert type="success">
+          <Alert tone="success">
             <p className="font-semibold">{userInfo.name ?? "Unknown User"}</p>
             <p>{userInfo.email ?? "No email provided"}</p>
             <p className="text-xs">Successfully authenticated with {client.name}</p>
           </Alert>
         ) : (
-          <Alert type="info">
+          <Alert tone="info">
             Successfully authenticated with {client.name}. Your credential seems ready to use, but we couldn't fetch your
             user info to verify. This app may not provide a user info endpoint, or your admin may not have configured it.
           </Alert>
@@ -738,7 +738,7 @@ function OauthFields({
     // oauth_error_formatter.ex, for a refresh that got a 5xx or 429.
     status = (
       <>
-        <Alert type="warning" header={`${client.name} is Having Issues`}>
+        <Alert tone="warning" header={`${client.name} is Having Issues`}>
           <p>{client.name} is experiencing technical difficulties.</p>
           <p className="mt-2 text-sm">This is temporary - please try again in a few minutes.</p>
         </Alert>
@@ -749,7 +749,7 @@ function OauthFields({
     // oauth_error_formatter.ex, for a refresh refused with invalid_grant.
     status = (
       <>
-        <Alert type="warning" header={`Your authorization with ${client.name} has expired or was revoked.`}>
+        <Alert tone="warning" header={`Your authorization with ${client.name} has expired or was revoked.`}>
           You'll need to reauthorize to continue using this credential.
         </Alert>
         {signInButton(`Reauthorize with ${client.name}`)}
@@ -791,7 +791,7 @@ function OauthFields({
           </div>
         </div>
       )}
-      {authorizeError && <Alert type="danger">{errorMessage(authorizeError)}</Alert>}
+      {authorizeError && <Alert tone="danger">{errorMessage(authorizeError)}</Alert>}
       {status}
     </div>
   );

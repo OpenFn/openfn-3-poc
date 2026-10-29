@@ -135,7 +135,7 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
             You're required to reauthenticate yourself before viewing the webhook{" "}
             {authType === "basic" ? "Password" : "API Key"}
           </p>
-          {reveal.error && <Alert type="danger">{errorMessage(reveal.error)}</Alert>}
+          {reveal.error && <Alert tone="danger">{errorMessage(reveal.error)}</Alert>}
           <TextInput
             id="user_password"
             type="password"
@@ -174,7 +174,7 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
         }
       >
         <div className="space-y-4">
-          {next.error && <Alert type="danger">{errorMessage(next.error)}</Alert>}
+          {next.error && <Alert tone="danger">{errorMessage(next.error)}</Alert>}
           <TypeOption selected={choice === "basic"} icon="hero-globe-alt" onSelect={() => setChoice("basic")}>
             Basic HTTP Authentication (username &amp; password)
           </TypeOption>

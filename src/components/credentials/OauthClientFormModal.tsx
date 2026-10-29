@@ -96,7 +96,7 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
 
       <Card as="section" title="Manage Project Access" description="Control which projects have access to this OAuth client">
         {allowGlobal && (
-          <Alert type="warning">
+          <Alert tone="warning">
             <Field errors={form.errors.global}>
               <Checkbox
                 label="Make client global (allow any project in this instance to use this client)"

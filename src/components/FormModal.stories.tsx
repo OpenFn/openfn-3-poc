@@ -40,7 +40,7 @@ export const Danger: Story = {
 };
 export const ContentBeforeForm: Story = {
   args: {
-    before: <Alert type="info">Fields marked * are required.</Alert>,
+    before: <Alert tone="info">Fields marked * are required.</Alert>,
   },
 };
 /** An async `onSubmit`: the submit button spins and Cancel is inert until it settles. */
