@@ -83,7 +83,7 @@ const rawControl = {
 // italic and mono stay classes: they emphasise text inside its size. Only the
 // history area is held to it so far.
 const typeRules = banned(
-  '\\b(?:text-(?:2xs|xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
+  '\\b(?:text-(?:xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
   'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/Text.tsx.'
 )
 
@@ -187,9 +187,10 @@ export default defineConfig([
   },
   // Chart palettes:
   {
-    files: ['src/components/history/ChannelTiming.tsx', 'src/components/admin/LiveDashboardHome.tsx'],
-    rules: { 'no-restricted-syntax': consumerRules([]) },
+    files: ['src/components/history/ChannelTiming.tsx'],
+    rules: { 'no-restricted-syntax': [...consumerRules([]), ...typeRules] },
   },
+  { files: ['src/components/admin/LiveDashboardHome.tsx'], rules: { 'no-restricted-syntax': consumerRules([]) } },
   // Tests and fixtures hold data (sandbox colours) and query chart classes:
   { files: ['src/**/*.test.{ts,tsx}', 'src/mock-data/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
   {

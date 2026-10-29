@@ -33,7 +33,7 @@ export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onC
         <button
           type="button"
           aria-label="Log level"
-          // eslint-disable-next-line no-restricted-syntax -- debt: sizes that follow the viewer's width (@md:); Text has no responsive sizes
+          // eslint-disable-next-line no-restricted-syntax -- debt: a control's own type; waits on a Button look for dark surfaces
           className="inline-flex items-center gap-1 text-xs/4 opacity-75 hover:opacity-100 @md:text-sm/6"
         >
           <span className="hero-adjustments-vertical size-4 @md:size-6" />

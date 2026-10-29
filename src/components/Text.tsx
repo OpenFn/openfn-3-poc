@@ -15,10 +15,10 @@ const variants = {
 export type TextVariant = keyof typeof variants;
 
 /**
- * Any text that isn't a heading. `variant` names what the text is and how big; colour
- * stays a class (`text-muted`, `text-faint`). It can wrap a block of copy as
- * well as a line: `<Text as="div" className="space-y-3">`. Inside it, bold,
- * italic and code keep its size: `font-medium`, `italic`, `<code>`.
+ * Any text that isn't a heading. `variant` names what the text is and how
+ * big; colour stays a class (`text-muted`, `text-faint`). It can wrap a block
+ * of copy as well as a line: `<Text as="div" className="space-y-3">`. Inside
+ * it, bold, italic and code keep its size: `font-medium`, `italic`, `<code>`.
  */
 export default function Text({
   variant = "body-md",
