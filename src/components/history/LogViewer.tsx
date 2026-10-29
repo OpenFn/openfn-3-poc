@@ -4,6 +4,7 @@ import { logsAtLevel } from "../../utils/history";
 import { cn } from "../../utils/cn";
 import CodeViewer, { type LineRange } from "../CodeViewer";
 import Menu, { MenuItem } from "../Menu";
+import Text from "../Text";
 import TextPingLoader from "./TextPingLoader";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
@@ -32,6 +33,7 @@ export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onC
         <button
           type="button"
           aria-label="Log level"
+          // eslint-disable-next-line no-restricted-syntax -- debt: sizes that follow the viewer's width (@md:); Text has no responsive sizes
           className="inline-flex items-center gap-1 text-xs/4 opacity-75 hover:opacity-100 @md:text-sm/6"
         >
           <span className="hero-adjustments-vertical size-4 @md:size-6" />
@@ -122,9 +124,9 @@ export default function LogViewer({
       <div className={cn("flex grow", className)}>
         <div className="relative grow">
           {text === "" ? (
-            <div className="p-12 text-center text-xs @md:text-base">
+            <Text as="div" variant="code-sm" className="p-12 text-center">
               <TextPingLoader>{waitingMessage}</TextPingLoader>
-            </div>
+            </Text>
           ) : (
             <div className="absolute inset-0">
               <CodeViewer

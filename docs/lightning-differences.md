@@ -36,3 +36,10 @@ goes back to Lightning's way.
 - **Icon buttons have no hover background.** Hover darkens the icon only, so
   it looks the same on white and grey surfaces. Some Lightning icon buttons
   add a grey square on hover, others don't.
+
+## Type
+
+- **The waiting messages in the log and dataclip viewers stay 12px.**
+  Lightning grows them to 16px when the panel is wide
+  (`viewers.ex:106,277`), the only text it sizes by panel width. In the
+  replica every piece of text has one size, from `Text`.

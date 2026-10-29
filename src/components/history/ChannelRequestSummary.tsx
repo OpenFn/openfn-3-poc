@@ -5,6 +5,7 @@ import DateTime from "../DateTime";
 import { DetailItem, DetailList } from "../DetailList";
 import Heading from "../Heading";
 import TextLink from "../TextLink";
+import Text from "../Text";
 import { MethodBadge, RequestPathDisplay, StatusCodeBadge } from "./ChannelRequestParts";
 import { ChannelStatePill } from "./StatePill";
 import { humanizeError } from "./channelHelpers";
@@ -46,7 +47,7 @@ export default function ChannelRequestSummary({
           state={request.state}
           title={request.state === "timeout" && event?.errorMessage ? humanizeError(event.errorMessage) : undefined}
         />
-        <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+        <Text as="div" variant="body-sm" className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1.5">
             <Heading size="eyebrow" as="span">
               Channel
@@ -60,7 +61,7 @@ export default function ChannelRequestSummary({
             <span className="font-mono text-strong">{shortUuid(request.id)}</span>
             <CopyButton value={request.id} label="Copy request ID" size="xs" />
           </span>
-        </div>
+        </Text>
       </div>
 
       <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">

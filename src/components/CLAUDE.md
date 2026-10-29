@@ -56,6 +56,8 @@ the same name on every component:
 - `variant` never carries meaning, and `tone` never carries loudness.
 - No other names for these: not `theme`, `type`, `color`, `appearance` or
   `kind`. `color` stays only on Pill's tag colours, which mean nothing.
+- One exception: `Text`'s `variant` is its named type style (`body-sm`,
+  `code-md`), not loudness. See `.claude/rules/type.md`.
 
 ## Tooltips
 

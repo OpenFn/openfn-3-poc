@@ -2,6 +2,7 @@ import type { RunStep, StepDataclip } from "../../types/history";
 import JsonViewer from "./JsonViewer";
 import TextPingLoader from "./TextPingLoader";
 import WipedDataViewer from "./WipedDataViewer";
+import Text from "../Text";
 
 /**
  * A selected step's input or output on the run page (viewers.ex
@@ -44,9 +45,9 @@ export default function StepDataclipViewer({
     return runFinished ? (
       <div className="m-2 p-12 text-center">No {inputOrOutput} state could be saved for this run.</div>
     ) : (
-      <div className="rounded-md bg-code p-12 text-center font-mono text-xs text-code @md:text-base">
+      <Text as="div" variant="code-sm" className="rounded-md bg-code p-12 text-center text-code">
         <TextPingLoader>Nothing yet</TextPingLoader>
-      </div>
+      </Text>
     );
   }
   return (
