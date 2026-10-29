@@ -56,6 +56,21 @@ reorders it.
  */
 ```
 
+## Explain a rule once, where it's enforced
+
+When several files rely on one rule, the explanation lives in the file that
+enforces it, usually the primitive or helper. The others say nothing, or one
+line pointing there if the caller would otherwise look wrong. Don't describe
+another file's behaviour in a comment; it goes wrong when that file changes.
+
+## Keep them true
+
+When you change behaviour, re-read the comments in that function and its
+JSDoc, and fix anything the change made false in the same commit.
+
+A TODO says what is left and why it isn't done now. "TODO: fix" is not a
+TODO.
+
 ## What a comment never says
 
 - What the next line plainly does (`// set the name`).
