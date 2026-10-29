@@ -162,6 +162,7 @@ everywhere. Reach for these first:
 | An on/off switch | `Toggle` |
 | An inline link | `TextLink` |
 | Read-only code, a log or a dataclip | `CodeViewer` |
+| A file upload or drop area | `FileDropZone` |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
 | Sorting and filtering a table in the browser | `useTableSort` from `useTableSort.ts` |
 | "Projects (3)" above a table, with its buttons | `TableTitle` |

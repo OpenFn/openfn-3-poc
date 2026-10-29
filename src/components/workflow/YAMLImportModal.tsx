@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../Button";
-import Card from "../Card";
+import FileDropZone from "../FileDropZone";
 import FormModal from "../FormModal";
 import { FieldError } from "../Inputs";
 import CodeEditor from "./CodeEditor";
@@ -42,33 +42,19 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
       </div>
       <div className="h-80">
         {mode === "upload" ? (
-          <Card dashed padding="none" className="relative h-full hover:border-emphasis">
-            {/* eslint-disable-next-line no-restricted-syntax -- file input stretched over the drop zone, which is the control */}
-            <input
-              id="workflow-file"
-              aria-label="Upload a file"
-              type="file"
-              accept=".yaml,.yml"
-              className="sr-only"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file)
-                  void file.text().then((t) => {
-                    setYaml(t);
-                    setMode("paste");
-                  });
-              }}
-            />
-            <label htmlFor="workflow-file" className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2 text-xs text-muted">
-              <span className="mb-1 rounded-xl bg-sunken p-3">
-                <span className="hero-arrow-up-tray block size-6 text-strong" />
-              </span>
-              <p className="text-sm text-muted">Upload or drop a YAML file.</p>
-              <p className="*:font-medium *:text-primary-500">
-                <span>YML</span> or <span>YAML</span>, up to 8MB
-              </p>
-            </label>
-          </Card>
+          <FileDropZone
+            accept=".yaml,.yml"
+            label="Upload or drop a YAML file."
+            hint="YML or YAML, up to 8MB"
+            invalidMessage="File must be .yml or .yaml format"
+            onFile={(file) =>
+              void file.text().then((t) => {
+                setYaml(t);
+                setMode("paste");
+              })
+            }
+            className="h-full"
+          />
         ) : (
           <div className="h-full overflow-hidden rounded-lg">
             <CodeEditor value={yaml} onChange={setYaml} language="yaml" ariaLabel="Workflow YAML" />
