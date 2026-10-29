@@ -67,14 +67,8 @@ wrapper.
   `useCurrentUser()`, `useInstanceInfo()`, `usePermissions(project)`.
 - `src/mock-data/` — the fake database: fixtures modelled on Lightning's demo
   seed (`lib/lightning/setup_utils.ex`) and the queries over them (`findProject`,
-  `workOrdersIn`, …). No pure helpers. Its own record types (`User`,
-  `Project`, `WorkOrder`, …) are in `models/`; pages and components don't
-  import them (ESLint enforces it; the unsplit workflow editor carries `debt:`
-  disables).
-  `generated/kickstart.ts` is generated from the project exports in
-  `kickstart/exports/` by `npm run kickstart:sync`, which also writes the
-  Kickstart scenario that loads the same projects into a local Lightning
-  (`kickstart/README.md`). Don't edit it by hand.
+  `workOrdersIn`, …), with its own record types in `models/`. Rules in
+  `.claude/rules/mock-data.md`.
 - `src/theme/` — themes, chosen from the settings button (bottom right).
   Lightning v2 is the default.
 - `annotations/` — a copy of the behaviour audit from OpenFn/lightning
@@ -222,19 +216,20 @@ enforces this on `src/components/`, `src/pages/` and `src/utils/`.
   `grep -rnE "no-restricted-imports -- (wiring|debt):" src` lists them. Don't add one without a
   reason the next person can act on.
 
-## Storybook
+## Rules by area
 
-Every component has a `.stories.tsx` next to it.
+The rules for one kind of file are in `.claude/rules/`. Each file loads only
+when you work on a file matching its `paths:`. Read the one that applies
+before writing code it covers.
 
-- **New component** → create a story with a default and meaningful variants.
-- **Changed props** → update the story args.
-- **Deleted component** → delete its story.
-- **Router-dependent components** → use `withRouter` / `withRouterAt` from
-  `src/stories/decorators.tsx`.
-- **Wrappers** (a gray page background, a right-hand side panel, a white
-  card, a diagram canvas) → `withGrayPanel`, `withSidePanel`,
-  `withWhitePanel`, `withCanvas` from the same file, not inline divs.
-- Stories use fixtures from `src/mock-data/`; every story is signed in as
-  `session.user` (`.storybook/preview.tsx`).
+| File | Covers |
+|---|---|
+| `pages.md` | `src/pages/`, `App.tsx`, `src/types/`: which STANDARDS.md patterns to read, naming, the frame, stories and tests |
+| `tests.md` | `*.test.ts(x)`, `src/test/`: where each behaviour is tested, how to write and name a test |
+| `stories.md` | `*.stories.tsx`, `.storybook/`: what each component's stories show |
+| `mock-data.md` | `src/mock-data/`, `kickstart/`: fixtures, queries, models, generated data |
+| `standards.md` | `STANDARDS.md`: pattern numbers never change |
+| `comments.md` | all source: when a comment earns its place, and what it never says |
 
-Run `npm run build-storybook` to verify stories compile. CI runs it on every PR.
+A new rule goes in the file for the files it governs, not here. If ESLint or
+a test enforces it, the rule names which.
