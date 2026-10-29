@@ -3,8 +3,10 @@ import Button from "./Button";
 import Menu from "./Menu";
 
 interface Props {
-  /** The main action's label (with any icon). */
+  /** The main action's label. */
   children: ReactNode;
+  /** The main action's icon, as Button's `icon`. */
+  icon?: ReactNode;
   onClick: () => void;
   /** MenuItems for the chevron's menu. */
   menu: ReactNode;
@@ -22,10 +24,10 @@ interface Props {
  * A Button with a chevron that opens a Menu of related actions: the
  * editor's Run / Retry buttons.
  */
-export default function SplitButton({ children, onClick, menu, menuLabel = "More options", variant = "primary", disabled = false, pending = false, tooltip }: Props) {
+export default function SplitButton({ children, icon, onClick, menu, menuLabel = "More options", variant = "primary", disabled = false, pending = false, tooltip }: Props) {
   return (
     <div className="inline-flex rounded-md shadow-xs">
-      <Button variant={variant} onClick={onClick} disabled={disabled} pending={pending} tooltip={tooltip} className="rounded-r-none">
+      <Button variant={variant} onClick={onClick} disabled={disabled} pending={pending} tooltip={tooltip} icon={icon} className="rounded-r-none">
         {children}
       </Button>
       <Menu

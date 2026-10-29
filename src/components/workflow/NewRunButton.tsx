@@ -27,19 +27,11 @@ export default function NewRunButton({
   variant = "primary",
   tooltip = "⌘ Enter",
 }: Props) {
-  // While running, Button's spinner takes the play icon's place.
-  const content = isRunning ? (
-    "Processing"
-  ) : (
-    <>
-      <span className="hero-play-solid h-4 w-4" />
-      {text}
-    </>
-  );
+  const content = isRunning ? "Processing" : text;
 
   if (!onRunWithCustomInputClick) {
     return (
-      <Button variant={variant} onClick={onClick} disabled={disabled} pending={isRunning} tooltip={tooltip}>
+      <Button variant={variant} onClick={onClick} disabled={disabled} pending={isRunning} tooltip={tooltip} icon="hero-play-solid">
         {content}
       </Button>
     );
@@ -47,6 +39,7 @@ export default function NewRunButton({
 
   return (
     <SplitButton
+      icon="hero-play-solid"
       variant={variant}
       onClick={onClick}
       disabled={disabled}

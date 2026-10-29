@@ -21,6 +21,7 @@ export const Success: Story = { args: {
 export const Disabled: Story = { args: { disabled: true, tooltip: "You don't have permission" } };
 export const Pending: Story = { args: { pending: true, children: "Saving" } };
 export const WithIcon: Story = { args: { icon: "hero-plus", children: "New project" } };
+export const WithIconRight: Story = { args: { icon: "hero-arrow-right", iconPosition: "right", children: "Build it" } };
 export const Plain: Story = { args: { variant: "plain", children: "Show more" } };
 export const ExtraSmall: Story = { args: { size: "xs", children: "Edit" } };
 export const Small: Story = { args: { size: "sm", children: "Run" } };

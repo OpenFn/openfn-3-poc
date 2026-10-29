@@ -27,8 +27,8 @@ export default function ButtonMenu({ label, variant = "secondary", align, classN
       align={align}
       className={className}
       trigger={
-        <Button variant={variant} pending={pending} disabled={disabled}>
-          {label} <span className="hero-chevron-down h-4 w-4" />
+        <Button variant={variant} pending={pending} disabled={disabled} icon="hero-chevron-down" iconPosition="right">
+          {label}
         </Button>
       }
     >

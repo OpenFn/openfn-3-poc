@@ -82,9 +82,8 @@ function WizardBreadcrumb({ step, onChoose }: { step: "choose" | "configure"; on
 
 function WizardFooter({ label, onPrimary, onCancel }: { label: string; onPrimary: () => void; onCancel?: (() => void) | undefined }) {
   const primary = (
-    <Button onClick={onPrimary} className={onCancel ? undefined : "w-full"}>
+    <Button onClick={onPrimary} className={onCancel ? undefined : "w-full"} icon="hero-arrow-right-micro" iconPosition="right">
       {label}
-      <span className="hero-arrow-right-micro h-4 w-4" />
     </Button>
   );
   return onCancel ? (

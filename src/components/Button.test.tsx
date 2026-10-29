@@ -50,4 +50,9 @@ describe("Button", () => {
     expect(screen.getByLabelText("Working")).toBeTruthy();
     expect(container.querySelector(".hero-play-solid")).toBeNull();
   });
+
+  it("puts the icon after the label with iconPosition right", () => {
+    render(<Button icon="hero-arrow-right" iconPosition="right">Build it</Button>);
+    expect(screen.getByRole("button").firstChild?.textContent).toBe("Build it");
+  });
 });

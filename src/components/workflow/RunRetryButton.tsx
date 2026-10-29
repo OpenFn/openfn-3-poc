@@ -18,6 +18,7 @@ export default function RunRetryButton({ isRetryable, disabled = false, onRun, o
   }
   return (
     <SplitButton
+      icon="hero-play-mini"
       onClick={onRetry}
       disabled={disabled}
       tooltip="⌘ Enter"
@@ -28,7 +29,6 @@ export default function RunRetryButton({ isRetryable, disabled = false, onRun, o
         </MenuItem>
       }
     >
-      <span className="hero-play-mini h-4 w-4" />
       Retry
     </SplitButton>
   );

@@ -110,8 +110,7 @@ export default function FullScreenIDE({
             onClick={() => showDocs("metadata")}
           />
         </div>
-        <Button tooltip="⌘ H" onClick={onShowHistory}>
-          <span className={cn("h-4 w-4", panelState === "history" ? "hero-clock-solid" : "hero-clock")} />
+        <Button tooltip="⌘ H" onClick={onShowHistory} icon={panelState === "history" ? "hero-clock-solid" : "hero-clock"}>
           History
         </Button>
         {(panelState === undefined || panelState === "history") && <NewRunButton onClick={onShowCreateRun} />}

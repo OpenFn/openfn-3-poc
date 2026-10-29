@@ -62,8 +62,10 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * `ConfirmModal` manage it.
    */
   pending?: boolean;
-  /** A hero icon class (e.g. `hero-plus`) shown before the label, sized to the button, or an icon element of your own. The spinner takes its place while `pending`. */
+  /** A hero icon class (e.g. `hero-plus`), sized to the button, or an icon element of your own. The spinner takes its place while `pending`. */
   icon?: ReactNode;
+  /** Which side of the label the icon goes: `left` (the default), or `right` for an arrow or a menu's chevron. Does nothing without an `icon`. */
+  iconPosition?: "left" | "right" | undefined;
   ref?: Ref<HTMLButtonElement>;
   children: ReactNode;
 }
@@ -98,6 +100,7 @@ export default function Button({
   target,
   rel,
   icon,
+  iconPosition = "left",
   ref,
   children,
   ...rest
@@ -112,16 +115,20 @@ export default function Button({
     "data-tone": tone,
     "aria-busy": pending || undefined,
   };
+  const iconEl = pending ? (
+    <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />
+  ) : typeof icon === "string" ? (
+    <span className={cn(icon, iconClasses[size], "shrink-0")} aria-hidden="true" />
+  ) : (
+    icon
+  );
+  // Without an icon the spinner goes before the label.
+  const right = iconPosition === "right" && icon != null;
   const content = (
     <>
-      {pending ? (
-        <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />
-      ) : typeof icon === "string" ? (
-        <span className={cn(icon, iconClasses[size], "shrink-0")} aria-hidden="true" />
-      ) : (
-        icon
-      )}
+      {!right && iconEl}
       {children}
+      {right && iconEl}
     </>
   );
   // Links take the same handlers and aria props as buttons.
