@@ -81,10 +81,10 @@ export default function Tooltip({
 
   // The tree is the same whether the control is disabled or not (a `disabled` prop that is passed adds
   // the wrapper), so enabling a control never remounts it.
-  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void; "aria-label"?: string }>;
-  // A tooltip that only repeats the control's name (an icon button's label) isn't linked as its
+  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void; "aria-label"?: string; label?: string }>;
+  // A tooltip that only repeats the control's name (its `aria-label`, or an IconButton's `label`) isn't linked as its
   // description too, or a screen reader says the name twice.
-  const repeatsName = typeof content === "string" && content === child.props["aria-label"];
+  const repeatsName = typeof content === "string" && content === (child.props["aria-label"] ?? child.props.label);
   const wrap = disabled !== undefined;
   const onWrapper = !!disabled && !!content;
   // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
