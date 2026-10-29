@@ -8,8 +8,9 @@ paths:
 # Pages
 
 Before adding or changing a page, read STANDARDS.md pattern 11 (page and
-wrapper) and the pattern for what you're adding: a mutation (1), a form (2),
-a list (3), a confirm (6), feedback (7), permissions (9).
+wrapper) and the pattern for what you're adding: 1 (async action) for a
+mutation, 2 (form with server errors), 3 (server-driven list), 6 (confirm
+then act), 7 (feedback), 9 (permission gating).
 `src/pages/profile/TokensPage.tsx` and `TokensPage.replica.tsx` are the
 worked example.
 

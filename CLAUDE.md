@@ -261,6 +261,7 @@ before writing code it covers.
 | `tests.md` | `*.test.ts(x)`, `src/test/`: where each behaviour is tested, how to write and name a test |
 | `stories.md` | `*.stories.tsx`, `.storybook/`: what each component's stories show |
 | `mock-data.md` | `src/mock-data/`, `kickstart/`: fixtures, queries, models, generated data |
+| `standards.md` | `STANDARDS.md`: pattern numbers never change |
 | `comments.md` | all source: when a comment earns its place, and what it never says |
 
 A new rule goes in the file for the files it governs, not here. If ESLint or
