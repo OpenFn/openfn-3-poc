@@ -27,7 +27,7 @@ describe("Toast", () => {
   });
 
   it("announces an error as an alert", () => {
-    expect(showToast("error").getAttribute("role")).toBe("alert");
+    expect(showToast("danger").getAttribute("role")).toBe("alert");
   });
 
   it("closes itself after 5 seconds", () => {
@@ -93,11 +93,11 @@ describe("Toast", () => {
     const show = vi.fn();
     render(
       <ToastProvider show={show}>
-        <Trigger tone="error" />
+        <Trigger tone="danger" />
       </ToastProvider>
     );
     fireEvent.click(screen.getByText("go"));
-    expect(show).toHaveBeenCalledWith("Saved", "error");
+    expect(show).toHaveBeenCalledWith("Saved", "danger");
     expect(screen.queryByText("Saved")).toBeNull();
   });
 });

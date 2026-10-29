@@ -29,7 +29,7 @@ const digestSelectOptions = digestOptions.map((d) => [capitalize(d), d] as [stri
 /** A select the host saves on every change, showing the choice while it does. */
 function SavedSelect({ id, label, saved, options, onSave }: { id: string; label: string; saved: string; options: [string, string][]; onSave: (value: string) => Promise<void> }) {
   const toast = useToast();
-  const select = useChosenValue(saved, onSave, (e) => toast(errorMessage(e), "error"));
+  const select = useChosenValue(saved, onSave, (e) => toast(errorMessage(e), "danger"));
   return <Select id={id} aria-label={label} value={select.value} options={options} onChange={(e) => select.choose(e.target.value)} />;
 }
 
@@ -106,13 +106,14 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
           <Td actions>
             <Button
               id={`remove_project_user_${c.id}_button`}
-              theme="secondary"
+              variant="secondary"
               size="lg"
               tooltip={c.removeBlockedReason ?? undefined}
               disabled={c.removeBlockedReason !== null}
               onClick={() => onRemove(c)}
+              icon="hero-minus-circle"
             >
-              <span className="hero-minus-circle h-5 w-5" /> Remove Collaborator
+              Remove Collaborator
             </Button>
           </Td>
         </Tr>

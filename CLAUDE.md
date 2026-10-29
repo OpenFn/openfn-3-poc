@@ -101,7 +101,9 @@ not **how** it's built.
   the collaborative editor's React components and a half-started new design
   system. Don't port those splits. Build every page from the primitives
   below, and when two Lightning screens style the same thing differently,
-  pick one treatment in the primitive rather than copying both.
+  pick one treatment in the primitive rather than copying both. Where the replica
+  looks or behaves differently on purpose, list it in
+  [docs/lightning-differences.md](./docs/lightning-differences.md).
 - Colours are named for what they're for: `text-strong`, `text-body`,
   `text-muted`, `text-faint`, `bg-surface`, `bg-subtle`, `border-subtle` and
   the rest in `src/theme/tokens.css`. Brand is `primary-*` (indigo; don't
@@ -137,79 +139,52 @@ everywhere. Reach for these first:
 
 | Need | Use |
 |---|---|
-| An action | `Button` (`to` for routes, `href` for plain links; `size="xs" theme="secondary"` for table row actions; `pending` while its request runs) |
-| A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
-| A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard; `useActions` for one per row, `latest` when only the newest answer counts); `Spinner` for anything loading |
-| A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` (shows the choice at once, puts back the saved value if the save fails) |
-| An icon-only action | `IconButton` (always give it a `label`; `to`/`href` for icon links, `external` to open `href` in a new tab, `tone="danger"`, or pass an SVG element as `icon`) |
-| The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
+| An action | `Button` (`size="xs" variant="secondary"` for table row actions) |
+| A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (never disable submit for invalid values) |
+| A request in flight | `useAction` from `utils/useAction.ts` (`useActions` for one per row); `Spinner` for anything loading |
+| A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` |
+| An icon-only action | `IconButton` (always give it a `label`) |
+| The X that closes a modal, toast or panel | `CloseButton` |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
-| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row; `Select` is every dropdown, styled and keyboard navigable on Headless UI's Listbox, with `prompt` shown while nothing is chosen, and tests pick from it with `pickOption` in `src/test/select.ts`); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
-| A name that becomes a URL-safe slug | `NameField` (input plus the "will be named" badge) |
-| A dialog | `Modal` (`size`, or `bare` for custom layouts) |
-| A dialog around one form | `FormModal` (`formId`, async `onSubmit`, `submitLabel`; Enter submits, Cancel is built in, pending and failure shown) |
-| Confirming one action | `ConfirmModal`; `confirmation` adds a type-to-confirm field |
+| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
+| A name that becomes a URL-safe slug | `NameField` |
+| A dialog | `Modal` |
+| A dialog around one form | `FormModal` |
+| Confirming one action | `ConfirmModal` |
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
-| A floating panel (filters, details) | `Popover` (`panelProps` puts `data-annotation` on the portalled panel; Menu takes it too) |
+| A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
-| Show / hide a section | `Disclosure` (`card`, `section` or `inline`) |
-| Switching views | `Tabs` (`underline` or `pill`, horizontal or vertical, buttons or route links) |
-| Picking one value from a few | `SegmentedControl` (a radio group drawn as Tabs' pill track; `disabledReason` shows a Tooltip) |
+| Show / hide a section | `Disclosure` |
+| Switching views | `Tabs` |
+| Picking one value from a few | `SegmentedControl` |
 | Searching or filtering a list | `SearchInput` |
-| A status chip, badge or tag | `Pill` (`color`, `square`, `mono`; `onRemove` makes it removable) |
-| Any bordered panel, tile or card | `Card` (`title`/`description`/`action` give it a header; `padding`, `muted`, `dashed`) |
-| A heading inside a page | `Heading` (`size` xl/lg/md/sm/eyebrow, `as` for the level) |
-| Labelled values | `DetailList` + `DetailItem` (`rows` or `grid`) |
-| A timestamp | `DateTime` (hover shows UTC, click copies it) |
-| A tooltip | `Tooltip` (`copy` makes a click copy that text and say "Copied!"; `disabled` when the child is a disabled control, so a wrapper takes its hover and swallows the click); `InfoTooltip` for the faded info icon next to a label |
-| A short work order, run or dataclip id | `UuidChip` (`to` links it, `length={7}` in the workflow editor) |
-| An on/off switch | `Toggle` (`note` adds gray text after the label) |
-| An inline link | `TextLink` (`variant="danger"` for destructive ones) |
-| Read-only code, a log or a dataclip | `CodeViewer` (Monaco; `ariaLabel`, `language`, `highlighted`, `revealLine`) |
-| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (dashed box, or `variant="plain"` for centred text inside a card or list; `title`, `children` below the message) (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`; `<Th actions />` and `<Td actions>` for the row-actions column, `align` for right/centre) |
-| Sorting and filtering a table in the browser | `useTableSort` (or `useSort` for state only, when rows are sorted elsewhere) from `useTableSort.ts` |
+| A status chip, badge or tag | `Pill` |
+| Any bordered panel, tile or card | `Card` |
+| A heading inside a page | `Heading` |
+| Labelled values | `DetailList` + `DetailItem` |
+| A timestamp | `DateTime` |
+| A tooltip | `Tooltip`; `InfoTooltip` for the faded info icon next to a label |
+| A short work order, run or dataclip id | `UuidChip` |
+| An on/off switch | `Toggle` |
+| An inline link | `TextLink` |
+| Read-only code, a log or a dataclip | `CodeViewer` |
+| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
+| Sorting and filtering a table in the browser | `useTableSort` from `useTableSort.ts` |
 | "Projects (3)" above a table, with its buttons | `TableTitle` |
 | A status message | `Alert` |
 | Page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
 
-Primitives expose their look to the themes through `data-ui` (and
-`data-variant` for a variant or tone). Theme CSS targets those hooks, never
-element selectors or utility classes, so a new primitive or variant needs its
-hook, and the GDS theme is worth a look after styling changes.
+Props are documented on each component (its comments and types) and shown in
+its stories, so they stay in step with the code. Read the component before
+using it.
 
-Dialogs, menus, popovers and selects sit on Headless UI (`@headlessui/react`), which
-handles focus, keyboard and positioning. `Tooltip` sits on Floating UI
-(`@floating-ui/react`), the library under Headless UI. Don't hand-roll `fixed inset-0`
-overlays, click-outside handlers or `absolute` dropdown panels.
-
-**Primitives own their behaviour.** Callers pass props; they never patch
-around a primitive.
-
-- **Fix the primitive, not the caller.** If a caller needs a workaround (a
-  wrapper span, `title=""`, an offset tweak), the fix belongs in the
-  primitive. A disabled control's tooltip is `Tooltip`'s `disabled` prop,
-  not a span in five components. A close X with no tooltip is `CloseButton`,
-  not `title=""` on seven buttons.
-- **Off means off.** A primitive with nothing to show (`Tooltip` with no
-  `content`) renders its child unchanged: no listeners, no effect on
-  anything around it. It also keeps the same element tree, so toggling it
-  never remounts the child and loses focus.
-- **One library per job.** Overlays share one stack (Headless UI and Floating
-  UI) so focus, Escape and stacking agree. If a primitive needs workarounds
-  against its library's internals, swap the library, as `Tooltip` did with
-  Radix.
-- **Anchor to what it describes.** A tooltip on a full-width row floats far
-  from its icon; put it on the icon.
-- **No options nobody uses.** Add a prop when a caller needs it, not before.
-- **Every rule has a test that fails without it.** Behaviour in a primitive
-  is shared by every page, so test it in the primitive's own test file, not
-  through each caller.
+How components are built (theme hooks, the libraries under them, prop names,
+tooltips, when to make a primitive) is in
+[src/components/CLAUDE.md](./src/components/CLAUDE.md), which loads when you
+work in that folder.
 
 **Feature components** (`src/components/<area>/`) are one panel or section
-of a page (`WorkOrdersTable`, `WebhookSecurityPanel`). They're often used
-once, and that's fine: they're the unit we wire to the backend and annotate.
-They compose primitives and don't carry their own button, input, modal or
-menu styling.
+of a page (`WorkOrdersTable`, `WebhookSecurityPanel`), built from primitives.
 
 - **Pages compose components** and take everything as props. State, route
   params and mock-data queries live in the page's `.replica.tsx` wrapper. No
@@ -218,14 +193,6 @@ menu styling.
   or the router** (ESLint enforces it; `*.replica.*` files, `*Replica.ts`
   helpers, tests and stories are exempt). They take records and `can*`
   booleans as props. See **The data seam** below.
-- **Need something that doesn't exist yet?** If it's general, add or extend a
-  primitive. If it's specific to an area, make a feature component. Either
-  way, add its story first.
-- When a pattern repeats across three or more feature components, it's a
-  primitive waiting to happen. Promote it.
-- Before adding a variant to a feature component, check whether a primitive
-  already covers it. Prefer a slightly different look over a second
-  implementation.
 - Use Tailwind's scale, not arbitrary values (`text-[13px]`, `max-w-[15rem]`),
   except for real geometry such as the workflow diagram.
 - Button labels follow Lightning's own wording, not a house style.

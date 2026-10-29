@@ -35,7 +35,7 @@ function FormCard({
     <form id={id} onSubmit={onSubmit} data-annotation="profile-account">
       <Card padding="lg" title={title} className="space-y-6">
         {children}
-        {error && <Alert type="danger">{errorMessage(error)}</Alert>}
+        {error && <Alert tone="danger">{errorMessage(error)}</Alert>}
         {button}
       </Card>
     </form>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import Button from "../Button";
+import IconButton from "../IconButton";
 import { NODE_SIZE, STROKE, nodeShapeStyle, type NodeRunState, EDGE_COLOR, EDGE_COLOR_SELECTED } from "./diagramGeometry";
 import Tooltip from "../Tooltip";
 import { NODE_RUN_ICON } from "../../theme/runStateColours";
@@ -162,17 +162,17 @@ export default function DiagramNode({
           style={{ width: NODE_SIZE, marginLeft: 2, marginTop: -18, justifyContent: "center" }}
           className="relative z-10 flex items-center opacity-0 transition group-hover:opacity-100"
         >
-          <Button
+          <IconButton
+            variant="primary"
             size="xs"
-            tooltip="Add a path to a new step"
-            className="ml-1 h-6 rounded-lg"
+            icon={<span className="hero-plus pointer-events-none h-4 w-4" aria-hidden="true" />}
+            label="Add a path to a new step"
+            className="ml-1 rounded-lg"
             onClick={(e) => {
               e.stopPropagation();
               onAddPath();
             }}
-          >
-            <span className="hero-plus pointer-events-none h-4 w-4" />
-          </Button>
+          />
         </div>
       )}
     </div>

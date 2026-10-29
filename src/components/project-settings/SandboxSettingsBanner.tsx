@@ -1,4 +1,4 @@
-import Alert, { type AlertType } from "../Alert";
+import Alert, { type AlertTone } from "../Alert";
 import TextLink from "../TextLink";
 import type { ParentProjectRef } from "../../types/project-settings";
 
@@ -13,12 +13,12 @@ interface Props {
   parent?: ParentProjectRef | null | undefined;
 }
 
-const alertTypes: Record<Variant, AlertType> = { local: "info", editable: "success", inherited: "warning" };
+const alertTones: Record<Variant, AlertTone> = { local: "info", editable: "success", inherited: "warning" };
 
 /** Lightning's `sandbox_settings_banner` (components/sandbox_settings_banner.ex). */
 export default function SandboxSettingsBanner({ variant, parent }: Props) {
   return (
-    <Alert type={alertTypes[variant]}>
+    <Alert tone={alertTones[variant]}>
       {variant === "local" &&
         "Changes you make here only apply to this sandbox and do not sync to the parent project on merge."}
       {variant === "editable" && "Changes you make here will sync to the parent project on merge."}

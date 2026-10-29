@@ -134,7 +134,7 @@ export default function ManualRunPanel({
             <Button>Search</Button>
             <IconButton icon="hero-calendar-days" label="Filter by date created" />
             <IconButton icon="hero-rectangle-group" label="Filter by type" />
-            <IconButton icon="hero-tag" label="Named only" active={namedOnly} aria-pressed={namedOnly} onClick={() => setNamedOnly((n) => !n)} />
+            <IconButton icon="hero-tag" label="Named only" active={namedOnly} onClick={() => setNamedOnly((n) => !n)} />
           </div>
           <div className="flex flex-col gap-3 overflow-auto">
             {visible.length ? (
@@ -180,7 +180,7 @@ export default function ManualRunPanel({
         <div>
           <div className="flex items-center gap-2">
             <Heading>{selected.name || "Unnamed"}</Heading>
-            <IconButton icon="hero-pencil" label="Rename" size="sm" />
+            <IconButton icon="hero-pencil" label="Rename" size="xs" />
           </div>
           <div className="mt-1 flex items-center gap-2 text-xs text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
@@ -211,7 +211,7 @@ export default function ManualRunPanel({
             tabs={tabOptions}
             active={tab}
             onChange={setTab}
-            after={onClosePanel && <CloseButton label="Close panel" size="sm" onClick={onClosePanel} />}
+            after={onClosePanel && <CloseButton label="Close panel" size="xs" onClick={onClosePanel} />}
           />
         )}
         <div className="flex-1 overflow-auto">{fromEdge ? edgeMessage : selected ? selectedView : <div className="flex h-full min-h-0 flex-col">{tabContent}</div>}</div>

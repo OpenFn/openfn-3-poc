@@ -37,7 +37,7 @@ function IdList({ label, ids, onOpenId }: { label: string; ids: string[]; onOpen
     <div className="flex flex-wrap items-center gap-1.5 text-xs">
       <span className="text-muted">{label}</span>
       {ids.map((id) => (
-        <Button key={id} theme="secondary" size="xs" className="font-mono text-xs" onClick={() => onOpenId?.(id)}>
+        <Button key={id} variant="secondary" size="xs" className="font-mono text-xs" onClick={() => onOpenId?.(id)}>
           {id}
         </Button>
       ))}
@@ -64,10 +64,10 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
           {annotation && (
             <IconButton
               href={annotation.url}
-              external
+              target="_blank"
               icon="hero-arrow-top-right-on-square"
               label="Open on GitHub"
-              size="sm"
+              size="xs"
             />
           )}
         </div>

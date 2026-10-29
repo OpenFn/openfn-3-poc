@@ -17,7 +17,7 @@ interface Props extends Omit<ComponentProps<typeof Modal>, "footer" | "bare"> {
    */
   onSubmit: () => void | Promise<void>;
   submitLabel: ReactNode;
-  submitTheme?: "primary" | "danger";
+  submitTone?: "danger" | undefined;
   submitDisabled?: boolean;
   submitId?: string | undefined;
   /** Shown on hover over the submit button, e.g. why it's disabled. */
@@ -42,7 +42,7 @@ export default function FormModal({
   formId,
   onSubmit,
   submitLabel,
-  submitTheme = "primary",
+  submitTone,
   submitDisabled = false,
   submitId,
   submitTooltip,
@@ -71,14 +71,14 @@ export default function FormModal({
             id={submitId}
             type="submit"
             form={formId}
-            theme={submitTheme}
+            tone={submitTone}
             disabled={submitDisabled}
             pending={submit.pending}
             tooltip={submitTooltip}
           >
             {submitLabel}
           </Button>
-          <Button id={cancelId} theme="secondary" onClick={close} disabled={submit.pending}>
+          <Button id={cancelId} variant="secondary" onClick={close} disabled={submit.pending}>
             {cancelLabel}
           </Button>
         </>
@@ -86,7 +86,7 @@ export default function FormModal({
     >
       {before}
       {submit.error && (
-        <Alert type="danger" className="mb-4" id={`${formId}-error`}>
+        <Alert tone="danger" className="mb-4" id={`${formId}-error`}>
           {errorMessage(submit.error)}
         </Alert>
       )}

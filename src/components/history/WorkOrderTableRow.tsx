@@ -146,8 +146,7 @@ export default function WorkOrderTableRow({
                   id={`cancel-wo-${wo.id}`}
                   icon="hero-x-mark-mini"
                   label="Cancel pending run"
-                  size="sm"
-                  className="hover:text-danger-500"
+                  size="xs"
                   onClick={onCancel}
                 />
               )}
@@ -157,7 +156,7 @@ export default function WorkOrderTableRow({
                     id={`retry-workorder-${wo.id}`}
                     icon="hero-arrow-path-mini"
                     label="Retry (run from the start)"
-                    size="sm"
+                    size="xs"
                     className="hover:text-primary-400"
                     onClick={() => {
                       onRetry();
@@ -166,10 +165,10 @@ export default function WorkOrderTableRow({
                   />
                 ) : canRunWorkflow ? (
                   <WipedTooltip message={zeroPersistence} dataStorageHref={dataStorageHref}>
-                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} title="" size="sm" disabled />
+                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} tooltip={false} size="xs" disabled />
                   </WipedTooltip>
                 ) : (
-                  <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="sm" disabled />
+                  <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="xs" disabled />
                 ))}
               <Pill>{runs.length}</Pill>
               <span className={cn(expanded ? "hero-chevron-up" : "hero-chevron-down", "size-4 text-faint")} />

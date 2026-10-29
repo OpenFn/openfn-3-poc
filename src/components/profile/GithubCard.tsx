@@ -29,7 +29,7 @@ export default function GithubCard({ github, onDisconnect }: Props) {
             Connect your GitHub account
           </Button>
         ) : status === "connected" ? (
-          <Button id="disconnect-github-button" theme="danger" onClick={() => setConfirming(true)}>
+          <Button id="disconnect-github-button" tone="danger" onClick={() => setConfirming(true)}>
             Disconnect from GitHub
           </Button>
         ) : (

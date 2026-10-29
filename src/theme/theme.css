@@ -15,11 +15,13 @@
  *
  * A token swap can't reach everything (button shape, field borders,
  * focus states), so each theme may add a component layer. That layer
- * keys off the `data-ui` / `data-variant` hooks the primitives emit
+ * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
  * (button, link, field, form-group, label, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
  * page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.
+ * A toned button is still `data-variant="primary"`: a rule meant for the
+ * plain primary button needs `:not([data-tone])`.
  * The default theme has no component layer.
  *
  * ADDING A THEME: add an entry in `themes.ts`, then a token block here
@@ -186,15 +188,16 @@ html[data-theme="light"] {
   /* ---- Actions ----------------------------------------------- */
 
   /* Buttons: a soft lift instead of a flat fill. Secondary buttons
-     are white with a hairline, coloured ones get an inner highlight. */
-  [data-ui="button"] {
+     are white with a hairline, coloured ones get an inner highlight.
+     Plain buttons (icon buttons) have no lift. */
+  [data-ui="button"]:where(:not([data-variant="plain"])) {
     font-weight: 500;
     box-shadow: var(--shadow-sm);
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
-    &:is([data-variant="primary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
+    &[data-variant="primary"] {
       box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--shadow-sm);
     }
-    &[data-variant="primary"]:hover:not(:disabled) { background-color: var(--ui-brand-hover); }
+    &[data-variant="primary"]:not([data-tone]):hover:not(:disabled) { background-color: var(--ui-brand-hover); }
     /* Tailwind's ring is a box-shadow too, so the hairline is drawn here. */
     &[data-variant="secondary"] {
       box-shadow: 0 0 0 1px var(--color-gray-300), var(--shadow-sm);
@@ -482,9 +485,6 @@ html[data-theme="gds"] {
   --ui-button-bg: #0f7a52;            --ui-button-hover: #0b5c3e;            --ui-button-edge: #083d29;
   --ui-button-secondary-bg: #f3f3f3;  --ui-button-secondary-hover: #cecece;  --ui-button-secondary-edge: #858686;
   --ui-button-danger-bg: #ca3535;     --ui-button-danger-hover: #982828;     --ui-button-danger-edge: #651b1b;
-  /* GOV.UK has no amber button. A "warning" button is a destructive
-     one (its Warning button is red), so it shares the danger colours. */
-  --ui-button-warning-bg: #ca3535;    --ui-button-warning-hover: #982828;    --ui-button-warning-edge: #651b1b;
 
   /* Workflow canvas: GOV.UK blue for the selection and its neighbours. */
   --ui-diagram-selected: #1d70b8;
@@ -560,7 +560,7 @@ html[data-theme="gds"] {
   /* ---- Actions ----------------------------------------------- */
 
   /* Button: solid fill with a "pressable" bottom edge that sinks on press. */
-  [data-ui="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
+  [data-ui="button"]:is([data-variant="primary"], [data-variant="secondary"]) {
     --_bg: var(--ui-button-bg);
     --_hover: var(--ui-button-hover);
     --_edge: var(--ui-button-edge);
@@ -579,15 +579,10 @@ html[data-theme="gds"] {
       --_edge: var(--ui-button-secondary-edge);
       --_text: var(--ui-text);
     }
-    &[data-variant="danger"] {
+    &[data-tone="danger"] {
       --_bg: var(--ui-button-danger-bg);
       --_hover: var(--ui-button-danger-hover);
       --_edge: var(--ui-button-danger-edge);
-    }
-    &[data-variant="warning"] {
-      --_bg: var(--ui-button-warning-bg);
-      --_hover: var(--ui-button-warning-hover);
-      --_edge: var(--ui-button-warning-edge);
     }
     &:hover:not(:disabled) { background-color: var(--_hover); }
     &:active:not(:disabled) { top: 2px; }
@@ -600,7 +595,7 @@ html[data-theme="gds"] {
 
   /* Links: always underlined, in GOV.UK link blue. The colour is set by
      re-pointing the tokens the `link` utility reads, not the `color`
-     property, so `variant="danger"` (link-danger, red) and per-call
+     property, so `tone="danger"` (link-danger, red) and per-call
      colour classes still win. */
   [data-ui="link"] {
     --color-primary-400: var(--ui-link);
@@ -653,9 +648,9 @@ html[data-theme="gds"] {
     --_icon: var(--ui-brand);
     border: var(--ui-emphasis-border) solid var(--_tone);
     background-color: #ffffff;
-    &[data-variant="success"] { --_tone: var(--ui-success); --_icon: var(--ui-success); }
-    &[data-variant="warning"] { --_icon: var(--ui-text); }
-    &[data-variant="danger"]  { --_tone: var(--ui-error); --_icon: var(--ui-error); }
+    &[data-tone="success"] { --_tone: var(--ui-success); --_icon: var(--ui-success); }
+    &[data-tone="warning"] { --_icon: var(--ui-text); }
+    &[data-tone="danger"]  { --_tone: var(--ui-error); --_icon: var(--ui-error); }
     :is(h3, div, p) { color: var(--ui-text); }
     h3 { font-size: var(--text-base); line-height: var(--text-base--line-height); }
     [class*="hero-"] { color: var(--_icon); }
@@ -684,7 +679,7 @@ html[data-theme="gds"] {
      Horizontal: GOV.UK's Tabs. Unselected tabs are grey with an
      underlined link; the selected one is white and opens into the
      content below the rule. */
-  [data-ui="tabs"][data-variant="underline"][data-orientation="horizontal"] {
+  [data-ui="tabs"][data-variant="line"][data-orientation="horizontal"] {
     column-gap: 5px;
     [role="tab"] {
       padding: 10px 20px;

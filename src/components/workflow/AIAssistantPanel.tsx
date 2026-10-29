@@ -145,8 +145,12 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
           <div className="flex h-full flex-col">
             <div className="flex items-center gap-2 px-6 pt-3 pb-2">
               <SearchInput value={query} onChange={setQuery} placeholder="Search conversations..." size="sm" className="flex-1" />
-              <Button theme="secondary" size="sm" onClick={() => setDesc((d) => !d)}>
-                <span className={cn("hero-arrow-down h-3.5 w-3.5 transition-transform", !desc && "rotate-180")} />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setDesc((d) => !d)}
+                icon={<span className={cn("hero-arrow-down h-3.5 w-3.5 transition-transform", !desc && "rotate-180")} aria-hidden="true" />}
+              >
                 {desc ? "Latest" : "Oldest"}
               </Button>
             </div>
@@ -210,7 +214,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                 data-testid="send-message-button"
                 icon="hero-paper-airplane-solid"
                 label="Send message"
-                active={!!input.trim()}
+                variant="primary"
                 disabled={!input.trim()}
               />
             </div>

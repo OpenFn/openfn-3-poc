@@ -33,7 +33,7 @@ export default function ProfilePageReplica() {
     }
     refusing.current = true;
     // edit.ex refuses with this flash; it push_patches, which can't cross live_sessions, so here it navigates.
-    toast("You can't perform this action", "error");
+    toast("You can't perform this action", "danger");
     navigate("/profile", { replace: true });
   }, [refused, toast, navigate]);
 

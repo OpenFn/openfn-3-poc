@@ -41,7 +41,7 @@ export default function UserDeletionModal({
         title={title}
         size="sm"
         footer={
-          <Button theme="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
         }

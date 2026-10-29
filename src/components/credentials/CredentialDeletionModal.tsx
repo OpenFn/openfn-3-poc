@@ -31,7 +31,7 @@ export default function CredentialDeletionModal({ onClose, credential, onDelete 
         title="Credential marked for deletion"
         size="sm"
         footer={
-          <Button theme="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Ok, understood
           </Button>
         }

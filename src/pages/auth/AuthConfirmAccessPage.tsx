@@ -56,7 +56,7 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
       </AuthPanel>
       <AuthPanel>
         <AuthPanelTitle>{option === "password" ? "Password" : "Authentication Code"}</AuthPanelTitle>
-        {confirm.error && <Alert type="danger">{errorMessage(confirm.error)}</Alert>}
+        {confirm.error && <Alert tone="danger">{errorMessage(confirm.error)}</Alert>}
         <form id="reauthentication-form" onSubmit={onSubmit} className="space-y-4" aria-busy={confirm.pending || undefined}>
           {option === "password" ? (
             <PasswordInput

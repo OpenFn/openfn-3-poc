@@ -13,7 +13,7 @@ interface Props {
 /** The Experimental Features card on /profile (experimental_features_component.html.heex). */
 export default function ExperimentalFeaturesCard({ enabled, onChange }: Props) {
   const toast = useToast();
-  const chosen = useChosenValue(enabled, onChange, (e) => toast(errorMessage(e), "error"));
+  const chosen = useChosenValue(enabled, onChange, (e) => toast(errorMessage(e), "danger"));
   return (
     <Card
       padding="lg"

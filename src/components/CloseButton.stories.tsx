@@ -9,5 +9,5 @@ export default meta;
 type Story = StoryObj<typeof CloseButton>;
 
 export const Default: Story = {};
-export const Small: Story = { args: { size: "sm" } };
+export const ExtraSmall: Story = { args: { size: "xs" } };
 export const WithLabel: Story = { args: { label: "Close panel" } };

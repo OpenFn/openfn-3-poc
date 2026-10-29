@@ -58,7 +58,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
   ];
   return (
     <div className="min-h-screen bg-page text-sm text-body">
-      <Alert type="warning" className="rounded-none">
+      <Alert tone="warning" className="rounded-none">
         <div className="flex justify-between gap-2">
           <span>
             Static approximation of <strong>Phoenix LiveDashboard</strong>, a third-party page mounted by Lightning at

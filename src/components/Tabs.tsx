@@ -21,8 +21,8 @@ interface Props<T extends string> {
   active: T;
   /** Called when a tab is chosen. Route tabs navigate on their own unless this is set. */
   onChange?: (id: T) => void;
-  /** `underline`: text over a rule. `pill`: segments on a gray track. */
-  variant?: "underline" | "pill";
+  /** `line`: text over a rule. `pill`: segments on a gray track. */
+  variant?: "line" | "pill";
   orientation?: "horizontal" | "vertical";
   /** Pill tabs share the row's width equally. */
   fill?: boolean;
@@ -41,7 +41,7 @@ export default function Tabs<T extends string>({
   tabs,
   active,
   onChange,
-  variant = "underline",
+  variant = "line",
   orientation = "horizontal",
   fill = false,
   label,
@@ -65,7 +65,7 @@ export default function Tabs<T extends string>({
         const classes = cn(
           tabStyles.base,
           s.tab,
-          variant === "underline" && !vertical && "-mb-px",
+          variant === "line" && !vertical && "-mb-px",
           fill && "flex-1 justify-center",
           selected ? s.selected : s.idle,
           tab.disabled && tabStyles.disabled
@@ -115,7 +115,7 @@ export default function Tabs<T extends string>({
       className={cn(
         "flex",
         vertical ? "flex-col" : "items-center gap-x-4",
-        variant === "underline" && !vertical && "border-b border-subtle",
+        variant === "line" && !vertical && "border-b border-subtle",
         className
       )}
     >

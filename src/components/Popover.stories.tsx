@@ -9,8 +9,8 @@ const meta: Meta<typeof Popover> = {
   decorators: [(Story) => <div className="p-8 pb-64"><Story /></div>],
   args: {
     trigger: (
-      <Button theme="secondary">
-        Status <span className="hero-chevron-down h-4 w-4" />
+      <Button variant="secondary" icon="hero-chevron-down" iconPosition="right">
+        Status
       </Button>
     ),
     className: "w-60 px-4 py-3",

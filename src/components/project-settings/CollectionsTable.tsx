@@ -1,6 +1,7 @@
 import { EmptyState, Table, Td, Th, Tr } from "../Table";
 import { useTableSort, type SortValue } from "../useTableSort";
 import Button from "../Button";
+import IconButton from "../IconButton";
 import type { CollectionRow } from "../../types/project-settings";
 import { formatBytes } from "../../utils/format";
 
@@ -57,22 +58,21 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
           <Td>{c.name}</Td>
           <Td>{formatBytes(c.byteSizeSum)}</Td>
           <Td actions>
-            <Button
+            <IconButton
               id={`preview-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
+              icon="hero-eye"
+              label="Preview collection"
               pending={previewingId === c.id}
               onClick={() => onPreview(c)}
-            >
-              <span className="hero-eye h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Preview collection</span>
-            </Button>
-            <Button id={`download-collection-${c.id}-button`} theme="secondary" size="xs" href={c.downloadHref}>
+            />
+            <Button id={`download-collection-${c.id}-button`} variant="secondary" size="xs" href={c.downloadHref}>
               Download
             </Button>
             <Button
               id={`edit-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
               disabled={!canManage}
               onClick={() => onEdit(c)}
@@ -81,7 +81,7 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
             </Button>
             <Button
               id={`delete-collection-${c.id}-button`}
-              theme="secondary"
+              variant="secondary"
               size="xs"
               disabled={!canManage}
               onClick={() => onDelete(c)}

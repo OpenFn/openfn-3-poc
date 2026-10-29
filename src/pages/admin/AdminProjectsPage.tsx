@@ -51,8 +51,7 @@ export default function AdminProjectsPage({
     <PageContent
       header={
         <Header title={title}>
-          <Button to="/settings/projects/new">
-            <span className="hero-plus h-4 w-4" />
+          <Button to="/settings/projects/new" icon="hero-plus">
             New Project
           </Button>
         </Header>

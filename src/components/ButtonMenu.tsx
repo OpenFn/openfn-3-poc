@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import Button, { type ButtonTheme } from "./Button";
+import Button, { type ButtonVariant } from "./Button";
 import Menu from "./Menu";
 import type { FloatingAlign } from "./floating";
 
 interface Props {
   /** The button's text, e.g. "Actions". A chevron is added after it. */
   label: ReactNode;
-  theme?: ButtonTheme;
+  variant?: ButtonVariant;
   align?: FloatingAlign;
   /** Width class for the menu. */
   className?: string;
@@ -21,14 +21,14 @@ interface Props {
  * A labelled button with a chevron that opens a Menu: row "Actions" menus,
  * "Add new" menus (Lightning's `simple_dropdown`).
  */
-export default function ButtonMenu({ label, theme = "secondary", align, className, pending = false, disabled = false, children }: Props) {
+export default function ButtonMenu({ label, variant = "secondary", align, className, pending = false, disabled = false, children }: Props) {
   return (
     <Menu
       align={align}
       className={className}
       trigger={
-        <Button theme={theme} pending={pending} disabled={disabled}>
-          {label} <span className="hero-chevron-down h-4 w-4" />
+        <Button variant={variant} pending={pending} disabled={disabled} icon="hero-chevron-down" iconPosition="right">
+          {label}
         </Button>
       }
     >

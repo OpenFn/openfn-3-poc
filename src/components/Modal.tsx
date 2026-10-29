@@ -67,7 +67,7 @@ export default function Modal({ open, onClose, title, description, children, foo
                         <DialogTitle className="text-lg font-semibold leading-5 text-strong">{title}</DialogTitle>
                         {description && <Description className="mt-2 text-sm text-muted">{description}</Description>}
                       </div>
-                      <CloseButton size="sm" className="-m-0.5 p-0.5" onClick={onClose} />
+                      <CloseButton onClick={onClose} />
                     </header>
                     <div className="my-4 h-0.5 bg-emphasis" />
                   </>

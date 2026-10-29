@@ -15,7 +15,7 @@ export const WithHeader: Story = {
   args: {
     title: "Project Identity",
     description: "Project name and description.",
-    action: <Button theme="secondary">Edit</Button>,
+    action: <Button variant="secondary">Edit</Button>,
   },
 };
 export const Large: Story = { args: { padding: "lg" } };

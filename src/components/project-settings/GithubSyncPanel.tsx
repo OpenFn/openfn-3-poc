@@ -74,7 +74,7 @@ export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, o
         {canInstall && (
           <p>
             No longer need to sync this project?{" "}
-            <TextLink variant="danger" onClick={() => setConfirmRemove(true)}>
+            <TextLink tone="danger" onClick={() => setConfirmRemove(true)}>
               Remove Integration.
             </TextLink>
           </p>

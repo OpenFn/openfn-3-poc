@@ -86,7 +86,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
             maxLength={240}
             {...identity.fieldProps("description")}
           />
-          {identity.error && <Alert type="danger">{errorMessage(identity.error)}</Alert>}
+          {identity.error && <Alert tone="danger">{errorMessage(identity.error)}</Alert>}
           <Button
             id="project-identity-submit-btn"
             type="submit"
@@ -125,11 +125,11 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
             note="(No more than one run at a time)"
           />
           {concurrency.values.serial && concurrency.dirty && (
-            <Alert type="warning" header="Heads Up!">
+            <Alert tone="warning" header="Heads Up!">
               <p>Disabling parallel run execution may significantly reduce the overall throughput of your project.</p>
             </Alert>
           )}
-          {concurrency.error && <Alert type="danger">{errorMessage(concurrency.error)}</Alert>}
+          {concurrency.error && <Alert tone="danger">{errorMessage(concurrency.error)}</Alert>}
           <Button
             id="project-concurrency-submit-btn"
             type="submit"
@@ -159,7 +159,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
               : "Deleting your project is irreversible"
           }
         >
-          <Button theme="danger" to={setup.deleteHref}>
+          <Button tone="danger" to={setup.deleteHref}>
             {sandbox ? "Delete sandbox" : "Delete project"}
           </Button>
         </Card>

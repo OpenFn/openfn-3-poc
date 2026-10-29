@@ -15,8 +15,8 @@ const { credentials, oauthClients } = credentialIndexDataFor(fixture, projects[0
 const keychainCredentials = keychainRowsFor(fixture, projects[0]!);
 
 const actions = () => (
-  <Button theme="secondary">
-    Actions <span className="hero-chevron-down ml-1 h-5 w-5" />
+  <Button variant="secondary" icon="hero-chevron-down" iconPosition="right">
+    Actions
   </Button>
 );
 

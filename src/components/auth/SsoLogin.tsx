@@ -13,8 +13,7 @@ export default function SsoLogin({ provider }: { provider: SsoProvider }) {
         or
         <hr className="flex-1 border-subtle" />
       </div>
-      <Button theme="secondary" href={provider.handlerUrl} tooltip={provider.name} className="w-full">
-        <span className="hero-identification h-4 w-4" />
+      <Button variant="secondary" href={provider.handlerUrl} tooltip={provider.name} className="w-full" icon="hero-identification">
         via external provider
       </Button>
     </>

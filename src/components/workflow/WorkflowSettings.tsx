@@ -82,7 +82,7 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
         description="Discard all uncommitted changes and restore the workflow to its latest saved snapshot. This action cannot be undone."
         className="border-t border-subtle pt-6"
       >
-        <Button theme="danger" onClick={() => setConfirmReset(true)}>
+        <Button tone="danger" onClick={() => setConfirmReset(true)}>
           Reset to Latest Snapshot
         </Button>
       </Section>

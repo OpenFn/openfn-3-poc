@@ -36,7 +36,7 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
       submitTooltip={!yaml.trim() ? "Enter YAML content to create workflow" : error ? "Fix validation errors to continue" : undefined}
     >
       <div className="mb-3 flex justify-end">
-        <Button theme="secondary" size="sm" onClick={() => setMode(mode === "upload" ? "paste" : "upload")}>
+        <Button variant="secondary" size="sm" onClick={() => setMode(mode === "upload" ? "paste" : "upload")}>
           {mode === "upload" ? "Paste text" : "Upload a file"}
         </Button>
       </div>

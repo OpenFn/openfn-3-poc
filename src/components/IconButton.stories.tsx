@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import Button from "./Button";
 import IconButton from "./IconButton";
 import { withRouter } from "../stories/decorators";
 
@@ -12,13 +13,13 @@ export default meta;
 type Story = StoryObj<typeof IconButton>;
 
 export const Default: Story = {};
-export const Small: Story = { args: { size: "sm", icon: "hero-trash", label: "Delete" } };
+export const ExtraSmall: Story = { args: { size: "xs", icon: "hero-trash", label: "Delete" } };
 export const Large: Story = { args: { size: "lg", icon: "hero-cog-6-tooth", label: "Settings" } };
 export const Active: Story = { args: { active: true, icon: "hero-view-columns", label: "Toggle panel orientation" } };
 export const Disabled: Story = { args: { disabled: true, icon: "hero-play", label: "Run" } };
 export const Danger: Story = { args: { tone: "danger", icon: "hero-trash", label: "Delete token" } };
 export const AsLink: Story = { args: { to: "/projects", icon: "hero-rectangle-stack", label: "View full history" } };
-export const ExternalLink: Story = { args: { href: "https://docs.openfn.org", external: true, icon: "hero-arrow-top-right-on-square", label: "Open docs" } };
+export const ExternalLink: Story = { args: { href: "https://docs.openfn.org", target: "_blank", icon: "hero-arrow-top-right-on-square", label: "Open docs" } };
 export const CustomIcon: Story = {
   args: {
     label: "Merge",
@@ -31,4 +32,20 @@ export const CustomIcon: Story = {
       </svg>
     ),
   },
+};
+
+/** Each size beside a Button of the same size: the same height. */
+export const BesideButtons: Story = {
+  render: () => (
+    <div className="flex flex-col items-start gap-3">
+      {(["xs", "sm", "md", "lg"] as const).map((size) => (
+        <div key={size} className="flex items-center gap-2">
+          <IconButton size={size} variant="secondary" icon="hero-eye" label="Preview" />
+          <Button size={size} variant="secondary">
+            Download
+          </Button>
+        </div>
+      ))}
+    </div>
+  ),
 };

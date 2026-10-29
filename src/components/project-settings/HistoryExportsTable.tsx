@@ -41,13 +41,13 @@ export default function HistoryExportsTable({ exports }: { exports: HistoryExpor
           <Td>{formatStatus(f.status)}</Td>
           <Td actions>
             {f.downloadHref ? (
-              <Button id={`download-export-file-${f.id}-button`} theme="secondary" size="xs" href={f.downloadHref} target="_blank">
+              <Button id={`download-export-file-${f.id}-button`} variant="secondary" size="xs" href={f.downloadHref} target="_blank">
                 Download
               </Button>
             ) : (
               <Button
                 id={`download-export-file-${f.id}-button`}
-                theme="secondary"
+                variant="secondary"
                 size="xs"
                 disabled
                 tooltip="Export is not yet ready for download"

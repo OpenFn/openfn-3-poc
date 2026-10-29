@@ -68,7 +68,7 @@ export default function WorkflowsIndexPage({
 }: WorkflowsIndexPageProps) {
   const toast = useToast();
   // The host announces success (its flash); a refusal or a lost connection is said here.
-  const failed = (error: unknown) => toast(errorMessage(error), "error");
+  const failed = (error: unknown) => toast(errorMessage(error), "danger");
   return (
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} />} />}>
       <Centered>

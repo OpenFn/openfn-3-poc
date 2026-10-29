@@ -14,7 +14,7 @@ function Demo({ initial, returnToConfigure }: { initial: AdaptorModal; returnToC
       <p>
         {job.adaptor} {job.credentialName ? `(${job.credentialName})` : ""}
       </p>
-      <Button theme="secondary" onClick={() => setOpen("configure")}>
+      <Button variant="secondary" onClick={() => setOpen("configure")}>
         Configure
       </Button>
       <AdaptorConfigModals

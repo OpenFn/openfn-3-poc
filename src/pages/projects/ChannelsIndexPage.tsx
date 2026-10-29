@@ -62,7 +62,7 @@ export default function ChannelsIndexPage({
   const base = `/projects/${project.id}/channels`;
   const pageTitle = form ? (form.channel ? "Edit Channel" : "New Channel") : "Channels";
   // The host announces success (its flash); a refusal or a lost connection is said here.
-  const failed = (error: unknown) => toast(errorMessage(error), "error");
+  const failed = (error: unknown) => toast(errorMessage(error), "danger");
 
   return (
     <>

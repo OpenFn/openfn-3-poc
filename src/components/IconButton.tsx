@@ -1,94 +1,50 @@
-import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode, Ref } from "react";
-import { Link } from "../routing/router";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "../utils/cn";
-import Tooltip from "./Tooltip";
+import Button, { type ButtonLook, type ButtonSize } from "./Button";
 
-export type IconButtonSize = "sm" | "md" | "lg";
-
-interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+type Props = Omit<ComponentProps<typeof Button>, "children" | "icon" | "tooltip" | "title" | "variant" | "tone"> & {
   /** Hero icon class, e.g. `hero-x-mark`, or an icon element of your own (an SVG). */
   icon: string | ReactNode;
   /** Accessible name, also shown as the hover tooltip. */
   label: string;
-  size?: IconButtonSize | undefined;
-  /** Highlights the button, e.g. a toggled panel. */
-  active?: boolean;
-  /** `danger` for destructive actions, e.g. a delete icon in a table row. */
-  tone?: "default" | "danger";
-  /** Render as a router link. Ignored while disabled. */
-  to?: string;
-  /** Render as a plain link. Ignored while disabled. */
-  href?: string;
-  /** Open the `href` link in a new tab. */
-  external?: boolean;
-  ref?: Ref<HTMLButtonElement>;
-}
+  /** Hover text when it should say more than the label (a shortcut, why it's disabled); `false` for none. */
+  tooltip?: string | false | undefined;
+  /** Shows a toggle as on, e.g. an open panel. Sets `aria-pressed`. */
+  active?: boolean | undefined;
+} & (
+    | { variant?: "plain" | "primary" | undefined; tone?: "danger" | undefined }
+    | { variant: "secondary"; tone?: never }
+  );
 
-const sizes: Record<IconButtonSize, { button: string; icon: string }> = {
-  sm: { button: "p-0.5", icon: "h-4 w-4" },
-  md: { button: "p-1", icon: "h-5 w-5" },
-  lg: { button: "p-1.5", icon: "h-6 w-6" },
-};
-
-const tones = {
-  default: "text-muted hover:bg-hover hover:text-body",
-  danger: "text-danger-600 hover:bg-danger-50 hover:text-danger-700",
+// A square as tall as a Button of the same size (28, 32, 36, 40px), so it lines up beside one.
+const sizes: Record<ButtonSize, { button: string; icon: string }> = {
+  xs: { button: "size-7", icon: "h-4 w-4" },
+  sm: { button: "size-8", icon: "h-5 w-5" },
+  md: { button: "size-9", icon: "h-5 w-5" },
+  lg: { button: "size-10", icon: "h-6 w-6" },
 };
 
 /**
- * A square, borderless button showing only an icon: close buttons, panel
- * toggles, row actions. Always give it a `label`. Pass `to` or `href` for an
- * icon-only link that looks the same.
+ * A square Button showing only an icon: close buttons, panel toggles, row
+ * actions. Colours, focus, disabled, pending, links and the size scale all
+ * come from Button; it defaults to `variant="plain"` and `size="sm"`. Always
+ * give it a `label`.
  */
-export default function IconButton({
-  icon,
-  label,
-  size = "md",
-  active = false,
-  tone = "default",
-  to,
-  href,
-  external = false,
-  className,
-  type = "button",
-  title,
-  ref,
-  ...rest
-}: Props) {
+export default function IconButton({ icon, label, size = "sm", tooltip, active, variant = "plain", tone, className, ...rest }: Props) {
   const s = sizes[size];
-  const classes = cn(
-    "inline-flex shrink-0 items-center justify-center rounded-md transition-colors cursor-pointer",
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
-    "disabled:cursor-not-allowed disabled:opacity-50",
-    active ? "bg-primary-50 text-primary-600" : tones[tone],
-    s.button,
-    className
-  );
-  const content = typeof icon === "string" ? <span className={cn(icon, s.icon)} aria-hidden="true" /> : icon;
-  const common = { "aria-label": label, "data-ui": "icon-button", "data-variant": tone, className: classes, id: rest.id };
-  const hint = title ?? label;
-
-  if ((to || href) && !rest.disabled) {
-    const onClick = rest.onClick as unknown as MouseEventHandler<HTMLAnchorElement> | undefined;
-    return (
-      <Tooltip content={hint}>
-        {to ? (
-          <Link to={to} onClick={onClick} {...common}>
-            {content}
-          </Link>
-        ) : (
-          <a href={href} onClick={onClick} {...(external && { target: "_blank", rel: "noopener noreferrer" })} {...common}>
-            {content}
-          </a>
-        )}
-      </Tooltip>
-    );
-  }
+  const look = { variant, tone } as ButtonLook;
   return (
-    <Tooltip content={hint} disabled={!!rest.disabled}>
-      <button ref={ref} type={type} {...rest} {...common}>
-        {content}
-      </button>
-    </Tooltip>
+    <Button
+      {...rest}
+      {...look}
+      size={size}
+      icon={typeof icon === "string" ? <span className={cn(icon, s.icon)} aria-hidden="true" /> : icon}
+      aria-label={label}
+      aria-pressed={active}
+      tooltip={tooltip === false ? undefined : (tooltip ?? label)}
+      className={cn("shrink-0 p-0", s.button, className)}
+    >
+      {null}
+    </Button>
   );
 }

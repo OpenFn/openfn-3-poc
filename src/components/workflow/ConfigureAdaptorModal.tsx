@@ -62,7 +62,7 @@ export default function ConfigureAdaptorModal({
             <Card padding="sm" className="flex items-center gap-2">
               <AdaptorIcon name={adaptor} size="md" />
               <span className="flex-1 truncate font-medium text-strong">{adaptorDisplayName(adaptor)}</span>
-              <Button theme="secondary" size="sm" onClick={onChangeAdaptor} aria-label="Change adaptor">
+              <Button variant="secondary" size="sm" onClick={onChangeAdaptor} aria-label="Change adaptor">
                 Change
               </Button>
             </Card>

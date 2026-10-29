@@ -9,12 +9,8 @@ const meta: Meta<typeof SplitButton> = {
   args: {
     onClick: () => {},
     tooltip: "⌘ Enter",
-    children: (
-      <>
-        <span className="hero-play-solid h-4 w-4" />
-        Run
-      </>
-    ),
+    icon: "hero-play-solid",
+    children: "Run",
     menu: (
       <MenuItem icon="hero-play" description="⌘ ⇧ Enter">
         Run with custom input
@@ -26,5 +22,6 @@ export default meta;
 type Story = StoryObj<typeof SplitButton>;
 
 export const Primary: Story = {};
-export const Secondary: Story = { args: { theme: "secondary" } };
+export const Secondary: Story = { args: { variant: "secondary" } };
 export const Disabled: Story = { args: { disabled: true } };
+export const Pending: Story = { args: { pending: true, children: "Processing" } };

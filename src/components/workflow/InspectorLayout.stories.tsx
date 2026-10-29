@@ -21,8 +21,8 @@ export const WithFooter: Story = {
   args: {
     footer: (
       <InspectorFooter
-        leftButtons={<Button theme="secondary">Edit</Button>}
-        rightButtons={<Button theme="danger">Delete</Button>}
+        leftButtons={<Button variant="secondary">Edit</Button>}
+        rightButtons={<Button tone="danger">Delete</Button>}
       />
     ),
   },

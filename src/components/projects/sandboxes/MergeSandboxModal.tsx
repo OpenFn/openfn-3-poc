@@ -167,7 +167,7 @@ export default function MergeSandboxModal({
       </div>
 
       {s.error && (
-        <Alert type="danger" id="merge-preview-error">
+        <Alert tone="danger" id="merge-preview-error">
           {s.error}
         </Alert>
       )}
@@ -235,7 +235,7 @@ export default function MergeSandboxModal({
         </>
       )}
 
-      <Alert type="warning" id="merge-deletion-warning" header="This sandbox will be deleted after merging">
+      <Alert tone="warning" id="merge-deletion-warning" header="This sandbox will be deleted after merging">
         It can be restored from the sandbox list for {formatGracePeriod(gracePeriodDays)}, then permanently removed.
         {count === 1 && <div className="mt-2">Its child sandbox will also be deleted.</div>}
         {count > 1 && <div className="mt-2">Its {count} child sandboxes will also be deleted.</div>}

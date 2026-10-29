@@ -81,7 +81,10 @@ export default function Tooltip({
 
   // The tree is the same whether the control is disabled or not (a `disabled` prop that is passed adds
   // the wrapper), so enabling a control never remounts it.
-  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void }>;
+  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void; "aria-label"?: string; label?: string }>;
+  // A tooltip that only repeats the control's name (its `aria-label`, or an IconButton's `label`) isn't linked as its
+  // description too, or a screen reader says the name twice.
+  const repeatsName = typeof content === "string" && content === (child.props["aria-label"] ?? child.props.label);
   const wrap = disabled !== undefined;
   const onWrapper = !!disabled && !!content;
   // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
@@ -98,10 +101,11 @@ export default function Tooltip({
     setOpen(false); // "Copied!" holds it open, then it hides.
   };
   const referenceProps = getReferenceProps({ ...base, ref, onClick });
+  if (repeatsName) delete referenceProps["aria-describedby"];
   const trigger = wrap ? (
     <span className={onWrapper ? "inline-flex cursor-not-allowed *:pointer-events-none" : "contents"} {...(onWrapper ? referenceProps : {})}>
       {/* The tooltip can't open from a disabled control, so the reason goes on it for screen readers. */}
-      {cloneElement(child, onWrapper ? (typeof content === "string" ? { "aria-description": content } : {}) : referenceProps)}
+      {cloneElement(child, onWrapper ? (typeof content === "string" && !repeatsName ? { "aria-description": content } : {}) : referenceProps)}
     </span>
   ) : (
     cloneElement(child, referenceProps)

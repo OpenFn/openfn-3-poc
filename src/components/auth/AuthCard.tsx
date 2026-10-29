@@ -19,8 +19,8 @@ export default function AuthCard({
 }) {
   return (
     <Card padding="lg" className="grid gap-4 sm:w-2/3 md:w-1/2">
-      {error && <Alert type="danger">{error}</Alert>}
-      {info && <Alert type="info">{info}</Alert>}
+      {error && <Alert tone="danger">{error}</Alert>}
+      {info && <Alert tone="info">{info}</Alert>}
       {children}
     </Card>
   );

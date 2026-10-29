@@ -59,10 +59,10 @@ export default function WebhookAuthMethodsTable({ authMethods, canWrite, onCreat
               )}
             </Td>
             <Td actions>
-              <Button theme="secondary" size="xs" disabled={!canWrite} onClick={() => onView(m)}>
+              <Button variant="secondary" size="xs" disabled={!canWrite} onClick={() => onView(m)}>
                 {canWrite ? "View" : "Edit"}
               </Button>
-              <Button theme="secondary" size="xs" disabled={!canWrite} onClick={() => onDelete(m)}>
+              <Button variant="secondary" size="xs" disabled={!canWrite} onClick={() => onDelete(m)}>
                 Delete
               </Button>
             </Td>

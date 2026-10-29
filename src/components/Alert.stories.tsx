@@ -5,7 +5,7 @@ const meta: Meta<typeof Alert> = {
   title: "Shared/Alert",
   component: Alert,
   args: {
-    type: "warning",
+    tone: "warning",
     header: "Heads Up!",
     children: "Disabling parallel run execution may significantly reduce the overall throughput of your project.",
   },
@@ -16,10 +16,10 @@ type Story = StoryObj<typeof Alert>;
 export const Warning: Story = {};
 export const Info: Story = {
   args: {
-    type: "info",
+    tone: "info",
     header: undefined,
     children: "Changes you make here only apply to this sandbox and do not sync to the parent project on merge.",
   },
 };
-export const Success: Story = { args: { type: "success", header: undefined, children: "Changes you make here will sync to the parent project on merge." } };
-export const Danger: Story = { args: { type: "danger", header: "1 channel will accept unauthenticated requests" } };
+export const Success: Story = { args: { tone: "success", header: undefined, children: "Changes you make here will sync to the parent project on merge." } };
+export const Danger: Story = { args: { tone: "danger", header: "1 channel will accept unauthenticated requests" } };

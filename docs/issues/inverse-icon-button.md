@@ -6,6 +6,6 @@ The sidebar collapse toggle is a hand-built button with its own SVG, because `Ic
 
 It's a lint exception.
 
-**Fix.** Add an `inverse` tone to `IconButton` (light icon, subtle hover on a dark background). `IconButton` already takes an SVG as `icon`. Keep the `sidebar-toggle-btn` hook, or move the themes to `data-ui="icon-button"` with the new `data-variant`, and check every theme's sidebar after.
+**Fix.** Add an `inverse` tone to `IconButton` (light icon, subtle hover on a dark background). `IconButton` already takes an SVG as `icon`. Keep the `sidebar-toggle-btn` hook, or move the themes to `data-ui="button"` with the new `data-tone`, and check every theme's sidebar after.
 
 **Done when** the disable comment is gone and the toggle looks the same in each theme.

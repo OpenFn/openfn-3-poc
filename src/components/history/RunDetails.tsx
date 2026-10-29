@@ -16,7 +16,7 @@ function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStor
   if (step.inputWiped)
     return (
       <WipedTooltip message={zeroPersistenceMessage} dataStorageHref={dataStorageHref}>
-        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} title="" disabled />
+        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} tooltip={false} disabled />
       </WipedTooltip>
     );
   if (step.jobDeleted)
@@ -169,8 +169,7 @@ export function RunCard({
               id={`cancel-run-${run.id}`}
               icon="hero-x-mark-mini"
               label="Cancel this run"
-              size="sm"
-              className="hover:text-danger-500"
+              size="xs"
               onClick={onCancel}
             />
           )}

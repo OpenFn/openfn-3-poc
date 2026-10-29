@@ -56,7 +56,7 @@ export default function DeleteSandboxModal({
         </p>
       )}
       <p>To confirm, type the sandbox name below.</p>
-      <Alert type="warning">
+      <Alert tone="warning">
         This sandbox will be retained for {formatGracePeriod(gracePeriodDays)} before being permanently removed. You can restore it
         from the sandbox list during that window.
       </Alert>

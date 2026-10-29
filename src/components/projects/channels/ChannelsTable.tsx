@@ -88,12 +88,12 @@ export default function ChannelsTable({
             </Td>
             <Td actions>
               {canEdit && (
-                <Button theme="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
+                <Button variant="secondary" size="xs" onClick={() => onEdit?.(channel.id)}>
                   Edit
                 </Button>
               )}
               {canDelete && (
-                <Button theme="danger" size="xs" onClick={() => setDeleting(channel)}>
+                <Button tone="danger" size="xs" onClick={() => setDeleting(channel)}>
                   Delete
                 </Button>
               )}

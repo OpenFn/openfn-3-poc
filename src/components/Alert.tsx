@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
+import type { Tone } from "./tone";
 
-export type AlertType = "info" | "success" | "warning" | "danger";
+export type AlertTone = Extract<Tone, "info" | "success" | "warning" | "danger">;
 
 // Lightning's Common.alert_classes/1, written out in full for Tailwind.
-const classes: Record<AlertType, { bg: string; icon: string; header: string; text: string; iconName: string }> = {
+const classes: Record<AlertTone, { bg: string; icon: string; header: string; text: string; iconName: string }> = {
   success: {
     bg: "bg-success-50",
     icon: "text-success-400",
@@ -36,7 +37,7 @@ const classes: Record<AlertType, { bg: string; icon: string; header: string; tex
 };
 
 interface Props {
-  type: AlertType;
+  tone: AlertTone;
   header?: ReactNode;
   children: ReactNode;
   className?: string;
@@ -45,12 +46,12 @@ interface Props {
 
 /**
  * Lightning's `Common.alert` (live/components/common.ex): a tinted,
- * rounded box with a type icon, an optional header and a message.
+ * rounded box with a tone icon, an optional header and a message.
  */
-export default function Alert({ type, header, children, className, id }: Props) {
-  const c = classes[type];
+export default function Alert({ tone, header, children, className, id }: Props) {
+  const c = classes[tone];
   return (
-    <div id={id} className={cn("rounded-md p-4 text-wrap", c.bg, className)} data-ui="alert" data-variant={type} role={type === "danger" ? "alert" : "status"}>
+    <div id={id} className={cn("rounded-md p-4 text-wrap", c.bg, className)} data-ui="alert" data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
       <div className={cn("flex", header ? "items-start" : "items-center")}>
         <div className="shrink-0">
           <span className={cn(c.iconName, "block h-5 w-5", c.icon)} />

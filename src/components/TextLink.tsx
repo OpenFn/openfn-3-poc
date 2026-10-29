@@ -14,11 +14,13 @@ interface Props {
   /** With neither `to` nor `href`, the link only runs this (default navigation is prevented). */
   onClick?: (e: MouseEvent) => void;
   /**
-   * `danger` for destructive actions (Disconnect, Revoke). `plain` takes the
-   * surrounding text's colour with no hover styling of its own (auth card
-   * footers, disclaimers): add any underline or hover colour with `className`.
+   * `plain` takes the surrounding text's colour with no hover styling of its
+   * own (auth card footers, disclaimers): add any underline or hover colour
+   * with `className`.
    */
-  variant?: "default" | "danger" | "plain";
+  variant?: "plain";
+  /** `danger` for destructive actions (Disconnect, Revoke). */
+  tone?: "danger";
   /** Hover text. */
   title?: ReactNode;
   id?: string;
@@ -29,15 +31,15 @@ interface Props {
 
 /**
  * An inline text link with Lightning's `link` utility (primary-400, underline
- * on hover), red with `variant="danger"`, or unstyled with `variant="plain"`.
- * Carries `data-ui="link"` and `data-variant` for themes.
+ * on hover), red with `tone="danger"`, or unstyled with `variant="plain"`.
+ * Carries `data-ui="link"`, `data-variant` and `data-tone` for themes.
  */
-export default function TextLink({ to, href, external = false, target, onClick, variant = "default", title, id, "aria-label": ariaLabel, className, children }: Props) {
-  const classes = cn(variant !== "plain" && "link", variant === "danger" && "link-danger", className);
+export default function TextLink({ to, href, external = false, target, onClick, variant, tone, title, id, "aria-label": ariaLabel, className, children }: Props) {
+  const classes = cn(variant !== "plain" && "link", tone === "danger" && "link-danger", className);
   if (to && !external) {
     return (
       <Tooltip content={title}>
-        <Link to={to} target={target} id={id} aria-label={ariaLabel} className={classes} onClick={onClick} data-ui="link" data-variant={variant}>
+        <Link to={to} target={target} id={id} aria-label={ariaLabel} className={classes} onClick={onClick} data-ui="link" data-variant={variant} data-tone={tone}>
           {children}
         </Link>
       </Tooltip>
@@ -55,6 +57,7 @@ export default function TextLink({ to, href, external = false, target, onClick, 
         className={classes}
         data-ui="link"
         data-variant={variant}
+        data-tone={tone}
         onClick={(e) => {
           if (!url) e.preventDefault();
           onClick?.(e);

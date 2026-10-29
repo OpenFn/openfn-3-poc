@@ -33,14 +33,14 @@ export const Danger: Story = {
     title: "Delete user",
     size: "sm",
     submitLabel: "Delete account",
-    submitTheme: "danger",
+    submitTone: "danger",
     formClassName: "space-y-3 text-sm text-muted",
     children: <TextInput id="scheduled_deletion_email" label="User email" />,
   },
 };
 export const ContentBeforeForm: Story = {
   args: {
-    before: <Alert type="info">Fields marked * are required.</Alert>,
+    before: <Alert tone="info">Fields marked * are required.</Alert>,
   },
 };
 /** An async `onSubmit`: the submit button spins and Cancel is inert until it settles. */

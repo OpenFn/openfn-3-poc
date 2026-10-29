@@ -58,7 +58,7 @@ export default function ChannelRequestSummary({
               Request
             </Heading>
             <span className="font-mono text-strong">{shortUuid(request.id)}</span>
-            <CopyButton value={request.id} label="Copy request ID" size="sm" />
+            <CopyButton value={request.id} label="Copy request ID" size="xs" />
           </span>
         </div>
       </div>

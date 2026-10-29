@@ -29,21 +29,18 @@ interface Props {
 function TestButton({ state, pending, onTest }: { state: TestState; pending: boolean; onTest: () => void }) {
   if (state === "failed")
     return (
-      <Button theme="danger" id="test-button">
-        <span className="hero-x-mark-solid h-4 w-4" />
+      <Button tone="danger" id="test-button" icon="hero-x-mark-solid">
         Failed
       </Button>
     );
   if (state === "success")
     return (
-      <Button theme="success" id="test-button">
-        <span className="hero-check-solid h-4 w-4" />
+      <Button tone="success" id="test-button" icon="hero-check-solid">
         Success
       </Button>
     );
   return (
-    <Button theme="secondary" id="test-button" onClick={onTest} pending={pending}>
-      <span className="hero-beaker-solid h-4 w-4" />
+    <Button variant="secondary" id="test-button" onClick={onTest} pending={pending} icon="hero-beaker-solid">
       Test
     </Button>
   );
@@ -191,7 +188,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               checked={values.allowUnverifiedEmail}
               onChange={(e) => set("allowUnverifiedEmail", e.target.checked)}
             />
-            {generalError && <Alert type="danger">{generalError}</Alert>}
+            {generalError && <Alert tone="danger">{generalError}</Alert>}
             <div className="flex justify-between sm:border-t sm:border-subtle sm:pt-4">
               <Button type="submit" pending={save.pending}>
                 Save
@@ -229,9 +226,8 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               <div className="mt-auto space-y-2">
                 <Heading size="sm">Remove</Heading>
                 <p>Deletes the Authentication Configuration, and disables external authentication for Lightning.</p>
-                {remove.error && <Alert type="danger">{errorMessage(remove.error)}</Alert>}
-                <Button theme="danger" onClick={() => void remove.run()} pending={remove.pending}>
-                  <span className="hero-trash h-4 w-4" />
+                {remove.error && <Alert tone="danger">{errorMessage(remove.error)}</Alert>}
+                <Button tone="danger" onClick={() => void remove.run()} pending={remove.pending} icon="hero-trash">
                   Remove
                 </Button>
               </div>

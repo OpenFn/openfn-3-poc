@@ -137,7 +137,7 @@ export default function WorkflowHealth({
 function Panel<T>({ query, card = false, children }: { query: HealthQuery<T>; card?: boolean; children: (data: T) => ReactNode }) {
   if (query.data) return children(query.data);
   const status = query.error ? (
-    <Alert type="danger">{query.error}</Alert>
+    <Alert tone="danger">{query.error}</Alert>
   ) : (
     <div className={`${FRAME} flex items-center justify-center text-faint`} aria-busy="true">
       <Spinner size="md" label="Loading…" />

@@ -2,6 +2,7 @@ import { createRef } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { hover, openTooltips } from "../test/tooltip";
+import CopyButton from "./CopyButton";
 import Tooltip from "./Tooltip";
 
 // jsdom counts every focus as :focus-visible, so each test says which kind of focus it is.
@@ -142,5 +143,35 @@ describe("Tooltip", () => {
     fireEvent.click(time);
     expect(openTooltips()).toEqual(["Copied!"]);
     expect(onRowClick).not.toHaveBeenCalled();
+  });
+
+  it("doesn't repeat a control's name as its description", async () => {
+    render(
+      <>
+        <Tooltip content="Delete">
+          <button aria-label="Delete">x</button>
+        </Tooltip>
+        <Tooltip content="Close IDE (Esc)">
+          <button aria-label="Close IDE">x</button>
+        </Tooltip>
+        <Tooltip content="Run" disabled>
+          <button aria-label="Run" disabled>x</button>
+        </Tooltip>
+      </>
+    );
+    await hover(screen.getByRole("button", { name: "Delete" }));
+    expect(openTooltips()).toEqual(["Delete"]);
+    expect(screen.getByRole("button", { name: "Delete" }).getAttribute("aria-describedby")).toBeNull();
+    await hover(screen.getByRole("button", { name: "Close IDE" }));
+    expect(screen.getByRole("button", { name: "Close IDE" }).getAttribute("aria-describedby")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Run" }).getAttribute("aria-description")).toBeNull();
+  });
+
+  it("doesn't describe an IconButton by the label it is already named by", async () => {
+    render(<CopyButton value="abc" label="Copy id" />);
+    const button = screen.getByRole("button", { name: "Copy id" });
+    await hover(button);
+    expect(openTooltips()).toEqual(["Copy id"]);
+    expect(button.getAttribute("aria-describedby")).toBeNull();
   });
 });

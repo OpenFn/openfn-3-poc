@@ -36,8 +36,7 @@ export default function TokensPage({ tokens, newToken, tokenId, onGenerate, onDe
     <PageContent
       header={
         <Header title="Personal Access Tokens">
-          <Button onClick={() => generate.run()} pending={generate.pending}>
-            <span className="hero-plus h-4 w-4" />
+          <Button onClick={() => generate.run()} pending={generate.pending} icon="hero-plus">
             Generate New Token
           </Button>
         </Header>

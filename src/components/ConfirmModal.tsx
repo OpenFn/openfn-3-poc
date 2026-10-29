@@ -31,7 +31,7 @@ interface Props {
   confirmLabel: ReactNode;
   cancelLabel?: ReactNode;
   /** `danger` for destructive actions. */
-  tone?: "primary" | "danger";
+  tone?: "danger" | undefined;
   confirmDisabled?: boolean;
   confirmId?: string;
   /** Ask the user to type something before the confirm button enables. */
@@ -53,7 +53,7 @@ export default function ConfirmModal({
   children,
   confirmLabel,
   cancelLabel,
-  tone = "primary",
+  tone,
   confirmDisabled = false,
   confirmId,
   confirmation,
@@ -76,7 +76,7 @@ export default function ConfirmModal({
       formClassName="text-sm text-muted space-y-3"
       onSubmit={() => onConfirm(typed)}
       submitLabel={confirmLabel}
-      submitTheme={tone}
+      submitTone={tone}
       submitDisabled={disabled}
       submitId={confirmId}
       submitTooltip={disabled ? confirmation?.disabledTooltip : undefined}

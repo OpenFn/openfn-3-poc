@@ -44,7 +44,7 @@ export default function InspectorLayout({
       <Card padding="none" className={cn("flex flex-col", fixedHeight ? "h-150" : "max-h-[calc(100vh-8rem)]")}>
         <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
           <div className="flex items-center gap-2">
-            {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="sm" onClick={onBack ?? onClose} />}
+            {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack ?? onClose} />}
             <Heading as="h2">{title}</Heading>
           </div>
           <CloseButton label="Close panel" onClick={onClose} />

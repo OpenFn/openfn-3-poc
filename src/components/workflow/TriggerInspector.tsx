@@ -54,7 +54,7 @@ function EditFooter({ onEdit }: { onEdit: () => void }) {
   return (
     <InspectorFooter
       leftButtons={
-        <Button theme="secondary" onClick={onEdit} tooltip="Edit trigger">
+        <Button variant="secondary" onClick={onEdit} tooltip="Edit trigger">
           Edit
         </Button>
       }
@@ -82,15 +82,14 @@ function WizardBreadcrumb({ step, onChoose }: { step: "choose" | "configure"; on
 
 function WizardFooter({ label, onPrimary, onCancel }: { label: string; onPrimary: () => void; onCancel?: (() => void) | undefined }) {
   const primary = (
-    <Button onClick={onPrimary} className={onCancel ? undefined : "w-full"}>
+    <Button onClick={onPrimary} className={onCancel ? undefined : "w-full"} icon="hero-arrow-right-micro" iconPosition="right">
       {label}
-      <span className="hero-arrow-right-micro h-4 w-4" />
     </Button>
   );
   return onCancel ? (
     <InspectorFooter
       leftButtons={
-        <Button theme="secondary" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
       }
@@ -228,7 +227,7 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         <Card padding="sm">
           <div className="flex items-center justify-between gap-2">
             <Pill>Default</Pill>
-            <CopyButton value={url} label="Copy Default URL" size="sm" />
+            <CopyButton value={url} label="Copy Default URL" size="xs" />
           </div>
           <div className="mt-1 break-all font-mono text-xs text-muted">{url}</div>
         </Card>

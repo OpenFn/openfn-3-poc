@@ -36,7 +36,7 @@ export default function SandboxActions({
       : "You are not authorized to cancel deletion of this sandbox";
     return (
       <div id={`cancel-deletion-sandbox-${sandbox.id}`}>
-        <Button theme="secondary" disabled={!!blocked} tooltip={blocked} pending={restore.pending} onClick={() => void restore.run()}>
+        <Button variant="secondary" disabled={!!blocked} tooltip={blocked} pending={restore.pending} onClick={() => void restore.run()}>
           Restore
         </Button>
       </div>

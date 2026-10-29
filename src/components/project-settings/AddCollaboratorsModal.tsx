@@ -73,8 +73,7 @@ export default function AddCollaboratorsModal({ existingEmails, onCancel, onSave
           </div>
         );
       })}
-      <Button theme="secondary" onClick={() => setRows([...rows, { email: "", role: "" }])}>
-        <span className="hero-plus-circle h-5 w-5" />
+      <Button variant="secondary" onClick={() => setRows([...rows, { email: "", role: "" }])} icon="hero-plus-circle">
         Add Additional Collaborator
       </Button>
     </FormModal>

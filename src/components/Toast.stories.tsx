@@ -11,14 +11,14 @@ export default meta;
 type Story = StoryObj<typeof Toast>;
 
 export const Info: Story = {};
-export const Error: Story = { args: { tone: "error", children: "Workflow could not be saved" } };
+export const Danger: Story = { args: { tone: "danger", children: "Workflow could not be saved" } };
 
 function Trigger() {
   const toast = useToast();
   return (
     <div className="flex gap-2">
       <Button onClick={() => toast("Project updated successfully")}>Show info</Button>
-      <Button theme="secondary" onClick={() => toast("Something went wrong", "error")}>
+      <Button variant="secondary" onClick={() => toast("Something went wrong", "danger")}>
         Show error
       </Button>
     </div>

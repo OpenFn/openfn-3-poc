@@ -96,29 +96,28 @@ export default function FullScreenIDE({
           <IconButton
             icon="hero-document-text"
             label="Docs"
-            title="Show adaptor documentation"
-            size="sm"
+            tooltip="Show adaptor documentation"
+            size="xs"
             active={docsTab === "docs" && !docsCollapsed}
             onClick={() => showDocs("docs")}
           />
           <IconButton
             icon="hero-sparkles"
             label="Metadata"
-            title="Show metadata explorer"
-            size="sm"
+            tooltip="Show metadata explorer"
+            size="xs"
             active={docsTab === "metadata" && !docsCollapsed}
             onClick={() => showDocs("metadata")}
           />
         </div>
-        <Button tooltip="⌘ H" onClick={onShowHistory}>
-          <span className={cn("h-4 w-4", panelState === "history" ? "hero-clock-solid" : "hero-clock")} />
+        <Button tooltip="⌘ H" onClick={onShowHistory} icon={panelState === "history" ? "hero-clock-solid" : "hero-clock"}>
           History
         </Button>
         {(panelState === undefined || panelState === "history") && <NewRunButton onClick={onShowCreateRun} />}
         {(panelState === "run-viewer" || panelState === "create-run") && (
           <RunRetryButton isRetryable={panelState === "run-viewer" && isRetryable} onRun={onRun} onRetry={onRetry} />
         )}
-        <IconButton icon="hero-x-mark" label="Close IDE" title="Close IDE (Esc)" onClick={onClose} />
+        <IconButton icon="hero-x-mark" label="Close IDE" tooltip="Close IDE (Esc)" onClick={onClose} />
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -152,11 +151,11 @@ export default function FullScreenIDE({
                       <IconButton
                         icon="hero-view-columns"
                         label="Toggle panel orientation"
-                        size="sm"
+                        size="xs"
                         className={cn(vertical && "rotate-90")}
                         onClick={() => setVertical((v) => !v)}
                       />
-                      <CloseButton label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
+                      <CloseButton label="Close docs panel" size="xs" onClick={() => setDocsCollapsed(true)} />
                     </>
                   }
                 />
@@ -217,7 +216,7 @@ export default function FullScreenIDE({
                           { id: "output", label: "Output" },
                         ]}
                       />
-                      <IconButton icon="hero-chevron-right" label="Collapse panel" size="sm" onClick={() => setRunCollapsed(true)} />
+                      <IconButton icon="hero-chevron-right" label="Collapse panel" size="xs" onClick={() => setRunCollapsed(true)} />
                     </div>
                   )}
                   <div className="flex-1 overflow-hidden bg-surface">{rightPanel}</div>

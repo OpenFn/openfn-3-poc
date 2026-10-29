@@ -10,5 +10,5 @@ export default meta;
 type Story = StoryObj<typeof CopyButton>;
 
 export const Icon: Story = {};
-export const SmallIcon: Story = { args: { size: "sm", label: "Copy Default URL" } };
+export const ExtraSmallIcon: Story = { args: { size: "xs", label: "Copy Default URL" } };
 export const WithText: Story = { args: { children: "Copy Code" } };
