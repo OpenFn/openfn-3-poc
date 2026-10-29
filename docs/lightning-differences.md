@@ -31,7 +31,10 @@ goes back to Lightning's way.
   hand.
 - **The AI chat's send button is disabled at half strength.** Lightning
   turns it grey (`collaborative-editor/components/ChatInput.tsx:368`).
-- **A danger icon button is red throughout** (G121). Lightning's cancel-run
-  X's are grey until hovered (`run_live/workorder_component.ex:262,422`),
-  while its token trash icon is red throughout
-  (`tokens_live/index.html.heex:104`).
+- **The cancel-run X is grey, darker on hover** (D200). Lightning turns it
+  red on hover (`run_live/workorder_component.ex:262,422`). Red is kept for
+  what can't be undone, like deleting a token
+  (`tokens_live/index.html.heex:104`); a cancelled run can be retried.
+- **Icon buttons have no hover background.** Hover darkens the icon only, so
+  it looks the same on white and grey surfaces. Some Lightning icon buttons
+  add a grey square on hover, others don't.

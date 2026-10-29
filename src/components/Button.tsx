@@ -19,19 +19,17 @@ const sizeClasses: Record<ButtonSize, string> = {
 const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-4 w-4", lg: "h-5 w-5" };
 
 // Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
-// text on nothing, with a background on hover and while pressed (`aria-pressed`). Disabled is
-// the same colour at half strength for every look, with no hover. Plain writes its hover as
-// `hover:` with `disabled:` undoing it, so a caller's own `hover:` colour replaces it; a
-// `not-disabled:hover:` class would outrank the caller's.
+// text on nothing: hover darkens the text only, so it sits on any surface, white or grey; a
+// pressed toggle (`aria-pressed`) gets a tint. Disabled is the same colour at half strength for
+// every look, with no hover. Plain writes its hover as `hover:` with `disabled:` undoing it, so
+// a caller's own `hover:` colour replaces it; a `not-disabled:hover:` class would outrank it.
 const lookClasses = {
   primary: "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse shadow-xs",
   secondary: "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs",
-  plain:
-    "text-muted hover:bg-hover hover:text-body disabled:bg-transparent disabled:text-muted aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
+  plain: "text-muted hover:text-body disabled:text-muted aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
   danger: "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse shadow-xs",
   success: "bg-success-600 not-disabled:hover:bg-success-500 text-inverse shadow-xs",
-  "plain-danger":
-    "text-danger-600 hover:bg-danger-50 hover:text-danger-700 disabled:bg-transparent disabled:text-danger-600",
+  "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600",
 };
 
 function buttonClasses(look: keyof typeof lookClasses, size: ButtonSize = "md", className?: string) {

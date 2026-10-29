@@ -147,7 +147,6 @@ export default function WorkOrderTableRow({
                   icon="hero-x-mark-mini"
                   label="Cancel pending run"
                   size="sm"
-                  tone="danger"
                   onClick={onCancel}
                 />
               )}

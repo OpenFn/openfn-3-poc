@@ -170,7 +170,6 @@ export function RunCard({
               icon="hero-x-mark-mini"
               label="Cancel this run"
               size="sm"
-              tone="danger"
               onClick={onCancel}
             />
           )}
