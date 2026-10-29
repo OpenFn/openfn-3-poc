@@ -1,27 +1,15 @@
 # Primitives that don't follow the prop-name rule yet
 
 CLAUDE.md's **Prop names** rule: `tone` for meaning, `variant` for loudness,
-`size` as `sm | md | lg`. Button follows it. These don't, found by a review in
+`size` as `sm | md | lg`. Button, Alert, Toast, MenuItem, TextLink and Tabs follow it. These don't, found by a review in
 four batches (primitives; workflow; history, projects, shell, devtools;
 admin, auth, credentials, profile, project settings).
 
 ## Renames (the values already fit)
 
-- **Alert** `type` → `tone`, `AlertType` → `AlertTone`. 53 call sites in 28
-  files. `data-variant` → `data-tone`, with `theme.css` (the Alert
-  `data-variant` selectors) and `AdminAuthProvidersPage.test.tsx:135,139`.
-  `SandboxSettingsBanner` maps its own `variant` onto it (below).
-- **Toast** `"error"` → `"danger"`. About 12 callers through `toast(…,
-  "error")`, `useAction.ts:118`, and the Toast stories and tests.
-- **IconButton** and **MenuItem** `tone="default"` → no tone. Nothing passes
-  `default`.
-- **TextLink** `variant="danger"` → `tone="danger"` (1 call site,
-  `GithubSyncPanel.tsx:77`, plus a story); `variant` keeps `plain` only.
-- **Tabs** `underline` → `line` (it's the default; `tabStyles.ts`,
-  `theme.css`, CLAUDE.md's Components table).
-- **IconButton** call sites that colour danger by hand
-  (`hover:text-danger-500` in `RunDetails.tsx:173`,
-  `WorkOrderTableRow.tsx:150`) → `tone="danger"`.
+Done for Alert, Toast, MenuItem, TextLink and Tabs. IconButton's two
+(`tone="default"` → no tone; `hover:text-danger-500` in `RunDetails.tsx` and
+`WorkOrderTableRow.tsx` → `tone="danger"`) go with the IconButton rework.
 
 ## Needs a decision
 
