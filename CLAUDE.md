@@ -153,7 +153,7 @@ everywhere. Reach for these first:
 | A floating panel (filters, details) | `Popover` (`panelProps` puts `data-annotation` on the portalled panel; Menu takes it too) |
 | A searchable list you pick from with the keyboard | `SearchList` |
 | Show / hide a section | `Disclosure` (`card`, `section` or `inline`) |
-| Switching views | `Tabs` (`underline` or `pill`, horizontal or vertical, buttons or route links) |
+| Switching views | `Tabs` (`line` or `pill`, horizontal or vertical, buttons or route links) |
 | Picking one value from a few | `SegmentedControl` (a radio group drawn as Tabs' pill track; `disabledReason` shows a Tooltip) |
 | Searching or filtering a list | `SearchInput` |
 | A status chip, badge or tag | `Pill` (`color`, `square`, `mono`; `onRemove` makes it removable) |

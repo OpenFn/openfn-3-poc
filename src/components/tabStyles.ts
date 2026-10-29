@@ -5,7 +5,7 @@
 export const tabStyles = {
   base: "inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
   disabled: "cursor-not-allowed opacity-50 hover:border-transparent hover:bg-transparent hover:text-muted",
-  underline: {
+  line: {
     list: "gap-4",
     tab: "border-b-2 px-1 py-2 text-sm font-medium leading-tight",
     selected: "border-primary-600 text-primary-600",

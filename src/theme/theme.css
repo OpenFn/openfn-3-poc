@@ -678,7 +678,7 @@ html[data-theme="gds"] {
      Horizontal: GOV.UK's Tabs. Unselected tabs are grey with an
      underlined link; the selected one is white and opens into the
      content below the rule. */
-  [data-ui="tabs"][data-variant="underline"][data-orientation="horizontal"] {
+  [data-ui="tabs"][data-variant="line"][data-orientation="horizontal"] {
     column-gap: 5px;
     [role="tab"] {
       padding: 10px 20px;
