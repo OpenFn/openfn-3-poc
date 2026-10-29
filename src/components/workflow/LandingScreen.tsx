@@ -77,7 +77,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
               />
               <div className="flex items-center justify-between px-3 py-2">
                 <AIDisclaimerFooter muted />
-                <Button size="sm" onClick={() => valid && onBuildWithAI(prompt)} disabled={!valid} icon="hero-arrow-right" iconPosition="right">
+                <Button variant="plain" size="sm" onClick={() => valid && onBuildWithAI(prompt)} disabled={!valid} icon="hero-arrow-right" iconPosition="right">
                   Build it
                 </Button>
               </div>
