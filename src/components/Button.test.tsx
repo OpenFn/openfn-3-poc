@@ -51,6 +51,14 @@ describe("Button", () => {
     expect(container.querySelector(".hero-play-solid")).toBeNull();
   });
 
+  it("carries the data-ui, data-variant and data-tone hooks the themes style", () => {
+    render(<Button tone="danger">Delete</Button>);
+    const danger = screen.getByRole("button", { name: "Delete" });
+    expect(danger.getAttribute("data-ui")).toBe("button");
+    expect(danger.getAttribute("data-variant")).toBe("primary");
+    expect(danger.getAttribute("data-tone")).toBe("danger");
+  });
+
   it("puts the icon after the label with iconPosition right", () => {
     render(<Button icon="hero-arrow-right" iconPosition="right">Build it</Button>);
     expect(screen.getByRole("button").firstChild?.textContent).toBe("Build it");

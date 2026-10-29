@@ -27,9 +27,8 @@ give `Button` a way to take the sandbox colour from a CSS variable.
 
 IconButton has one look per `variant` and `tone`; these callers change it.
 
-- `Pill.tsx:72`: the remove X takes the pill's text colour.
 - `FilterChip.tsx:70`: a round, primary-coloured X.
-- `WorkOrderTableRow.tsx:161` and `RunDetails.tsx:35`: retry, primary on hover.
+- `WorkOrderTableRow.tsx:160` and `RunDetails.tsx:35`: retry, primary on hover.
 - `WorkOrdersTable.tsx:163`: tilts and turns primary on hover.
 - `MiniHistory.tsx:98`: primary while selected.
 - `devtools/SettingsMenu.tsx:38`: the round dark settings button (devtools,

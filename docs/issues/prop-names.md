@@ -7,9 +7,7 @@ admin, auth, credentials, profile, project settings).
 
 ## Renames (the values already fit)
 
-Done for Alert, Toast, MenuItem, TextLink and Tabs. IconButton's two
-(`tone="default"` → no tone; `hover:text-danger-500` in `RunDetails.tsx` and
-`WorkOrderTableRow.tsx` → `tone="danger"`) go with the IconButton rework.
+Done for Alert, Toast, MenuItem, TextLink, Tabs and IconButton.
 
 ## Needs a decision
 

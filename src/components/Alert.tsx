@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
+import type { Tone } from "./tone";
 
-export type AlertTone = "info" | "success" | "warning" | "danger";
+export type AlertTone = Extract<Tone, "info" | "success" | "warning" | "danger">;
 
 // Lightning's Common.alert_classes/1, written out in full for Tailwind.
 const classes: Record<AlertTone, { bg: string; icon: string; header: string; text: string; iconName: string }> = {

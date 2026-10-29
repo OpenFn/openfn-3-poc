@@ -26,6 +26,11 @@ describe("IconButton", () => {
     }
   });
 
+  it("defaults to the plain variant the light theme's `:not([data-variant=\"plain\"])` relies on", () => {
+    render(<IconButton icon="hero-x-mark" label="Close" />);
+    expect(screen.getByRole("button", { name: "Close" }).getAttribute("data-variant")).toBe("plain");
+  });
+
   it("marks a toggle that's on as pressed", () => {
     render(<IconButton icon="hero-funnel" label="Filter" active />);
     expect(screen.getByRole("button", { name: "Filter", pressed: true })).toBeTruthy();

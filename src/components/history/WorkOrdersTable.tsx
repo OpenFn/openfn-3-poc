@@ -160,7 +160,7 @@ export default function WorkOrdersTable({
                 icon="hero-cloud-arrow-down"
                 label={`Export all ${page.totalEntries} results matching your query`}
                 onClick={onExport}
-                className="transition hover:-rotate-6 hover:bg-transparent hover:text-primary-500"
+                className="transition hover:-rotate-6 hover:text-primary-500"
               />
             )
           }

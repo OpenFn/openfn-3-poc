@@ -24,12 +24,12 @@ goes back to Lightning's way.
 - **Icons in medium buttons are 16px.** Lightning draws 20px in two places
   (Generate New Token in the empty tokens list, Add Additional Collaborator)
   and 16px in the rest.
-- **Icon buttons share Button's heights** (G120): a square of 28, 32, 36 or
+- **Icon buttons share Button's heights**: a square of 28, 32, 36 or
   40px, so an icon lines up with the text buttons beside it. Lightning sizes
   each one by hand, from a bare 20px modal X to 28px editor buttons.
 - **The AI chat's send button is a primary button, paler when disabled.**
   Lightning turns it grey (`collaborative-editor/components/ChatInput.tsx:368`).
-- **The cancel-run X is grey, darker on hover** (D200). Lightning turns it
+- **The cancel-run X is grey, darker on hover**. Lightning turns it
   red on hover (`run_live/workorder_component.ex:262,422`). Red is kept for
   what can't be undone, like deleting a token
   (`tokens_live/index.html.heex:104`); a cancelled run can be retried.

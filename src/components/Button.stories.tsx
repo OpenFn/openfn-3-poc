@@ -14,10 +14,7 @@ type Story = StoryObj<typeof Button>;
 export const Primary: Story = {};
 export const Secondary: Story = { args: { variant: "secondary", children: "Cancel" } };
 export const Danger: Story = { args: { tone: "danger", children: "Delete" } };
-export const Success: Story = { args: {
-  tone: "success",
-  children: "Connect",
-} };
+export const Success: Story = { args: { tone: "success", children: "Connect" } };
 export const Disabled: Story = { args: { disabled: true, tooltip: "You don't have permission" } };
 export const Pending: Story = { args: { pending: true, children: "Saving" } };
 export const WithIcon: Story = { args: { icon: "hero-plus", children: "New project" } };
@@ -29,7 +26,7 @@ export const Large: Story = { args: { size: "lg", children: "Create project" } }
 export const AsLink: Story = { args: { to: "/projects", children: "Projects" } };
 export const AsExternalLink: Story = { args: { href: "https://docs.openfn.org", children: "Docs" } };
 
-/** Every look, enabled and disabled (the same colour at half strength). */
+/** Every look, enabled and disabled (filled buttons at their 300 shade, secondary grey, plain faded). */
 export const AllLooks: Story = {
   render: () => (
     <div className="grid grid-cols-2 gap-3 justify-items-start">
