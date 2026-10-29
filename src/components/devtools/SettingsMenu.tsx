@@ -53,21 +53,23 @@ export default function SettingsMenu() {
               label="Annotations panel"
               description="Show the behaviour annotation for whatever you hover over."
             />
-            <fieldset className="space-y-2 border-t border-subtle pt-4">
-              <Heading as="div" size="xs">
-                Theme
-              </Heading>
-              {themes.map((theme) => (
-                <Radio
-                  key={theme.id}
-                  name="theme"
-                  checked={theme.id === themeId}
-                  onChange={() => setTheme(theme.id)}
-                  label={<ThemeName meta={theme} />}
-                  hint={theme.description}
-                />
-              ))}
-            </fieldset>
+            <div className="border-t border-subtle pt-4">
+              <fieldset className="space-y-2">
+                <Heading as="legend" size="xs">
+                  Theme
+                </Heading>
+                {themes.map((theme) => (
+                  <Radio
+                    key={theme.id}
+                    name="theme"
+                    checked={theme.id === themeId}
+                    onChange={() => setTheme(theme.id)}
+                    label={<ThemeName meta={theme} />}
+                    hint={theme.description}
+                  />
+                ))}
+              </fieldset>
+            </div>
           </div>
         )}
       </Popover>
