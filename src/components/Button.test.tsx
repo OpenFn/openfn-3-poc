@@ -39,7 +39,7 @@ describe("Button", () => {
   });
 
   it("takes a tone only on the filled button", () => {
-    // @ts-expect-error -- a secondary button has no tone (CLAUDE.md, Prop names); typecheck fails if it gains one.
+    // @ts-expect-error -- a secondary button has no tone (src/components/CLAUDE.md, Prop names); typecheck fails if it gains one.
     void (<Button variant="secondary" tone="danger">Delete</Button>);
     // @ts-expect-error -- a plain button is red or nothing.
     void (<Button variant="plain" tone="success">Connect</Button>);

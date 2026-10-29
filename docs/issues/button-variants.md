@@ -1,7 +1,7 @@
 # Buttons styled outside Button
 
 Button's looks are `primary`, `secondary` and `plain`, with `tone`
-(CLAUDE.md, Prop names). Some buttons still draw their own look.
+(src/components/CLAUDE.md, Prop names). Some buttons still draw their own look.
 
 ## Built by hand (marked `debt:`)
 

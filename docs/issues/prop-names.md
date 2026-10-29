@@ -1,6 +1,6 @@
 # Primitives that don't follow the prop-name rule yet
 
-CLAUDE.md's **Prop names** rule: `tone` for meaning, `variant` for loudness,
+src/components/CLAUDE.md's **Prop names** rule: `tone` for meaning, `variant` for loudness,
 `size` as `sm | md | lg`. Button, Alert, Toast, MenuItem, TextLink and Tabs follow it. These don't, found by a review in
 four batches (primitives; workflow; history, projects, shell, devtools;
 admin, auth, credentials, profile, project settings).
