@@ -49,12 +49,8 @@ Each behaviour has one home. Find it before writing a test.
 - Several inputs to one rule are one table test (`it.each`, or a `for` loop
   inside the test). Different setups, or success against failure, stay
   separate tests.
-- A test for a pending state leaves the action unanswered, checks the page,
-  then answers it and checks again. Don't fake timers to get there.
 - Before deleting or merging a test, name the test that still covers it.
   Break that behaviour in the code and watch the surviving test fail.
-- When the same setup appears a third time, move it to a helper at the top
-  of the file, or to `src/test/` once two files need it.
 
 ## Names
 

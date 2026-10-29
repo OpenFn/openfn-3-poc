@@ -63,5 +63,3 @@ reorders it.
   refactor"). That belongs in the commit message.
 - Ticket numbers, commit hashes, PR numbers or chat decisions. Say the rule
   itself.
-- A promise about code elsewhere that nothing checks ("the only caller
-  passes…"). Make it a type or a test instead.

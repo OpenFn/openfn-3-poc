@@ -257,7 +257,7 @@ before writing code it covers.
 
 | File | Covers |
 |---|---|
-| `pages.md` | `src/pages/`, `App.tsx`, `src/types/`: page and wrapper, the contract, copying Lightning |
+| `pages.md` | `src/pages/`, `App.tsx`, `src/types/`: which STANDARDS.md patterns to read, naming, the frame, stories and tests |
 | `tests.md` | `*.test.ts(x)`, `src/test/`: where each behaviour is tested, how to write and name a test |
 | `stories.md` | `*.stories.tsx`, `.storybook/`: what each component's stories show |
 | `mock-data.md` | `src/mock-data/`, `kickstart/`: fixtures, queries, models, generated data |
