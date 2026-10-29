@@ -549,10 +549,10 @@ html[data-theme="gds"] {
   [data-ui="auth-nav"] { background-color: var(--ui-brand); }
 
   /* Headings are always bold, whatever weight the markup asks for.
-     An eyebrow is GOV.UK's caption instead: the regular-weight,
+     The eyebrow (Heading size xs) is GOV.UK's caption instead: the regular-weight,
      secondary-text line that names the section above a heading. */
   :is(h1, h2, h3, h4) { font-weight: 700; }
-  [data-ui="heading"][data-variant="eyebrow"] {
+  [data-ui="heading"][data-size="xs"] {
     color: var(--ui-secondary-text);
     font-weight: 400;
   }

@@ -9,4 +9,4 @@ export const ExtraLarge: Story = { args: { size: "xl", as: "h2" } };
 export const Large: Story = { args: { size: "lg" } };
 export const Medium: Story = {};
 export const Small: Story = { args: { size: "sm" } };
-export const Eyebrow: Story = { args: { variant: "eyebrow", children: "Destination URL" } };
+export const ExtraSmall: Story = { args: { size: "xs", children: "Destination URL" } };

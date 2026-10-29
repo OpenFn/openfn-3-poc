@@ -54,7 +54,7 @@ export default function SettingsMenu() {
               description="Show the behaviour annotation for whatever you hover over."
             />
             <fieldset className="space-y-2 border-t border-subtle pt-4">
-              <Heading as="div" variant="eyebrow">
+              <Heading as="div" size="xs">
                 Theme
               </Heading>
               {themes.map((theme) => (

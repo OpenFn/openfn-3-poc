@@ -17,7 +17,7 @@ found 44 combinations of size, weight and spacing.
 - **`Heading`** for anything that titles what follows it. `as` is its place
   in the outline (`h1`–`h6`), `size` is its look. Pick the level for the
   outline, never for the size. The small capitals above a section are
-  `Heading variant="eyebrow"`.
+  `Heading size="xs"`, the smallest heading.
 - **`Text`** for every other piece of text. Its `variant` is a named style,
   a role at a size:
 
