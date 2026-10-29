@@ -21,7 +21,7 @@ export default function RunRetryButton({ isRetryable, disabled = false, onRun, o
       icon="hero-play-mini"
       onClick={onRetry}
       disabled={disabled}
-      tooltip="⌘ Enter"
+      tooltip={disabled ? undefined : "⌘ Enter"}
       menuLabel="Open options"
       menu={
         <MenuItem icon="hero-play-solid" description="⌘ ⇧ Enter" onClick={onRun}>

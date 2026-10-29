@@ -10,7 +10,7 @@ interface Props {
   isRunning?: boolean;
   text?: string | undefined;
   variant?: "primary" | "secondary";
-  /** Hover text (Lightning shows the shortcut, or why it's disabled). */
+  /** Hover text while it can run (the shortcut). None while disabled or running, when the shortcut does nothing. */
   tooltip?: string;
 }
 
@@ -28,10 +28,11 @@ export default function NewRunButton({
   tooltip = "⌘ Enter",
 }: Props) {
   const content = isRunning ? "Processing" : text;
+  const hover = disabled || isRunning ? undefined : tooltip;
 
   if (!onRunWithCustomInputClick) {
     return (
-      <Button variant={variant} onClick={onClick} disabled={disabled} pending={isRunning} tooltip={tooltip} icon="hero-play-solid">
+      <Button variant={variant} onClick={onClick} disabled={disabled} pending={isRunning} tooltip={hover} icon="hero-play-solid">
         {content}
       </Button>
     );
@@ -44,7 +45,7 @@ export default function NewRunButton({
       onClick={onClick}
       disabled={disabled}
       pending={isRunning}
-      tooltip={tooltip}
+      tooltip={hover}
       menuLabel="Open run options"
       menu={
         <MenuItem icon="hero-play" description="⌘ ⇧ Enter" onClick={onRunWithCustomInputClick}>

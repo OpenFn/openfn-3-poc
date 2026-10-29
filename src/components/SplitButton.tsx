@@ -17,7 +17,7 @@ interface Props {
   /** The main action is in flight: both halves are disabled and the main one shows a spinner. */
   pending?: boolean;
   /** Hover text for the main action (often a keyboard shortcut). */
-  tooltip?: string;
+  tooltip?: string | undefined;
 }
 
 /**
