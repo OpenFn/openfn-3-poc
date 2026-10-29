@@ -169,7 +169,7 @@ export function RunCard({
               id={`cancel-run-${run.id}`}
               icon="hero-x-mark-mini"
               label="Cancel this run"
-              size="sm"
+              size="xs"
               onClick={onCancel}
             />
           )}

@@ -121,7 +121,7 @@ export function Toast({ tone = "info", children, onClose, timeout }: ToastProps)
     >
       <span className={cn(c.icon, "h-5 w-5 shrink-0")} />
       <span>{children}</span>
-      {onClose && <CloseButton size="sm" />}
+      {onClose && <CloseButton size="xs" />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { hover, openTooltips } from "../test/tooltip";
+import Button from "./Button";
 import IconButton from "./IconButton";
 
 describe("IconButton", () => {
@@ -11,9 +12,18 @@ describe("IconButton", () => {
     expect(classes).not.toMatch(/hover:text-body/);
   });
 
-  it("keeps its own size, not Button's minimum height", () => {
-    render(<IconButton icon="hero-x-mark" label="Close" size="sm" />);
-    expect(screen.getByRole("button", { name: "Close" }).className).not.toMatch(/min-h-8/);
+  it("is a square as tall as a Button of the same size", () => {
+    for (const size of ["xs", "sm", "md", "lg"] as const) {
+      const { unmount } = render(
+        <>
+          <Button size={size}>Save</Button>
+          <IconButton icon="hero-x-mark" label="Close" size={size} />
+        </>
+      );
+      const height = screen.getByRole("button", { name: "Save" }).className.match(/min-h-(\d+)/)?.[1];
+      expect(screen.getByRole("button", { name: "Close" }).className).toMatch(new RegExp(`(^| )size-${height}( |$)`));
+      unmount();
+    }
   });
 
   it("marks a toggle that's on as pressed", () => {

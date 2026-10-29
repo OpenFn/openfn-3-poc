@@ -180,7 +180,7 @@ export default function ManualRunPanel({
         <div>
           <div className="flex items-center gap-2">
             <Heading>{selected.name || "Unnamed"}</Heading>
-            <IconButton icon="hero-pencil" label="Rename" size="sm" />
+            <IconButton icon="hero-pencil" label="Rename" size="xs" />
           </div>
           <div className="mt-1 flex items-center gap-2 text-xs text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
@@ -211,7 +211,7 @@ export default function ManualRunPanel({
             tabs={tabOptions}
             active={tab}
             onChange={setTab}
-            after={onClosePanel && <CloseButton label="Close panel" size="sm" onClick={onClosePanel} />}
+            after={onClosePanel && <CloseButton label="Close panel" size="xs" onClick={onClosePanel} />}
           />
         )}
         <div className="flex-1 overflow-auto">{fromEdge ? edgeMessage : selected ? selectedView : <div className="flex h-full min-h-0 flex-col">{tabContent}</div>}</div>

@@ -45,7 +45,7 @@ export default function SettingsMenu() {
           <div data-devtools aria-label="Settings" className="space-y-4">
             <div className="flex items-center justify-between">
               <Heading size="sm">Settings</Heading>
-              <CloseButton label="Close settings" size="sm" onClick={close} />
+              <CloseButton label="Close settings" size="xs" onClick={close} />
             </div>
             <Toggle
               checked={annotations.open}

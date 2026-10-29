@@ -67,7 +67,7 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
               target="_blank"
               icon="hero-arrow-top-right-on-square"
               label="Open on GitHub"
-              size="sm"
+              size="xs"
             />
           )}
         </div>

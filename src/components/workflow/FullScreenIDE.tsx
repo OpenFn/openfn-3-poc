@@ -97,7 +97,7 @@ export default function FullScreenIDE({
             icon="hero-document-text"
             label="Docs"
             tooltip="Show adaptor documentation"
-            size="sm"
+            size="xs"
             active={docsTab === "docs" && !docsCollapsed}
             onClick={() => showDocs("docs")}
           />
@@ -105,7 +105,7 @@ export default function FullScreenIDE({
             icon="hero-sparkles"
             label="Metadata"
             tooltip="Show metadata explorer"
-            size="sm"
+            size="xs"
             active={docsTab === "metadata" && !docsCollapsed}
             onClick={() => showDocs("metadata")}
           />
@@ -151,11 +151,11 @@ export default function FullScreenIDE({
                       <IconButton
                         icon="hero-view-columns"
                         label="Toggle panel orientation"
-                        size="sm"
+                        size="xs"
                         className={cn(vertical && "rotate-90")}
                         onClick={() => setVertical((v) => !v)}
                       />
-                      <CloseButton label="Close docs panel" size="sm" onClick={() => setDocsCollapsed(true)} />
+                      <CloseButton label="Close docs panel" size="xs" onClick={() => setDocsCollapsed(true)} />
                     </>
                   }
                 />
@@ -216,7 +216,7 @@ export default function FullScreenIDE({
                           { id: "output", label: "Output" },
                         ]}
                       />
-                      <IconButton icon="hero-chevron-right" label="Collapse panel" size="sm" onClick={() => setRunCollapsed(true)} />
+                      <IconButton icon="hero-chevron-right" label="Collapse panel" size="xs" onClick={() => setRunCollapsed(true)} />
                     </div>
                   )}
                   <div className="flex-1 overflow-hidden bg-surface">{rightPanel}</div>

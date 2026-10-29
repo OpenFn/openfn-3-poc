@@ -164,7 +164,7 @@ export default function DiagramNode({
         >
           <IconButton
             variant="primary"
-            size="sm"
+            size="xs"
             icon={<span className="hero-plus pointer-events-none h-4 w-4" aria-hidden="true" />}
             label="Add a path to a new step"
             className="ml-1 rounded-lg"

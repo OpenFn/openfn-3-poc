@@ -21,7 +21,7 @@ function FullHistoryLink({ to, id }: { to: string; id?: string }) {
       to={to}
       icon="hero-rectangle-stack"
       label="View full history for this workflow"
-      size="sm"
+      size="xs"
       onClick={(e) => e.stopPropagation()}
     />
   );
@@ -94,7 +94,7 @@ export default function MiniHistory({
                   <IconButton
                     icon={selected || isExpanded ? "hero-chevron-down" : "hero-chevron-right"}
                     label={`${isExpanded ? "Collapse" : "Expand"} work order details`}
-                    size="sm"
+                    size="xs"
                     className={cn(selected && "text-primary-600")}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -133,7 +133,7 @@ export default function MiniHistory({
                           <IconButton
                             icon="hero-x-mark"
                             label="Deselect run"
-                            size="sm"
+                            size="xs"
                             onClick={(e) => {
                               e.stopPropagation();
                               onDeselectRun();
@@ -177,7 +177,7 @@ export default function MiniHistory({
         <div className="flex items-center gap-1 border-b border-subtle bg-subtle px-3 py-2">
           <Heading size="sm">Run History</Heading>
           <FullHistoryLink to={historyHref} />
-          <IconButton icon="hero-x-mark" label="Back to landing" size="sm" className="ml-auto mr-2" onClick={onBack} />
+          <IconButton icon="hero-x-mark" label="Back to landing" size="xs" className="ml-auto mr-2" onClick={onBack} />
         </div>
         <div className="flex-1 overflow-y-auto">{list}</div>
       </div>

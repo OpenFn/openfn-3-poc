@@ -48,7 +48,7 @@ export default function SearchInput({ value, onChange, onClear, label, placehold
           id={clearButtonId}
           icon="hero-x-mark"
           label="Clear search"
-          size="sm"
+          size="xs"
           className="absolute right-2 top-1/2 -translate-y-1/2"
           onClick={() => {
             onChange("");

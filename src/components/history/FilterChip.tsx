@@ -66,7 +66,7 @@ export default function FilterChip({
         <IconButton
           icon="hero-x-mark-solid"
           label="Clear filter"
-          size="sm"
+          size="xs"
           className="rounded-full text-primary-400 hover:bg-primary-200 hover:text-primary-600"
           onClick={onClear}
         />
