@@ -61,11 +61,13 @@ export default function CollectionsTable({ collections, canManage, onCreate, onP
               id={`preview-collection-${c.id}-button`}
               variant="secondary"
               size="xs"
+              aria-label="Preview collection"
+              tooltip="Preview collection"
               pending={previewingId === c.id}
               onClick={() => onPreview(c)}
+              icon="hero-eye"
             >
-              <span className="hero-eye h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Preview collection</span>
+              {null}
             </Button>
             <Button id={`download-collection-${c.id}-button`} variant="secondary" size="xs" href={c.downloadHref}>
               Download

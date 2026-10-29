@@ -226,6 +226,15 @@ question, with the same name on every component:
 - No other names for these: not `theme`, `type`, `color`, `appearance` or
   `kind`. `color` stays only on Pill's tag colours, which mean nothing.
 
+**Tooltips.** Every tooltip is a `Tooltip`, never a browser `title`.
+
+- An icon-only control always shows its name as a tooltip (`IconButton`'s
+  `label` is its tooltip). The close X is the exception (`CloseButton`).
+- A text button gets a tooltip only when it adds something: a keyboard
+  shortcut, or why it's disabled. Never its own text again.
+- A disabled control says why, when there's a reason to give.
+- The text is the name, then any shortcut in brackets: "Close IDE (Esc)".
+
 **Feature components** (`src/components/<area>/`) are one panel or section
 of a page (`WorkOrdersTable`, `WebhookSecurityPanel`). They're often used
 once, and that's fine: they're the unit we wire to the backend and annotate.
