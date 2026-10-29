@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Button from "./Button";
-import { withRouter } from "../stories/decorators";
+import { withRouter, withWhitePanel } from "../stories/decorators";
 
 const meta: Meta<typeof Button> = {
   title: "Shared/Button",
@@ -19,7 +19,8 @@ export const Disabled: Story = { args: { disabled: true, tooltip: "You don't hav
 export const Pending: Story = { args: { pending: true, children: "Saving" } };
 export const WithIcon: Story = { args: { icon: "hero-plus", children: "New project" } };
 export const WithIconRight: Story = { args: { icon: "hero-arrow-right", iconPosition: "right", children: "Build it" } };
-export const Plain: Story = { args: { variant: "plain", children: "Show more" } };
+/** Plain text sits on white: on the grey page it falls below 4.5:1. */
+export const Plain: Story = { args: { variant: "plain", children: "Show more" }, decorators: [withWhitePanel()] };
 export const ExtraSmall: Story = { args: { size: "xs", children: "Edit" } };
 export const Small: Story = { args: { size: "sm", children: "Run" } };
 export const Large: Story = { args: { size: "lg", children: "Create project" } };
@@ -28,6 +29,7 @@ export const AsExternalLink: Story = { args: { href: "https://docs.openfn.org", 
 
 /** Every look, enabled and disabled (filled buttons at their 300 shade, secondary grey, plain faded). */
 export const AllLooks: Story = {
+  decorators: [withWhitePanel("w-auto")],
   render: () => (
     <div className="grid grid-cols-2 gap-3 justify-items-start">
       {[false, true].map((disabled) => (

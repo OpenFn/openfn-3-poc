@@ -190,7 +190,7 @@ html[data-theme="light"] {
   /* Buttons: a soft lift instead of a flat fill. Secondary buttons
      are white with a hairline, coloured ones get an inner highlight.
      Plain buttons (icon buttons) have no lift. */
-  [data-ui="button"]:not([data-variant="plain"]) {
+  [data-ui="button"]:where(:not([data-variant="plain"])) {
     font-weight: 500;
     box-shadow: var(--shadow-sm);
     transition: background-color 0.15s ease, box-shadow 0.15s ease;

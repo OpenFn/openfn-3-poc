@@ -21,8 +21,9 @@ const sizeClasses: Record<ButtonSize, string> = {
 const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", md: "h-4 w-4", lg: "h-5 w-5" };
 
 // Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
-// text on nothing: hover darkens the text only, so it sits on any surface, white or grey; a
-// pressed toggle (`aria-pressed`) gets a tint. Disabled has no hover: filled looks turn their
+// text on nothing: hover darkens the text only, so an icon sits on any surface, white or grey.
+// Text needs a white surface: on the grey page plain (4.39:1) and plain danger (4.33:1) fall
+// below 4.5:1. A pressed toggle (`aria-pressed`) gets a tint. Disabled has no hover: filled looks turn their
 // 300 shade with white text, secondary goes grey, and plain is faded to half strength, as
 // Lightning draws them (`new_inputs.ex` button, the editor's Run / Retry). Plain writes its
 // hover as `hover:` with `disabled:` undoing it, so a caller's own `hover:` colour replaces it;

@@ -1,7 +1,11 @@
+/// <reference types="node" />
+import { readFileSync } from "node:fs";
+import { composeStories } from "@storybook/react-vite";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { hover, openTooltips } from "../test/tooltip";
 import Button from "./Button";
+import * as stories from "./Button.stories";
 
 describe("Button", () => {
   it("passes a disabled button's hover to the wrapper that shows its reason", async () => {
@@ -57,6 +61,26 @@ describe("Button", () => {
     expect(danger.getAttribute("data-ui")).toBe("button");
     expect(danger.getAttribute("data-variant")).toBe("primary");
     expect(danger.getAttribute("data-tone")).toBe("danger");
+  });
+
+  it("leaves the focus halo on top of the default theme's lift", () => {
+    // Read from disk: Vitest hands CSS imports, ?raw too, over empty.
+    const themeCss = readFileSync("src/theme/theme.css", "utf8");
+    // A bare :not() adds a class's weight, so the lift's primary and secondary box-shadows would
+    // outrank the halo (`:is(a, button, …):focus-visible`) and a focused Save would show nothing.
+    expect(themeCss).not.toMatch(/\[data-ui="button"\]:not\(/);
+    expect(themeCss).toContain('[data-ui="button"]:where(:not([data-variant="plain"])) {');
+  });
+
+  it("shows plain text buttons on white in its stories, where they pass 4.5:1", () => {
+    const { Plain, AllLooks } = composeStories(stories);
+    for (const Story of [Plain, AllLooks]) {
+      const { unmount } = render(<Story />);
+      for (const button of screen.getAllByRole("button").filter((b) => b.getAttribute("data-variant") === "plain")) {
+        expect(button.closest(".bg-surface")).not.toBeNull();
+      }
+      unmount();
+    }
   });
 
   it("puts the icon after the label with iconPosition right", () => {
