@@ -137,11 +137,11 @@ everywhere. Reach for these first:
 
 | Need | Use |
 |---|---|
-| An action | `Button` (`to` for routes, `href` for plain links; `size="xs" variant="secondary"` for table row actions; `tone="danger"` for destructive ones; `pending` while its request runs) |
+| An action | `Button` (`to` for routes, `href` for plain links; `icon` for a leading icon; `variant="plain"` for text with no fill; `size="xs" variant="secondary"` for table row actions; `tone="danger"` for destructive ones; `pending` while its request runs) |
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (`fieldProps` on each control, `submit` for page forms, `modalSubmit` for `FormModal`; `blank` from `utils/validate.ts` for required fields; never disable submit for invalid values) |
 | A request in flight | `useAction` from `utils/useAction.ts` (pending, error, double-click guard; `useActions` for one per row, `latest` when only the newest answer counts); `Spinner` for anything loading |
 | A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` (shows the choice at once, puts back the saved value if the save fails) |
-| An icon-only action | `IconButton` (always give it a `label`; `to`/`href` for icon links, `external` to open `href` in a new tab, `tone="danger"`, or pass an SVG element as `icon`) |
+| An icon-only action | `IconButton` (a square `Button`, `variant="plain"` unless you say otherwise; always give it a `label`, which is also its tooltip; `tooltip` to say more, `tooltip={false}` for none; `active` for a toggle that's on) |
 | The X that closes a modal, toast or panel | `CloseButton` (`label` defaults to "Close"; no tooltip, unlike `IconButton`) |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
 | A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs` (`fieldClassName` styles the wrapper, e.g. `flex-1` in a row; `Select` is every dropdown, styled and keyboard navigable on Headless UI's Listbox, with `prompt` shown while nothing is chosen, and tests pick from it with `pickOption` in `src/test/select.ts`); wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` |
@@ -211,7 +211,7 @@ question, with the same name on every component:
 | Prop | Answers | Values |
 |---|---|---|
 | `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
-| `variant` | How loud is it? | The component's own list, loudest first: Button `primary`, `secondary`; Pill `subtle`, `solid`; Tabs `line`, `pill` |
+| `variant` | How loud is it? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Pill `subtle`, `solid`; Tabs `line`, `pill` |
 | `size` | How big is it? | `sm`, `md`, `lg` |
 
 - Meaning only goes in `tone`. `danger` is never a `variant`, so
