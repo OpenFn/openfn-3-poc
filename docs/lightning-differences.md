@@ -42,3 +42,6 @@ goes back to Lightning's way.
 - **A timed-out channel request is a warning (yellow).** Lightning draws the
   Timeout state pill orange (`channel_state_pill`); the replica puts channel
   states on Pill's tones, which have no orange.
+- **Exception and Lost run states are pale grey.** Lightning draws them dark
+  grey with white text (`state_pill`); the replica keeps every status pill
+  pale, so a list never mixes pale and solid.

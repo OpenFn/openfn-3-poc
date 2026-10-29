@@ -22,8 +22,8 @@ export const STATE_PILL: Record<WorkOrderState | RunState | "running", string> =
   crashed: "bg-orange-100 text-orange-700",
   cancelled: "bg-gray-100 text-gray-700",
   killed: "bg-warning-100 text-warning-800",
-  exception: "bg-gray-800 text-white",
-  lost: "bg-gray-800 text-white",
+  exception: "bg-gray-100 text-gray-700",
+  lost: "bg-gray-100 text-gray-700",
 };
 
 /** The work-order dot (DashboardComponents.state_card). */

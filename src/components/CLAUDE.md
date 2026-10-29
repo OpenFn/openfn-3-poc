@@ -48,11 +48,11 @@ the same name on every component:
 | Prop | Answers | Values |
 |---|---|---|
 | `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
-| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Pill `subtle`, `solid`; Tabs `line`, `pill`; Heading `default`, `eyebrow`; SearchList `palette`, `field` |
-| `size` | How big is it? | `xs`, `sm`, `md`, `lg`, `xl`. Each component takes the steps it needs, and a step means the same size on every component that shares it |
+| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Tabs `line`, `pill`; Heading `default`, `eyebrow`; SearchList `palette`, `field` |
+| `size` | How big is it? | `xs`, `sm`, `md`, `lg`, `xl`. Each component takes the steps it needs. Button and IconButton share one height per step, so they line up side by side; other components' steps are their own for now |
 
 - Meaning only goes in `tone`. `danger` is never a `variant`, so
-  `<Button tone="danger">` and `<Pill tone="danger" variant="solid">`.
+  `<Button tone="danger">` and `<Pill tone="danger">`.
 - `variant` never carries meaning, and `tone` never carries loudness.
 - No other names for these: not `theme`, `type`, `color`, `appearance` or
   `kind`. `color` stays only on Pill's tag colours, which mean nothing.
