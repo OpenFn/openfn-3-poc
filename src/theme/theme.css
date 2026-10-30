@@ -18,7 +18,7 @@
  * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
  * (button, link, field, form-group, label, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
- * page-body, sidebar)
+ * page-title-row, page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.
  * A toned button is still `data-variant="primary"`: a rule meant for the
  * plain primary button needs `:not([data-tone])`.
@@ -176,7 +176,8 @@ html[data-theme="light"] .sudo-variant {
 html[data-theme="light"] {
   /* ---- Page frame -------------------------------------------- */
 
-  [data-ui="page-body"] { background-color: #ffffff; }
+  [data-ui="page-body"],
+  [data-ui="page-title-row"] { background-color: #ffffff; }
   [data-ui="page-header"] {
     border-bottom-color: var(--ui-border);
     box-shadow: none;
@@ -535,7 +536,8 @@ html[data-theme="gds"] {
 
   /* A plain white page. GOV.UK separates content with space and
      rules, not by setting white panels on a grey ground. */
-  [data-ui="page-body"] { background-color: #ffffff; }
+  [data-ui="page-body"],
+  [data-ui="page-title-row"] { background-color: #ffffff; }
 
   /* The bar above each page plays the part of GOV.UK's Service
      navigation: a light blue band ruled off underneath. */

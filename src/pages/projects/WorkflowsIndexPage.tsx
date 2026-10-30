@@ -78,7 +78,7 @@ export default function WorkflowsIndexPage({
           title="Workflows"
           count={stats.length}
         >
-          <SearchInput value={searchTerm} onChange={onSearch} onClear={onClear} clearButtonId="clear_search_button" className="w-96" />
+          <SearchInput value={searchTerm} onChange={onSearch} onClear={onClear} clearButtonId="clear_search_button" className="w-96 min-w-0 shrink" />
           <Button
             id="new-workflow-button"
             to={`/projects/${project.id}/w/new`}

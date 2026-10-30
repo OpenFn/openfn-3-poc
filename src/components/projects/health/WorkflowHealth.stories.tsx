@@ -11,8 +11,8 @@ const failed = { data: null, error: HEALTH_LOAD_ERROR };
 
 type State = "loaded" | "loading" | "failuresError" | "failedRefresh";
 
-/** Health for one workflow over the default range; the page header's RangePicker changes it (Projects/Health/RangePicker). */
-function WithRange({
+/** One workflow's health over the default range; the page header's RangePicker changes the range (Projects/Health/RangePicker). */
+function Health({
   workflowId,
   state = "loaded",
   ...props
@@ -51,20 +51,20 @@ export default meta;
 type Story = StoryObj<typeof WorkflowHealth>;
 
 export const WithFailures: Story = {
-  render: () => <WithRange workflowId="wf-openhie" />,
+  render: () => <Health workflowId="wf-openhie" />,
 };
 export const NoHistory: Story = {
-  render: () => <WithRange workflowId="wf-facility-sync" />,
+  render: () => <Health workflowId="wf-facility-sync" />,
 };
 /** Every request out: each panel holds its frame. */
 export const Loading: Story = {
-  render: () => <WithRange workflowId="wf-openhie" state="loading" />,
+  render: () => <Health workflowId="wf-openhie" state="loading" />,
 };
 /** The failures endpoint failed: its two panels say so, the donuts keep their numbers. */
 export const FailuresError: Story = {
-  render: () => <WithRange workflowId="wf-openhie" state="failuresError" />,
+  render: () => <Health workflowId="wf-openhie" state="failuresError" />,
 };
 /** Both numbers and an error (Lightning's hook never sends both): the numbers win and no error shows. */
 export const FailedRefresh: Story = {
-  render: () => <WithRange workflowId="wf-openhie" state="failedRefresh" />,
+  render: () => <Health workflowId="wf-openhie" state="failedRefresh" />,
 };

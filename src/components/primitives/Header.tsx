@@ -36,19 +36,19 @@ export default function Header({ title, count, breadcrumbs, children, loggedOut 
 
   if (breadcrumbs && title) {
     return (
-      <div className="flex-none" data-ui="page-header">
-        <div className="bg-surface shadow-xs border-b border-subtle" data-testid="top-bar">
+      <div className="flex-none">
+        <div className="bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
           <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">{breadcrumbs}</div>
         </div>
-        {/* The same gutter as the page body, so the title lines up with the content under it.
-            It scrolls sideways rather than clip the actions on a narrow screen. */}
-        <div className="bg-page overflow-x-auto [scrollbar-gutter:stable_both-edges]">
+        {/* Part of the page, so themes paint it like the body. The same gutter as the body, so
+            the title lines up with the content under it (the gutter needs an overflow). */}
+        <div className="bg-page overflow-x-auto [scrollbar-gutter:stable_both-edges]" data-ui="page-title-row">
           {/* One height whatever sits beside the title (nothing, a button, a search box), so the
               title and the content start at the same place on every page. Narrow, the actions
-              wrap under the title. */}
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 flex min-h-15 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              wrap under the title, and pb-1 keeps their focus rings inside the row. */}
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 pb-1 flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2">
             {heading}
-            {children && <div className="flex shrink-0 items-center gap-2">{children}</div>}
+            {children && <div className="flex min-w-0 items-center gap-2">{children}</div>}
           </div>
         </div>
       </div>
