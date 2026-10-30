@@ -1,6 +1,6 @@
-import Button from "../Button";
-import TableTitle from "../TableTitle";
-import SearchInput from "../SearchInput";
+import Button from "../primitives/Button";
+import TableTitle from "../primitives/TableTitle";
+import SearchInput from "../primitives/SearchInput";
 import { useRouter } from "../../routing/router";
 
 /**

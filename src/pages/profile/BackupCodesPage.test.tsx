@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import BackupCodesPage from "./BackupCodesPage";
 
 const codes = [

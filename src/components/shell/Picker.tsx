@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
-import Modal from "../Modal";
-import SearchList from "../SearchList";
+import Modal from "../primitives/Modal";
+import SearchList from "../primitives/SearchList";
 import { filterPickerItems } from "./projectPickerItems";
 
 /**

@@ -1,4 +1,4 @@
-import Pill from "../Pill";
+import Pill from "../primitives/Pill";
 import { shortUuid, uuidOf } from "../../utils/format";
 
 /**

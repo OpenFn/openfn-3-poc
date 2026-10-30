@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import { RequestError } from "../../utils/errors";
 import { pickOption } from "../../test/select";
 import ProfilePage, { type ProfilePageProps } from "./ProfilePage";

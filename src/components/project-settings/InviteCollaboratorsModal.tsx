@@ -1,7 +1,7 @@
 import { useState } from "react";
-import FormModal from "../FormModal";
-import { TextInput } from "../Inputs";
-import IconButton from "../IconButton";
+import FormModal from "../primitives/FormModal";
+import { TextInput } from "../primitives/Inputs";
+import IconButton from "../primitives/IconButton";
 import RoleSelect from "./RoleSelect";
 import type { CollaboratorValues, InviteValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";

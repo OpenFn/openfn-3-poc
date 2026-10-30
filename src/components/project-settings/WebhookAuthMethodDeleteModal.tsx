@@ -1,5 +1,5 @@
-import Alert from "../Alert";
-import ConfirmModal from "../ConfirmModal";
+import Alert from "../primitives/Alert";
+import ConfirmModal from "../primitives/ConfirmModal";
 import { UsageLinks } from "./LinkedUsageModal";
 import type { WebhookAuthMethodRow } from "../../types/project-settings";
 

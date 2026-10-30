@@ -2,22 +2,22 @@ import { useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
 import type { Dataclip } from "../../mock-data/models/history";
 import { cn } from "../../utils/cn";
-import DataclipTypePill from "../history/DataclipTypePill";
-import Button from "../Button";
-import Card from "../Card";
-import FileDropZone from "../FileDropZone";
-import Heading from "../Heading";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
-import { FieldError } from "../Inputs";
+import DataclipTypePill from "../domain/DataclipTypePill";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import FileDropZone from "../primitives/FileDropZone";
+import Heading from "../primitives/Heading";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
+import { FieldError } from "../primitives/Inputs";
 import CodeEditor from "./CodeEditor";
-import Tabs from "../Tabs";
+import Tabs from "../primitives/Tabs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
-import SearchInput from "../SearchInput";
+import SearchInput from "../primitives/SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 type Tab = "empty" | "custom" | "existing";
 

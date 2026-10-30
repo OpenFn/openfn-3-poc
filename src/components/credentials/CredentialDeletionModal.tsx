@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "../Button";
-import ConfirmModal from "../ConfirmModal";
-import Modal from "../Modal";
+import Button from "../primitives/Button";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Modal from "../primitives/Modal";
 import type { CredentialRow } from "../../types/credentials";
 
 interface Props {

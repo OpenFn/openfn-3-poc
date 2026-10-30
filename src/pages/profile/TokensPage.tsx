@@ -1,6 +1,6 @@
-import Header from "../../components/Header";
-import Button from "../../components/Button";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import Button from "../../components/primitives/Button";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import NewTokenBanner from "../../components/profile/NewTokenBanner";
 import TokensTable from "../../components/profile/TokensTable";
 import TokenDeletionModal from "../../components/profile/TokenDeletionModal";

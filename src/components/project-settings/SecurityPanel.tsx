@@ -1,7 +1,7 @@
-import Card from "../Card";
-import SectionHeader from "../SectionHeader";
-import { useToast } from "../Toast";
-import Toggle from "../Toggle";
+import Card from "../primitives/Card";
+import SectionHeader from "../primitives/SectionHeader";
+import { useToast } from "../primitives/Toast";
+import Toggle from "../primitives/Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { ParentProjectRef, SecuritySettings } from "../../types/project-settings";
 import { errorMessage } from "../../utils/errors";

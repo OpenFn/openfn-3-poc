@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
-import Tabs from "../../components/Tabs";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
+import Tabs from "../../components/primitives/Tabs";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/history/FilterChip";
 import HistorySearchBar from "../../components/history/HistorySearchBar";
@@ -15,7 +15,7 @@ import {
 } from "../../components/history/HistoryModals";
 import WorkOrdersTable from "../../components/history/WorkOrdersTable";
 import { allTicked } from "../../utils/history";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { historySearchFields, historyStatuses } from "../../constants";
 import type { HistoryWorkOrderState, RunState, SearchFieldId, WorkOrderRow } from "../../types/history";
 import type { PageInfo, SortState } from "../../types/lists";

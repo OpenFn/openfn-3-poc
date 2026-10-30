@@ -2,7 +2,7 @@
 
 Two places need text smaller than `text-xs` (12px), Tailwind's smallest size, so they use arbitrary values:
 
-- `src/components/UserAvatar.tsx:17`: `text-[10px]` for the small avatar initials.
+- `src/components/primitives/UserAvatar.tsx:17`: `text-[10px]` for the small avatar initials.
 - `src/components/shell/Sidebar.tsx:130`: `text-[8px]` for the version label under the logo.
 
 Both lines are lint exceptions.

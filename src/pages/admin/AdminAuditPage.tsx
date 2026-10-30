@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import AuditTable from "../../components/admin/AuditTable";
 import type { AuditEvent } from "../../types/admin";
 import type { PageInfo } from "../../types/lists";

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { withRouter } from "../../stories/decorators";
-import { Table, Th, Tr } from "../Table";
+import { Table, Th, Tr } from "../primitives/Table";
 import { findWorkOrder } from "../../mock-data/history";
 import { workOrderRow } from "../../mock-data/history-extra";
 import WorkOrderTableRow from "./WorkOrderTableRow";

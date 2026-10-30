@@ -4,10 +4,10 @@ import { userRoleOptions } from "../../constants";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
-import Alert from "../Alert";
-import Button from "../Button";
-import { Checkbox, PasswordInput, Select, TextInput } from "../Inputs";
-import Toggle from "../Toggle";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import { Checkbox, PasswordInput, Select, TextInput } from "../primitives/Inputs";
+import Toggle from "../primitives/Toggle";
 
 interface Props {
   /** The account being edited; omit for /settings/users/new. */

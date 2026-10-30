@@ -1,8 +1,8 @@
-import Disclosure from "../../components/Disclosure";
-import { DetailItem, DetailList } from "../../components/DetailList";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
-import Pill from "../../components/Pill";
+import Disclosure from "../../components/primitives/Disclosure";
+import { DetailItem, DetailList } from "../../components/primitives/DetailList";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
+import Pill from "../../components/primitives/Pill";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import {
   BodyViewer,

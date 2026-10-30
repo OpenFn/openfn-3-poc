@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Button from "../Button";
+import Button from "../primitives/Button";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import { withSidePanel } from "../../stories/decorators";
 

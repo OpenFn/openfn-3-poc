@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import Heading from "../Heading";
-import InfoTooltip from "../InfoTooltip";
-import Pill from "../Pill";
-import { Table, Td, Th, Tr } from "../Table";
+import Heading from "../primitives/Heading";
+import InfoTooltip from "../primitives/InfoTooltip";
+import Pill from "../primitives/Pill";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "../../types/credentials";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):

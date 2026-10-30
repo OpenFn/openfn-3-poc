@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../Button";
-import { FieldError, TextInput } from "../Inputs";
-import IconButton from "../IconButton";
-import FormModal from "../FormModal";
+import Button from "../primitives/Button";
+import { FieldError, TextInput } from "../primitives/Inputs";
+import IconButton from "../primitives/IconButton";
+import FormModal from "../primitives/FormModal";
 import RoleSelect from "./RoleSelect";
 import type { CollaboratorValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";

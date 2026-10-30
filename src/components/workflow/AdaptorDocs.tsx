@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { adaptorFunctions, resolvedAdaptorVersion } from "../../mock-data/adaptors";
 import { adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
-import Disclosure from "../Disclosure";
-import Heading from "../Heading";
-import TextLink from "../TextLink";
+import Disclosure from "../primitives/Disclosure";
+import Heading from "../primitives/Heading";
+import TextLink from "../primitives/TextLink";
 
 /**
  * The IDE's Docs panel (assets/js/adaptor-docs/components/DocsPanel.tsx):

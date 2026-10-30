@@ -43,11 +43,15 @@ describe("the data seam lint rule", () => {
 
   it("pages, components and contract shapes may not import the replica's models, and say so once", async () => {
     const code = (from: string) => `import type { Project } from "${from}";\nexport type X = Project;\n`;
-    const message =
-      "'../mock-data/models/projects' import is restricted from being used by a pattern. Models are the replica's records: take a hand-written contract shape from src/types/ (STANDARDS §11).";
-    expect(await seamMessages("src/pages/SeamProbePage.tsx", code("../mock-data/models/projects"))).toEqual([message]);
-    expect(await seamMessages("src/components/SeamProbe.tsx", code("../mock-data/models/projects"))).toEqual([message]);
-    expect(await seamMessages("src/types/seamProbe.ts", code("../mock-data/models/projects"))).toEqual([message]);
+    const message = (from: string) =>
+      `'${from}' import is restricted from being used by a pattern. Models are the replica's records: take a hand-written contract shape from src/types/ (STANDARDS §11).`;
+    for (const [probe, from] of [
+      ["src/pages/SeamProbePage.tsx", "../mock-data/models/projects"],
+      ["src/components/primitives/SeamProbe.tsx", "../../mock-data/models/projects"],
+      ["src/types/seamProbe.ts", "../mock-data/models/projects"],
+    ] as const) {
+      expect(await seamMessages(probe, code(from))).toEqual([message(from)]);
+    }
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("../../mock-data/models/projects"))).toEqual([]);
   });
 });
@@ -59,15 +63,16 @@ describe("the type size lint rule", () => {
     return (result?.messages ?? []).filter((m) => m.message.startsWith("Type size:"));
   };
 
-  it.each(["text-sm", "leading-5", "tracking-wide"])("bans %s in history and nowhere else", async (className) => {
+  it.each(["text-sm", "leading-5", "tracking-wide"])("bans %s in history and domain and nowhere else", async (className) => {
     expect(await typeMessages("src/components/history/Probe.tsx", className)).toHaveLength(1);
-    expect(await typeMessages("src/components/Probe.tsx", className)).toEqual([]);
+    expect(await typeMessages("src/components/domain/Probe.tsx", className)).toHaveLength(1);
+    expect(await typeMessages("src/components/primitives/Probe.tsx", className)).toEqual([]);
   });
 
   // A later block for the same file replaces the history block's list, so check every file.
-  it("applies to every history component", async () => {
+  it("applies to every history and domain component", async () => {
     const files = Object.keys(sources)
-      .filter((path) => /^\.\/components\/history\/[^/]+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
+      .filter((path) => /^\.\/components\/(history|domain)\/[^/]+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
       .map((path) => `src${path.slice(1)}`);
     expect(files.length).toBeGreaterThan(0);
     const missing: string[] = [];
@@ -77,5 +82,96 @@ describe("the type size lint rule", () => {
       if (!options.some((o) => o?.message?.startsWith("Type size:"))) missing.push(file);
     }
     expect(missing).toEqual([]);
+  });
+});
+
+describe("the tier lint rule", () => {
+  const code = (from: string) => `import X from "${from}";\nexport default X;\n`;
+  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|feature component|util) |Nothing outside src\/pages\/)/;
+
+  it("a primitive may import primitives and utils, not domain, a feature component, the shell or a page", async () => {
+    const probe = "src/components/primitives/TierProbe.tsx";
+    expect(await seamMessages(probe, code("./Button"))).toEqual([]);
+    expect(await seamMessages(probe, code("../../utils/cn"))).toEqual([]);
+    for (const from of ["../domain/StatePill", "../history/RunStepList", "../shell/Sidebar", "../../pages/history/RunShowPage"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+  });
+
+  it("a domain component may import primitives and domain, not an area, the shell or a page", async () => {
+    const probe = "src/components/domain/TierProbe.tsx";
+    for (const from of ["../primitives/Pill", "./StatePill", "../../types/history"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([]);
+    }
+    for (const from of ["../history/RunStepList", "../shell/Sidebar", "../../pages/history/RunShowPage"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+  });
+
+  it("a feature component may import primitives, domain, the shell and its own area, not another area", async () => {
+    const probe = "src/components/workflow/TierProbe.tsx";
+    for (const from of ["../primitives/Button", "../domain/StatePill", "../shell/ProjectBreadcrumbs", "./EditorHeader", "../../types/history"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([]);
+    }
+    expect(await seamMessages(probe, code("../history/RunStepList"))).toEqual([expect.stringMatching(tier)]);
+    expect(await seamMessages("src/components/shell/TierProbe.tsx", code("../history/RunStepList"))).toEqual([
+      expect.stringMatching(tier),
+    ]);
+  });
+
+  it("nothing outside src/pages/ imports a page except App.tsx, src/index.ts and a page's wrapper", async () => {
+    const page = (depth: number) => `${"../".repeat(depth)}pages/profile/ProfilePage`;
+    for (const [probe, depth] of [
+      ["src/components/profile/TierProbe.tsx", 2],
+      ["src/utils/tierProbe.ts", 1],
+      ["src/types/tierProbe.ts", 1],
+      ["src/mock-data/tierProbe.ts", 1],
+      ["src/session/tierProbe.ts", 1],
+    ] as const) {
+      expect(await seamMessages(probe, code(page(depth)))).toEqual([expect.stringMatching(tier)]);
+    }
+    expect(await seamMessages("src/App.tsx", code("./pages/profile/ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/index.ts", code("./pages/profile/ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/pages/profile/ProfilePage.replica.tsx", code("./ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/pages/admin/TierProbe.tsx", code("../profile/ProfilePage"))).toEqual([]);
+  });
+
+  // A file directly in src/components/ matches no tier's block, so it could import anything.
+  it("nothing lives directly in src/components/", () => {
+    expect(Object.keys(sources).filter((p) => /^\.\/components\/[^/]+\.tsx?$/.test(p))).toEqual([]);
+  });
+
+  it("catches the long way round, through ../../components/", async () => {
+    for (const [probe, from] of [
+      ["src/components/primitives/TierProbe.tsx", "../../components/domain/StatePill"],
+      ["src/components/domain/TierProbe.tsx", "../../components/history/RunStepList"],
+      ["src/components/domain/TierProbe.tsx", "../../components/shell/Sidebar"],
+      ["src/components/workflow/TierProbe.tsx", "../../components/history/RunStepList"],
+    ] as const) {
+      expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+    expect(await seamMessages("src/components/workflow/TierProbe.tsx", code("../../components/domain/StatePill"))).toEqual([]);
+  });
+
+  it("a util may import primitives and no other components", async () => {
+    expect(await seamMessages("src/utils/tierProbe.ts", code("../components/primitives/Toast"))).toEqual([]);
+    for (const from of ["../components/domain/StatePill", "../components/history/RunStepList", "../components/shell/Sidebar"]) {
+      expect(await seamMessages("src/utils/tierProbe.ts", code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+  });
+
+  it("a replica outside src/pages/ doesn't import a page", async () => {
+    for (const probe of ["src/utils/probeReplica.ts", "src/components/history/Probe.replica.tsx", "src/mock-data/probeReplica.ts"]) {
+      const depth = probe.split("/").length - 2;
+      expect(await seamMessages(probe, code(`${"../".repeat(depth)}pages/admin/AdminUsersPage`))).toEqual([
+        expect.stringMatching(tier),
+      ]);
+    }
+  });
+
+  it("keeps the seam's patterns in a tier", async () => {
+    for (const probe of ["src/components/history/TierProbe.tsx", "src/components/domain/TierProbe.tsx"]) {
+      expect(await seamMessages(probe, code("../../session/session"))).toHaveLength(1);
+    }
   });
 });

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import App from "./App";
-import { ToastProvider } from "./components/Toast";
+import { ToastProvider } from "./components/primitives/Toast";
 import { session } from "./mock-data/users";
 import { ReactRouterAdapter } from "./routing/ReactRouterAdapter";
 import SessionProvider from "./session/SessionProvider";

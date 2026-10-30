@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
 import type { LogLine, RunDetail, RunStep } from "../../types/history";
 import { RequestError } from "../../utils/errors";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import RunShowPage from "./RunShowPage";
 import { tooltipOf } from "../../test/tooltip";
 

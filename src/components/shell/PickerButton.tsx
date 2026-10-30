@@ -1,5 +1,5 @@
 import { cn } from "../../utils/cn";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   label: string;

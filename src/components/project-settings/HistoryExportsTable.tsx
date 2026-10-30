@@ -1,8 +1,8 @@
-import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import Button from "../Button";
+import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import Button from "../primitives/Button";
 import type { ExportStatus, HistoryExportRow } from "../../types/project-settings";
 import { capitalize } from "../../utils/format";
-import DateTime from "../DateTime";
+import DateTime from "../primitives/DateTime";
 
 /** data_tables.ex `format_export_status/1`: "in_progress" -> "In progress". */
 function formatStatus(status: ExportStatus): string {

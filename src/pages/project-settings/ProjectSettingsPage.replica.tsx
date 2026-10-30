@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import {
   generateApiKey,

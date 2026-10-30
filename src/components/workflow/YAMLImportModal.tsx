@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../Button";
-import FileDropZone from "../FileDropZone";
-import FormModal from "../FormModal";
-import { FieldError } from "../Inputs";
+import Button from "../primitives/Button";
+import FileDropZone from "../primitives/FileDropZone";
+import FormModal from "../primitives/FormModal";
+import { FieldError } from "../primitives/Inputs";
 import CodeEditor from "./CodeEditor";
 
 interface Props {

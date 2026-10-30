@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "../Button";
-import ConfirmModal from "../ConfirmModal";
-import Card from "../Card";
+import Button from "../primitives/Button";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Card from "../primitives/Card";
 import type { GithubAccessSettings } from "../../types/profile";
 
 interface Props {

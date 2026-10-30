@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import IconButton from "../IconButton";
+import IconButton from "../primitives/IconButton";
 import { NODE_SIZE, STROKE, nodeShapeStyle, type NodeRunState, EDGE_COLOR, EDGE_COLOR_SELECTED } from "./diagramGeometry";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 import { NODE_RUN_ICON } from "../../theme/runStateColours";
 
 const RUN_ICONS: Record<string, string> = {

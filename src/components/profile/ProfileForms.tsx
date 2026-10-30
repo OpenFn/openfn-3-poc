@@ -1,9 +1,9 @@
 import type { FormEvent, ReactNode } from "react";
-import Alert from "../Alert";
-import Button from "../Button";
-import Card from "../Card";
-import InfoTooltip from "../InfoTooltip";
-import { PasswordInput, Select, TextInput } from "../Inputs";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import InfoTooltip from "../primitives/InfoTooltip";
+import { PasswordInput, Select, TextInput } from "../primitives/Inputs";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "../../types/profile";
 import { contactPreferenceOptions, contactPreferenceTooltip } from "../../constants";
 import { errorMessage } from "../../utils/errors";

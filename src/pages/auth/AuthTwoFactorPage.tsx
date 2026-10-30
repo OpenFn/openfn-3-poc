@@ -7,10 +7,10 @@ import AuthPanelLayout, {
   AuthPanelTitle,
   HavingProblems,
 } from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/Alert";
-import TextLink from "../../components/TextLink";
-import Button from "../../components/Button";
-import { TextInput } from "../../components/Inputs";
+import Alert from "../../components/primitives/Alert";
+import TextLink from "../../components/primitives/TextLink";
+import Button from "../../components/primitives/Button";
+import { TextInput } from "../../components/primitives/Inputs";
 import { authMessages } from "../../constants";
 import type { TwoFactorMethod } from "../../types/auth";
 

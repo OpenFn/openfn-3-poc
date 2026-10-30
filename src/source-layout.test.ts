@@ -21,4 +21,18 @@ describe("source file layout", () => {
     });
     expect(late.map(([path]) => path)).toEqual([]);
   });
+
+  it("a story's group in Storybook is its folder", () => {
+    // primitives/ is "Primitives", project-settings/ is "Project settings", any page is "Pages".
+    const label = (folder: string) => folder[0]!.toUpperCase() + folder.slice(1).replace(/-/g, " ");
+    const wrong = Object.entries(sources)
+      .filter(([path]) => /^\.\/(components|pages)\/.*\.stories\.tsx$/.test(path))
+      .flatMap(([path, text]) => {
+        const [, top, folder] = path.split("/");
+        const group = /title: "([^"/]+)\//.exec(text)?.[1];
+        const expected = top === "pages" ? "Pages" : label(folder!);
+        return group === expected ? [] : [`${path}: "${group}", not "${expected}"`];
+      });
+    expect(wrong).toEqual([]);
+  });
 });

@@ -1,9 +1,9 @@
 import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
 import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
 import { cn } from "../../utils/cn";
-import Button from "../Button";
-import Card from "../Card";
-import Pill from "../Pill";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Pill from "../primitives/Pill";
 import AdaptorIcon from "./AdaptorIcon";
 
 /** The help text on the Adaptor field label. */

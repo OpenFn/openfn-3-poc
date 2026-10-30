@@ -1,11 +1,11 @@
 import { useAnnotations } from "../../annotations/annotations-context";
 import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "../../annotations/source";
-import Heading from "../Heading";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
-import TextLink from "../TextLink";
+import Heading from "../primitives/Heading";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
+import TextLink from "../primitives/TextLink";
 import AnnotationCard from "./AnnotationCard";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 export const ANNOTATIONS_PANEL_WIDTH = 440;
 

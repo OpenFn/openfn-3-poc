@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectsTable from "./ProjectsTable";
-import Button from "../Button";
+import Button from "../primitives/Button";
 import { projectsOverviewFor } from "../../mock-data/dashboard-stats";
 import { session } from "../../mock-data/users";
 import { withRouter } from "../../stories/decorators";
