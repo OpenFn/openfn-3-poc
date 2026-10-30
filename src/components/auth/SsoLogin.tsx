@@ -1,4 +1,5 @@
 import Button from "../primitives/Button";
+import Text from "../primitives/Text";
 import type { SsoProvider } from "../../types/auth";
 
 /**
@@ -8,11 +9,11 @@ import type { SsoProvider } from "../../types/auth";
 export default function SsoLogin({ provider }: { provider: SsoProvider }) {
   return (
     <>
-      <div className="flex items-center gap-2 text-xs text-body">
+      <Text as="div" variant="body-sm" className="flex items-center gap-2 text-body">
         <hr className="flex-1 border-subtle" />
         or
         <hr className="flex-1 border-subtle" />
-      </div>
+      </Text>
       <Button variant="secondary" href={provider.handlerUrl} tooltip={provider.name} className="w-full" icon="hero-identification">
         via external provider
       </Button>

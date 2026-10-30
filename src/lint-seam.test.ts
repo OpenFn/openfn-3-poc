@@ -63,16 +63,17 @@ describe("the type size lint rule", () => {
     return (result?.messages ?? []).filter((m) => m.message.startsWith("Type size:"));
   };
 
-  it.each(["text-sm", "leading-5", "tracking-wide"])("bans %s in history and domain and nowhere else", async (className) => {
+  it.each(["text-sm", "leading-5", "tracking-wide"])("bans %s in history, domain and auth and nowhere else", async (className) => {
     expect(await typeMessages("src/components/history/Probe.tsx", className)).toHaveLength(1);
     expect(await typeMessages("src/components/domain/Probe.tsx", className)).toHaveLength(1);
+    expect(await typeMessages("src/components/auth/Probe.tsx", className)).toHaveLength(1);
     expect(await typeMessages("src/components/primitives/Probe.tsx", className)).toEqual([]);
   });
 
   // A later block for the same file replaces the history block's list, so check every file.
-  it("applies to every history and domain component", async () => {
+  it("applies to every history, domain and auth component", async () => {
     const files = Object.keys(sources)
-      .filter((path) => /^\.\/components\/(history|domain)\/[^/]+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
+      .filter((path) => /^\.\/components\/(history|domain|auth)\/[^/]+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
       .map((path) => `src${path.slice(1)}`);
     expect(files.length).toBeGreaterThan(0);
     const missing: string[] = [];
