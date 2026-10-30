@@ -5,6 +5,21 @@ General web and accessibility rules are in Vercel's
 Where they clash with Lightning's wording (Title Case buttons), Lightning wins.
 The rules below are ours.
 
+## The goal
+
+A person or an agent can build a new Lightning screen fast, from parts that
+already exist, and it looks and behaves like every other screen. If a page
+needs its own styling, the system has failed, not the page.
+
+We know it's working when:
+
+- There's one way to do each thing.
+- Pages hold no styling: `className` only for placement.
+- Agents applying these principles agree on a finding 95% of the time.
+
+Organise first, then improve the look. Once pages hold no styling, a better
+look is a change to the primitives, and every page gets it at once.
+
 ## Components
 
 - One job, one component. When two do the same thing, delete one.
