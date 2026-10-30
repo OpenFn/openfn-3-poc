@@ -13,6 +13,9 @@ goes back to Lightning's way.
 
 ## Buttons
 
+- **Disabled buttons are their enabled colour at half strength.** Lightning
+  gives each look its own disabled colours (`new_inputs.ex:232-247`, e.g.
+  success turns a mint `bg-green-300`). One rule for every look, and no mint green.
 - **One focus ring colour.** Lightning's danger and success buttons draw a
   red or green focus outline (`new_inputs.ex:244,249`); the replica uses the
   focus colour on every button, so focus always looks the same.
@@ -27,7 +30,7 @@ goes back to Lightning's way.
 - **Icon buttons share Button's heights**: a square of 28, 32, 36 or
   40px, so an icon lines up with the text buttons beside it. Lightning sizes
   each one by hand, from a bare 20px modal X to 28px editor buttons.
-- **The AI chat's send button is a primary button, paler when disabled.**
+- **The AI chat's send button is a primary button, at half strength when disabled.**
   Lightning turns it grey (`collaborative-editor/components/ChatInput.tsx:368`).
 - **The cancel-run X is grey, darker on hover**. Lightning turns it
   red on hover (`run_live/workorder_component.ex:262,422`). Red is kept for
