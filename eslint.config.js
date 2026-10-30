@@ -173,19 +173,23 @@ const areas = fs
 const tiers = 'See .claude/rules/components.md, Tiers.'
 const pageImports = {
   regex: '(^|/)pages(/|$)',
-  message: `Only App.tsx, src/index.ts and a page's own .replica.tsx import a page. Move what you need into src/types/ or a component. ${tiers}`,
+  message: `Nothing outside src/pages/ imports a page except App.tsx and src/index.ts. Move what you need into src/types/ or a component. ${tiers}`,
 }
 const primitiveImports = {
-  // From primitives/, `../x` is a sibling folder in src/components/.
-  regex: '^\\.\\./[^.]|(^|/)pages(/|$)',
+  // From primitives/, `../x` is a sibling folder in src/components/; `../../components/x` is the long way round.
+  regex: '^\\.\\./[^.]|(^|/)pages(/|$)|(^|/)components/(?!primitives(/|$))',
   message: `A primitive uses only other primitives (and utils, types, theme). Pass the feature in as a prop or children. ${tiers}`,
 }
 const domainImports = {
-  regex: '^\\.\\./(?!primitives(/|$))[^.]|(^|/)pages(/|$)',
+  regex: '^\\.\\./(?!primitives(/|$))[^.]|(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain)(/|$))',
   message: `A domain component uses only primitives and other domain components. Pass the feature in as a prop or children. ${tiers}`,
 }
+const utilImports = {
+  regex: '(^|/)components/(?!primitives(/|$))|(^|/)pages(/|$)',
+  message: `A util may import primitives, not domain/, shell or area components or a page. ${tiers}`,
+}
 const otherAreaImports = (area) => ({
-  regex: `^(\\.\\./)+(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
+  regex: `(^(\\.\\./)+|(^|/)components/)(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
   message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
 })
 
@@ -312,12 +316,19 @@ export default defineConfig([
     ignores: seamIgnores,
     rules: { 'no-restricted-imports': seamImports([otherAreaImports(area), pageImports]) },
   })),
-  { files: ['src/utils/**/*.{ts,tsx}'], ignores: seamIgnores, rules: { 'no-restricted-imports': seamImports([pageImports]) } },
+  { files: ['src/utils/**/*.{ts,tsx}'], ignores: seamIgnores, rules: { 'no-restricted-imports': seamImports([utilImports]) } },
   {
-    // Only the route table, the package entry and a page's own wrapper import a page.
+    // A replica outside src/pages/ is wiring, not a page's wrapper, so it doesn't import pages either.
+    files: ['src/components/**/*[rR]eplica.{ts,tsx}', 'src/utils/**/*[rR]eplica.{ts,tsx}'],
+    ignores: ['**/*.stories.tsx', '**/*.test.{ts,tsx}'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports] }] },
+  },
+  {
+    // Outside src/pages/, only the route table and the package entry import a page.
     files: ['src/**/*.{ts,tsx}'],
     ignores: [
-      ...seamIgnores,
+      '**/*.stories.tsx',
+      '**/*.test.{ts,tsx}',
       'src/pages/**',
       'src/components/**',
       'src/utils/**',

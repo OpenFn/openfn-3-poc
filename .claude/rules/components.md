@@ -26,11 +26,12 @@ Stories and tests are exempt.
 
 Every tier may import `src/utils/`, `src/types/`, `src/theme/`,
 `src/routing/` and `src/constants.ts`. Utils may import primitives
-(`useAction` uses `Toast`).
+(`useAction` uses `Toast`), and no other components.
 
-Only `App.tsx`, `src/index.ts` and a page's own `.replica.tsx` import a
-page. Anything else a page's file holds that others need (a props type, a
-helper) moves out: shapes to `src/types/`, UI to a component.
+Nothing outside `src/pages/` imports a page except `App.tsx` and
+`src/index.ts`. Anything else a page's file holds that others need (a
+props type, a helper) moves out: shapes to `src/types/`, UI to a
+component.
 
 ## Where a new component goes
 

@@ -87,7 +87,7 @@ describe("the type size lint rule", () => {
 
 describe("the tier lint rule", () => {
   const code = (from: string) => `import X from "${from}";\nexport default X;\n`;
-  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|feature component) |Only App\.tsx)/;
+  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|feature component|util) |Nothing outside src\/pages\/)/;
 
   it("a primitive may import primitives and utils, not domain, a feature component, the shell or a page", async () => {
     const probe = "src/components/primitives/TierProbe.tsx";
@@ -119,7 +119,7 @@ describe("the tier lint rule", () => {
     ]);
   });
 
-  it("only App.tsx, src/index.ts and a page's own wrapper import a page", async () => {
+  it("nothing outside src/pages/ imports a page except App.tsx, src/index.ts and a page's wrapper", async () => {
     const page = (depth: number) => `${"../".repeat(depth)}pages/profile/ProfilePage`;
     for (const [probe, depth] of [
       ["src/components/profile/TierProbe.tsx", 2],
@@ -139,6 +139,34 @@ describe("the tier lint rule", () => {
   // A file directly in src/components/ matches no tier's block, so it could import anything.
   it("nothing lives directly in src/components/", () => {
     expect(Object.keys(sources).filter((p) => /^\.\/components\/[^/]+\.tsx?$/.test(p))).toEqual([]);
+  });
+
+  it("catches the long way round, through ../../components/", async () => {
+    for (const [probe, from] of [
+      ["src/components/primitives/TierProbe.tsx", "../../components/domain/StatePill"],
+      ["src/components/domain/TierProbe.tsx", "../../components/history/RunStepList"],
+      ["src/components/domain/TierProbe.tsx", "../../components/shell/Sidebar"],
+      ["src/components/workflow/TierProbe.tsx", "../../components/history/RunStepList"],
+    ] as const) {
+      expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+    expect(await seamMessages("src/components/workflow/TierProbe.tsx", code("../../components/domain/StatePill"))).toEqual([]);
+  });
+
+  it("a util may import primitives and no other components", async () => {
+    expect(await seamMessages("src/utils/tierProbe.ts", code("../components/primitives/Toast"))).toEqual([]);
+    for (const from of ["../components/domain/StatePill", "../components/history/RunStepList", "../components/shell/Sidebar"]) {
+      expect(await seamMessages("src/utils/tierProbe.ts", code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+  });
+
+  it("a replica outside src/pages/ doesn't import a page", async () => {
+    for (const probe of ["src/utils/probeReplica.ts", "src/components/history/Probe.replica.tsx", "src/mock-data/probeReplica.ts"]) {
+      const depth = probe.split("/").length - 2;
+      expect(await seamMessages(probe, code(`${"../".repeat(depth)}pages/admin/AdminUsersPage`))).toEqual([
+        expect.stringMatching(tier),
+      ]);
+    }
   });
 
   it("keeps the seam's patterns in a tier", async () => {
