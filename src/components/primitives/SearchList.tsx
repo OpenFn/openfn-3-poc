@@ -28,8 +28,6 @@ interface Props<T> {
   getKey: (item: T) => string;
   /** The row's content. The row itself (padding, highlight) comes from `variant`. */
   renderItem: (item: T, state: SearchListItemState) => ReactNode;
-  /** Accessible name for a row, when its content isn't enough. */
-  getLabel?: (item: T) => string;
   isSelected?: (item: T) => boolean;
   /** The search text. The caller filters `items` / `sections` with it. */
   query: string;
@@ -93,7 +91,6 @@ export default function SearchList<T>({
   sections: sectionsProp,
   getKey,
   renderItem,
-  getLabel,
   isSelected = () => false,
   query,
   onQueryChange,
@@ -182,7 +179,6 @@ export default function SearchList<T>({
                       <ComboboxOption
                         key={getKey(item)}
                         value={item}
-                        aria-label={getLabel?.(item)}
                         aria-selected={selected}
                         className={look.option}
                       >

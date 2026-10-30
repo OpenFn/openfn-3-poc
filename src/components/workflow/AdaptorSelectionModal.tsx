@@ -67,7 +67,6 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
         onQueryChange={setQuery}
         sections={sections}
         getKey={(a) => a.id}
-        getLabel={(a) => `Select ${a.name} adaptor`}
         onSelect={pick}
         header={
           fallback && (
