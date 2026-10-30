@@ -105,8 +105,8 @@ const rawControl = {
 }
 
 // Type size comes from Text or Heading (src/components/primitives/Text.tsx). Weight,
-// italic and mono stay classes: they emphasise text inside its size. Only the
-// history/, domain/, auth/, profile/, credentials/, project-settings/, admin/, devtools/, shell/ and pages/ are held to it so far.
+// italic and mono stay classes: they emphasise text inside its size. The areas
+// moved onto Text so far are held to it: the files list below.
 const typeRules = banned(
   '\\b(?:text-(?:xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
   'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/primitives/Text.tsx.'
@@ -231,7 +231,18 @@ export default defineConfig([
     rules: { 'no-restricted-syntax': consumerRules(colourRules()) },
   },
   {
-    files: ['src/components/history/**/*.tsx', 'src/components/domain/**/*.tsx', 'src/components/auth/**/*.tsx', 'src/components/profile/**/*.tsx', 'src/components/credentials/**/*.tsx', 'src/components/project-settings/**/*.tsx', 'src/components/admin/**/*.tsx', 'src/components/devtools/**/*.tsx', 'src/components/shell/**/*.tsx', 'src/pages/**/*.tsx'],
+    files: [
+      'src/components/history/**/*.tsx',
+      'src/components/domain/**/*.tsx',
+      'src/components/auth/**/*.tsx',
+      'src/components/profile/**/*.tsx',
+      'src/components/credentials/**/*.tsx',
+      'src/components/project-settings/**/*.tsx',
+      'src/components/admin/**/*.tsx',
+      'src/components/devtools/**/*.tsx',
+      'src/components/shell/**/*.tsx',
+      'src/pages/**/*.tsx',
+    ],
     ignores: ['**/*.stories.tsx', '**/*.test.tsx'],
     rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules] },
   },
