@@ -31,6 +31,11 @@ wrapper.
   starting `debt:` is one to fix (`grep -rn "debt:" src`).
 - `npm run storybook` — start Storybook on port 6006
 - `npm run build-storybook` — build Storybook static site
+- `npm run test:stories` — render every story in Chromium and run axe on
+  it; each violation fails that story. CI runs it on a PR that touches
+  `src/`, `.storybook/`, `public/` or the packages (`.github/workflows/stories.yml`).
+  Stop Storybook first: running both breaks the open Storybook until it
+  restarts.
 - `npm run compare:all` — set up a local Lightning and compare it with the
   replica, screen by screen. See **Comparing with Lightning** below.
 - `npm run kickstart:sync` — regenerate the shared projects from
@@ -79,9 +84,10 @@ wrapper.
   (`src/annotations/viewIds.ts`). Put `data-annotation` on any sub-panel that
   has its own inventory or shared id. To update, replace the folder with the
   branch's current `annotations/` and update SOURCE.md.
-- `docs/issues/` — known fixes, one file each (the repo has no issue
-  tracker). Delete the file in the PR that fixes it; add one when you find
-  something you won't fix now.
+- `docs/lightning-differences.md` — where the replica looks or behaves
+  differently from Lightning on purpose.
+- Known fixes and open questions live in Lucy's project tracker, not the
+  repo. Don't add files for them here.
 
 ## Matching Lightning
 

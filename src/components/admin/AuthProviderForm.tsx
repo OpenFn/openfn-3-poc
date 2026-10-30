@@ -6,12 +6,12 @@ import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import { Checkbox, PasswordInput, TextInput } from "../primitives/Inputs";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import { cn } from "../../utils/cn";
 import { RequestError, errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { blank } from "../../utils/validate";
-import Text from "../primitives/Text";
 
 type TestState = "unknown" | "success" | "failed";
 

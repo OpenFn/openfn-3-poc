@@ -3,10 +3,10 @@ import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "../.
 import Heading from "../primitives/Heading";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import AnnotationCard from "./AnnotationCard";
 import Tooltip from "../primitives/Tooltip";
-import Text from "../primitives/Text";
 
 export const ANNOTATIONS_PANEL_WIDTH = 440;
 

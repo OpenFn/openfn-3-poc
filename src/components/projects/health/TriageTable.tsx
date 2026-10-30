@@ -105,7 +105,7 @@ export default function TriageTable({
   if (signatures.length === 0) {
     return (
       <Card padding="lg">
-        <p className={EMPTY}>{emptyMessage}</p>
+        <Text as="p" className={EMPTY}>{emptyMessage}</Text>
       </Card>
     );
   }

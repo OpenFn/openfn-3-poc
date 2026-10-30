@@ -39,6 +39,7 @@ export default function BackupCodesCard({
       </Alert>
       <div className="grid gap-4 p-6 md:grid-cols-2">
         {codes.map((c) => (
+          // eslint-disable-next-line no-restricted-syntax -- a backup code is spaced out so it reads one character at a time
           <div key={c.code} className="text-center tracking-widest">
             {c.usedAt ? (
               <Text className="text-faint">

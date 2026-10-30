@@ -4,11 +4,11 @@ import Disclosure from "../primitives/Disclosure";
 import Heading from "../primitives/Heading";
 import IconButton from "../primitives/IconButton";
 import Pill from "../primitives/Pill";
+import Text from "../primitives/Text";
 import type { Tone } from "../primitives/tone";
 import { EmptyState } from "../primitives/Table";
 import TextLink from "../primitives/TextLink";
 import Markdown from "./Markdown";
-import Text from "../primitives/Text";
 
 interface Props {
   id: string;
@@ -39,6 +39,7 @@ function IdList({ label, ids, onOpenId }: { label: string; ids: string[]; onOpen
     <Text as="div" variant="body-sm" className="flex flex-wrap items-center gap-1.5">
       <span className="text-muted">{label}</span>
       {ids.map((id) => (
+        // eslint-disable-next-line no-restricted-syntax -- debt: Button has no 12px mono size for ids
         <Button key={id} variant="secondary" size="xs" className="font-mono text-xs" onClick={() => onOpenId?.(id)}>
           {id}
         </Button>

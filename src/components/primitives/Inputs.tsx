@@ -23,7 +23,7 @@ export function Label({ htmlFor, className, children }: { htmlFor?: string | und
 
 export function FieldError({ children }: { children: ReactNode }) {
   return (
-    <p data-tag="error_message" data-ui="error-message" className="mt-1 inline-flex items-center gap-x-1.5 text-xs text-danger-600">
+    <p data-tag="error_message" data-ui="error-message" className="mt-1 inline-flex items-center gap-x-1.5 text-xs text-danger-700">
       <span className="hero-exclamation-circle h-4 w-4" />
       {children}
     </p>

@@ -41,7 +41,7 @@ export default function Disclosure({ id, title, titleRight, note, defaultOpen = 
         <DisclosureButton className="group flex items-center gap-1.5 text-strong">
           {chevron("h-3.5 w-3.5")}
           <Text variant="label-md">{title}</Text>
-          {note && <Text variant="body-sm" className="text-faint">({note})</Text>}
+          {note && <Text variant="body-sm" className="text-muted">({note})</Text>}
           {titleRight}
         </DisclosureButton>
         <DisclosurePanel className="mt-2">{children}</DisclosurePanel>

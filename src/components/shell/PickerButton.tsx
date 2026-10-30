@@ -1,11 +1,18 @@
 import { cn } from "../../utils/cn";
+import { prefersDarkText } from "../../utils/colour";
 import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   label: string;
+  /** Hero icon class, e.g. `hero-folder`. */
+  icon?: string;
+  /** Event dispatched on `document.body`; the matching Picker listens for it. */
+  openEvent?: string;
   isSandbox?: boolean;
+  /** Accent icon in sandbox mode. */
+  accentIcon?: string;
   /** Sandbox accent background. */
-  sandboxColor?: string | null;
+  color?: string | null;
 }
 
 /**
@@ -13,10 +20,20 @@ interface Props {
  * assets/js/picker/PickerButton.tsx). Sandboxes render in their own colour
  * with a beaker, and a deep path is shortened to its last two parts.
  */
-export default function PickerButton({ label, isSandbox = false, sandboxColor }: Props) {
+export default function PickerButton({
+  label,
+  icon = "hero-folder",
+  openEvent = "open-project-picker",
+  isSandbox = false,
+  accentIcon = "hero-beaker",
+  color,
+}: Props) {
   const parts = label.split("/");
   const truncated = isSandbox && parts.length > 2;
   const visible = truncated ? parts.slice(-2) : parts;
+  // Lightning always writes white on the sandbox colour; a light colour gets dark text instead, for contrast.
+  const onLight = isSandbox && !!color && prefersDarkText(color);
+  const accent = onLight ? "text-strong" : "text-white/80";
 
   const button = (
     // eslint-disable-next-line no-restricted-syntax -- debt: a secondary Button that takes the sandbox colour at runtime
@@ -24,18 +41,18 @@ export default function PickerButton({ label, isSandbox = false, sandboxColor }:
       type="button"
       onClick={(e) => {
         e.preventDefault();
-        // The project Picker listens for this event on document.body.
-        document.body.dispatchEvent(new CustomEvent("open-project-picker"));
+        document.body.dispatchEvent(new CustomEvent(openEvent));
       }}
       className={cn(
+        // eslint-disable-next-line no-restricted-syntax -- a control that owns its type: the picker button
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
         isSandbox
-          ? "border-transparent text-inverse hover:opacity-90"
+          ? cn("border-transparent hover:opacity-90", onLight ? "text-strong" : "text-inverse")
           : "border-strong bg-surface text-body hover:border-emphasis hover:bg-hover"
       )}
-      style={isSandbox ? { backgroundColor: sandboxColor ?? "var(--color-primary-600)" } : undefined}
+      style={isSandbox ? { backgroundColor: color ?? "var(--color-primary-600)" } : undefined}
     >
-      <span className={cn("h-4 w-4", isSandbox ? "hero-beaker text-white/80" : "hero-folder text-muted")} />
+      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} ${accent}` : `${icon} text-muted`)} />
       <span>
         {isSandbox && parts.length > 1 ? (
           <>
@@ -51,7 +68,7 @@ export default function PickerButton({ label, isSandbox = false, sandboxColor }:
           label
         )}
       </span>
-      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? "text-white/80" : "text-faint")} />
+      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? accent : "text-faint")} />
     </button>
   );
   return <Tooltip content={truncated ? parts.join(" > ") : undefined}>{button}</Tooltip>;

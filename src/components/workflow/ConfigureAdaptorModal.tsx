@@ -12,6 +12,7 @@ import Modal from "../primitives/Modal";
 import TextLink from "../primitives/TextLink";
 import { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorIcon from "./AdaptorIcon";
+import Text from "../primitives/Text";
 
 interface Props {
   isOpen: boolean;
@@ -79,18 +80,22 @@ export default function ConfigureAdaptorModal({
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <Label>Credentials</Label>
-            {needsCredentials && <TextLink className="text-sm font-medium">New Credential</TextLink>}
+            {needsCredentials && (
+              <Text variant="label-md">
+                <TextLink>New Credential</TextLink>
+              </Text>
+            )}
           </div>
           {!needsCredentials ? (
-            <Card muted padding="lg" className="text-center text-sm text-muted">
-              This adaptor does not require credentials.
+            <Card muted padding="lg" className="text-center text-muted">
+              <Text as="p">This adaptor does not require credentials.</Text>
             </Card>
           ) : shown.length === 0 ? (
             <Card padding="lg" className="text-center">
-              <div className="flex flex-col items-center gap-3">
-                <p className="text-muted">No credentials found in this project</p>
-                <TextLink className="text-sm font-medium">Create a new credential</TextLink>
-              </div>
+              <p className="mb-3 text-muted">No credentials found in this project</p>
+              <Text variant="label-md">
+                <TextLink>Create a new credential</TextLink>
+              </Text>
             </Card>
           ) : (
             <Card padding="none" className="max-h-48 divide-y divide-subtle overflow-y-auto">
@@ -104,16 +109,16 @@ export default function ConfigureAdaptorModal({
                       onChange={() => onCredentialChange(c.name)}
                       label={<span className="font-medium text-strong">{c.name}</span>}
                       hint={
-                        <span className="flex items-center gap-1 text-sm">
+                        <Text className="flex items-center gap-1">
                           <span className="hero-user-solid h-4 w-4" />
                           {ownerEmail(c.ownerId)}
-                        </span>
+                        </Text>
                       }
                     />
                     {selected && (
-                      <TextLink className="text-sm" onClick={() => onCredentialChange(null)}>
-                        Clear
-                      </TextLink>
+                      <Text>
+                        <TextLink onClick={() => onCredentialChange(null)}>Clear</TextLink>
+                      </Text>
                     )}
                   </div>
                 );

@@ -31,7 +31,7 @@ export default function StepFailureBars({
   emptyMessage: string;
 }) {
   const rows = groupByStep(signatures);
-  if (rows.length === 0) return <p className={EMPTY}>{emptyMessage}</p>;
+  if (rows.length === 0) return <Text as="p" className={EMPTY}>{emptyMessage}</Text>;
   const max = Math.max(...rows.map((r) => r.count));
 
   return (
@@ -44,11 +44,7 @@ export default function StepFailureBars({
                 <Tooltip content={label}>
                   <span className={cn("truncate", key === NO_STEP ? "italic text-muted" : "text-strong")}>{label}</span>
                 </Tooltip>
-                {adaptor && (
-                  <Text variant="code-sm" className="truncate text-muted">
-                    {adaptorLabel(adaptor)}
-                  </Text>
-                )}
+                {adaptor && <Text variant="code-sm" className="truncate text-muted">{adaptorLabel(adaptor)}</Text>}
               </div>
               <span className="shrink-0 font-medium tabular-nums text-strong">{formatNumber(count)}</span>
             </Text>

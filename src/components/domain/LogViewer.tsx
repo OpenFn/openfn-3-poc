@@ -21,7 +21,8 @@ export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onC
         // eslint-disable-next-line no-restricted-syntax -- debt: a text-only menu trigger on the dark log panel; Button has no look for dark surfaces
         <button
           type="button"
-          aria-label="Log level"
+          // The visible level stays in the name, so "click info" reaches it by voice.
+          aria-label={`Log level: ${selected}`}
           // eslint-disable-next-line no-restricted-syntax -- debt: a control's own type; waits on a Button look for dark surfaces
           className="inline-flex items-center gap-1 text-xs/4 opacity-75 hover:opacity-100 @md:text-sm/6"
         >

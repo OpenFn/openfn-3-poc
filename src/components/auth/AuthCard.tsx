@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import Alert from "../primitives/Alert";
 import Card from "../primitives/Card";
-import { cn } from "../../utils/cn";
 import Text from "../primitives/Text";
+import { cn } from "../../utils/cn";
 
 /**
  * The white form card on logged-out pages: half the centred column on
@@ -33,11 +33,7 @@ export default function AuthCard({
  */
 export function AuthFooterLinks({ left, right, divider = false }: { left?: ReactNode; right?: ReactNode; divider?: boolean }) {
   return (
-    <Text
-      as="div"
-      variant="body-sm"
-      className={cn("flex justify-between text-body", divider && "sm:border-t sm:border-subtle sm:pt-5")}
-    >
+    <Text as="div" variant="body-sm" className={cn("flex justify-between text-body", divider && "sm:border-t sm:border-subtle sm:pt-5")}>
       <div>{left}</div>
       <div>{right}</div>
     </Text>

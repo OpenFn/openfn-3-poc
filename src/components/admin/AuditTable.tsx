@@ -6,8 +6,8 @@ import Pagination from "../primitives/Pagination";
 import Pill from "../primitives/Pill";
 import DateTime from "../primitives/DateTime";
 import { Table, Td, Th, Tr } from "../primitives/Table";
-import AuditChanges from "./AuditChanges";
 import Text from "../primitives/Text";
+import AuditChanges from "./AuditChanges";
 
 function TwoLine({ label, sub }: { label: string; sub: string }) {
   return (

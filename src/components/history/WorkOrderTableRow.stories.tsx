@@ -14,7 +14,9 @@ const meta = {
       <Table
         header={
           <Tr>
-            <Th />
+            <Th>
+              <span className="sr-only">Select</span>
+            </Th>
             <Th>ID</Th>
             <Th>Workflow</Th>
             <Th>Input</Th>

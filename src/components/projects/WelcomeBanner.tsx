@@ -46,6 +46,7 @@ export default function WelcomeBanner({
 
   return (
     <div className="mb-2 min-h-25 pt-6" id="welcome-banner-typewriter">
+      {/* eslint-disable-next-line no-restricted-syntax -- debt: 24px medium title has no Heading size */}
       <h1 className="text-2xl font-medium">
         {h1}
         {typingHeading && <span className="typewriter-cursor animate-pulse text-muted">|</span>}

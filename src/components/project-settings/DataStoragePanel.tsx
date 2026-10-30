@@ -37,15 +37,15 @@ const toPeriod = (v: string) => (v === "" ? null : Number(v));
 /** One setting: its name, an explanation, then the control. `dimmed` fades the text when it doesn't apply. */
 function Setting({ title, dimmed = false, description, children }: { title: string; dimmed?: boolean; description: ReactNode; children: ReactNode }) {
   return (
-    <div className={cn("space-y-3", dimmed && "text-faint")}>
-      <Text as="div" className="space-y-1">
-        <Heading as="h4" size="sm" className={cn(dimmed && "text-faint")}>
+    <Text as="div" className={cn("space-y-3", dimmed && "text-faint")}>
+      <div>
+        <Heading as="h3" size="sm" className={cn(dimmed && "text-faint")}>
           {title}
         </Heading>
-        <p>{description}</p>
-      </Text>
+        <p className="mt-1">{description}</p>
+      </div>
       {children}
-    </div>
+    </Text>
   );
 }
 
@@ -93,8 +93,8 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
             title="History Retention Period"
             description={
               <>
-                Select how long your run history is stored in OpenFn before being removed from the servers.{" "}
-                <TextLink href="https://docs.openfn.org/documentation/manage-projects/retention-periods" external>
+                Select how long your run history is stored in OpenFn before being removed from the servers.
+                <TextLink href="https://docs.openfn.org/documentation/manage-projects/retention-periods" external className="ml-1">
                   Learn more
                 </TextLink>
                 <br /> This includes all Work Orders, Runs, and Logs.
@@ -118,8 +118,8 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
             description={
               <>
                 The input and output data associated with workflow runs and channel requests is useful for debugging.
-                However it can contain sensitive PII. Should OpenFn store this data?{" "}
-                <TextLink href="https://docs.openfn.org/documentation/manage-projects/io-data-storage" external>
+                However it can contain sensitive PII. Should OpenFn store this data?
+                <TextLink href="https://docs.openfn.org/documentation/manage-projects/io-data-storage" external className="ml-1">
                   Learn more
                 </TextLink>
               </>

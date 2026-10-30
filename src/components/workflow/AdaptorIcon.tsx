@@ -16,10 +16,12 @@ export default function AdaptorIcon({ name, size = "md" }: { name: string; size?
   const url = adaptorIconUrl(name);
   if (!url) {
     return (
+      // eslint-disable-next-line no-restricted-syntax -- an icon: the initial stands in for the adaptor's logo
       <div className={cn(sizeClasses[size], "flex items-center justify-center rounded-md bg-emphasis text-xs font-semibold text-muted")}>
         {short[0]?.toUpperCase() || "?"}
       </div>
     );
   }
-  return <img src={url} alt={short} className={cn(sizeClasses[size], "object-cover")} />;
+  // The name is always printed beside the icon, so the image is decorative.
+  return <img src={url} alt="" className={cn(sizeClasses[size], "object-cover")} />;
 }

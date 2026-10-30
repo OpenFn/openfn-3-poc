@@ -1,4 +1,3 @@
-import { cn } from "../../utils/cn";
 import { useState, type ReactNode } from "react";
 import type { WorkflowGraph } from "../../types/workflow-graph";
 import Button from "../primitives/Button";
@@ -8,6 +7,7 @@ import { TextInput } from "../primitives/Inputs";
 import TextLink from "../primitives/TextLink";
 import Toggle from "../primitives/Toggle";
 import InspectorLayout from "./InspectorLayout";
+import Text from "../primitives/Text";
 
 interface Props {
   graph: WorkflowGraph;
@@ -22,12 +22,16 @@ interface Props {
 
 function Section({ title, description, className, children }: { title: string; description?: ReactNode; className?: string; children: ReactNode }) {
   return (
-    <div className={cn("flex flex-col", description ? "gap-3" : "gap-2", className)}>
-      <div className="flex flex-col gap-2">
-        <Heading size="sm">{title}</Heading>
-        {description && <p className="text-sm text-muted">{description}</p>}
-      </div>
-      <div>{children}</div>
+    <div className={className}>
+      <Heading size="sm" className="mb-2">
+        {title}
+      </Heading>
+      {description && (
+        <Text as="p" className="mb-3 text-muted">
+          {description}
+        </Text>
+      )}
+      {children}
     </div>
   );
 }
@@ -43,9 +47,9 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
     <InspectorLayout title="Workflow settings" onClose={onClose}>
       <TextInput id="name" label="Workflow Name" value={graph.name} onChange={(e) => onChange({ name: e.target.value })} />
       <Section title="Workflow as YAML">
-        <TextLink onClick={onViewAsYAML} className="text-sm">
-          View your workflow as YAML code
-        </TextLink>
+        <Text>
+          <TextLink onClick={onViewAsYAML}>View your workflow as YAML code</TextLink>
+        </Text>
       </Section>
       <Toggle
         label="Allow console.log() usage"
@@ -61,24 +65,22 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
           </>
         }
       >
-        <div className="flex flex-col gap-2">
-          <TextInput
-            id="concurrency"
-            type="number"
-            label="Max Concurrency"
-            placeholder="Unlimited (up to max available)"
-            min={1}
-            disabled={concurrencyDisabled}
-            value={graph.concurrency ?? ""}
-            onChange={(e) => onChange({ concurrency: e.target.value === "" ? null : Number(e.target.value) })}
-          />
-          {concurrencyDisabled && (
-            <p className="text-xs italic text-muted">
-              Parallel execution of runs is disabled for this project. This setting will have no effect. You can modify your Project
-              Concurrency setting on the <TextLink to={`/projects/${projectId}/settings`}>project setup</TextLink> page.
-            </p>
-          )}
-        </div>
+        <TextInput
+          id="concurrency"
+          type="number"
+          label="Max Concurrency"
+          placeholder="Unlimited (up to max available)"
+          min={1}
+          disabled={concurrencyDisabled}
+          value={graph.concurrency ?? ""}
+          onChange={(e) => onChange({ concurrency: e.target.value === "" ? null : Number(e.target.value) })}
+        />
+        {concurrencyDisabled && (
+          <Text as="p" variant="body-sm" className="mt-2 italic text-muted">
+            Parallel execution of runs is disabled for this project. This setting will have no effect. You can modify your Project
+            Concurrency setting on the <TextLink to={`/projects/${projectId}/settings`}>project setup</TextLink> page.
+          </Text>
+        )}
       </Section>
       <Section
         title="Reset Workflow"

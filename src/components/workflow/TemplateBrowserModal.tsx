@@ -6,6 +6,7 @@ import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import Modal from "../primitives/Modal";
 import SearchInput from "../primitives/SearchInput";
+import Text from "../primitives/Text";
 import WorkflowDiagram from "./WorkflowDiagram";
 import { matchesQuery } from "../../utils/search";
 
@@ -43,7 +44,7 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
   return (
     <Modal open={isOpen} onClose={onClose} size="2xl" title="Templates">
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
-      <div className="flex h-[70vh] max-h-160 gap-6 text-sm">
+      <Text as="div" className="flex h-[70vh] max-h-160 gap-6">
         <div className="w-76 shrink-0 overflow-y-auto">
           <div className="sticky top-0 z-10 bg-surface pb-2">
             <SearchInput value={query} onChange={setQuery} placeholder="Search templates" size="sm" />
@@ -80,7 +81,7 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
             </div>
           )}
         </Card>
-      </div>
+      </Text>
     </Modal>
   );
 }

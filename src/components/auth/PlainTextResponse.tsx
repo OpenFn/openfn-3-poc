@@ -1,5 +1,3 @@
-import Text from "../primitives/Text";
-
 /**
  * A bare text/plain response as the browser shows it. Lightning answers
  * blocked routes (e.g. /users/register with signup off) this way, with no
@@ -7,8 +5,7 @@ import Text from "../primitives/Text";
  */
 export default function PlainTextResponse({ children }: { children: string }) {
   return (
-    <Text as="pre" className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-strong">
-      {children}
-    </Text>
+    // eslint-disable-next-line no-restricted-syntax -- a copy of the browser's bare text/plain page, not app type
+    <pre className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-sm text-strong">{children}</pre>
   );
 }

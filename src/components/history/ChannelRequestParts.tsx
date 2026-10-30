@@ -34,7 +34,7 @@ export function RequestPathDisplay({ event }: { event: ChannelEvent | undefined 
   return (
     <Text variant="code-md" className="break-all text-strong">
       {event?.requestPath}
-      {event?.requestQueryString && <span className="text-faint">?{event.requestQueryString}</span>}
+      {event?.requestQueryString && <span className="text-muted">?{event.requestQueryString}</span>}
     </Text>
   );
 }

@@ -12,6 +12,7 @@ import LogViewer from "../domain/LogViewer";
 import { DetailItem, DetailList } from "../primitives/DetailList";
 import Heading from "../primitives/Heading";
 import InfoTooltip from "../primitives/InfoTooltip";
+import Text from "../primitives/Text";
 
 export type RunViewerTab = "log" | "input" | "output";
 
@@ -89,13 +90,16 @@ export default function RunViewerPanel({ projectId, run, startedBy, steps, logs,
                       type="button"
                       onClick={() => onSelectStep(s)}
                       className={cn(
+                        // eslint-disable-next-line no-restricted-syntax -- a control: the step row sets its own type
                         "flex w-full items-center gap-3 rounded border-r-4 p-2 text-left text-sm",
                         selected ? "border-primary-500 bg-primary-50 font-semibold" : "border-transparent hover:border-strong hover:bg-hover"
                       )}
                     >
                       <StepIcon reason={s.exitReason} />
                       <span className="min-w-0 flex-1 truncate">{s.jobName}</span>
-                      <span className="shrink-0 text-xs text-muted">{formatElapsed(s.startedAt, s.finishedAt)}</span>
+                      <Text variant="body-sm" className="shrink-0 text-muted">
+                        {formatElapsed(s.startedAt, s.finishedAt)}
+                      </Text>
                     </button>
                   </li>
                 );

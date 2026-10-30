@@ -2,10 +2,10 @@ import { useState } from "react";
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import Tabs from "../../components/primitives/Tabs";
+import Text from "../../components/primitives/Text";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/history/FilterChip";
 import HistorySearchBar from "../../components/history/HistorySearchBar";
-import Text from "../../components/primitives/Text";
 import {
   BulkCancelModal,
   BulkRerunModal,

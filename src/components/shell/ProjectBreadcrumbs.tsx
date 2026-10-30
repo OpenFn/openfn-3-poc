@@ -21,7 +21,7 @@ export default function ProjectBreadcrumbs({ project, label, items = [], current
         <PickerButton
           label={label}
           isSandbox={project.parentId !== null}
-          sandboxColor={project.color}
+          color={project.color}
         />
       </BreadcrumbPicker>
       {items.map(([label, to]) => (

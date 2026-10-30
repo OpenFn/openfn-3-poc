@@ -11,8 +11,12 @@ import Tooltip from "../primitives/Tooltip";
  * a plain title, then either the table or the empty state passed in.
  */
 
-function TableHeading({ children }: { children: ReactNode }) {
-  return <Heading as="h6">{children}</Heading>;
+function TableTitle({ children }: { children: ReactNode }) {
+  return (
+    <Heading className="mb-2">
+      {children}
+    </Heading>
+  );
 }
 
 function ProjectBadges({ names }: { names: string[] }) {
@@ -52,8 +56,8 @@ interface TableProps<T> {
 
 export function OauthClientsTable({ rows, showOwner = false, emptyState, actions }: TableProps<OauthClientRow>) {
   return (
-    <div id="oauth-clients-table-container" className="space-y-2">
-      <TableHeading>OAuth Clients</TableHeading>
+    <div id="oauth-clients-table-container">
+      <TableTitle>OAuth Clients</TableTitle>
       {rows.length === 0 ? (
         emptyState
       ) : (
@@ -88,8 +92,8 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
 
 export function CredentialsTable({ rows, showOwner = false, emptyState, actions }: TableProps<CredentialRow>) {
   return (
-    <div id="credentials-table-container" className="space-y-2">
-      <TableHeading>Credentials</TableHeading>
+    <div id="credentials-table-container">
+      <TableTitle>Credentials</TableTitle>
       {rows.length === 0 ? (
         emptyState
       ) : (
@@ -142,10 +146,10 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
   );
 }
 
-export function KeychainCredentialsTable({ rows, emptyState, actions }: Omit<TableProps<KeychainCredentialRow>, "showOwner">) {
+export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, actions }: TableProps<KeychainCredentialRow>) {
   return (
-    <div id="keychain-credentials-table-container" className="space-y-2">
-      <TableHeading>Keychain Credentials</TableHeading>
+    <div id="keychain-credentials-table-container">
+      <TableTitle>Keychain Credentials</TableTitle>
       {rows.length === 0 ? (
         emptyState
       ) : (
@@ -156,7 +160,7 @@ export function KeychainCredentialsTable({ rows, emptyState, actions }: Omit<Tab
               <Th>Name</Th>
               <Th>Path</Th>
               <Th>Default Credential</Th>
-              <Th>Owner</Th>
+              {showOwner && <Th>Owner</Th>}
               <Th actions />
             </Tr>
           }
@@ -170,7 +174,7 @@ export function KeychainCredentialsTable({ rows, emptyState, actions }: Omit<Tab
               <Td className="wrap-break-word max-w-60">
                 {kc.defaultCredential ? kc.defaultCredential.name : <span className="text-faint">None</span>}
               </Td>
-              <Td className="wrap-break-word max-w-60">{kc.ownerEmail}</Td>
+              {showOwner && <Td className="wrap-break-word max-w-60">{kc.ownerEmail}</Td>}
               <Td actions>{actions?.(kc)}</Td>
             </Tr>
           ))}

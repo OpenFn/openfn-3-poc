@@ -709,10 +709,10 @@ function OauthFields({
     status = (
       <>
         <Alert tone="warning" header="Reauthentication Required">
-          <div className="space-y-2">
-            <p>You've changed the permissions for this credential.</p>
-            <p>Please reauthenticate with {client.name} to apply these changes.</p>
-          </div>
+          <p>You've changed the permissions for this credential.</p>
+          <Text as="p" className="mt-2">
+            Please reauthenticate with {client.name} to apply these changes.
+          </Text>
         </Alert>
         {signInButton("Reauthenticate")}
       </>
@@ -724,7 +724,9 @@ function OauthFields({
           <Alert tone="success">
             <p className="font-semibold">{userInfo.name ?? "Unknown User"}</p>
             <p>{userInfo.email ?? "No email provided"}</p>
-            <Text as="p" variant="body-sm">Successfully authenticated with {client.name}</Text>
+            <Text as="p" variant="body-sm">
+              Successfully authenticated with {client.name}
+            </Text>
           </Alert>
         ) : (
           <Alert tone="info">
@@ -743,10 +745,10 @@ function OauthFields({
     status = (
       <>
         <Alert tone="warning" header={`${client.name} is Having Issues`}>
-          <div className="space-y-2">
-            <p>{client.name} is experiencing technical difficulties.</p>
-            <p>This is temporary - please try again in a few minutes.</p>
-          </div>
+          <p>{client.name} is experiencing technical difficulties.</p>
+          <Text as="p" className="mt-2">
+            This is temporary - please try again in a few minutes.
+          </Text>
         </Alert>
         {signInButton("Try Again Later")}
       </>

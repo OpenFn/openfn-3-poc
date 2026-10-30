@@ -4,6 +4,7 @@ import { adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
 import Disclosure from "../primitives/Disclosure";
 import Heading from "../primitives/Heading";
 import TextLink from "../primitives/TextLink";
+import Text from "../primitives/Text";
 
 /**
  * The IDE's Docs panel (assets/js/adaptor-docs/components/DocsPanel.tsx):
@@ -16,9 +17,9 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
   const version = resolvedAdaptorVersion(adaptor);
   const fns = adaptorFunctions(adaptor);
   return (
-    <div className="space-y-4 overflow-auto pl-1 text-sm">
-      <div className="flex flex-col gap-2">
-        <Heading size="lg" as="h1" className="text-body">
+    <Text as="div" className="ml-1 space-y-4 overflow-auto">
+      <div>
+        <Heading size="lg" as="h1" className="mb-2 text-body">
           {pkg} ({version})
         </Heading>
         <div>
@@ -59,20 +60,18 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
             <div className="flex flex-col gap-2 pb-4 pl-4">
               <p>{fn.description}</p>
               {fn.example && (
-                <div className="flex flex-col gap-1">
-                  <p className="text-body">Example</p>
-                  <div className="px-4">
-                    <pre className="overflow-x-auto rounded-md border-2 border-subtle bg-sunken py-2 pr-8 pl-4 font-mono text-xs text-strong">
-                      {fn.example}
-                    </pre>
-                  </div>
-                </div>
+                <>
+                  <p className="mt-2 text-body">Example</p>
+                  <Text as="pre" variant="code-sm" className="mx-4 mt-1 overflow-x-auto rounded-md border-2 border-subtle bg-sunken py-2 pr-8 pl-4 text-strong">
+                    {fn.example}
+                  </Text>
+                </>
               )}
             </div>
           </Disclosure>
         ))}
       </div>
-    </div>
+    </Text>
   );
 }
 

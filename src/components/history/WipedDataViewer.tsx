@@ -46,7 +46,7 @@ export default function WipedDataViewer({
             <>
               Contact one of your{" "}
               <Tooltip content={adminContacts.join(", ")}>
-                <span className="inline-block text-primary-400">project admins</span>
+                <span className="inline-block text-link">project admins</span>
               </Tooltip>{" "}
               for more information.
             </>

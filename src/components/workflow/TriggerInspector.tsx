@@ -10,6 +10,7 @@ import Pill from "../primitives/Pill";
 import TextLink from "../primitives/TextLink";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import CopyButton from "../primitives/CopyButton";
+import Text from "../primitives/Text";
 
 const TITLES = { webhook: "On webhook call", cron: "On a schedule" } as const;
 
@@ -64,18 +65,20 @@ function EditFooter({ onEdit }: { onEdit: () => void }) {
 
 function WizardBreadcrumb({ step, onChoose }: { step: "choose" | "configure"; onChoose?: () => void }) {
   return (
-    <nav aria-label="Wizard steps" className="flex items-center gap-1.5 text-xs">
-      {step === "configure" && onChoose ? (
-        <TextLink onClick={onChoose} className="text-faint hover:text-muted">
-          Choose
-        </TextLink>
-      ) : (
-        <span className={step === "choose" ? "font-semibold text-strong underline" : "text-faint"}>Choose</span>
-      )}
-      <span aria-hidden="true" className="text-faint">
-        ›
-      </span>
-      <span className={step === "configure" ? "font-semibold text-strong underline" : "text-faint"}>Configure</span>
+    <nav aria-label="Wizard steps">
+      <Text as="div" variant="body-sm" className="flex items-center gap-1.5">
+        {step === "configure" && onChoose ? (
+          <TextLink onClick={onChoose} className="text-faint hover:text-muted">
+            Choose
+          </TextLink>
+        ) : (
+          <span className={step === "choose" ? "font-semibold text-strong underline" : "text-faint"}>Choose</span>
+        )}
+        <span aria-hidden="true" className="text-faint">
+          ›
+        </span>
+        <span className={step === "configure" ? "font-semibold text-strong underline" : "text-faint"}>Configure</span>
+      </Text>
     </nav>
   );
 }
@@ -134,18 +137,20 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         <WizardBreadcrumb step="choose" />
         <Card padding="sm" className="flex items-center justify-between">
           <TriggerTypeBadge type={draft.type} />
-          <TextLink
-            className="text-sm font-semibold"
-            onClick={() =>
-              setDraft((d) =>
-                d.type === "webhook"
-                  ? { ...d, type: "cron", cronExpression: d.cronExpression ?? "0 0 * * *", cronDescription: d.cronDescription ?? "At 12:00 AM" }
-                  : { ...d, type: "webhook" }
-              )
-            }
-          >
-            Change
-          </TextLink>
+          <Text>
+            <TextLink
+              className="font-semibold"
+              onClick={() =>
+                setDraft((d) =>
+                  d.type === "webhook"
+                    ? { ...d, type: "cron", cronExpression: d.cronExpression ?? "0 0 * * *", cronDescription: d.cronDescription ?? "At 12:00 AM" }
+                    : { ...d, type: "webhook" }
+                )
+              }
+            >
+              Change
+            </TextLink>
+          </Text>
         </Card>
       </InspectorLayout>
     );
@@ -171,8 +176,10 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
         {draft.type === "webhook" ? (
           <>
             <WebhookUrlField>
-              <Card padding="sm" className="break-all font-mono text-xs text-muted">
-                {webhookUrl(draft.id)}
+              <Card padding="sm">
+                <Text as="div" variant="code-sm" className="break-all text-muted">
+                  {webhookUrl(draft.id)}
+                </Text>
               </Card>
             </WebhookUrlField>
             <div className="space-y-2">
@@ -227,32 +234,34 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
             <Pill>Default</Pill>
             <CopyButton value={url} label="Copy Default URL" size="xs" />
           </div>
-          <div className="mt-1 break-all font-mono text-xs text-muted">{url}</div>
+          <Text as="div" variant="code-sm" className="mt-1 break-all text-muted">
+            {url}
+          </Text>
         </Card>
       </WebhookUrlField>
       <Disclosure variant="inline" defaultOpen={false} title="Authentication" note={trigger.hasAuthMethod ? "1 configured" : "none configured"}>
         {trigger.hasAuthMethod ? (
-          <div className="flex items-center gap-2 text-xs">
+          <Text as="div" variant="body-sm" className="flex items-center gap-2">
             <span className="hero-shield-check-micro h-4 w-4 text-success-600" />
             <span className="font-medium text-body">CommCare webhook key</span>
             <span className="text-faint">(API Key)</span>
-          </div>
+          </Text>
         ) : (
-          <p className="text-xs text-muted">
+          <Text as="p" variant="body-sm" className="text-muted">
             No authentication configured.{" "}
             <TextLink onClick={startEdit} className="font-medium">
               Add authentication
             </TextLink>
-          </p>
+          </Text>
         )}
       </Disclosure>
       <Disclosure variant="inline" defaultOpen={false} title="Response">
-        <p className="text-xs text-muted">
+        <Text as="p" variant="body-sm" className="text-muted">
           {response.shortDescription}{" "}
           <TextLink to="https://docs.openfn.org/documentation/build/triggers#webhook-responses" external>
             learn more
           </TextLink>
-        </p>
+        </Text>
       </Disclosure>
     </InspectorLayout>
   );

@@ -18,6 +18,7 @@ import SearchInput from "../primitives/SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 type Tab = "empty" | "custom" | "existing";
 
@@ -99,11 +100,11 @@ export default function ManualRunPanel({
               invalidMessage="Invalid file format. Please only upload: JSON"
               onFile={(file) => void file.text().then((text) => setBody(prettyJson(text)))}
             />
-            <div className="flex items-center gap-2 py-2 text-sm text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">
+            <Text as="div" className="flex items-center gap-2 py-2 text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">
               <span />
               OR
               <span />
-            </div>
+            </Text>
           </div>
           <div className="flex min-h-48 flex-1 flex-col overflow-hidden">
             {parseError && (
@@ -116,7 +117,7 @@ export default function ManualRunPanel({
         </div>
       )}
       {tab === "existing" && (
-        <div className="flex flex-col gap-3 px-3 pt-4 pb-6 text-sm">
+        <Text as="div" className="flex flex-col gap-3 px-3 pt-4 pb-6">
           <div className="flex items-center gap-2">
             <SearchInput value={query} onChange={setQuery} placeholder="Search names or UUID prefixes" size="sm" className="flex-1" />
             <Button>Search</Button>
@@ -149,7 +150,9 @@ export default function ManualRunPanel({
                     <span className="truncate font-mono">{clip.name || shortUuid(uuidOf(clip.id), 7)}</span>
                     <DataclipTypePill type={clip.type} />
                   </div>
-                  <span className="truncate text-xs">{formatShortLocalDateTime(clip.insertedAt)}</span>
+                  <Text variant="body-sm" className="truncate">
+                    {formatShortLocalDateTime(clip.insertedAt)}
+                  </Text>
                 </Card>
               ))
             ) : (
@@ -157,7 +160,7 @@ export default function ManualRunPanel({
             )}
             {visible.length > 0 && <p className="text-center text-muted">Search results are limited to the 10 most recent matches for this step.</p>}
           </div>
-        </div>
+        </Text>
       )}
     </>
   );
@@ -170,11 +173,11 @@ export default function ManualRunPanel({
             <Heading className="min-w-0 wrap-break-word">{selected.name || "Unnamed"}</Heading>
             <IconButton icon="hero-pencil" label="Rename" size="xs" />
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <Text as="div" variant="body-sm" className="mt-1 flex items-center gap-2 text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
             <span>•</span>
             <span>{formatLocalDate(selected.insertedAt)}</span>
-          </div>
+          </Text>
         </div>
         <IconButton icon="hero-x-mark" label="Unselect dataclip" onClick={() => setSelected(null)} />
       </div>

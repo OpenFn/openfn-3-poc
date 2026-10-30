@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { findWorkflowGraph } from "../../mock-data/workflow";
 import { newWorkflowGraph } from "../../utils/workflowGraph";
+import { diagramParameters } from "../../stories/decorators";
 import WorkflowDiagram from "./WorkflowDiagram";
-import { withCanvas } from "../../stories/decorators";
 
 const meta: Meta<typeof WorkflowDiagram> = {
   title: "Workflow/WorkflowDiagram",
   component: WorkflowDiagram,
-  parameters: { layout: "fullscreen" },
-  decorators: [withCanvas("h-180")],
+  parameters: { ...diagramParameters, layout: "fullscreen" },
+  decorators: [(Story) => <div className="h-[720px]"><Story /></div>],
   args: { graph: findWorkflowGraph("wf-openhie")!, selection: null, onSelect: () => {}, onAddPath: () => {} },
 };
 export default meta;

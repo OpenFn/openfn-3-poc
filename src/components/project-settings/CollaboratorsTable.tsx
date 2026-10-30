@@ -70,7 +70,9 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
             <div>
               {c.firstName} {c.lastName}
             </div>
-            <Text as="div" variant="body-sm">{c.email}</Text>
+            <Text as="div" variant="body-sm">
+              {c.email}
+            </Text>
             {c.isCurrentUser && (
               <Text variant="body-sm" className="text-faint">
                 <em>Well hello, you!</em>
