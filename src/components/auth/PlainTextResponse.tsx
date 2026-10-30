@@ -5,6 +5,7 @@
  */
 export default function PlainTextResponse({ children }: { children: string }) {
   return (
+    // eslint-disable-next-line no-restricted-syntax -- a copy of the browser's bare text/plain page, not app type
     <pre className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-sm text-strong">{children}</pre>
   );
 }

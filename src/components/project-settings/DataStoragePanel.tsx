@@ -5,6 +5,7 @@ import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import { Radio, Select } from "../primitives/Inputs";
 import SectionHeader from "../primitives/SectionHeader";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { DataStorageSettings, DataStorageValues } from "../../types/project-settings";
@@ -36,7 +37,7 @@ const toPeriod = (v: string) => (v === "" ? null : Number(v));
 /** One setting: its name, an explanation, then the control. `dimmed` fades the text when it doesn't apply. */
 function Setting({ title, dimmed = false, description, children }: { title: string; dimmed?: boolean; description: ReactNode; children: ReactNode }) {
   return (
-    <div className={cn("space-y-3 text-sm", dimmed && "text-faint")}>
+    <Text as="div" className={cn("space-y-3", dimmed && "text-faint")}>
       <div>
         <Heading as="h3" size="sm" className={cn(dimmed && "text-faint")}>
           {title}
@@ -44,7 +45,7 @@ function Setting({ title, dimmed = false, description, children }: { title: stri
         <p className="mt-1">{description}</p>
       </div>
       {children}
-    </div>
+    </Text>
   );
 }
 

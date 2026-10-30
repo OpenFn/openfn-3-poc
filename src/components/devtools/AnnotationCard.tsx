@@ -4,6 +4,7 @@ import Disclosure from "../primitives/Disclosure";
 import Heading from "../primitives/Heading";
 import IconButton from "../primitives/IconButton";
 import Pill from "../primitives/Pill";
+import Text from "../primitives/Text";
 import type { Tone } from "../primitives/tone";
 import { EmptyState } from "../primitives/Table";
 import TextLink from "../primitives/TextLink";
@@ -35,14 +36,15 @@ function statusTone(status: string): Tone {
 function IdList({ label, ids, onOpenId }: { label: string; ids: string[]; onOpenId?: ((id: string) => void) | undefined }) {
   if (ids.length === 0) return null;
   return (
-    <div className="flex flex-wrap items-center gap-1.5 text-xs">
+    <Text as="div" variant="body-sm" className="flex flex-wrap items-center gap-1.5">
       <span className="text-muted">{label}</span>
       {ids.map((id) => (
+        // eslint-disable-next-line no-restricted-syntax -- debt: Button has no 12px mono size for ids
         <Button key={id} variant="secondary" size="xs" className="font-mono text-xs" onClick={() => onOpenId?.(id)}>
           {id}
         </Button>
       ))}
-    </div>
+    </Text>
   );
 }
 
@@ -81,9 +83,9 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
           {inventory && <Pill tone={statusTone(inventory.status)}>inventory: {inventory.status}</Pill>}
         </div>
         {inventory && (
-          <p className="text-xs text-muted">
+          <Text as="p" variant="body-sm" className="text-muted">
             {inventory.section} · <code>{inventory.route.replace(/`/g, "")}</code>
-          </p>
+          </Text>
         )}
         <IdList label="Inherits" ids={list("inherits")} onOpenId={onOpenId} />
         <IdList label="Flows" ids={list("flows")} onOpenId={onOpenId} />
@@ -111,7 +113,9 @@ export default function AnnotationCard({ id, annotation, inventory, onOpenId, in
         <>
           {annotation.frontMatterRaw && (
             <Disclosure title="Front matter" defaultOpen={false} padded={false}>
-              <pre className="overflow-x-auto border-t border-subtle px-4 py-3 text-xs text-muted">{annotation.frontMatterRaw}</pre>
+              <Text as="pre" variant="code-sm" className="overflow-x-auto border-t border-subtle px-4 py-3 text-muted">
+                {annotation.frontMatterRaw}
+              </Text>
             </Disclosure>
           )}
           <Markdown source={annotation.body} />

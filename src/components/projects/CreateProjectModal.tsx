@@ -4,6 +4,7 @@ import NameField from "../primitives/NameField";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
+import Text from "../primitives/Text";
 
 /**
  * "Create a new project" (DashboardLive.ProjectCreationModal): Name, with
@@ -55,9 +56,9 @@ export default function CreateProjectModal({
       />
       <div className="space-y-2">
         <TextArea id="project_description" label="Description" {...form.fieldProps("description")} />
-        <p className="text-xs text-muted">
+        <Text as="p" variant="body-sm" className="text-muted">
           A short description of a project [max 240 characters]
-        </p>
+        </Text>
       </div>
     </FormModal>
   );

@@ -1,4 +1,5 @@
 import Modal from "../primitives/Modal";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 
 interface Props {
@@ -30,9 +31,12 @@ export default function CollectionPreviewModal({ name, json, onClose }: Props) {
       }
     >
       {json ? (
+        // eslint-disable-next-line no-restricted-syntax -- debt: belongs in CodeViewer
         <pre className="h-96 overflow-auto rounded-md bg-code p-4 text-xs text-code">{json}</pre>
       ) : (
-        <p className="flex h-96 items-center justify-center text-sm text-faint">This collection is empty.</p>
+        <Text as="p" className="flex h-96 items-center justify-center text-faint">
+          This collection is empty.
+        </Text>
       )}
     </Modal>
   );

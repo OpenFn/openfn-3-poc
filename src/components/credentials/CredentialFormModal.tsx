@@ -9,6 +9,7 @@ import IconButton from "../primitives/IconButton";
 import InfoTooltip from "../primitives/InfoTooltip";
 import { Checkbox, PasswordInput, Radio, TextArea, TextInput } from "../primitives/Inputs";
 import Tabs from "../primitives/Tabs";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import ProjectsPicker from "./ProjectsPicker";
 import { adaptorIconUrl } from "../../utils/adaptors";
@@ -688,9 +689,9 @@ function OauthFields({
   if (env.pending) {
     // Lightning has no way out of this; a closed popup would otherwise leave the tab waiting for good.
     status = (
-      <p className="text-sm text-muted">
+      <Text as="p" className="text-muted">
         Authenticating with {client.name}... <TextLink onClick={onSignIn}>Start again</TextLink>
-      </p>
+      </Text>
     );
   } else if (env.answer?.error) {
     status = (
@@ -707,7 +708,9 @@ function OauthFields({
       <>
         <Alert tone="warning" header="Reauthentication Required">
           <p>You've changed the permissions for this credential.</p>
-          <p className="mt-2 text-sm">Please reauthenticate with {client.name} to apply these changes.</p>
+          <Text as="p" className="mt-2">
+            Please reauthenticate with {client.name} to apply these changes.
+          </Text>
         </Alert>
         {signInButton("Reauthenticate")}
       </>
@@ -719,7 +722,9 @@ function OauthFields({
           <Alert tone="success">
             <p className="font-semibold">{userInfo.name ?? "Unknown User"}</p>
             <p>{userInfo.email ?? "No email provided"}</p>
-            <p className="text-xs">Successfully authenticated with {client.name}</p>
+            <Text as="p" variant="body-sm">
+              Successfully authenticated with {client.name}
+            </Text>
           </Alert>
         ) : (
           <Alert tone="info">
@@ -727,10 +732,10 @@ function OauthFields({
             user info to verify. This app may not provide a user info endpoint, or your admin may not have configured it.
           </Alert>
         )}
-        <p className="text-sm text-muted">
+        <Text as="p" className="text-muted">
           If your credential isn't working as expected, you can{" "}
           <TextLink onClick={onSignIn}>reauthenticate with {client.name}</TextLink>
-        </p>
+        </Text>
       </>
     );
   } else if (env.stored?.status === "unavailable") {
@@ -739,7 +744,9 @@ function OauthFields({
       <>
         <Alert tone="warning" header={`${client.name} is Having Issues`}>
           <p>{client.name} is experiencing technical difficulties.</p>
-          <p className="mt-2 text-sm">This is temporary - please try again in a few minutes.</p>
+          <Text as="p" className="mt-2">
+            This is temporary - please try again in a few minutes.
+          </Text>
         </Alert>
         {signInButton("Try Again Later")}
       </>
@@ -767,12 +774,12 @@ function OauthFields({
             <InfoTooltip title="Select permissions associated to your OAuth2 Token" />
           </Heading>
           {client.scopesDocUrl && (
-            <p className="text-xs text-strong">
+            <Text as="p" variant="body-sm" className="text-strong">
               Learn more about {client.name} permissions{" "}
               <TextLink to={client.scopesDocUrl} external>
                 here
               </TextLink>
-            </p>
+            </Text>
           )}
           <div className="flex flex-wrap gap-x-6 gap-y-1">
             {scopes.map((s) => {

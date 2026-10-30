@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
+import Text from "../primitives/Text";
 
 /**
  * A stat tile (DashboardComponents.metric_card): a small title, a big
@@ -22,12 +23,12 @@ export default function MetricCard({
       <Heading as="h2" size="xs" className="truncate">
         {title}
       </Heading>
-      <div className="mt-2 text-3xl font-bold">{value}</div>{" "}
+      <Text as="div" variant="stat-lg" className="mt-2">{value}</Text>{" "}
       {(suffix || link) && (
-        <div className="mt-1 flex items-baseline justify-between gap-2 text-xs text-muted">
+        <Text as="div" variant="body-sm" className="mt-1 flex items-baseline justify-between gap-2 text-muted">
           <div>{suffix}</div>
           {link}
-        </div>
+        </Text>
       )}
     </Card>
   );

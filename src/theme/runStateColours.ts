@@ -1,4 +1,4 @@
-import type { RunState, StepExitReason, WorkOrderState } from "../types/history";
+import type { RunDisplayState, StepExitReason } from "../types/history";
 import type { WorkOrderDisplayState } from "../types/workflows";
 
 /**
@@ -10,7 +10,7 @@ import type { WorkOrderDisplayState } from "../types/workflows";
 
 /** A work-order or run state pill (run_live/components.ex `state_pill`
  * chip_styles), on Pill's tag shades. Goes in Pill's `className`. */
-export const STATE_PILL: Record<WorkOrderState | RunState | "running", string> = {
+export const STATE_PILL: Record<RunDisplayState, string> = {
   rejected: "bg-danger-100 text-danger-700",
   pending: "bg-gray-100 text-gray-700",
   running: "bg-info-100 text-info-700",
