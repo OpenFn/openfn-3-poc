@@ -5,6 +5,7 @@ import Button from "../../primitives/Button";
 import Card from "../../primitives/Card";
 import Pill from "../../primitives/Pill";
 import { Table, Td, Th, Tr } from "../../primitives/Table";
+import Text from "../../primitives/Text";
 import { DOT, EMPTY, FAILURE_COLORS, adaptorLabel } from "./palette";
 
 // One tip per error type the worker reports (TriageTable.tsx `TIPS`).
@@ -100,7 +101,7 @@ export default function TriageTable({
   if (signatures.length === 0) {
     return (
       <Card padding="lg">
-        <p className={EMPTY}>{emptyMessage}</p>
+        <Text as="p" className={EMPTY}>{emptyMessage}</Text>
       </Card>
     );
   }

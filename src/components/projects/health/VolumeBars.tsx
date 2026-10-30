@@ -5,6 +5,7 @@ import { formatNumber } from "../../../utils/format";
 import { historyUrl } from "../../../utils/history";
 import type { RunBucket } from "../../../types/workflow-health";
 import { CANCELLED, DOT, EMPTY, FAILED, FRAME, LEGEND, SUCCESS } from "./palette";
+import Text from "../../primitives/Text";
 
 /** A run has no `rejected` state, so the red band folds the other five. */
 const RUN_FAILURE_KEYS = ["failed", "crashed", "killed", "exception", "lost"] as const;
@@ -81,7 +82,7 @@ export default function VolumeBars({
   const totals = SERIES.map((s) => ({ ...s, value: rows.reduce((sum, r) => sum + r[s.key], 0) })).filter(
     ({ key, value }) => key !== "cancelled" || value > 0
   );
-  if (totals.every(({ value }) => value === 0)) return <p className={EMPTY}>{emptyMessage}</p>;
+  if (totals.every(({ value }) => value === 0)) return <Text as="p" className={EMPTY}>{emptyMessage}</Text>;
 
   const max = Math.max(...rows.map((r) => r.success + r.cancelled + r.failed));
   // A tenth of headroom, rounded up to four whole-number steps.
@@ -97,7 +98,7 @@ export default function VolumeBars({
   return (
     <>
       <div className={`${FRAME} flex`} aria-hidden="true">
-        <div className="flex w-11 shrink-0 flex-col text-xs text-muted">
+        <Text as="div" variant="body-sm" className="flex w-11 shrink-0 flex-col text-muted">
           <div className="relative flex-1">
             {ticks.map((t, i) => (
               <span key={i} className="absolute right-2 translate-y-1/2" style={{ bottom: `${(t / ceiling) * 100}%` }}>
@@ -106,7 +107,7 @@ export default function VolumeBars({
             ))}
           </div>
           <div className="h-5" />
-        </div>
+        </Text>
         <div className="flex flex-1 flex-col">
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
           <div className="relative flex flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
@@ -136,8 +137,10 @@ export default function VolumeBars({
               );
             })}
             {tip && hovered !== null && (
-              <div
-                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-subtle bg-surface text-xs shadow-lg"
+              <Text
+                as="div"
+                variant="body-sm"
+                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-subtle bg-surface shadow-lg"
                 // Beside the bar, on the side with more room.
                 style={hovered < n / 2 ? { left: `${((hovered + 1) / n) * 100}%` } : { right: `${((n - hovered) / n) * 100}%` }}
               >
@@ -151,17 +154,17 @@ export default function VolumeBars({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Text>
             )}
           </div>
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
-          <div className="flex h-5 gap-[1%] pt-1 text-xs text-muted">
+          <Text as="div" variant="body-sm" className="flex h-5 gap-[1%] pt-1 text-muted">
             {rows.map((r, i) => (
               <span key={r.at} className="flex-1 truncate text-center">
                 {(n - 1 - i) % every === 0 ? tickLabel(r.at, hours, timezone) : ""}
               </span>
             ))}
-          </div>
+          </Text>
         </div>
       </div>
       <p className="sr-only">{`Window totals: ${totals.map(({ label, value }) => `${label} ${formatNumber(value)}`).join(", ")}.`}</p>

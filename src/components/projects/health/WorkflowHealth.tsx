@@ -19,6 +19,7 @@ import Spinner from "../../primitives/Spinner";
 import Tabs from "../../primitives/Tabs";
 import VolumeBars from "./VolumeBars";
 import { FRAME } from "./palette";
+import Text from "../../primitives/Text";
 
 type Tab = "Work orders" | "Runs";
 
@@ -147,4 +148,4 @@ function Panel<T>({ query, card = false, children }: { query: HealthQuery<T>; ca
 }
 
 /** The small gray note at the right of a card's title. */
-const meta = (text: string) => <span className="text-xs text-muted">{text}</span>;
+const meta = (text: string) => <Text variant="body-sm" className="text-muted">{text}</Text>;

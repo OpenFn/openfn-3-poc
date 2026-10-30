@@ -2,6 +2,7 @@ import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import TextLink from "../primitives/TextLink";
+import Text from "../primitives/Text";
 
 /**
  * The "MFA Required for Project" card (project_live/mfa_required.html.heex):
@@ -17,10 +18,10 @@ export default function MfaRequiredCard({ title = "MFA Required for Project" }: 
         </span>
         <div className="space-y-2">
           <Heading>{title}</Heading>
-          <p className="text-sm text-muted">
+          <Text as="p" className="text-muted">
             This project requires all members to use multi-factor authentication. Please enable MFA for{" "}
             <TextLink to="/profile">your account</TextLink> in order to gain access.
-          </p>
+          </Text>
         </div>
       </div>
       <div className="flex justify-end">

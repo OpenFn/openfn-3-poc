@@ -14,6 +14,7 @@ import Pill from "../primitives/Pill";
 import SearchInput from "../primitives/SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatSessionAge } from "../../utils/format";
+import Text from "../primitives/Text";
 
 interface Props {
   sessions: AISession[];
@@ -106,13 +107,14 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
 
       <div className="flex-1 overflow-hidden">
         {view === "chat" ? (
-          <div className="h-full space-y-4 overflow-y-auto p-4 text-sm" data-testid="message-list">
+          <Text as="div" className="h-full space-y-4 overflow-y-auto p-4" data-testid="message-list">
             {messages.map((m) =>
               m.role === "user" ? (
                 <div key={m.id} className="flex justify-end">
                   <div className="max-w-5/6 whitespace-pre-wrap rounded-2xl bg-sunken px-4 py-2.5 text-strong">{m.content}</div>
                 </div>
               ) : (
+                // eslint-disable-next-line no-restricted-syntax -- debt: relaxed line height for chat replies has no Text style
                 <div key={m.id} className="leading-relaxed text-strong">
                   <p className="whitespace-pre-wrap">{m.content}</p>
                   {m.code && (
@@ -126,20 +128,22 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                         </CopyButton>
                         <Button size="xs">Add</Button>
                       </div>
-                      <pre className="overflow-x-auto bg-code p-3 font-mono text-xs text-code">{m.code}</pre>
+                      <Text as="pre" variant="code-sm" className="overflow-x-auto bg-code p-3 text-code">
+                        {m.code}
+                      </Text>
                     </Card>
                   )}
                 </div>
               )
             )}
-          </div>
+          </Text>
         ) : sessions.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
             <div className="mb-2 rounded-full bg-sunken p-5">
               <span className="hero-chat-bubble-left-right block h-10 w-10 text-faint" />
             </div>
             <Heading size="lg">No conversations yet</Heading>
-            <p className="max-w-70 text-sm text-muted">Start chatting below to create your first conversation</p>
+            <Text as="p" className="max-w-70 text-muted">Start chatting below to create your first conversation</Text>
           </div>
         ) : (
           <div className="flex h-full flex-col">
@@ -171,10 +175,10 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                     <Heading size="sm" as="h4" className="mb-1.5 truncate">
                       {s.title}
                     </Heading>
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted">
+                    <Text as="div" variant="body-sm" className="flex items-center justify-between gap-3 text-muted">
                       {formatSessionAge(s.updatedAt)}
                       <Pill>{s.messages.length}</Pill>
-                    </div>
+                    </Text>
                   </button>
                 ))}
               </div>
@@ -204,6 +208,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
               }}
               placeholder={view === "chat" ? "Ask a follow-up question..." : "Ask me anything about this workflow..."}
               rows={1}
+              // eslint-disable-next-line no-restricted-syntax -- a control: the chat composer sets its own type
               className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
               style={{ height: 52 }}
             />
@@ -223,7 +228,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
       </div>
 
       <Modal open={aboutOpen} onClose={() => setAboutOpen(false)} title="About the AI Assistant" size="md">
-        <div className="space-y-4 text-sm">
+        <Text as="div" className="space-y-4">
           <p>The OpenFn AI Assistant helps you build workflows and write job code. It can:</p>
           <ul className="list-inside list-disc space-y-1 pl-4">
             <li>Generate complete workflow templates</li>
@@ -244,7 +249,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             <strong>Important:</strong> Do not deploy auto-generated code in production without thorough testing. Do not include real user
             data, personally identifiable information, or sensitive business data in your queries.
           </p>
-        </div>
+        </Text>
       </Modal>
     </aside>
   );

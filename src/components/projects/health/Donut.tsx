@@ -2,6 +2,7 @@ import { formatNumber } from "../../../utils/format";
 import { Link } from "../../../routing/router";
 import TextLink from "../../primitives/TextLink";
 import { DOT, EMPTY, FRAME, LEGEND, percent } from "./palette";
+import Text from "../../primitives/Text";
 
 export interface Slice {
   key: string;
@@ -48,7 +49,7 @@ export default function Donut({
   centre: (total: number) => { value: string; label: string };
 }) {
   const total = slices.reduce((sum, { value }) => sum + value, 0);
-  if (total === 0) return <p className={EMPTY}>{emptyMessage}</p>;
+  if (total === 0) return <Text as="p" className={EMPTY}>{emptyMessage}</Text>;
 
   const drawn = slices.filter((s) => s.value > 0);
   const only = drawn.length === 1 ? drawn[0] : undefined;
@@ -81,8 +82,9 @@ export default function Donut({
           )}
         </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          {/* eslint-disable-next-line no-restricted-syntax -- debt: 24px stat number has no Text style */}
           <span className="text-2xl font-semibold text-strong">{middle.value}</span>
-          <span className="text-xs text-muted">{middle.label}</span>
+          <Text variant="body-sm" className="text-muted">{middle.label}</Text>
         </div>
       </div>
       <ul className={LEGEND}>

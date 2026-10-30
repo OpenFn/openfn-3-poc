@@ -14,6 +14,7 @@ import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
+import Text from "../primitives/Text";
 
 interface Props {
   mfa: MfaSettings;
@@ -80,7 +81,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
       action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
     >
       {show && (
-        <div className="space-y-5 border-t border-strong pt-5 text-sm">
+        <Text as="div" className="space-y-5 border-t border-strong pt-5">
           {enabled && !setup && (
             <p>
               You have configured an authentication app to get two-factor authentication codes.{" "}
@@ -130,7 +131,9 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 </div>
               </form>
               <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
-                <code className="text-sm text-muted">{setup.secret}</code>
+                <Text className="text-muted">
+                  <code>{setup.secret}</code>
+                </Text>
               </Modal>
             </div>
           )}
@@ -146,7 +149,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
               }
             />
           )}
-        </div>
+        </Text>
       )}
 
       <ConfirmModal
