@@ -74,7 +74,6 @@ export default function DiagramNode({
       <div
         role={onClick && "button"}
         tabIndex={onClick && 0}
-        aria-label={label}
         className="flex cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         onClick={(e) => {
           e.stopPropagation();
