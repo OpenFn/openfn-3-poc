@@ -185,7 +185,7 @@ describe("RunShowPage", () => {
     expect(screen.getByText(/mapping/)).toBeTruthy();
     expect(document.querySelector("[data-highlighted]")?.textContent).toBe("JOB mapping");
 
-    fireEvent.click(screen.getByRole("button", { name: "Log level" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log level: debug" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "error" }));
     expect(onLogLevelChange).toHaveBeenCalledWith("error");
     expect(screen.queryByText(/Starting operation 1/)).toBeNull();

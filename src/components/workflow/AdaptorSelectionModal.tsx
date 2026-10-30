@@ -58,7 +58,7 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
       ];
 
   return (
-    <Modal open={isOpen} onClose={onClose} size="md">
+    <Modal open={isOpen} onClose={onClose} size="md" label="Select an adaptor">
       <SearchList<Row>
         variant="field"
         listLabel="Adaptor options"
@@ -67,7 +67,6 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
         onQueryChange={setQuery}
         sections={sections}
         getKey={(a) => a.id}
-        getLabel={(a) => `Select ${a.name} adaptor`}
         onSelect={pick}
         header={
           fallback && (

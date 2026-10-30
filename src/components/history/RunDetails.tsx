@@ -58,8 +58,8 @@ export function StepListItem({
   onRetry: () => void;
 }) {
   return (
-    <Text as="div" variant="body-sm" id={`step-${step.id}`} role="row" className={cn("flex items-center text-muted hover:bg-surface", step.cloned && "opacity-50")}>
-      <div role="cell" className="flex flex-1 items-center gap-2 py-2 pl-4">
+    <Text as="div" variant="body-sm" id={`step-${step.id}`} role="listitem" className={cn("flex items-center text-muted hover:bg-surface", step.cloned && "opacity-50")}>
+      <div className="flex flex-1 items-center gap-2 py-2 pl-4">
         <StepIcon reason={step.exitReason} errorType={step.errorType} />
         <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-strong hover:text-primary-500">
           {step.jobName}
@@ -74,7 +74,7 @@ export function StepListItem({
           started <DateTime value={step.startedAt} format="time_only" />
         </span>
       </div>
-      <div role="cell" className="flex min-w-60 shrink-0 items-center justify-end gap-3 px-4 py-2">
+      <div className="flex min-w-60 shrink-0 items-center justify-end gap-3 px-4 py-2">
         {canRunWorkflow && step.exitReason && <StepRerun step={step} dataStorageHref={dataStorageHref} onRetry={onRetry} />}
         <IconButton id={`inspect-step-${step.id}`} icon="hero-document-magnifying-glass-mini" label="Inspect this step" to={step.inspectHref} />
         <span className="w-16 text-right">
@@ -176,7 +176,7 @@ export function RunCard({
           )}
         </div>
       </Text>
-      <div role="rowgroup" id={`run-${run.id}`} className={cn("bg-sunken", steps.length && "border-t border-strong")}>
+      <div role="list" aria-label="Steps" id={`run-${run.id}`} className={cn("bg-sunken", steps.length && "border-t border-strong")}>
         {steps.map((step) => (
           <StepListItem key={step.id} step={step} canRunWorkflow={canRunWorkflow} dataStorageHref={dataStorageHref} onRetry={() => onRetryStep(step.id)} />
         ))}

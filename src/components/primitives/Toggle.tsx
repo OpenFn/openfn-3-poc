@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 import Text from "./Text";
 import Tooltip from "./Tooltip";
 
-interface Props {
+interface BaseProps {
   checked: boolean;
   onChange?: ((checked: boolean) => void) | undefined;
   /** Shown to the right of the switch. */
@@ -20,6 +20,9 @@ interface Props {
   /** Name of the hidden checkbox that mirrors the state, as Lightning's toggle input has. */
   name?: string | undefined;
 }
+
+/** A switch has no text of its own, so one of these must name it. */
+type Props = BaseProps & ({ label: string } | { labelledBy: string } | { tooltip: string });
 
 /**
  * Lightning's toggle switch (new_inputs.ex `type="toggle"`): primary-600

@@ -43,12 +43,12 @@ export const WORK_ORDER_DOT: Record<WorkOrderDisplayState, string> = {
 /** The work-order state's text, next to the dot. */
 export const WORK_ORDER_TEXT: Record<WorkOrderDisplayState, string> = {
   rejected: "text-gray-600",
-  pending: "text-gray-500",
-  running: "text-info-500",
-  success: "text-success-500",
-  failed: "text-danger-500",
-  crashed: "text-orange-500",
-  cancelled: "text-gray-500",
+  pending: "text-gray-600",
+  running: "text-info-700",
+  success: "text-success-800",
+  failed: "text-danger-700",
+  crashed: "text-orange-700",
+  cancelled: "text-gray-600",
   killed: "text-warning-800",
   exception: "text-gray-600",
   lost: "text-gray-600",

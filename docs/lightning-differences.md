@@ -83,3 +83,40 @@ goes back to Lightning's way.
 - **A modal's title has a normal line height.** Lightning squeezes it to
   20px (`modal.ex:109`); the replica uses `Heading size="lg"` as it is, so
   the title lines up with the close button.
+
+## Colour
+
+- **Muted, faint and link text are a shade darker.** Lightning uses
+  gray-500 for muted text, gray-400 for faint and primary-400 for links;
+  the replica uses gray-600, gray-500 and primary-600, so text meets WCAG AA
+  contrast on white and on the grey page (`npm run test:stories` checks it).
+- **The release version under the sidebar logo is full strength.** Lightning
+  fades it to half (`opacity-50`), which falls below AA contrast on the
+  sidebar.
+- **Work-order states, field errors and the success button are darker.**
+  Lightning writes work-order states in the 500 shades next to their dot,
+  field errors in danger-600, and fills the success button with
+  success-600; the replica uses the 700s (success text 800), which meet AA.
+- **A sandbox chip on a light colour has dark text.** Lightning always writes
+  white on the sandbox's colour, which is unreadable on amber or green; the
+  replica picks dark or white text by the colour's luminance
+  (`prefersDarkText` in `src/utils/colour.ts`).
+- **Faded text is solid instead.** Lightning fades the read-only adaptor
+  (`AdaptorDisplay.tsx:197`, `opacity-50`) and the admin project form's
+  users with no role (`opacity-60`); the replica writes them in muted or
+  faint text, which reads as quieter but meets AA.
+- **The channel timing bars are a shade lighter.** Lightning draws them in
+  orange-400 and blue-400 behind 900 text (`timing.ex:277-388`); the replica
+  uses the 300s, so the text on them meets AA.
+- **A danger link darkens on hover.** Lightning lightens it to red-600
+  (`app.css:176`), below AA on the grey page; the replica goes to
+  danger-800, as other links go darker on hover.
+
+## Accessible names
+
+- **A control's hidden name contains the text it shows.** Lightning's log
+  level button has no hidden name, and its adaptor picker names each option
+  "Select <name> adaptor" (`SearchableList/ListRow.tsx:42`). The replica
+  names the log level button "Log level: info", the adaptor button "Change
+  adaptor: http" and the proxy URL "Copy proxy URL: <url>", and an adaptor
+  option by its own text, so voice control users can say what they see.

@@ -172,7 +172,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                     }}
                     className="w-full rounded-lg p-3 text-left hover:bg-hover"
                   >
-                    <Heading size="sm" as="h4" className="mb-1.5 truncate">
+                    <Heading size="sm" as="h3" className="mb-1.5 truncate">
                       {s.title}
                     </Heading>
                     <Text as="div" variant="body-sm" className="flex items-center justify-between gap-3 text-muted">
@@ -238,7 +238,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             <li>Suggest improvements to your code</li>
           </ul>
           <p className="text-muted">Messages are saved unencrypted to the OpenFn database and may be monitored for quality control.</p>
-          <Heading size="sm" as="h4" className="pt-2">
+          <Heading size="sm" as="h3" className="pt-2">
             Using The Assistant Safely
           </Heading>
           <p>

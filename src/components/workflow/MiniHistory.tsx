@@ -162,7 +162,7 @@ export default function MiniHistory({
                         {run.startedAt && run.finishedAt && (
                           <>
                             <Dot />
-                            <span className="text-faint">{formatDuration(run.startedAt, run.finishedAt)}</span>
+                            <span className="text-muted">{formatDuration(run.startedAt, run.finishedAt)}</span>
                           </>
                         )}
                       </div>

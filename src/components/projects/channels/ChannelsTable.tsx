@@ -54,7 +54,7 @@ export default function ChannelsTable({
         {channels.map((channel) => (
           <Tr key={channel.id} id={`channel-${channel.id}`}>
             <Td className={cn("max-w-60 font-medium wrap-break-word", channel.enabled ? "text-strong" : "text-faint")}>
-              {channel.name}
+              <span id={`channel-name-${channel.id}`}>{channel.name}</span>
             </Td>
             <Td className="max-w-80">
               <div className="flex items-center gap-1.5 font-mono text-muted">
@@ -76,6 +76,7 @@ export default function ChannelsTable({
                 <Toggle
                   id={channel.id}
                   name="channel_state"
+                  labelledBy={`channel-name-${channel.id}`}
                   checked={channel.enabled}
                   onChange={(v) => onToggle?.(channel.id, v)}
                   tooltip={channel.enabled ? undefined : `${channel.name} (disabled)`}

@@ -33,12 +33,12 @@ export default function AdaptorDisplay({ adaptor, credentialName = null, onEdit,
     <Card padding="sm" className="flex items-center justify-between gap-2">
       <Text as="div" className="flex min-w-0 flex-1 items-center gap-2">
         {onChangeAdaptor && !isReadOnly ? (
-          <Button variant="secondary" size="xs" onClick={onChangeAdaptor} aria-label="Change adaptor" className="min-w-0">
+          <Button variant="secondary" size="xs" onClick={onChangeAdaptor} aria-label={`Change adaptor: ${adaptorDisplayName(adaptor)}`} className="min-w-0">
             <AdaptorIcon name={adaptor} size="sm" />
             <span className="truncate">{adaptorDisplayName(adaptor)}</span>
           </Button>
         ) : (
-          <div className="flex items-center gap-2 opacity-50">
+          <div className="flex items-center gap-2">
             <AdaptorIcon name={adaptor} size="sm" />
             <span className="truncate font-medium text-muted">{adaptorDisplayName(adaptor)}</span>
           </div>

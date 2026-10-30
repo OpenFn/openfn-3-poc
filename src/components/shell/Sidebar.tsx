@@ -137,7 +137,7 @@ export function SidebarLogo({ releaseLabel, collapsed = false }: { releaseLabel:
     <div className="primary-light mt-3 border-t border-white/10 pt-5 text-center">
       {collapsed ? <OpenFnLogoCollapsed className="mx-auto h-6" /> : <OpenFnLogo className="mx-auto h-6" />}
       {/* eslint-disable-next-line no-restricted-syntax -- below text-xs, the smallest step on the scale */}
-      <code className="block py-1 text-[8px] opacity-50">{releaseLabel}</code>
+      <code className="block py-1 text-[8px]">{releaseLabel}</code>
     </div>
   );
 }

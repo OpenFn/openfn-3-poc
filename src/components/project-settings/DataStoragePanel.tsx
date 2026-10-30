@@ -39,7 +39,7 @@ function Setting({ title, dimmed = false, description, children }: { title: stri
   return (
     <Text as="div" className={cn("space-y-3", dimmed && "text-faint")}>
       <div>
-        <Heading as="h4" size="sm" className={cn(dimmed && "text-faint")}>
+        <Heading as="h3" size="sm" className={cn(dimmed && "text-faint")}>
           {title}
         </Heading>
         <p className="mt-1">{description}</p>

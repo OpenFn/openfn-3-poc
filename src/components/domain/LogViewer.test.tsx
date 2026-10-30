@@ -35,7 +35,7 @@ describe("LogViewer", () => {
     // Read-only keeps Tab from being Monaco's indent, so focus can leave.
     expect(editor()).toMatchObject({ theme: "default", options: { readOnly: true } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Log level" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log level: info" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "error" }));
     expect(picked).toBe("error");
     expect(text()).toBe("JOB boom");
@@ -61,7 +61,7 @@ describe("LogViewer", () => {
     expect(editor().revealed).toEqual([2]);
 
     // At error only step a's "boom" is left, so its first line moves to 1.
-    fireEvent.click(screen.getByRole("button", { name: "Log level" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log level: debug" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "error" }));
     expect([...editor().highlighted]).toEqual([1]);
     expect(editor().revealed).toEqual([2]);

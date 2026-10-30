@@ -63,3 +63,11 @@ export const withCanvas =
       <Story />
     </div>
   );
+
+/**
+ * Story parameters for the workflow diagram: axe's colour-contrast check is
+ * off. The diagram keeps Lightning's greys, where a faded node or a grey edge
+ * label means disabled or not reached, and lifting only the text read worse
+ * than the fade. Every other check still runs.
+ */
+export const diagramParameters = { a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } } };

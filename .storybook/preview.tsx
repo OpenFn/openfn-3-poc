@@ -29,6 +29,9 @@ const withSession: Decorator = (Story) => (
 const preview: Preview = {
   parameters: {
     // The tiers first, as in src/components/ (.claude/rules/components.md), then the areas, then pages.
+    // An axe violation fails the story's test (`npm run test:stories`).
+    // Headless UI's focus guards are aria-hidden buttons that hand focus back to the panel; axe can't tell.
+    a11y: { test: "error", context: { exclude: ["[data-headlessui-focus-guard]"] } },
     options: { storySort: { order: ["Primitives", "Domain", "Shell", "*", "Pages"] } },
     controls: {
       matchers: {

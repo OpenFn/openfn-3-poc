@@ -17,7 +17,7 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
       <div
         role="button"
         tabIndex={0}
-        aria-label="Copy proxy URL"
+        aria-label={`Copy proxy URL: ${url}`}
         // Enter and Space copy too; the Tooltip's click handler does the work.
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
