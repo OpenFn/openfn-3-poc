@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../primitives/Button";
-import { FieldError, TextInput } from "../primitives/Inputs";
+import { TextInput } from "../primitives/Inputs";
 import IconButton from "../primitives/IconButton";
 import FormModal from "../primitives/FormModal";
 import RoleSelect from "./RoleSelect";
@@ -28,10 +28,13 @@ interface Props {
  */
 export default function AddCollaboratorsModal({ existingEmails, onCancel, onSave }: Props) {
   const [rows, setRows] = useState<CollaboratorDraft[]>([{ email: "", role: "" }]);
+  // Errors show once Save is pressed, not while typing; Save stays pressable (PRINCIPLES.md, Forms).
+  const [submitted, setSubmitted] = useState(false);
   const update = (i: number, patch: Partial<CollaboratorDraft>) =>
     setRows(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   const errorFor = (r: CollaboratorDraft) => {
-    if (r.email && !isValidEmail(r.email)) return "has invalid format";
+    if (!r.email.trim()) return "can't be blank";
+    if (!isValidEmail(r.email)) return "has invalid format";
     if (existingEmails.includes(r.email.toLowerCase())) return "This account is already part of this project";
     return null;
   };
@@ -45,31 +48,30 @@ export default function AddCollaboratorsModal({ existingEmails, onCancel, onSave
       description="Enter the email address and role of new collaborator(s) to invite them to this project"
       formId="add_collaborators_modal_form"
       formClassName="space-y-5"
-      // Save is only enabled once every row has a role.
-      onSubmit={() => onSave(rows as CollaboratorValues[])}
+      onSubmit={async () => {
+        setSubmitted(true);
+        if (valid) await onSave(rows as CollaboratorValues[]);
+      }}
       submitLabel={<>Save Collaborator{rows.length > 1 ? "s" : ""}</>}
       submitId="save_collaborators_button"
-      submitDisabled={!valid}
     >
       {rows.map((r, i) => {
-        const error = errorFor(r);
+        const error = submitted ? errorFor(r) : null;
         return (
-          <div key={i}>
-            <div className="flex items-center gap-4">
-              <TextInput
-                fieldClassName="flex-1"
-                aria-label="Email"
-                placeholder="email@example.com"
-                required
-                value={r.email}
-                onChange={(e) => update(i, { email: e.target.value })}
-              />
-              <RoleSelect value={r.role} onChange={(role) => update(i, { role })} />
-              {rows.length > 1 && (
-                <IconButton icon="hero-minus-circle" label="Remove row" onClick={() => setRows(rows.filter((_, j) => j !== i))} />
-              )}
-            </div>
-            {error && <FieldError>{error}</FieldError>}
+          <div key={i} className="flex items-start gap-4">
+            <TextInput
+              fieldClassName="flex-1"
+              aria-label="Email"
+              placeholder="email@example.com"
+              required
+              value={r.email}
+              errors={error ? [error] : []}
+              onChange={(e) => update(i, { email: e.target.value })}
+            />
+            <RoleSelect value={r.role} errors={submitted && !r.role ? ["can't be blank"] : []} onChange={(role) => update(i, { role })} />
+            {rows.length > 1 && (
+              <IconButton icon="hero-minus-circle" label="Remove row" className="mt-2" onClick={() => setRows(rows.filter((_, j) => j !== i))} />
+            )}
           </div>
         );
       })}

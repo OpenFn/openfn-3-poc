@@ -29,7 +29,8 @@ before building or reviewing a component.
 - `npm run build` — typecheck and build
 - `npm test` — run the unit tests (Vitest)
 - `npm run lint` — run ESLint. CI runs it, and warnings fail too. The
-  colour, arbitrary-value and raw-control rules below are lint errors. An
+  colour, arbitrary-value and raw-control rules below are lint errors, and so
+  is any deprecated API (`FormEvent`, `navigator.platform`). An
   exception is disabled on its line with a reason after ` -- `; a reason
   starting `debt:` is one to fix (`grep -rn "debt:" src`).
 - `npm run storybook` — start Storybook on port 6006
@@ -148,12 +149,13 @@ everywhere. Reach for these first:
 |---|---|
 | An action | `Button` (`size="xs" variant="secondary"` for table row actions) |
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (never disable submit for invalid values) |
+| A form on a page: its fields, its error, its buttons (Save on the right) | `Form`, with `{...form.formProps(save)}` |
 | A request in flight | `useAction` from `utils/useAction.ts` (`useActions` for one per row); `Spinner` for anything loading |
 | A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` |
 | An icon-only action | `IconButton` (always give it a `label`) |
 | The X that closes a modal, toast or panel | `CloseButton` |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
-| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
+| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()`, `data-ui="field"` and `useFieldControl()`; `info` and `aside` on a field put a tooltip or a badge or link beside its label (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
 | A name that becomes a URL-safe slug | `NameField` |
 | A dialog | `Modal` |
 | A dialog around one form | `FormModal` |
@@ -164,6 +166,8 @@ everywhere. Reach for these first:
 | Show / hide a section | `Disclosure` |
 | Switching views | `Tabs` |
 | Picking one value from a few | `SegmentedControl` |
+| A set of radios or checkboxes under one label | `Field group` |
+| Picking one of a few options drawn as cards | `RadioCards` |
 | Searching or filtering a list | `SearchInput` |
 | A status chip, badge or tag | `Pill` |
 | Any bordered panel, tile or card | `Card` |

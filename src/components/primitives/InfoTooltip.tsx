@@ -10,13 +10,14 @@ interface Props {
 }
 
 /**
- * Lightning's `Common.tooltip` (live/components/common.ex): a small faded
- * primary info icon next to a label, with its tooltip above.
+ * A grey outline info icon next to a label, with its tooltip above, as the
+ * collaborative editor draws it (ConfigureAdaptorModal.tsx). Lightning's
+ * LiveView pages use a faded primary icon instead (`Common.tooltip`).
  */
 export default function InfoTooltip({
   title,
-  icon = "hero-information-circle-solid",
-  iconClass = "-mt-0.5 w-4 h-4 text-primary-600 opacity-50",
+  icon = "hero-information-circle",
+  iconClass = "-mt-0.5 h-4 w-4 text-faint hover:text-muted",
   className,
 }: Props) {
   return (

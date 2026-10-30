@@ -40,7 +40,7 @@ export default function SearchInput({ value, onChange, onClear, label, placehold
         aria-label={label ?? placeholder}
         data-ui="field"
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-        className={controlClasses(false, cn("placeholder:text-faint", sm ? "py-1.5 pl-9 pr-9" : "py-2 pl-10 pr-10"))}
+        className={controlClasses(cn("placeholder:text-faint", sm ? "py-1.5 pl-9 pr-9" : "py-2 pl-10 pr-10"))}
         {...rest}
       />
       {value !== "" && (

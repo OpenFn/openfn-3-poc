@@ -60,7 +60,8 @@ const form = (id: string) => within(document.getElementById(id)!);
 const type = (el: HTMLElement, value: string) => fireEvent.change(el, { target: { value } });
 const input = (el: HTMLElement) => el as HTMLInputElement;
 const dialog = () => screen.getByRole("dialog");
-const mfaSwitch = () => document.getElementById("toggle-mfa-switch")!;
+/** The MFA card's one action: "Set up MFA" while off, "Disable MFA" while on, none while setting up. */
+const mfaAction = () => document.getElementById("mfa-action");
 
 describe("ProfilePage", () => {
   it("shows who the user is and links to account deletion", () => {
@@ -87,7 +88,8 @@ describe("ProfilePage", () => {
       const { onSaveBasicInfo } = renderPage();
       const basic = form("basic-info-form");
       const save = () => basic.getByRole("button", { name: "Save" }) as HTMLButtonElement;
-      expect(save().disabled).toBe(true);
+      // Disabled but focusable, so its reason ("No changes to save") can be read.
+      expect(isDisabled(save())).toBe(true);
       type(basic.getByLabelText(/First name/), " ");
       expect(isDisabled(save())).toBe(false);
       fireEvent.submit(document.getElementById("basic-info-form")!);
@@ -207,7 +209,7 @@ describe("ProfilePage", () => {
     it("sets up MFA with the secret from the host's reply, and sends the code typed", async () => {
       const { onStartMfaSetup, onConfirmMfa } = renderPage();
       expect(document.getElementById("set_totp_form")).toBeNull();
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       await waitFor(() => expect(onStartMfaSetup).toHaveBeenCalled());
       expect((await screen.findByAltText(/QR code/)).getAttribute("src")).toBe("data:image/svg+xml,qr");
       expect(screen.queryByText("JBSWY3DPEHPK3PXP")).toBeNull();
@@ -224,7 +226,7 @@ describe("ProfilePage", () => {
     it("keeps the setup open with the host's error when the code is wrong", async () => {
       const onConfirmMfa = vi.fn().mockRejectedValue(new RequestError("invalid", { fieldErrors: { code: ["invalid code"] } }));
       renderPage({ onConfirmMfa });
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       type(await screen.findByLabelText(/Verify the code from the app/), "000000");
       const totp = form("set_totp_form");
       fireEvent.submit(document.getElementById("set_totp_form")!);
@@ -232,17 +234,17 @@ describe("ProfilePage", () => {
       expect(document.getElementById("set_totp_form")).toBeTruthy();
     });
 
-    it("says why setup couldn't start, and leaves the switch off", async () => {
+    it("says why setup couldn't start, and still offers to set it up", async () => {
       renderPage({ onStartMfaSetup: vi.fn().mockRejectedValue(new RequestError("Something went wrong")) });
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       expect(await screen.findByText("Something went wrong")).toBeTruthy();
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("false");
+      await waitFor(() => expect(mfaAction()?.textContent).toBe("Set up MFA"));
       expect(document.getElementById("set_totp_form")).toBeNull();
     });
 
     it("won't send a code that isn't six digits, and calls a blank one blank", async () => {
       const { onConfirmMfa } = renderPage();
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       const code = await screen.findByLabelText(/Verify the code from the app/);
       const totp = form("set_totp_form");
       type(code, "12345");
@@ -254,23 +256,21 @@ describe("ProfilePage", () => {
       expect(onConfirmMfa).not.toHaveBeenCalled();
     });
 
-    it("drops the secret on Cancel or switching off, and the next setup starts with it hidden", async () => {
+    it("drops the secret on Cancel, and the next setup starts with it hidden", async () => {
       const { onStartMfaSetup } = renderPage();
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       fireEvent.click(await screen.findByText("this secret key"));
       expect(within(dialog()).getByText("JBSWY3DPEHPK3PXP")).toBeTruthy();
       fireEvent.click(form("set_totp_form").getByText("Cancel"));
       expect(document.getElementById("set_totp_form")).toBeNull();
       expect(screen.queryByText("JBSWY3DPEHPK3PXP")).toBeNull();
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("false");
+      expect(mfaAction()?.textContent).toBe("Set up MFA");
 
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       await screen.findByAltText(/QR code/);
       expect(onStartMfaSetup).toHaveBeenCalledTimes(2);
       expect(screen.queryByText("JBSWY3DPEHPK3PXP")).toBeNull();
-      fireEvent.click(mfaSwitch());
-      expect(document.getElementById("set_totp_form")).toBeNull();
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("false");
+      expect(mfaAction()).toBeNull();
     });
 
     it("asks for a new secret to set up another device", async () => {
@@ -286,7 +286,7 @@ describe("ProfilePage", () => {
         mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" },
         onDisableMfa: vi.fn().mockRejectedValue(new RequestError("Oops! Could not disable 2FA from your account. Please try again later")),
       });
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       fireEvent.click(within(dialog()).getByRole("button", { name: "Disable" }));
       expect(await within(dialog()).findByText("Oops! Could not disable 2FA from your account. Please try again later")).toBeTruthy();
     });
@@ -294,51 +294,48 @@ describe("ProfilePage", () => {
     it("disables MFA after confirming, and links to the recovery codes", async () => {
       const { onDisableMfa, onStartMfaSetup } = renderPage({ mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } });
       expect(screen.getByRole("link", { name: "View" }).getAttribute("href")).toBe("/profile/auth/backup_codes");
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       expect(onStartMfaSetup).not.toHaveBeenCalled();
       fireEvent.click(within(dialog()).getByRole("button", { name: "Disable" }));
       await waitFor(() => expect(onDisableMfa).toHaveBeenCalled());
       await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     });
 
-    it("closes the setup and turns the switch off when MFA is disabled while setting up another device", async () => {
+    it("closes the setup and offers to set MFA up again when it's disabled while setting up another device", async () => {
       const { rerender } = renderPage({ mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } });
       fireEvent.click(screen.getByText("Setup another device instead"));
       await screen.findByAltText(/QR code/);
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       fireEvent.click(within(dialog()).getByRole("button", { name: "Disable" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
       rerender({ mfa: { enabled: false, backupCodesHref: "/profile/auth/backup_codes" } });
       expect(document.getElementById("set_totp_form")).toBeNull();
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("false");
+      expect(mfaAction()?.textContent).toBe("Set up MFA");
     });
 
-    it("keeps the switch on after a confirmed setup until the host's props arrive", async () => {
+    it("offers Disable MFA after a confirmed setup, before the host's props arrive", async () => {
       renderPage();
-      fireEvent.click(mfaSwitch());
+      fireEvent.click(mfaAction()!);
       type(await screen.findByLabelText(/Verify the code from the app/), "123456");
       fireEvent.submit(document.getElementById("set_totp_form")!);
       await waitFor(() => expect(document.getElementById("set_totp_form")).toBeNull());
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("true");
+      expect(mfaAction()?.textContent).toBe("Disable MFA");
     });
 
-    it("holds the switch while setup is starting, and Cancel while the code is being saved", async () => {
+    it("shows Set up MFA as working while setup starts, and holds Cancel while the code is being saved", async () => {
       let started!: (v: { secret: string; qrCodeSrc: string }) => void;
       let confirmed!: () => void;
       renderPage({
         onStartMfaSetup: vi.fn(() => new Promise<{ secret: string; qrCodeSrc: string }>((resolve) => (started = resolve))),
         onConfirmMfa: vi.fn(() => new Promise<void>((resolve) => (confirmed = resolve))),
       });
-      fireEvent.click(mfaSwitch());
-      await waitFor(() => expect((mfaSwitch() as HTMLButtonElement).disabled).toBe(true));
-      expect(mfaSwitch().getAttribute("aria-checked")).toBe("true");
+      fireEvent.click(mfaAction()!);
+      await waitFor(() => expect(mfaAction()?.getAttribute("aria-busy")).toBe("true"));
       started({ secret: "JBSWY3DPEHPK3PXP", qrCodeSrc: "data:image/svg+xml,qr" });
       type(await screen.findByLabelText(/Verify the code from the app/), "123456");
-      expect(isDisabled((mfaSwitch() as HTMLButtonElement))).toBe(false);
       fireEvent.submit(document.getElementById("set_totp_form")!);
       const cancel = form("set_totp_form").getByRole("button", { name: "Cancel" }) as HTMLButtonElement;
       await waitFor(() => expect(cancel.disabled).toBe(true));
-      expect((mfaSwitch() as HTMLButtonElement).disabled).toBe(true);
       confirmed();
       await waitFor(() => expect(document.getElementById("set_totp_form")).toBeNull());
     });
@@ -446,7 +443,7 @@ describe("ProfilePage", () => {
   it("follows new MFA and experimental features props from the host", () => {
     const { rerender } = renderPage();
     rerender({ mfa: { ...data().mfa, enabled: true }, experimentalFeatures: true });
-    expect(mfaSwitch().getAttribute("aria-checked")).toBe("true");
+    expect(mfaAction()?.textContent).toBe("Disable MFA");
     expect(screen.getByText(/You have configured an authentication app/)).toBeTruthy();
     expect(document.getElementById("preferences_experimental_features")!.getAttribute("aria-checked")).toBe("true");
   });

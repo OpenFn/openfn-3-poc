@@ -7,6 +7,8 @@ interface Props {
   /** When given, renders a split button whose menu offers "Run with custom input". */
   onRunWithCustomInputClick?: () => void;
   disabled?: boolean;
+  /** Hover text while disabled, saying why: "Fix the JSON input to run". */
+  disabledReason?: string | undefined;
   isRunning?: boolean;
   text?: string | undefined;
   variant?: "primary" | "secondary";
@@ -22,13 +24,14 @@ export default function NewRunButton({
   onClick,
   onRunWithCustomInputClick,
   disabled = false,
+  disabledReason,
   isRunning = false,
   text = "Run",
   variant = "primary",
   tooltip = "⌘ Enter",
 }: Props) {
   const content = isRunning ? "Processing" : text;
-  const hover = disabled || isRunning ? undefined : tooltip;
+  const hover = isRunning ? undefined : disabled ? disabledReason : tooltip;
 
   if (!onRunWithCustomInputClick) {
     return (

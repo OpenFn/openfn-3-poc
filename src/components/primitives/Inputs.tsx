@@ -1,29 +1,24 @@
 import { Label as HeadlessLabel, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
-import { useId, useRef, useState, type FocusEvent, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
+import { useContext, useId, useLayoutEffect, useRef, useState, type RefObject, type FocusEvent, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 import { controlClasses } from "./controlClasses";
+import { checkNamed, FieldContext, useFieldControl } from "./fieldControl";
 import { floatingPanelClasses } from "./floating";
 import IconButton from "./IconButton";
+import InfoTooltip from "./InfoTooltip";
 import Text from "./Text";
 
 /**
  * Form controls. Every control shares one look (`controlClasses`) and sits
- * in a `Field`, which handles the label, hint and errors. Wrap a custom
- * control in `Field` to give it the same frame, and give the control
+ * in a `Field`, which handles the label, hint and errors. Field passes its
+ * control the ids of its hint and errors and `aria-invalid`; a custom
+ * control wrapped in `Field` takes them with `useFieldControl()`, and
  * `data-ui="field"` so themes style it like the others.
  */
 
-export function Label({ htmlFor, className, children }: { htmlFor?: string | undefined; className?: string | undefined; children: ReactNode }) {
+export function FieldError({ id, children }: { id?: string | undefined; children: ReactNode }) {
   return (
-    <label htmlFor={htmlFor} data-ui="label" className={cn("text-sm/6 font-medium text-strong", className)}>
-      {children}
-    </label>
-  );
-}
-
-export function FieldError({ children }: { children: ReactNode }) {
-  return (
-    <p data-tag="error_message" data-ui="error-message" className="mt-1 inline-flex items-center gap-x-1.5 text-xs text-danger-700">
+    <p id={id} data-tag="error_message" data-ui="error-message" className="mt-1 inline-flex items-center gap-x-1.5 text-xs text-invalid">
       <span className="hero-exclamation-circle h-4 w-4" />
       {children}
     </p>
@@ -35,7 +30,11 @@ interface FieldProps {
   required?: boolean | undefined;
   /** Help text between the label and the control. */
   hint?: ReactNode;
-  errors?: string[];
+  errors?: string[] | undefined;
+  /** Tooltip text for an info icon after the label. */
+  info?: string | undefined;
+  /** At the right end of the label row, at the label's size: one link that acts on the field ("New Credential"), or a badge. */
+  aside?: ReactNode;
   /** Classes for the field wrapper (label + control + errors), e.g. `flex-1` to grow in a flex row. `className` styles the control itself. */
   fieldClassName?: string | undefined;
 }
@@ -43,33 +42,135 @@ interface FieldProps {
 /** The control's id, or a generated one, so its label is always linked to it. */
 function useFieldId(id?: string) {
   const generated = useId();
-  return id ?? generated;
+  // Inside a Field that names an id (`<Field id="x" label="…"><TextInput /></Field>`), use that one, so its label points here.
+  const outer = useContext(FieldContext).id;
+  return id ?? outer ?? generated;
 }
 
-/** A label, optional hint, a control and its errors. */
-export function Field({ id, label, required, hint, errors = [], className, children }: Omit<FieldProps, "fieldClassName"> & { id?: string | undefined; className?: string | undefined; children: ReactNode }) {
-  return (
-    <div className={className} data-ui="form-group" data-invalid={errors.length > 0 || undefined}>
-      {label && (
-        <Label htmlFor={id} className="mb-2 block">
+/**
+ * A label, optional hint, a control and its errors. `group` makes it a
+ * fieldset named by the label, for a set of radios or checkboxes; a disabled
+ * group disables every control in it and dims its text.
+ */
+export function Field({
+  id,
+  label,
+  required,
+  hint,
+  errors = [],
+  info,
+  aside,
+  group = false,
+  disabled,
+  "aria-label": ariaLabel,
+  className,
+  children,
+}: Omit<FieldProps, "fieldClassName"> & {
+  /** The control's id, which the label points at. Leave it out when the control names itself from the label (Select). */
+  id?: string | undefined;
+  group?: boolean;
+  /** Only with `group`. */
+  disabled?: boolean | undefined;
+  /** Only with `group`: names the group in place of its label. */
+  "aria-label"?: string | undefined;
+  className?: string | undefined;
+  children: ReactNode;
+}) {
+  const base = useId();
+  const labelId = `${base}-label`;
+  const hintId = `${base}-hint`;
+  const errorIds = errors.map((_, i) => `${base}-error-${i}`);
+  const describedBy = [...(hint ? [hintId] : []), ...errorIds].join(" ") || undefined;
+  const invalid = errors.length > 0;
+  const outer = useContext(FieldContext);
+  // A control's own Field with no label, hint or errors (TextInput inside a labelled Field) keeps the outer Field's wiring.
+  const passThrough = !group && !label && !hint && !invalid;
+  // A label points at its control by id; without one (a group, or a Field around a card) it's plain text.
+  const LabelTag = group || !id ? "span" : "label";
+  // A hint sits close under its label, so the two read as one; the control comes after a wider gap.
+  const gap = hint ? "mb-1" : "mb-2";
+  // The info button sits beside the <label>, not in it, so its text stays out of the control's name.
+  const labelRow = label && (
+    <div data-ui="label-row" className={cn("flex items-center justify-between gap-2", gap)}>
+      <span className="flex items-center">
+        <LabelTag id={labelId} htmlFor={LabelTag === "label" ? id : undefined} data-ui="label" className="text-sm/6 font-medium text-strong group-disabled/field:text-faint">
           {label}
           {required && <span data-ui="required" className="text-danger-500"> *</span>}
-        </Label>
+        </LabelTag>
+        {info && <InfoTooltip title={info} />}
+      </span>
+      {aside && (
+        <Text as="span" variant="label-md">
+          {aside}
+        </Text>
       )}
-      {hint && <small data-ui="hint" className="mb-2 block text-xs text-muted">{hint}</small>}
-      {children}
-      {errors.map((e) => (
-        <FieldError key={e}>{e}</FieldError>
-      ))}
     </div>
+  );
+  const Tag = group ? "fieldset" : "div";
+  return (
+    <Tag
+      // A fieldset won't shrink below its content without min-w-0.
+      className={cn(group && "group/field min-w-0", className)}
+      data-ui="form-group"
+      data-invalid={invalid || undefined}
+      {...(group && { disabled, "aria-label": ariaLabel, "aria-labelledby": label && !ariaLabel ? labelId : undefined, "aria-describedby": describedBy })}
+    >
+      {labelRow}
+      {hint && <small id={hintId} data-ui="hint" className="mb-2 block text-xs text-muted group-disabled/field:text-faint">{hint}</small>}
+      {/* A group's radios take only aria-invalid; the fieldset already carries the hint and errors. */}
+      <FieldContext.Provider value={passThrough ? outer : group ? { invalid } : { id, describedBy, invalid, labelled: Boolean(label && id) }}>{children}</FieldContext.Provider>
+      {errors.map((e, i) => (
+        <FieldError key={e} id={errorIds[i]}>
+          {e}
+        </FieldError>
+      ))}
+    </Tag>
   );
 }
 
-export function TextInput({ label, required, hint, errors = [], fieldClassName, className, ...rest }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
+/** True when a control has its own label, a hidden name, or sits in a labelled Field. */
+function useIsNamed(label: ReactNode, props: { "aria-label"?: string | undefined; "aria-labelledby"?: string | undefined }) {
+  const outer = useContext(FieldContext);
+  return Boolean(label || props["aria-label"] || props["aria-labelledby"] || outer.labelled);
+}
+
+/**
+ * Headless UI's ListboxButton fills aria-describedby only from its own
+ * Description and drops one passed in, so the Field's hint and errors go on
+ * after each change.
+ */
+function DescribedBy({ target, ids }: { target: RefObject<HTMLElement | null>; ids: string | undefined }) {
+  useLayoutEffect(() => {
+    if (ids) target.current?.setAttribute("aria-describedby", ids);
+    else target.current?.removeAttribute("aria-describedby");
+  }, [target, ids]);
+  return null;
+}
+
+/** Renders a control with the props of the Field around it, for controls that render their own Field. */
+function FieldControlProps({ children }: { children: (props: ReturnType<typeof useFieldControl>) => ReactNode }) {
+  return children(useFieldControl());
+}
+
+export function TextInput({ label, required, hint, errors, info, aside, fieldClassName, className, ...rest }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
   const id = useFieldId(rest.id);
+  checkNamed("TextInput", useIsNamed(label, rest));
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
-      <input type="text" autoComplete="off" required={required} data-ui="field" className={controlClasses(errors.length > 0, className)} {...rest} id={id} />
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} info={info} aside={aside} className={fieldClassName}>
+      <FieldControlProps>
+        {(field) => (
+          <input
+            type="text"
+            autoComplete="off"
+            required={required}
+            data-ui="field"
+            className={controlClasses(className)}
+            {...field}
+            {...rest}
+            id={id}
+          />
+        )}
+      </FieldControlProps>
     </Field>
   );
 }
@@ -78,20 +179,26 @@ export function TextInput({ label, required, hint, errors = [], fieldClassName, 
  * Lightning's password `.input` (new_inputs.ex): a text field with an eye
  * button that toggles between hidden and shown.
  */
-export function PasswordInput({ label, required, hint, errors = [], fieldClassName, className, ...rest }: FieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
+export function PasswordInput({ label, required, hint, errors, info, aside, fieldClassName, className, ...rest }: FieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
   const id = useFieldId(rest.id);
+  checkNamed("PasswordInput", useIsNamed(label, rest));
   const [revealed, setRevealed] = useState(false);
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} info={info} aside={aside} className={fieldClassName}>
       <div className="relative">
-        <input
-          type={revealed ? "text" : "password"}
-          required={required}
-          data-ui="field"
-          className={controlClasses(errors.length > 0, cn("pr-10", className))}
-          {...rest}
-          id={id}
-        />
+        <FieldControlProps>
+          {(field) => (
+            <input
+              type={revealed ? "text" : "password"}
+              required={required}
+              data-ui="field"
+              className={controlClasses(cn("pr-10", className))}
+              {...field}
+              {...rest}
+              id={id}
+            />
+          )}
+        </FieldControlProps>
         <div className="absolute inset-y-0 right-0 flex items-center pr-2">
           <IconButton
             icon={revealed ? "hero-eye" : "hero-eye-slash"}
@@ -104,11 +211,23 @@ export function PasswordInput({ label, required, hint, errors = [], fieldClassNa
   );
 }
 
-export function TextArea({ label, required, hint, errors = [], fieldClassName, className, ...rest }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function TextArea({ label, required, hint, errors, info, aside, fieldClassName, className, ...rest }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const id = useFieldId(rest.id);
+  checkNamed("TextArea", useIsNamed(label, rest));
   return (
-    <Field id={id} label={label} required={required} hint={hint} errors={errors} className={fieldClassName}>
-      <textarea required={required} data-ui="field" className={controlClasses(errors.length > 0, cn("overflow-y-auto", className))} {...rest} id={id} />
+    <Field id={id} label={label} required={required} hint={hint} errors={errors} info={info} aside={aside} className={fieldClassName}>
+      <FieldControlProps>
+        {(field) => (
+          <textarea
+            required={required}
+            data-ui="field"
+            className={controlClasses(cn("overflow-y-auto", className))}
+            {...field}
+            {...rest}
+            id={id}
+          />
+        )}
+      </FieldControlProps>
     </Field>
   );
 }
@@ -153,6 +272,8 @@ export function Select({
   required,
   hint,
   errors = [],
+  info,
+  aside,
   fieldClassName,
   options,
   prompt,
@@ -166,7 +287,9 @@ export function Select({
   "aria-label": ariaLabel,
 }: SelectProps) {
   const id = useFieldId(givenId);
+  checkNamed("Select", useIsNamed(label, { "aria-label": ariaLabel }));
   const items = options.map(optionParts);
+  const chosen = items.find(([, v]) => v === value)?.[0];
   const button = useRef<HTMLButtonElement>(null);
   // Focus can move between the button and the open list; only leaving both is a blur.
   const leave = (e: FocusEvent) => {
@@ -202,20 +325,32 @@ export function Select({
       // Like a native select, picking the option already chosen changes nothing.
       onChange={(v: string) => v !== value && onChange?.({ target: { value: v } })}
     >
-      <Field label={label && labelText(label)} required={required} hint={hint} errors={errors} className={fieldClassName}>
+      <Field label={label && labelText(label)} required={required} hint={hint} errors={errors} info={info} aside={aside} className={fieldClassName}>
         {!label && ariaLabel && labelText(ariaLabel, "sr-only")}
-        <ListboxButton
-          ref={button}
-          id={id}
-          data-ui="field"
-          onBlur={leave}
-          // Headless UI submits the form on Enter; a native select doesn't. Space and the arrows open it.
-          onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-          className={controlClasses(errors.length > 0, cn("grid grid-cols-1 border py-2 pl-3 pr-2 text-left", className))}
-        >
-          <span className="col-start-1 row-start-1 truncate pr-6">{items.find(([, v]) => v === value)?.[0] ?? prompt ?? "\u00a0"}</span>
-          <span className="hero-chevron-up-down col-start-1 row-start-1 size-5 self-center justify-self-end text-muted sm:size-4" />
-        </ListboxButton>
+        <FieldControlProps>
+          {(field) => (
+            <>
+              <ListboxButton
+                ref={button}
+                {...field}
+                id={id}
+                data-ui="field"
+                onBlur={leave}
+                // Headless UI submits the form on Enter; a native select doesn't. Space and the arrows open it.
+                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+                className={controlClasses(cn("grid grid-cols-1 border py-2 pl-3 pr-2 text-left", className))}
+              >
+                {/* Only a chosen value turns red with an error, not the prompt. */}
+                <span className={cn("col-start-1 row-start-1 truncate pr-6", chosen === undefined && errors.length > 0 && "text-strong")}>
+                  {chosen ?? prompt ?? "\u00a0"}
+                </span>
+                <span className="hero-chevron-up-down col-start-1 row-start-1 size-5 self-center justify-self-end text-muted sm:size-4" />
+              </ListboxButton>
+              {/* After the button, so its ref is set when the effect runs. */}
+              <DescribedBy target={button} ids={field["aria-describedby"]} />
+            </>
+          )}
+        </FieldControlProps>
         <ListboxOptions
           anchor={{ to: "bottom start", gap: 4 }}
           transition
@@ -242,7 +377,11 @@ export function Select({
 
 type ChoiceProps = { label: ReactNode; hint?: ReactNode; ref?: Ref<HTMLInputElement> } & Omit<InputHTMLAttributes<HTMLInputElement>, "type">;
 
-const choiceClasses = "h-4 w-4 border-strong text-primary-600 focus:ring-focus transition duration-200 cursor-pointer disabled:cursor-not-allowed";
+const choiceClasses = cn(
+  "h-4 w-4 border-strong text-primary-600 focus:ring-focus transition duration-200 cursor-pointer",
+  "disabled:cursor-not-allowed disabled:border-subtle disabled:bg-subtle disabled:checked:bg-emphasis",
+  "aria-invalid:border-invalid"
+);
 
 /** A checkbox with its label to the right. `indeterminate` shows a dash, e.g. a partly-selected "select all". */
 export function Checkbox({ label, hint, className, indeterminate = false, ref, ...rest }: ChoiceProps & { indeterminate?: boolean }) {
@@ -259,14 +398,35 @@ export function Radio({ label, hint, className, ...rest }: ChoiceProps) {
   return <Choice type="radio" label={label} hint={hint} className={className} {...rest} />;
 }
 
-function Choice({ label, hint, className, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
+/** A checkbox or radio. In a Field with errors (a group, or one checkbox) it takes the error look. */
+function Choice({ label, hint, className, id: givenId, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
+  // In a one-checkbox Field it's tied to the Field's error; in a group the fieldset carries it.
+  const { invalid, describedBy } = useContext(FieldContext);
+  const generated = useId();
+  const id = givenId ?? generated;
+  const hintId = `${id}-hint`;
+  // The hint sits outside the <label>, so it's read as the control's description, not part of its name.
+  const described = [...(hint ? [hintId] : []), ...(describedBy ? [describedBy] : [])].join(" ") || undefined;
   return (
-    <label className={cn("flex gap-2 text-sm leading-6 text-body", hint ? "items-start" : "items-center")}>
-      <input data-ui="choice" className={cn(choiceClasses, hint && "mt-1", className)} {...rest} />
-      <span>
-        {label}
-        {hint && <Text variant="body-sm" className="block text-muted">{hint}</Text>}
-      </span>
-    </label>
+    <div className={cn("flex gap-2 text-sm leading-6 text-body has-disabled:text-muted", hint ? "items-start" : "items-center")}>
+      <input
+        id={id}
+        data-ui="choice"
+        aria-invalid={invalid || undefined}
+        aria-describedby={described}
+        className={cn(choiceClasses, hint && "mt-1", className)}
+        {...rest}
+      />
+      <div>
+        <label htmlFor={id} className={rest.disabled ? "cursor-not-allowed" : "cursor-pointer"}>
+          {label}
+        </label>
+        {hint && (
+          <Text id={hintId} variant="body-sm" className="block text-muted">
+            {hint}
+          </Text>
+        )}
+      </div>
+    </div>
   );
 }

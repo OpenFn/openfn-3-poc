@@ -5,7 +5,7 @@ import { cn } from "../../utils/cn";
 import Heading from "../primitives/Heading";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
-import { Radio } from "../primitives/Inputs";
+import { Field, Radio } from "../primitives/Inputs";
 import Popover from "../primitives/Popover";
 import Toggle from "../primitives/Toggle";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
@@ -54,21 +54,20 @@ export default function SettingsMenu() {
               description="Show the behaviour annotation for whatever you hover over."
             />
             <div className="border-t border-subtle pt-4">
-              <fieldset className="space-y-2">
-                <Heading as="legend" size="xs">
-                  Theme
-                </Heading>
-                {themes.map((theme) => (
-                  <Radio
-                    key={theme.id}
-                    name="theme"
-                    checked={theme.id === themeId}
-                    onChange={() => setTheme(theme.id)}
-                    label={<ThemeName meta={theme} />}
-                    hint={theme.description}
-                  />
-                ))}
-              </fieldset>
+              <Field group label="Theme">
+                  <div className="space-y-2">
+                  {themes.map((theme) => (
+                    <Radio
+                      key={theme.id}
+                      name="theme"
+                      checked={theme.id === themeId}
+                      onChange={() => setTheme(theme.id)}
+                      label={<ThemeName meta={theme} />}
+                      hint={theme.description}
+                    />
+                  ))}
+                </div>
+              </Field>
             </div>
           </div>
         )}

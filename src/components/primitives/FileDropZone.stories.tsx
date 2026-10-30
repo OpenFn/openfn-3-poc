@@ -16,6 +16,7 @@ export default meta;
 type Story = StoryObj<typeof FileDropZone>;
 
 export const Default: Story = {};
+export const Disabled: Story = { args: { disabled: true } };
 export const FillsItsParent: Story = {
   args: {
     accept: ".yaml,.yml",

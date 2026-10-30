@@ -3,6 +3,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
 import AuthCard, { AuthFooterLinks } from "../../components/auth/AuthCard";
 import Button from "../../components/primitives/Button";
+import Form from "../../components/primitives/Form";
+import { useForm } from "../../utils/useForm";
+import { emailErrors } from "../../utils/validate";
 import { TextInput } from "../../components/primitives/Inputs";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { authFlags } from "../../mock-data/auth";
@@ -25,27 +28,25 @@ export default function AuthConfirmAccountPage() {
       right={flags.allowSignup && <TextLink variant="plain" to="/users/register">Register</TextLink>}
     />
   );
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate("/projects");
-  };
+  // Confirming needs nothing typed; resending needs the email.
+  const form = useForm({ initial: { email: "" }, validate: ({ email }) => ({ email: token ? [] : emailErrors(email) }) });
 
   return (
     <AuthLayout title={token ? "Confirm account" : "Resend confirmation instructions"}>
       <div id="reset-password">
-        <form onSubmit={onSubmit}>
+        <Form {...form.formProps(() => navigate("/projects"))}>
           <AuthCard>
             {token ? (
               <Button type="submit">Confirm my account</Button>
             ) : (
               <>
-                <TextInput id="user_email" type="email" label="Email" required />
+                <TextInput id="user_email" type="email" label="Email" required {...form.fieldProps("email")} />
                 <Button type="submit">Resend confirmation instructions</Button>
               </>
             )}
             {footer}
           </AuthCard>
-        </form>
+        </Form>
       </div>
     </AuthLayout>
   );

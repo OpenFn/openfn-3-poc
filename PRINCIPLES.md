@@ -62,7 +62,10 @@ look is a change to the primitives, and every page gets it at once.
 - **Field:** label, hint, control, error. Every control has a disabled and an
   error look. See Forms below.
 - **Switch or checkbox:** a switch takes effect now; a checkbox is part of a
-  form you submit.
+  form you submit. One exception: on/off settings in the workflow editor stay
+  switches (a workflow's or a path's Enabled, Allow console.log() usage),
+  though everything there waits for the editor's Save. The editor is one
+  draft you save as a whole, so its switches show its state.
 - **Status:** one badge per kind of status, with the same words and colours
   wherever it shows.
 - **Row actions:** up to two quiet buttons, everything else in a ••• menu.
@@ -100,6 +103,8 @@ errors or buttons itself.
 - **Buttons are placed by the container:** on the right, main action last, on
   pages and in pop-ups alike. The sign-in card is the one exception: its single
   action runs the full width.
+- **A search box or the AI chat box isn't a form you save.** Its button sits
+  in the box and it keeps its own layout.
 
 ## Where we're heading
 

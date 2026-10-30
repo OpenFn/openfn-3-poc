@@ -91,6 +91,92 @@ goes back to Lightning's way.
   grey with white text (`state_pill`); the replica keeps every status pill
   pale, so a list never mixes pale and solid.
 
+## Fields
+
+- **A field with an error turns the typed text red too.** Lightning only
+  reddens the border (`new_inputs.ex`). Red text makes the wrong value easy
+  to spot. A dropdown's prompt stays dark; only a chosen value turns red.
+- **The manual run's JSON error sits under the editor.** Lightning puts it
+  above (`manual-run-panel/views/CustomView.tsx:91`). Every field in the
+  replica reads label, hint, control, error.
+- **The landing screen's "Recommended" badge sits at the right end of the
+  label row.** Lightning puts it next to "Build with AI". Every field keeps
+  its label, star and info icon on the left and one link or badge on the
+  right, as Lightning does for "New Credential".
+- **A picked option card has a primary border; the focus outline only shows
+  for the keyboard.** Lightning's webhook auth type cards draw the focus
+  outline round the picked card, so picked and focused look the same.
+
+- **Info icons are a grey outline everywhere.** Lightning's LiveView pages
+  draw a faded primary icon (`Common.tooltip`, `common.ex`); the
+  collaborative editor draws a grey outline (`ConfigureAdaptorModal.tsx`).
+  The replica uses the grey outline.
+
+
+- **Contact preference explains itself in a hint.** Lightning hides the
+  explanation in an info tooltip. The replica shows a shorter version under
+  the label, so people see what "Critical" means before they choose.
+
+- **A form's buttons sit on the right, the main action last.** Lightning's
+  settings and admin forms put Save on the left, before Cancel (profile,
+  project setup, data storage, MFA, the admin user, project and auth
+  provider forms, first setup); its modals put it on the right. The replica
+  uses the modal's order everywhere: Cancel, then Save. The auth provider's
+  Test sits before Save.
+- **No browser validation bubbles.** Lightning's forms let the browser show
+  "Please fill in this field" for a required field. The replica turns that
+  off, so only the field's own error shows, in the same red as every other.
+  Our checks cover what the browser did: blank required fields, and an email
+  without an @ ("must have the @ sign and no spaces", Lightning's own words).
+- **After a refused Save, focus moves to the first field with an error.**
+  Lightning leaves focus on the button.
+
+- **Data storage shows one card per setting.** Lightning puts its three
+  settings in one card, each with a heading, a paragraph and a divider
+  (`settings.html.heex:862-1053`). The replica gives each its own card with
+  a title and description, like every other settings tab, and one Save below
+  them. The plan's limit note is the History dropdown's hint. When the
+  Input/Output retention period doesn't apply, its dropdown is disabled;
+  Lightning also fades that section's title and description.
+
+- **A setting that waits for Save is a checkbox, not a switch.** Lightning
+  uses switches for the admin user's Support User and a channel's Enabled,
+  though neither applies until you press Save. The replica keeps switches for
+  things that take effect at once (enabling from a table, requiring MFA,
+  support access, experimental features), and for on/off settings in the
+  workflow editor (PRINCIPLES.md).
+- **Profile MFA has "Set up MFA" and "Disable MFA" buttons.** Lightning's
+  switch looks instant but starts a set-up form or asks to confirm, so the
+  replica shows the action it is.
+
+- **Disable parallel execution saves as you switch it, after a confirm.**
+  Lightning puts the switch in a form with its own Save and shows the "Heads
+  Up!" warning once switched. The replica asks first, with the same words,
+  and saves on confirm; switching it back off saves at once.
+  Lightning lets the hosted plan swap in its own control here; the replica
+  keeps the switch and shows the plan's reason ("Not allowed on Free plans")
+  under it, disabled.
+
+- **The login password is required.** Lightning marks only the email as
+  required on the login form. The replica marks both, and says "can't be
+  blank" for an empty password.
+
+- **Save stays pressable in the collaborator and YAML import modals.**
+  Lightning disables Save until every row has an email and a role, and
+  disables Create until the YAML looks right. The replica keeps them
+  pressable and says what's missing when pressed ("can't be blank", "Enter
+  YAML content to create workflow"), and shows a row's email error only
+  then, not while typing.
+- **A disabled Run says why on hover.** When the manual run's JSON doesn't
+  parse, "Run From Here" shows "Fix the JSON input to run".
+
+- **Two-factor and confirm access are ordinary fields.** Lightning gives the
+  panel a large heading ("Password", "Authentication Code") and puts the help
+  text under the Verify or Confirm button. The replica uses a field label,
+  then the help text as its hint, then the box, as on every other form.
+- **Profile's first Save says why it's disabled.** Until something changes,
+  hovering or focusing it shows "No changes to save".
+
 ## File uploads
 
 - **One drop zone for both uploads.** Lightning styles the manual run upload

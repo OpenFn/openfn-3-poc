@@ -83,7 +83,7 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   merged), `dirty`, `reset()`, and `fieldProps(name)` to spread onto
   `TextInput`, `NameField` etc. `clearOnSave` empties the form after a
   successful save (password forms) instead of keeping what was typed.
-- A page form submits with `onSubmit={form.submit(save)}`. It runs `save`
+- A page form submits with `<Form {...form.formProps(save)}>`. It runs `save`
   through `useAction` (pattern 1), so `form.pending` goes on the Save button
   and `form.error` shows as an `Alert` by the form (pattern 7). On success
   the submitted values become the saved ones and the form is clean again.

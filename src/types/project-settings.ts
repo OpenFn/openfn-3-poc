@@ -27,6 +27,8 @@ export interface SetupSettings {
   env: string;
   /** null runs workflows in parallel; 1 runs one at a time across the project. */
   concurrency: number | null;
+  /** Why the plan doesn't allow changing it ("Not allowed on Free plans"), or null. The hosted plan supplies it. */
+  concurrencyLimitMessage: string | null;
   /** "Export project": the project as YAML. */
   exportHref: string;
   /** "Delete project": the route that opens the deletion modal. */

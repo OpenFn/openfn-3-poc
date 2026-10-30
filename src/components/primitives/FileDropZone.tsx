@@ -1,5 +1,6 @@
 import { useId, useState, type DragEvent } from "react";
 import { cn } from "../../utils/cn";
+import { useFieldControl } from "./fieldControl";
 
 /** Lightning's YAML import limit, applied to every upload here. */
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -15,18 +16,22 @@ interface Props {
   hint?: string;
   /** Shown in place of `hint` when a file doesn't match `accept`. */
   invalidMessage: string;
+  disabled?: boolean | undefined;
   className?: string;
 }
 
 /**
  * A dashed area that takes one file, by click, keyboard (the file input
- * inside it is focusable) or drag and drop.
+ * inside it is focusable) or drag and drop. Inside a `Field`, the field's
+ * errors mark it invalid and are read with it.
  */
-export default function FileDropZone({ accept, onFile, label, hint, invalidMessage, className }: Props) {
+export default function FileDropZone({ accept, onFile, label, hint, invalidMessage, disabled = false, className }: Props) {
   const hintId = useId();
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
-  const invalid = error !== "";
+  const field = useFieldControl();
+  const invalid = (error !== "" || field["aria-invalid"] === true) && !disabled;
+  const describedBy = [hint || error ? hintId : undefined, field["aria-describedby"]].filter(Boolean).join(" ") || undefined;
   const extensions = accept.split(",").map((ext) => ext.trim().toLowerCase());
 
   const take = (files: FileList | null) => {
@@ -46,7 +51,7 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
 
   const onDragOver = (e: DragEvent) => {
     e.preventDefault();
-    setDragging(true);
+    if (!disabled) setDragging(true);
   };
   const onDragLeave = (e: DragEvent) => {
     // Moving onto the icon or text inside fires dragleave too.
@@ -55,42 +60,47 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    take(e.dataTransfer.files);
+    if (!disabled) take(e.dataTransfer.files);
   };
 
   return (
     <label
       data-ui="file-drop-zone"
       data-dragging={dragging || undefined}
+      data-disabled={disabled || undefined}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-strong p-3 text-center text-sm/6 text-muted transition-colors",
+        "flex flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-strong p-3 text-center text-sm/6 text-muted transition-colors",
         "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus",
-        dragging
-          ? "border-primary-500 bg-primary-50 text-body"
-          : invalid
-            ? "border-danger-400 bg-danger-50"
-            : "bg-surface hover:border-emphasis",
+        disabled
+          ? "cursor-not-allowed bg-subtle"
+          : dragging
+            ? "cursor-pointer border-primary-500 bg-primary-50 text-body"
+            : invalid
+              ? "cursor-pointer border-invalid bg-danger-50"
+              : "cursor-pointer bg-surface hover:border-emphasis",
         className
       )}
     >
-      <span className={cn("size-8", invalid ? "hero-exclamation-circle text-danger-600" : "hero-cloud-arrow-up text-faint")} />
+      <span className={cn("size-8", invalid ? "hero-exclamation-circle text-invalid" : "hero-cloud-arrow-up text-faint")} />
       <input
         type="file"
         accept={accept}
+        disabled={disabled}
         aria-label={label}
-        aria-describedby={hint || invalid ? hintId : undefined}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         className="sr-only"
         onChange={(e) => {
           take(e.target.files);
           e.target.value = "";
         }}
       />
-      <span className="font-medium text-strong">{label}</span>
-      {invalid ? (
-        <span id={hintId} role="alert" className="text-xs/5 text-danger-700">
+      <span className={cn("font-medium", disabled ? "text-muted" : "text-strong")}>{label}</span>
+      {error !== "" && !disabled ? (
+        <span id={hintId} role="alert" className="text-xs/5 text-invalid">
           {error}
         </span>
       ) : (
