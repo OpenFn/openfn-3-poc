@@ -32,8 +32,10 @@ wrapper.
 - `npm run storybook` — start Storybook on port 6006
 - `npm run build-storybook` — build Storybook static site
 - `npm run test:stories` — render every story in Chromium and run axe on
-  it; each violation fails that story. Local only, not in CI yet. Stop
-  Storybook first: running both breaks the open Storybook until it restarts.
+  it; each violation fails that story. CI runs it on a PR that touches
+  `src/`, `.storybook/` or the packages (`.github/workflows/stories.yml`).
+  Stop Storybook first: running both breaks the open Storybook until it
+  restarts.
 - `npm run compare:all` — set up a local Lightning and compare it with the
   replica, screen by screen. See **Comparing with Lightning** below.
 - `npm run kickstart:sync` — regenerate the shared projects from
