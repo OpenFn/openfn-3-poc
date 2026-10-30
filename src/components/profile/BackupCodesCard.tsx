@@ -5,6 +5,7 @@ import InfoTooltip from "../primitives/InfoTooltip";
 import SectionHeader from "../primitives/SectionHeader";
 import type { BackupCode } from "../../types/tokens";
 import { useCopy } from "../../utils/useCopy";
+import Text from "../primitives/Text";
 
 /**
  * The recovery codes card (backup_codes_live/index.html.heex): the codes
@@ -38,12 +39,13 @@ export default function BackupCodesCard({
       </Alert>
       <div className="grid gap-4 p-6 md:grid-cols-2">
         {codes.map((c) => (
+          // eslint-disable-next-line no-restricted-syntax -- debt: spaced-out backup code has no Text style
           <div key={c.code} className="text-center tracking-widest">
             {c.usedAt ? (
-              <span className="text-sm text-faint">
+              <Text className="text-faint">
                 <span className="line-through">{c.code}</span>
                 <InfoTooltip title={`Code used on ${c.usedAt.slice(0, 19).replace("T", " ")}`} />
-              </span>
+              </Text>
             ) : (
               c.code
             )}

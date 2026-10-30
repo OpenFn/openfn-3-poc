@@ -4,6 +4,7 @@ import DateTime from "../primitives/DateTime";
 import Heading from "../primitives/Heading";
 import IconButton from "../primitives/IconButton";
 import type { ApiToken } from "../../types/tokens";
+import Text from "../primitives/Text";
 
 /**
  * The personal access tokens table (tokens_live/index.html.heex): masked
@@ -52,7 +53,9 @@ export default function TokensTable({ tokens, onGenerate }: { tokens: ApiToken[]
           <span className="hero-finger-print h-12 w-12" />
           <div className="flex-1">
             <Heading size="sm">No Personal Access Tokens</Heading>
-            <p className="mt-1 text-sm text-muted">Get started by creating a new access token.</p>
+            <Text as="p" className="mt-1 text-muted">
+              Get started by creating a new access token.
+            </Text>
           </div>
           <Button id="generate_new_token" onClick={onGenerate} icon="hero-plus">
             Generate New Token
