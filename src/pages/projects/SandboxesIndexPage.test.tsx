@@ -7,6 +7,7 @@ import { RequestError } from "../../utils/errors";
 import { formatUtcDate } from "../../utils/format";
 import { pickOption } from "../../test/select";
 import SandboxesIndexPage, { type SandboxesIndexPageProps } from "./SandboxesIndexPage";
+import { isDisabled } from "../../test/disabled";
 
 const row = (id: string, name: string, more: Partial<SandboxRow> = {}): SandboxRow => ({
   id,
@@ -134,7 +135,7 @@ describe("SandboxesIndexPage", () => {
   it("greys Create with the host's reason, and shows it in place of the empty state's link", () => {
     renderPage({ sandboxes: [], createBlockedReason: "Maximum sandbox nesting depth reached (2 levels deep)" });
     const create = document.getElementById("create-sandbox-button") as HTMLButtonElement;
-    expect(create.disabled).toBe(true);
+    expect(isDisabled(create)).toBe(true);
     expect(create.getAttribute("aria-description")).toBe("Maximum sandbox nesting depth reached (2 levels deep)");
     expect(screen.getByText("No sandboxes found")).toBeTruthy();
     expect(screen.getByText("Maximum sandbox nesting depth reached (2 levels deep)", { selector: "p" })).toBeTruthy();
@@ -150,10 +151,10 @@ describe("SandboxesIndexPage", () => {
     const { navigate } = renderPage({ sandboxes: [live, row("s3", "locked", { canEdit: false, canDelete: false, canMerge: false })] });
     fireEvent.click(action("edit", "s1"));
     expect(navigate).toHaveBeenCalledWith("/projects/p1/sandboxes/s1/edit");
-    expect(action("edit", "s3").disabled).toBe(true);
+    expect(isDisabled(action("edit", "s3"))).toBe(true);
     expect(action("edit", "s3").getAttribute("aria-label")).toBe("You are not authorized to edit this sandbox");
-    expect(action("delete", "s3").disabled).toBe(true);
-    expect(action("branch-rewire", "s3").disabled).toBe(true);
+    expect(isDisabled(action("delete", "s3"))).toBe(true);
+    expect(isDisabled(action("branch-rewire", "s3"))).toBe(true);
   });
 
   describe("delete", () => {
@@ -165,9 +166,9 @@ describe("SandboxesIndexPage", () => {
       expect(dialog.textContent).toContain("retained for 7 days");
       expect(dialog.textContent).not.toContain("You are currently viewing this project");
       const submit = within(dialog).getByRole("button", { name: "Delete sandbox" }) as HTMLButtonElement;
-      expect(submit.disabled).toBe(true);
+      expect(isDisabled(submit)).toBe(true);
       fireEvent.change(screen.getByLabelText(/Sandbox name/), { target: { value: "fhir-mappin" } });
-      expect(submit.disabled).toBe(true);
+      expect(isDisabled(submit)).toBe(true);
       fireEvent.submit(document.getElementById("confirm-delete-sandbox-form")!);
       expect(onDeleteSandbox).not.toHaveBeenCalled();
       fireEvent.change(screen.getByLabelText(/Sandbox name/), { target: { value: "fhir-mapping" } });
@@ -283,9 +284,9 @@ describe("SandboxesIndexPage", () => {
           { ...gone, id: "s5", name: "not-mine", canCancelDeletion: false },
         ],
       });
-      expect(action("cancel-deletion", "s2").disabled).toBe(true);
+      expect(isDisabled(action("cancel-deletion", "s2"))).toBe(true);
       expect(action("cancel-deletion", "s2").getAttribute("aria-description")).toBe("Upgrade to restore more sandboxes");
-      expect(action("cancel-deletion", "s5").disabled).toBe(true);
+      expect(isDisabled(action("cancel-deletion", "s5"))).toBe(true);
       expect(action("cancel-deletion", "s5").getAttribute("aria-description")).toBe("You are not authorized to cancel deletion of this sandbox");
     });
   });
@@ -376,7 +377,7 @@ describe("SandboxesIndexPage", () => {
       expect(ticked().filter((t) => !["Sandbox creds", "cache-a", "cache-b"].includes(t!))).toHaveLength(4);
       fireEvent.click(all);
       expect(all.checked).toBe(false);
-      expect(submit().disabled).toBe(true);
+      expect(isDisabled(submit())).toBe(true);
       expect(submit().getAttribute("aria-description")).toBe("No workflows selected");
       fireEvent.submit(document.getElementById("merge-sandbox-form")!);
       expect(onMergeSandbox).not.toHaveBeenCalled();
@@ -415,7 +416,7 @@ describe("SandboxesIndexPage", () => {
       await openMerge({ onPreviewMerge });
       const select = target();
       await pickOption(select, "other-sandbox");
-      expect(submit().disabled).toBe(true);
+      expect(isDisabled(submit())).toBe(true);
       await pickOption(select, "openhie-project");
       await waitFor(() => expect(submit().disabled).toBe(false));
       resolveSlow(preview({ targetId: "s3", workflows: [wf("w9", "Stale one", { isChanged: true })] }));
@@ -502,7 +503,7 @@ describe("SandboxesIndexPage", () => {
       renderPage({ onPreviewMerge: vi.fn().mockRejectedValue(new RequestError("Sandbox not found")) });
       fireEvent.click(action("branch-rewire", "s1"));
       expect(await screen.findByText("Sandbox not found")).toBeTruthy();
-      expect(submit().disabled).toBe(true);
+      expect(isDisabled(submit())).toBe(true);
       expect(submit().getAttribute("aria-description")).toBe("The merge preview didn't load");
     });
 
@@ -526,7 +527,7 @@ describe("SandboxesIndexPage", () => {
     it("disables Merge when there's no project to merge into", async () => {
       await openMerge({ onPreviewMerge: vi.fn().mockResolvedValue(preview({ targets: [], targetId: null })) });
       expect(screen.getByRole("dialog").textContent).toContain("counterparts in MAIN.");
-      expect(submit().disabled).toBe(true);
+      expect(isDisabled(submit())).toBe(true);
       expect(submit().getAttribute("aria-description")).toBe("No project to merge into");
     });
 

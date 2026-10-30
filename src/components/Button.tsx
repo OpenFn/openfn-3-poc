@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNode, Ref } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactElement, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
@@ -62,8 +62,8 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Shown on hover (often why it's disabled). */
   tooltip?: string | undefined;
   /**
-   * The action is in flight: the button is disabled and shows a spinner
-   * before its label. Pass `useAction().pending` or let `FormModal` /
+   * The action is in flight: the button shows a spinner before its label and
+   * ignores presses, but keeps focus (`aria-disabled`, not `disabled`). Pass `useAction().pending` or let `FormModal` /
    * `ConfirmModal` manage it.
    */
   pending?: boolean;
@@ -71,7 +71,8 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
   /** Which side of the label the icon goes: `left` (the default), or `right` for an arrow or a menu's chevron. Does nothing without an `icon`. */
   iconPosition?: "left" | "right" | undefined;
-  ref?: Ref<HTMLButtonElement>;
+  /** The `<button>`, or the `<a>` when it renders a link. */
+  ref?: Ref<HTMLButtonElement | HTMLAnchorElement>;
   children: ReactNode;
 }
 
@@ -85,7 +86,7 @@ type Props = BaseProps & ButtonLook;
 
 /**
  * Pass `to` or `href` to get a link that looks the same; disabled, it's a
- * plain disabled button. `pending` disables it and shows a spinner while a
+ * plain disabled button. `pending` blocks presses and shows a spinner while a
  * request runs (STANDARDS.md pattern 1). `xs` is the table row action.
  * `variant="plain"` is text with no fill or border, IconButton's default.
  */
@@ -108,6 +109,7 @@ export default function Button({
   iconPosition = "left",
   ref,
   children,
+  onClick,
   ...rest
 }: Props) {
   const disabled = disabledProp || pending;
@@ -119,6 +121,15 @@ export default function Button({
     "data-variant": variant,
     "data-tone": tone,
     "aria-busy": pending || undefined,
+  };
+  // A natively disabled button drops the focus it holds, so a pending one stays focusable and
+  // swallows the press instead; preventDefault also stops a submit button sending its form again.
+  const pendingProps = {
+    "aria-disabled": pending || undefined,
+    onClick: (e: MouseEvent<HTMLButtonElement>) => {
+      if (pending) e.preventDefault();
+      else onClick?.(e);
+    },
   };
   const iconEl = pending ? (
     <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />
@@ -137,28 +148,28 @@ export default function Button({
     </>
   );
   // Links take the same handlers and aria props as buttons.
-  const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
+  const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), onClick: onClick as AnchorHTMLAttributes<HTMLAnchorElement>["onClick"], ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
   const wrap = (el: ReactElement) => (
-    <Tooltip content={tooltip} disabled={disabled && !pending}>
+    <Tooltip content={tooltip} disabled={disabledProp}>
       {el}
     </Tooltip>
   );
   if (to && !disabled) {
     return wrap(
-      <Link to={to} {...link}>
+      <Link ref={ref as Ref<HTMLAnchorElement>} to={to} {...link}>
         {content}
       </Link>
     );
   }
   if (href && !disabled) {
     return wrap(
-      <a href={href} download={download} {...link}>
+      <a ref={ref as Ref<HTMLAnchorElement>} href={href} download={download} {...link}>
         {content}
       </a>
     );
   }
   return wrap(
-    <button ref={ref} type={type} disabled={disabled} {...shared} {...rest}>
+    <button ref={ref as Ref<HTMLButtonElement>} type={type} disabled={disabledProp} {...shared} {...rest} {...pendingProps}>
       {content}
     </button>
   );

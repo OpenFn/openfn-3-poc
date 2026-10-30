@@ -7,6 +7,7 @@ import { RequestError } from "../../utils/errors";
 import { pickOption } from "../../test/select";
 import ProfilePage, { type ProfilePageProps } from "./ProfilePage";
 import { tooltipOf } from "../../test/tooltip";
+import { isDisabled } from "../../test/disabled";
 
 const data = (): Omit<ProfilePageProps, `on${string}`> => ({
   user: {
@@ -375,7 +376,7 @@ describe("ProfilePage", () => {
       expect(link().textContent).toBe("Reconnect your GitHub Account");
       expect(await tooltipOf(link())).toBe("Your token has expired");
       rerender({ github: { connectHref: null, status: "none" } });
-      expect((document.getElementById("github-oauth-not-enabled") as HTMLButtonElement).disabled).toBe(true);
+      expect(isDisabled(document.getElementById("github-oauth-not-enabled"))).toBe(true);
     });
 
     it("disconnects after confirming", async () => {
@@ -401,7 +402,7 @@ describe("ProfilePage", () => {
     it("keeps Delete disabled while the email doesn't match", () => {
       renderPage({ deleting: true });
       type(within(dialog()).getByLabelText(/User email/), "amy@example.com");
-      expect((within(dialog()).getByRole("button", { name: "Delete account" }) as HTMLButtonElement).disabled).toBe(true);
+      expect(isDisabled(within(dialog()).getByRole("button", { name: "Delete account" }))).toBe(true);
     });
 
     it("opens only when the host says so", () => {
@@ -412,7 +413,7 @@ describe("ProfilePage", () => {
     it("deletes once the email is typed, and closes on Cancel", async () => {
       const { onDeleteAccount, onCloseDelete } = renderPage({ deleting: true });
       const confirm = () => within(dialog()).getByRole("button", { name: "Delete account" }) as HTMLButtonElement;
-      expect(confirm().disabled).toBe(true);
+      expect(isDisabled(confirm())).toBe(true);
       type(within(dialog()).getByLabelText(/User email/), "amy@example.org");
       fireEvent.click(confirm());
       await waitFor(() => expect(onDeleteAccount).toHaveBeenCalledWith("amy@example.org"));

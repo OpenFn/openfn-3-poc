@@ -1,8 +1,9 @@
 /// <reference types="node" />
 import { readFileSync } from "node:fs";
 import { composeStories } from "@storybook/react-vite";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { createRef } from "react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { hover, openTooltips } from "../test/tooltip";
 import Button from "./Button";
 import * as stories from "./Button.stories";
@@ -17,12 +18,38 @@ describe("Button", () => {
     expect(openTooltips()).toEqual(["You can't do that"]);
   });
 
-  it("blocks a second click while its request runs", () => {
-    render(<Button pending>Save</Button>);
+  it("blocks a second click while its request runs, and keeps the focus it had", () => {
+    const onClick = vi.fn();
+    const onSubmit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
+    const form = (pending: boolean) => (
+      <form onSubmit={onSubmit}>
+        <Button type="submit" pending={pending} onClick={onClick}>Save</Button>
+      </form>
+    );
+    const { rerender } = render(form(false));
     const button = screen.getByRole<HTMLButtonElement>("button", { name: /Save/ });
-    expect(button.disabled).toBe(true);
+    act(() => button.focus());
+    rerender(form(true));
+    expect(document.activeElement).toBe(button);
+    expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.getAttribute("aria-busy")).toBe("true");
     expect(screen.getByLabelText("Working")).toBeTruthy();
+    fireEvent.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("hands its ref the link it renders", () => {
+    const toRef = createRef<HTMLButtonElement | HTMLAnchorElement>();
+    const hrefRef = createRef<HTMLButtonElement | HTMLAnchorElement>();
+    render(
+      <>
+        <Button ref={toRef} to="/projects">Projects</Button>
+        <Button ref={hrefRef} href="https://docs.openfn.org">Docs</Button>
+      </>
+    );
+    expect(toRef.current).toBe(screen.getByRole("link", { name: "Projects" }));
+    expect(hrefRef.current).toBe(screen.getByRole("link", { name: "Docs" }));
   });
 
   it("can't be followed when a link is disabled", () => {

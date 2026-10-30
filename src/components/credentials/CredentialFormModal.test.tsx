@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CredentialRow, CredentialSecretsResult, OauthClientRow, OauthSignInResult } from "../../types/credentials";
 import { RequestError } from "../../utils/errors";
 import CredentialFormModal from "./CredentialFormModal";
+import { isDisabled } from "../../test/disabled";
 
 const credential: CredentialRow = {
   id: "cred-1",
@@ -246,7 +247,7 @@ describe("CredentialFormModal", () => {
       expect(screen.queryByText("Reauthentication Required")).toBeNull();
       expect(saveButton().disabled).toBe(false);
       fireEvent.click(screen.getByLabelText("spreadsheets"));
-      expect(saveButton().disabled).toBe(true);
+      expect(isDisabled(saveButton())).toBe(true);
       save();
       fireEvent.click(screen.getByLabelText("spreadsheets"));
       expect(saveButton().disabled).toBe(false);
