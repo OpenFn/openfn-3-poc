@@ -33,7 +33,7 @@ wrapper.
 - `npm run build-storybook` — build Storybook static site
 - `npm run test:stories` — render every story in Chromium and run axe on
   it; each violation fails that story. CI runs it on a PR that touches
-  `src/`, `.storybook/` or the packages (`.github/workflows/stories.yml`).
+  `src/`, `.storybook/`, `public/` or the packages (`.github/workflows/stories.yml`).
   Stop Storybook first: running both breaks the open Storybook until it
   restarts.
 - `npm run compare:all` — set up a local Lightning and compare it with the

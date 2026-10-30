@@ -9,6 +9,7 @@ on:
     paths:
       - "src/**"
       - ".storybook/**"
+      - "public/**"
       - "package.json"
       - "package-lock.json"
       - "vite.config.ts"
