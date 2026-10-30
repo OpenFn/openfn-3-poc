@@ -53,9 +53,7 @@ found 44 combinations of size, weight and spacing.
 ## Enforced
 
 ESLint (`typeRules` in `eslint.config.js`) bans `text-xs` to `text-9xl`,
-`leading-*` and `tracking-*` in the areas moved onto `Text` so far: every
-folder of `src/components/` except `primitives/`, `projects/` and
-`workflow/`, and `src/pages/`. Each area adds its folder to the rule's
-`files` list when it moves. A control that owns its type, like `FilterChip`,
-disables the rule on its line with the reason; a line still to move says
-`debt:`.
+`leading-*` and `tracking-*` in `src/pages/` and every folder of
+`src/components/` but `primitives/`. A control that owns its type, like
+`FilterChip`, disables the rule on its line with the reason; a line still to
+move says `debt:`.
