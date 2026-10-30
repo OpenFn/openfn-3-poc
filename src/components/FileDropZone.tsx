@@ -69,10 +69,10 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
         "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-strong p-3 text-center text-sm/6 text-muted transition-colors",
         "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus",
         dragging
-          ? "border-primary-500 bg-primary-50"
+          ? "border-primary-500 bg-primary-50 text-body"
           : invalid
             ? "border-danger-400 bg-danger-50"
-            : "hover:border-emphasis",
+            : "bg-surface hover:border-emphasis",
         className
       )}
     >
@@ -90,7 +90,7 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
       />
       <span className="font-medium text-strong">{label}</span>
       {invalid ? (
-        <span id={hintId} role="alert" className="text-xs/5 text-danger-600">
+        <span id={hintId} role="alert" className="text-xs/5 text-danger-700">
           {error}
         </span>
       ) : (
