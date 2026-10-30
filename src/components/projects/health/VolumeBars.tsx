@@ -5,6 +5,7 @@ import { formatNumber } from "../../../utils/format";
 import { historyUrl } from "../../../utils/history";
 import type { RunBucket } from "../../../types/workflow-health";
 import { CANCELLED, DOT, EMPTY, FAILED, FRAME, LEGEND, SUCCESS } from "./palette";
+import Text from "../../primitives/Text";
 
 /** A run has no `rejected` state, so the red band folds the other five. */
 const RUN_FAILURE_KEYS = ["failed", "crashed", "killed", "exception", "lost"] as const;
@@ -97,6 +98,7 @@ export default function VolumeBars({
   return (
     <>
       <div className={`${FRAME} flex`} aria-hidden="true">
+        {/* eslint-disable-next-line no-restricted-syntax -- chart axis labels */}
         <div className="flex w-11 shrink-0 flex-col text-xs text-muted">
           <div className="relative flex-1">
             {ticks.map((t, i) => (
@@ -108,7 +110,7 @@ export default function VolumeBars({
           <div className="h-5" />
         </div>
         <div className="flex flex-1 flex-col">
-          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart; chart axis labels */}
           <div className="relative flex flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
             {ticks.slice(1).map((t, i) => (
               <div key={i} className="pointer-events-none absolute inset-x-0 border-t border-subtle" style={{ bottom: `${(t / ceiling) * 100}%` }} />
@@ -136,8 +138,10 @@ export default function VolumeBars({
               );
             })}
             {tip && hovered !== null && (
-              <div
-                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-subtle bg-surface text-xs shadow-lg"
+              <Text
+                as="div"
+                variant="body-sm"
+                className="pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-lg border border-subtle bg-surface shadow-lg"
                 // Beside the bar, on the side with more room.
                 style={hovered < n / 2 ? { left: `${((hovered + 1) / n) * 100}%` } : { right: `${((n - hovered) / n) * 100}%` }}
               >
@@ -151,10 +155,10 @@ export default function VolumeBars({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Text>
             )}
           </div>
-          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart; chart axis labels */}
           <div className="flex h-5 gap-[1%] pt-1 text-xs text-muted">
             {rows.map((r, i) => (
               <span key={r.at} className="flex-1 truncate text-center">

@@ -8,6 +8,7 @@ import FormModal from "../../primitives/FormModal";
 import { Checkbox, Select } from "../../primitives/Inputs";
 import Pill from "../../primitives/Pill";
 import Spinner from "../../primitives/Spinner";
+import Text from "../../primitives/Text";
 
 interface State {
   /** The latest preview that arrived. Merge always sends its target. */
@@ -138,8 +139,9 @@ export default function MergeSandboxModal({
       }
     >
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm text-body">
+        <Text as="div" className="flex items-center gap-2 text-body">
           <span>Merge</span>
+          {/* eslint-disable-next-line no-restricted-syntax -- debt: Pill has no 14px size */}
           <Pill square color="gray" className="text-sm text-strong">
             {sandboxName}
           </Pill>
@@ -159,11 +161,11 @@ export default function MergeSandboxModal({
               void ask(targetId);
             }}
           />
-        </div>
-        <p className="text-sm text-body">
+        </Text>
+        <Text as="p" className="text-body">
           The workflows you select below will overwrite their counterparts in{" "}
           <strong className="font-medium text-strong">{targetName}</strong>. Any conflicting changes in the target are lost.
-        </p>
+        </Text>
       </div>
 
       {s.error && (
@@ -273,9 +275,9 @@ function TickList({
             onChange={() => onChange(all ? new Set() : new Set(rows.map((r) => r.id)))}
           />
         </div>
-        <span className="text-xs text-muted">
+        <Text variant="body-sm" className="text-muted">
           {selected.size} of {rows.length} selected
-        </span>
+        </Text>
       </div>
       <ul className="max-h-48 divide-y divide-subtle overflow-y-auto">
         {rows.map((r) => (

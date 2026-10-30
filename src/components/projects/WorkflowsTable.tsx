@@ -13,6 +13,7 @@ import Pill from "../primitives/Pill";
 import TextLink from "../primitives/TextLink";
 import WorkOrderStatus from "./WorkOrderStatus";
 import { useUrlParams } from "../../utils/useUrlParams";
+import Text from "../primitives/Text";
 
 /**
  * The workflows index table (DashboardComponents.workflows_table): name and
@@ -117,9 +118,9 @@ export default function WorkflowsTable({
                     {wf.name}
                   </p>
                 </Tooltip>
-                <p className="mt-1 text-xs">
+                <Text as="p" variant="body-sm" className="mt-1">
                   Updated <DateTime value={wf.updatedAt} />
-                </p>
+                </Text>
               </Td>
               <Td>
                 <WorkOrderStatus state={s.lastWorkOrder?.state ?? null} updatedAt={s.lastWorkOrder?.updatedAt} period={period} />
@@ -183,8 +184,9 @@ function toggleTooltip(triggerType: string, enabled: boolean, lifecycle: boolean
 function Count({ value, to, children }: { value: number; to: string; children: ReactNode }) {
   return (
     <>
+      {/* eslint-disable-next-line no-restricted-syntax -- debt: 18px count has no Text style */}
       <div className="text-lg">{value > 0 ? <TextLink to={to}>{value}</TextLink> : <span className="text-faint">0</span>}</div>{" "}
-      <div className="mt-1 text-xs">{value > 0 ? children : "N/A"}</div>
+      <Text as="div" variant="body-sm" className="mt-1">{value > 0 ? children : "N/A"}</Text>
     </>
   );
 }

@@ -3,6 +3,7 @@ import Card from "../../primitives/Card";
 import Heading from "../../primitives/Heading";
 import TextLink from "../../primitives/TextLink";
 import WorkspaceCard from "./WorkspaceCard";
+import Text from "../../primitives/Text";
 
 /**
  * The sandboxes page list (SandboxLive.Components.workspace_list): the root
@@ -57,15 +58,18 @@ export default function WorkspaceList({
       <div className="space-y-3">
         {card(root, !rootIsSandbox)}
         {active.length === 0 && scheduled.length === 0 ? (
-          <Card dashed className="space-y-3 py-8 text-center text-sm text-muted">
-            <p className="text-base font-medium">No sandboxes found</p>
-            <p>
-              {createBlockedReason ?? (
-                <>
-                  <TextLink to={newHref}>Create your first sandbox</TextLink> to start experimenting.
-                </>
-              )}
-            </p>
+          <Card dashed className="py-8 text-center text-muted">
+            <Text as="div" className="space-y-3">
+              {/* eslint-disable-next-line no-restricted-syntax -- debt: 16px medium empty-state title has no Heading size */}
+              <p className="text-base font-medium">No sandboxes found</p>
+              <p>
+                {createBlockedReason ?? (
+                  <>
+                    <TextLink to={newHref}>Create your first sandbox</TextLink> to start experimenting.
+                  </>
+                )}
+              </p>
+            </Text>
           </Card>
         ) : (
           active.map((s) => card(s))
