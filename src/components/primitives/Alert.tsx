@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import type { Tone } from "./tone";
+import Heading from "./Heading";
+import Text from "./Text";
 
 export type AlertTone = Extract<Tone, "info" | "success" | "warning" | "danger">;
 
@@ -59,11 +61,17 @@ export default function Alert({ tone, header, children, className, id }: Props) 
         <div className="ml-3 min-w-0 flex-1">
           {header ? (
             <>
-              <h3 className={cn("text-sm font-medium", c.header)}>{header}</h3>
-              <div className={cn("mt-2 text-sm", c.text)}>{children}</div>
+              <Heading size="sm" className={c.header}>
+                {header}
+              </Heading>
+              <Text as="div" className={cn("mt-2", c.text)}>
+                {children}
+              </Text>
             </>
           ) : (
-            <div className={cn("text-sm", c.text)}>{children}</div>
+            <Text as="div" className={c.text}>
+              {children}
+            </Text>
           )}
         </div>
       </div>

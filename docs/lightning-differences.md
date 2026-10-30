@@ -80,3 +80,9 @@ goes back to Lightning's way.
   Lightning grows them to 16px when the panel is wide
   (`viewers.ex:106,277`), the only text it sizes by panel width. In the
   replica every piece of text has one size, from `Text`.
+- **An alert's header is semibold.** Lightning sets it medium
+  (`common.ex:173`); the replica draws it with `Heading size="sm"`, the
+  same as every other small title.
+- **A modal's title has a normal line height.** Lightning squeezes it to
+  20px (`modal.ex:109`); the replica uses `Heading size="lg"` as it is, so
+  the title lines up with the close button.

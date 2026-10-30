@@ -1,7 +1,9 @@
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import CloseButton from "./CloseButton";
+import Heading from "./Heading";
+import Text from "./Text";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
@@ -64,8 +66,18 @@ export default function Modal({ open, onClose, title, description, children, foo
                   <>
                     <header className="flex items-start justify-between gap-4 px-6">
                       <div>
-                        <DialogTitle className="text-lg font-semibold leading-5 text-strong">{title}</DialogTitle>
-                        {description && <Description className="mt-2 text-sm text-muted">{description}</Description>}
+                        <DialogTitle as={Fragment}>
+                          <Heading size="lg" as="h2">
+                            {title}
+                          </Heading>
+                        </DialogTitle>
+                        {description && (
+                          <Description as={Fragment}>
+                            <Text as="p" className="mt-2 text-muted">
+                              {description}
+                            </Text>
+                          </Description>
+                        )}
                       </div>
                       <CloseButton onClick={onClose} />
                     </header>

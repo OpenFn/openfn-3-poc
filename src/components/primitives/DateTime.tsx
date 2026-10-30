@@ -1,6 +1,7 @@
 import { formatRelative, formatRelativeDetailed, formatTimeOnly, formatUtc } from "../../utils/format";
 import { cn } from "../../utils/cn";
 import Tooltip from "./Tooltip";
+import Text from "./Text";
 
 /**
  * Lightning's `Common.datetime`: a local, relative timestamp ("today at
@@ -31,7 +32,7 @@ export default function DateTime({
       content={
         <>
           {utc}
-          <span className="block text-xs text-faint">Click to copy timestamp</span>
+          <Text variant="body-sm" className="block text-faint">Click to copy timestamp</Text>
         </>
       }
     >
