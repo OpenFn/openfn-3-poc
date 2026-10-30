@@ -46,6 +46,31 @@ goes back to Lightning's way.
   it looks the same on white and grey surfaces. Some Lightning icon buttons
   add a grey square on hover, others don't.
 
+## Page header
+
+- **A page inside a project names itself under the bar.** Lightning's bar
+  holds the breadcrumb and, on some pages, the main button, and the page name
+  is only the last crumb (`LayoutComponents.header`). The replica keeps the
+  bar with the breadcrumb, and adds a row under it with the page title, its
+  count and the main button or search: "Workflows (3)" with "Create new
+  workflow". Lightning put those in the body's `table_title` on Workflows,
+  Sandboxes and Channels, so every page now names itself in one place.
+- **Top-level pages keep their title in the bar, and their main button moves
+  up beside it.** Lightning puts "Create project" and "Create collection"
+  under a second "Projects (3)" / "Collections (3)" title in the body
+  (`dashboard_live/user_projects_section.ex:74`, `collection_live/index.ex:99`);
+  the replica shows the count in the bar title and drops the repeat.
+- **History's Work Orders / Channel Logs tabs sit beside its title.**
+  Lightning puts them in the bar (`run_live/index.html.heex:22`).
+- **A detail page's short id is in its title, as plain text.** Lightning
+  ends the breadcrumb with "Run" and a light short id (or a mono one for a
+  channel request); the replica's breadcrumb ends with "Run" and the title
+  row reads "Run 5e9a1c2b". How a short id looks is still open (G155).
+- **A workflow's Health page names the workflow in the header**, with the
+  range picker beside it; Lightning puts both at the top of the page body.
+- **A `>` follows the project picker in the breadcrumb.** Lightning shows
+  none there, only between later crumbs.
+
 ## Tags
 
 - **A timed-out channel request is a warning (yellow).** Lightning draws the

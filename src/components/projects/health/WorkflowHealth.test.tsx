@@ -1,10 +1,9 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { HEALTH_LOAD_ERROR } from "../../../constants";
 import type { ErrorSignatures, HealthQuery, Outcomes, RunVolume } from "../../../types/workflow-health";
 import { FAILED } from "./palette";
 import WorkflowHealth from "./WorkflowHealth";
-import { tooltipOf } from "../../../test/tooltip";
 
 const range = { from: "2026-10-07T10:00:00.000Z", to: "2026-10-14T10:00:00.000Z" };
 const zero = { success: 0, cancelled: 0, failed: 0, crashed: 0, killed: 0, exception: 0, lost: 0, rejected: 0 };
@@ -26,49 +25,21 @@ const runs: RunVolume = {
 const ok = <T,>(data: T): HealthQuery<T> => ({ data, error: null });
 
 function renderHealth(props: Partial<React.ComponentProps<typeof WorkflowHealth>> = {}) {
-  const onDaysChange = vi.fn();
   render(
     <WorkflowHealth
       projectId="p1"
       workflowId="wf-1"
-      workflowName="Daily sync"
       days="7"
-      onDaysChange={onDaysChange}
       outcomes={ok(outcomes)}
       failures={ok(failures)}
       runs={ok(runs)}
       {...props}
     />
   );
-  return { onDaysChange };
 }
 
 const card = (title: string) => screen.getByRole("heading", { name: title }).closest<HTMLElement>("[data-ui=card]")!;
 const params = (href: string | null) => new URL(href!, "http://x").searchParams;
-
-describe("WorkflowHealth range picker", () => {
-  it("is a radio group that disables ranges past the history retention", () => {
-    const { onDaysChange } = renderHealth({ historyRetentionPeriod: 14 });
-    expect(screen.queryByRole("tab", { name: "Last 7 days" })).toBeNull();
-    // The segmented control, so the themes style it like every other pill switch.
-    expect(screen.getByRole("radiogroup", { name: "Time range" }).getAttribute("data-ui")).toBe("segmented-control");
-    const month = screen.getByRole("radio", { name: "Last 30 days" });
-    expect(month.getAttribute("aria-disabled")).toBe("true");
-    expect(screen.getByRole("radio", { name: "Last 7 days" }).getAttribute("aria-checked")).toBe("true");
-    expect(screen.getByRole("radio", { name: "Last 24 hours" }).hasAttribute("aria-disabled")).toBe(false);
-
-    fireEvent.click(month);
-    expect(onDaysChange).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("radio", { name: "Last 24 hours" }));
-    expect(onDaysChange).toHaveBeenCalledWith("1");
-  });
-
-  it("names the retention when a disabled range is hovered", async () => {
-    renderHealth({ historyRetentionPeriod: 14 });
-    // The tooltip hangs off the wrapper, since a disabled radio drops pointer events.
-    expect(await tooltipOf(screen.getByRole("radio", { name: "Last 30 days" }).parentElement!)).toBe("Only 14 days of history are kept for this project.");
-  });
-});
 
 describe("WorkflowHealth panels", () => {
   it("shows a loading frame per panel, with no numbers, meta, empty message or error", () => {
@@ -182,9 +153,8 @@ describe("WorkflowHealth runs over time", () => {
 describe("WorkflowHealth page body", () => {
   const big: Outcomes = { window: range, counts: { ...zero, success: 1146, failed: 98, crashed: 24, killed: 12, lost: 7 } };
 
-  it("names the workflow and totals its work orders", () => {
+  it("totals its work orders", () => {
     renderHealth({ outcomes: ok(big) });
-    expect(screen.getByRole("heading", { name: "Daily sync" })).toBeTruthy();
     expect(screen.getByText("1,287 work orders")).toBeTruthy();
   });
 
@@ -225,7 +195,7 @@ describe("WorkflowHealth page body", () => {
     renderHealth({ outcomes: refused, failures: refused, runs: refused });
     expect(screen.getAllByText(HEALTH_LOAD_ERROR)).toHaveLength(4);
     // The page stays around its failed panels.
-    for (const name of ["Daily sync", "Outcomes", "Failure breakdown", "Steps with failures", "Triage - grouped by failure type"]) {
+    for (const name of ["Outcomes", "Failure breakdown", "Steps with failures", "Triage - grouped by failure type"]) {
       expect(screen.getByRole("heading", { name })).toBeTruthy();
     }
     fireEvent.click(screen.getByRole("tab", { name: "Runs" }));
@@ -241,13 +211,4 @@ describe("WorkflowHealth page body", () => {
     expect(screen.getByText("fail:RuntimeError @ Load")).toBeTruthy();
   });
 
-  it("leaves every range enabled when retention is unlimited or covers them all", () => {
-    for (const historyRetentionPeriod of [null, 30]) {
-      renderHealth({ historyRetentionPeriod });
-      for (const name of ["Last 24 hours", "Last 7 days", "Last 30 days"]) {
-        expect(screen.getByRole("radio", { name }).hasAttribute("aria-disabled")).toBe(false);
-      }
-      cleanup();
-    }
-  });
 });

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Heading from "../primitives/Heading";
+import SectionHeader from "../primitives/SectionHeader";
 import InfoTooltip from "../primitives/InfoTooltip";
 import Pill from "../primitives/Pill";
 import { Table, Td, Th, Tr } from "../primitives/Table";
@@ -10,14 +10,6 @@ import Tooltip from "../primitives/Tooltip";
  * The three tables of the credential index (live/components/data_tables.ex):
  * a plain title, then either the table or the empty state passed in.
  */
-
-function TableTitle({ children }: { children: ReactNode }) {
-  return (
-    <Heading className="mb-2">
-      {children}
-    </Heading>
-  );
-}
 
 function ProjectBadges({ names }: { names: string[] }) {
   return (
@@ -56,8 +48,8 @@ interface TableProps<T> {
 
 export function OauthClientsTable({ rows, showOwner = false, emptyState, actions }: TableProps<OauthClientRow>) {
   return (
-    <div id="oauth-clients-table-container">
-      <TableTitle>OAuth Clients</TableTitle>
+    <div id="oauth-clients-table-container" className="space-y-2">
+      <SectionHeader title="OAuth Clients" />
       {rows.length === 0 ? (
         emptyState
       ) : (
@@ -92,8 +84,8 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
 
 export function CredentialsTable({ rows, showOwner = false, emptyState, actions }: TableProps<CredentialRow>) {
   return (
-    <div id="credentials-table-container">
-      <TableTitle>Credentials</TableTitle>
+    <div id="credentials-table-container" className="space-y-2">
+      <SectionHeader title="Credentials" />
       {rows.length === 0 ? (
         emptyState
       ) : (
@@ -148,8 +140,8 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
 
 export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, actions }: TableProps<KeychainCredentialRow>) {
   return (
-    <div id="keychain-credentials-table-container">
-      <TableTitle>Keychain Credentials</TableTitle>
+    <div id="keychain-credentials-table-container" className="space-y-2">
+      <SectionHeader title="Keychain Credentials" />
       {rows.length === 0 ? (
         emptyState
       ) : (

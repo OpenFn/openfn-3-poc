@@ -117,26 +117,22 @@ export default function RunShowPage({
           project={project}
           label={projectLabel}
           items={[["History", `/projects/${project.id}/history`]]}
-          current={
-            <>
-              Run
-              <span className="pl-2 font-light">{shortUuid(runId)}</span>
-              <div className="mx-2" />
-              {run && snapshotVersion && (
-                <SnapshotVersionChip
-                  version={snapshotVersion}
-                  tooltip={
-                    snapshotVersion === "latest"
-                      ? "This run is based on the latest version of this workflow."
-                      : `This run is based on a snapshot of this workflow that was taken on ${snapshotDate(run.snapshot.insertedAt)}`
-                  }
-                />
-              )}
-            </>
-          }
+          current="Run"
         />
       }
-    />
+      title={`Run ${shortUuid(runId)}`}
+    >
+      {run && snapshotVersion && (
+        <SnapshotVersionChip
+          version={snapshotVersion}
+          tooltip={
+            snapshotVersion === "latest"
+              ? "This run is based on the latest version of this workflow."
+              : `This run is based on a snapshot of this workflow that was taken on ${snapshotDate(run.snapshot.insertedAt)}`
+          }
+        />
+      )}
+    </Header>
   );
 
   if (loading) {

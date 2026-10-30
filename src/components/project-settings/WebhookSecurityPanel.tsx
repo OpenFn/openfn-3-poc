@@ -60,6 +60,7 @@ export default function WebhookSecurityPanel({ webhookSecurity: { authMethods, c
   return (
     <>
       <SectionHeader
+        size="lg"
         title={title}
         subtitle={subtitle}
         permissionsSection={canWrite ? undefined : "webhook auth methods."}

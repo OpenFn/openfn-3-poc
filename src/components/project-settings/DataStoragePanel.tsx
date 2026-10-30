@@ -72,6 +72,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
   return (
     <>
       <SectionHeader
+        size="lg"
         title="Data storage"
         subtitle="View or modify data storage settings for this project."
         permissionsSection={canEdit ? undefined : "data storage settings."}

@@ -25,14 +25,10 @@ export default function DataclipShowPage({ project, projectLabel, dataclip, body
             <ProjectBreadcrumbs
               project={project}
               label={projectLabel}
-              current={
-                <>
-                  Dataclip
-                  <span className="pl-2 font-light">{shortUuid(dataclip.id)}</span>
-                </>
-              }
+              current="Dataclip"
             />
           }
+          title={`Dataclip ${shortUuid(dataclip.id)}`}
         />
       }
     >

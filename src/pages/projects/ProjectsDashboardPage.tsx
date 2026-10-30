@@ -30,7 +30,18 @@ export default function ProjectsDashboardPage({ firstName, projects, onCreate }:
   const [creating, setCreating] = useState(false);
 
   return (
-    <PageContent header={<Header title="Projects" />}>
+    <PageContent
+      header={
+        // With no projects, Lightning shows only the empty state's "Create a new one.": no count, no second button.
+        <Header title="Projects" count={projects.length || undefined}>
+          {projects.length > 0 && (
+            <Button id="open-create-project-modal-button" onClick={() => setCreating(true)}>
+              Create project
+            </Button>
+          )}
+        </Header>
+      }
+    >
       <Centered>
         <div className="-mt-6">
           <WelcomeBanner firstName={firstName} />
@@ -38,11 +49,6 @@ export default function ProjectsDashboardPage({ firstName, projects, onCreate }:
             <ProjectsTable
               projects={projects}
               onCreate={() => setCreating(true)}
-              createButton={
-                <Button id="open-create-project-modal-button" className="w-full" onClick={() => setCreating(true)}>
-                  Create project
-                </Button>
-              }
             />
           </div>
           <CreateProjectModal open={creating} onClose={() => setCreating(false)} onCreate={onCreate} />

@@ -40,6 +40,7 @@ export default function CollectionsPanel({ collections: { collections, canManage
   return (
     <div id="collections" className="space-y-4">
       <SectionHeader
+        size="lg"
         title="Project collections"
         subtitle="Manage collections for this project."
         permissionsSection={canManage ? undefined : "available collections."}

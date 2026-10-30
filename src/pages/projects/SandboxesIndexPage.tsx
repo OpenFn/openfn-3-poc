@@ -3,7 +3,6 @@ import Button from "../../components/primitives/Button";
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import TableTitle from "../../components/primitives/TableTitle";
 import DeleteSandboxModal from "../../components/domain/DeleteSandboxModal";
 import MergeSandboxModal from "../../components/projects/sandboxes/MergeSandboxModal";
 import SandboxFormModal from "../../components/projects/sandboxes/SandboxFormModal";
@@ -105,9 +104,9 @@ export default function SandboxesIndexPage({
   const merging = [root, ...sandboxes].find((s) => s.id === mergingId) ?? null;
 
   return (
-    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Sandboxes" />} />}>
-      <Centered>
-        <TableTitle title="Sandboxes" className="mb-6">
+    <PageContent
+      header={
+        <Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Sandboxes" />} title="Sandboxes">
           <Button
             id="create-sandbox-button"
             size="lg"
@@ -117,8 +116,10 @@ export default function SandboxesIndexPage({
           >
             Create Sandbox
           </Button>
-        </TableTitle>
-
+        </Header>
+      }
+    >
+      <Centered>
         <WorkspaceList
           root={root}
           rootIsSandbox={rootIsSandbox}

@@ -17,4 +17,22 @@ export const WithAction: Story = {
 export const WithBreadcrumbs: Story = {
   args: { breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="History" /> },
 };
+export const TitleWithCount: Story = {
+  args: { title: "Projects", count: 3, children: <Button>Create project</Button> },
+};
+export const WithBreadcrumbsAndTitle: Story = {
+  args: {
+    breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="Workflows" />,
+    title: "Workflows",
+    count: 3,
+    children: <Button>Create new workflow</Button>,
+  },
+};
+export const LongTitle: Story = {
+  args: {
+    breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="Settings" />,
+    title: "Malawi Community Health Worker Referrals to National HMIS (DHIS2 Tracker) settings",
+    children: <Button>Save</Button>,
+  },
+};
 export const LoggedOut: Story = { args: { title: "Log in", loggedOut: true } };

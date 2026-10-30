@@ -107,8 +107,8 @@ describe("ChannelRequestShowPage", () => {
     expect(screen.getByText("https://destination.example.com/api")).toBeTruthy();
     // The summary's latency, and the timing bar's end.
     expect(screen.getAllByText("350 ms")).toHaveLength(2);
-    // The short id in the breadcrumb and beside "Request".
-    expect(screen.getAllByText("4f1c9a8e")).toHaveLength(2);
+    // The short id beside "Request" (the page title has it too).
+    expect(screen.getAllByText("4f1c9a8e")).toHaveLength(1);
 
     const redacted = screen.getByText("[REDACTED]");
     expect(redacted.className).toContain("italic");
@@ -118,11 +118,11 @@ describe("ChannelRequestShowPage", () => {
     expect(screen.getAllByText("JSON").length).toBe(2);
   });
 
-  it("names the breadcrumb trail with the request's short id", () => {
+  it("names the breadcrumb trail, and the page with the request's short id", () => {
     renderPage();
     expect(screen.getByRole("link", { name: "History" }).getAttribute("href")).toBe("/projects/p1/history");
     expect(screen.getByRole("link", { name: "Channels" }).getAttribute("href")).toBe("/projects/p1/history/channels");
-    expect(screen.getByText(/Channel Request/).textContent).toContain("4f1c9a8e");
+    expect(screen.getByRole("heading", { level: 1, name: "Channel Request 4f1c9a8e" })).toBeTruthy();
   });
 
   it("explains a transport error and shows its code, with one timing bar", async () => {
