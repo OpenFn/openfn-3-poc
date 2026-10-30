@@ -25,7 +25,8 @@ export interface RunOverlay {
 interface Props {
   graph: WorkflowGraph;
   selection: Selection;
-  onSelect: (selection: Selection) => void;
+  /** `keyboard` when picked with Enter or Space, so the inspector can take focus. */
+  onSelect: (selection: Selection, how?: { keyboard: boolean }) => void;
   /** The "+" under a job: add a new step after it. */
   onAddPath?: (jobId: string) => void;
   run?: RunOverlay | null;
@@ -65,8 +66,16 @@ export default function WorkflowDiagram({
   const [manualLayout, setManualLayout] = useState(false);
   const fitted = useRef(false);
   const drag = useRef<{ x: number; y: number; vx: number; vy: number; moved: boolean } | null>(null);
+  // A step picked from the keyboard gets focus back when its inspector closes and the focus with it.
+  const returnTo = useRef<HTMLElement | null>(null);
   // A preview's nodes and paths do nothing, so they aren't buttons.
-  const pick = (picked: Selection) => (preview ? undefined : () => onSelect(picked));
+  const pick = (picked: Selection) =>
+    preview
+      ? undefined
+      : (how?: { keyboard: boolean }) => {
+          returnTo.current = how?.keyboard ? (document.activeElement as HTMLElement) : null;
+          onSelect(picked, how);
+        };
 
   const fit = useCallback(
     (width = size.width, height = size.height) => {
@@ -132,6 +141,11 @@ export default function WorkflowDiagram({
   }, []);
 
   const selectedId = selection?.id ?? null;
+  useEffect(() => {
+    if (selectedId !== null) return;
+    if (returnTo.current && document.activeElement === document.body) returnTo.current.focus();
+    returnTo.current = null;
+  }, [selectedId]);
   const triggerIds = new Set(graph.triggers.map((t) => t.id));
   const isRun = !!run;
 
@@ -249,7 +263,10 @@ export default function WorkflowDiagram({
         if (d.moved) setViewport((v) => ({ ...v, x: d.vx + dx, y: d.vy + dy }));
       }}
       onPointerUp={() => {
-        if (drag.current && !drag.current.moved) onSelect(null);
+        if (drag.current && !drag.current.moved) {
+          returnTo.current = null;
+          onSelect(null);
+        }
         drag.current = null;
       }}
       data-testid="workflow-diagram"
@@ -292,12 +309,13 @@ export default function WorkflowDiagram({
 }
 
 /** The adaptor icon inside a job node, or its short name when there's no icon (nodes/Job.tsx). */
+/** Decorative: the step's sublabel already names the adaptor. */
 function JobIcon({ adaptor }: { adaptor: string }) {
   const url = adaptorIconUrl(adaptor);
   const short = adaptorShortName(adaptor);
   return url ? (
-    <img src={url} alt={short} className="w-full h-full" draggable={false} />
+    <img src={url} alt="" className="w-full h-full" draggable={false} />
   ) : (
-    <div className="font-bold overflow-hidden text-ellipsis whitespace-nowrap">{short}</div>
+    <div className="font-bold overflow-hidden text-ellipsis whitespace-nowrap" aria-hidden="true">{short}</div>
   );
 }

@@ -33,8 +33,8 @@ interface Props {
   startedBy?: string | undefined;
   /** Shows the "+" path button under the node on hover (jobs only). */
   onAddPath?: (() => void) | undefined;
-  /** Picks it. Without one it isn't a button (the read-only preview). */
-  onClick?: (() => void) | undefined;
+  /** Picks it; `keyboard` when picked with Enter or Space. Without one it isn't a button (the read-only preview). */
+  onClick?: ((how?: { keyboard: boolean }) => void) | undefined;
 }
 
 /**
@@ -82,7 +82,7 @@ export default function DiagramNode({
         onKeyDown={(e) => {
           if (e.key !== "Enter" && e.key !== " ") return;
           e.preventDefault();
-          onClick?.();
+          onClick?.({ keyboard: true });
         }}
       >
         <div className="relative">

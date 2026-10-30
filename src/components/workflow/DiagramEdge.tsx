@@ -22,8 +22,8 @@ interface Props {
   neighbour?: boolean;
   /** While viewing a run: the path wasn't taken. */
   didntRun?: boolean;
-  /** Picks it. Without one it isn't a button (the read-only preview). */
-  onClick?: (() => void) | undefined;
+  /** Picks it; `keyboard` when picked with Enter or Space. Without one it isn't a button (the read-only preview). */
+  onClick?: ((how?: { keyboard: boolean }) => void) | undefined;
 }
 
 /**
@@ -124,7 +124,7 @@ export default function DiagramEdge({
         onKeyDown={(e) => {
           if (e.key !== "Enter" && e.key !== " ") return;
           e.preventDefault();
-          onClick?.();
+          onClick?.({ keyboard: true });
         }}
         onPointerDown={(e) => e.stopPropagation()}
         data-testid={`edge-label-${id}`}
