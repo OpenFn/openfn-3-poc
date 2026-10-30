@@ -72,13 +72,14 @@ describe("the type size lint rule", () => {
     expect(await typeMessages("src/components/project-settings/Probe.tsx", className)).toHaveLength(1);
     expect(await typeMessages("src/components/admin/Probe.tsx", className)).toHaveLength(1);
     expect(await typeMessages("src/components/devtools/Probe.tsx", className)).toHaveLength(1);
+    expect(await typeMessages("src/components/shell/Probe.tsx", className)).toHaveLength(1);
     expect(await typeMessages("src/components/primitives/Probe.tsx", className)).toEqual([]);
   });
 
   // A later block for the same file replaces the history block's list, so check every file.
   it("applies to every component in the areas moved onto Text", async () => {
     const files = Object.keys(sources)
-      .filter((path) => /^\.\/components\/(history|domain|auth|profile|credentials|project-settings|admin|devtools)\/.+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
+      .filter((path) => /^\.\/components\/(history|domain|auth|profile|credentials|project-settings|admin|devtools|shell)\/.+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
       .map((path) => `src${path.slice(1)}`);
     expect(files.length).toBeGreaterThan(0);
     const missing: string[] = [];

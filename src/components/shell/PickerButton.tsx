@@ -40,6 +40,7 @@ export default function PickerButton({
         document.body.dispatchEvent(new CustomEvent(openEvent));
       }}
       className={cn(
+        // eslint-disable-next-line no-restricted-syntax -- a control that owns its type: the picker button
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
         isSandbox
           ? "border-transparent text-inverse hover:opacity-90"
