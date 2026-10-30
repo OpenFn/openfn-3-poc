@@ -59,7 +59,6 @@ export default function ChannelsIndexPage({
   const { navigate } = useRouter();
   const toast = useToast();
   const base = `/projects/${project.id}/channels`;
-  const pageTitle = form ? (form.channel ? "Edit Channel" : "New Channel") : "Channels";
   // The host announces success (its flash); a refusal or a lost connection is said here.
   const failed = (error: unknown) => toast(errorMessage(error), "danger");
 
@@ -68,7 +67,7 @@ export default function ChannelsIndexPage({
       <PageContent
         header={
           <Header
-            breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current={pageTitle} />}
+            breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Channels" />}
             title="Channels"
             count={channels.length}
           >

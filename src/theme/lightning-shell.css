@@ -58,8 +58,12 @@
 #sidebar-panel[data-collapsed="true"] {
   width: 64px;
   .menu-item { justify-content: center; padding: 0; }
+  /* Visually hidden (Tailwind's sr-only), so the account button and Experimental keep their names. */
   .menu-item-text,
-  .user-menu-text,
+  .user-menu-text {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+  }
   .user-menu-chevron { display: none; }
   .user-menu-trigger { justify-content: center; padding: 0; }
   .user-menu-content { justify-content: center; }
