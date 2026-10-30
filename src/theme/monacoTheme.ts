@@ -10,7 +10,12 @@ export function setUpMonaco(monaco: Monaco) {
   monaco.editor.defineTheme("default", {
     base: "vs-dark",
     inherit: true,
-    rules: [{ token: "logSource", foreground: "#CBD5E1", fontStyle: "italic" }],
+    rules: [
+      { token: "logSource", foreground: "#CBD5E1", fontStyle: "italic" },
+      // vs-dark's string orange is too dark on this background for AA contrast.
+      { token: "string", foreground: "#F0C4A8" },
+      { token: "string.value.json", foreground: "#F0C4A8" },
+    ],
     colors: {
       "editor.foreground": "#E2E8F0",
       "editorLineNumber.foreground": "#CBD5E1",

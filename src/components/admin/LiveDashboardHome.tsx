@@ -85,7 +85,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
       <div className="mx-auto -mt-6 max-w-6xl">
         <Card className="flex flex-wrap gap-x-6 gap-y-1">
           {data.tabs.map((tab, i) => (
-            <span key={tab} className={cn(i > 0 && "text-blue-500")}>
+            <span key={tab} className={cn(i > 0 && "text-link")}>
               {tab}
             </span>
           ))}

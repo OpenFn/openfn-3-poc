@@ -32,7 +32,7 @@ const lookClasses = {
   secondary: "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs",
   plain: "text-muted hover:text-body disabled:text-muted aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
   danger: "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse shadow-xs",
-  success: "bg-success-600 not-disabled:hover:bg-success-500 text-inverse shadow-xs",
+  success: "bg-success-700 not-disabled:hover:bg-success-600 text-inverse shadow-xs",
   "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600",
 };
 

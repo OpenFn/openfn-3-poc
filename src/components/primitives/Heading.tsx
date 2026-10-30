@@ -18,7 +18,7 @@ const sizes: Record<HeadingSize, string> = {
  */
 export default function Heading({
   size = "md",
-  as: Tag = "h3",
+  as: Tag = "h2",
   id,
   className,
   children,

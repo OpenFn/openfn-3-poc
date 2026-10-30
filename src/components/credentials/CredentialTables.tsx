@@ -13,7 +13,7 @@ import Tooltip from "../primitives/Tooltip";
 
 function TableTitle({ children }: { children: ReactNode }) {
   return (
-    <Heading as="h6" className="mb-2">
+    <Heading className="mb-2">
       {children}
     </Heading>
   );

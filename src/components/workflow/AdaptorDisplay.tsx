@@ -37,7 +37,7 @@ export default function AdaptorDisplay({ adaptor, credentialName = null, onEdit,
             <span className="truncate">{adaptorDisplayName(adaptor)}</span>
           </Button>
         ) : (
-          <div className="flex items-center gap-2 opacity-50">
+          <div className="flex items-center gap-2">
             <AdaptorIcon name={adaptor} size="sm" />
             <span className="truncate font-medium text-muted">{adaptorDisplayName(adaptor)}</span>
           </div>

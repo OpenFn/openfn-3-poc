@@ -93,3 +93,11 @@ goes back to Lightning's way.
 - **The release version under the sidebar logo is full strength.** Lightning
   fades it to half (`opacity-50`), which falls below AA contrast on the
   sidebar.
+- **Work-order states, field errors and the success button are darker.**
+  Lightning writes work-order states in the 500 shades next to their dot,
+  field errors in danger-600, and fills the success button with
+  success-600; the replica uses the 700s (success text 800), which meet AA.
+- **A sandbox chip on a light colour has dark text.** Lightning always writes
+  white on the sandbox's colour, which is unreadable on amber or green; the
+  replica picks dark or white text by the colour's luminance
+  (`prefersDarkText` in `src/utils/colour.ts`).

@@ -29,5 +29,9 @@ export const Queued: Story = { args: { ...base, run: { ...run("run-4"), state: "
 
 export const OneStep: Story = {
   args: { ...base, run: run("run-1"), index: 1, total: 1 },
-  render: () => <StepListItem step={run("run-1").steps[0]!} canRunWorkflow dataStorageHref={null} onRetry={noop} />,
+  render: () => (
+    <div role="list">
+      <StepListItem step={run("run-1").steps[0]!} canRunWorkflow dataStorageHref={null} onRetry={noop} />
+    </div>
+  ),
 };

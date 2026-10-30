@@ -655,8 +655,8 @@ html[data-theme="gds"] {
     &[data-tone="success"] { --_tone: var(--ui-success); --_icon: var(--ui-success); }
     &[data-tone="warning"] { --_icon: var(--ui-text); }
     &[data-tone="danger"]  { --_tone: var(--ui-error); --_icon: var(--ui-error); }
-    :is(h3, div, p) { color: var(--ui-text); }
-    h3 { font-size: var(--text-base); line-height: var(--text-base--line-height); }
+    :is([data-ui="heading"], div, p) { color: var(--ui-text); }
+    [data-ui="heading"] { font-size: var(--text-base); line-height: var(--text-base--line-height); }
     [class*="hero-"] { color: var(--_icon); }
   }
 
