@@ -128,8 +128,9 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                         </CopyButton>
                         <Button size="xs">Add</Button>
                       </div>
-                      {/* eslint-disable-next-line no-restricted-syntax -- debt: belongs in CodeViewer */}
-                      <pre className="overflow-x-auto bg-code p-3 font-mono text-xs text-code">{m.code}</pre>
+                      <Text as="pre" variant="code-sm" className="overflow-x-auto bg-code p-3 text-code">
+                        {m.code}
+                      </Text>
                     </Card>
                   )}
                 </div>

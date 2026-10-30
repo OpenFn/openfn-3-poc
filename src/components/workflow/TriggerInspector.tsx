@@ -67,17 +67,17 @@ function WizardBreadcrumb({ step, onChoose }: { step: "choose" | "configure"; on
   return (
     <nav aria-label="Wizard steps">
       <Text as="div" variant="body-sm" className="flex items-center gap-1.5">
-      {step === "configure" && onChoose ? (
-        <TextLink onClick={onChoose} className="text-faint hover:text-muted">
-          Choose
-        </TextLink>
-      ) : (
-        <span className={step === "choose" ? "font-semibold text-strong underline" : "text-faint"}>Choose</span>
-      )}
-      <span aria-hidden="true" className="text-faint">
-        ›
-      </span>
-      <span className={step === "configure" ? "font-semibold text-strong underline" : "text-faint"}>Configure</span>
+        {step === "configure" && onChoose ? (
+          <TextLink onClick={onChoose} className="text-faint hover:text-muted">
+            Choose
+          </TextLink>
+        ) : (
+          <span className={step === "choose" ? "font-semibold text-strong underline" : "text-faint"}>Choose</span>
+        )}
+        <span aria-hidden="true" className="text-faint">
+          ›
+        </span>
+        <span className={step === "configure" ? "font-semibold text-strong underline" : "text-faint"}>Configure</span>
       </Text>
     </nav>
   );
