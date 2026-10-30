@@ -25,3 +25,17 @@ export const FillsItsParent: Story = {
     className: "h-80",
   },
 };
+
+function dragOnto(canvasElement: HTMLElement, type: "dragover" | "drop", fileName?: string) {
+  const dataTransfer = new DataTransfer();
+  if (fileName) dataTransfer.items.add(new File(["{}"], fileName));
+  canvasElement.querySelector("label")?.dispatchEvent(new DragEvent(type, { bubbles: true, dataTransfer }));
+}
+
+export const Dragging: Story = {
+  play: async ({ canvasElement }) => dragOnto(canvasElement, "dragover"),
+};
+/** A dropped file of the wrong type: the message stays until a valid file comes in. */
+export const Invalid: Story = {
+  play: async ({ canvasElement }) => dragOnto(canvasElement, "drop", "notes.txt"),
+};
