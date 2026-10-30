@@ -101,3 +101,22 @@ goes back to Lightning's way.
   white on the sandbox's colour, which is unreadable on amber or green; the
   replica picks dark or white text by the colour's luminance
   (`prefersDarkText` in `src/utils/colour.ts`).
+- **Faded text is solid instead.** Lightning fades the read-only adaptor
+  (`AdaptorDisplay.tsx:197`, `opacity-50`) and the admin project form's
+  users with no role (`opacity-60`); the replica writes them in muted or
+  faint text, which reads as quieter but meets AA.
+- **The channel timing bars are a shade lighter.** Lightning draws them in
+  orange-400 and blue-400 behind 900 text (`timing.ex:277-388`); the replica
+  uses the 300s, so the text on them meets AA.
+- **A danger link darkens on hover.** Lightning lightens it to red-600
+  (`app.css:176`), below AA on the grey page; the replica goes to
+  danger-800, as other links go darker on hover.
+
+## Accessible names
+
+- **A control's hidden name contains the text it shows.** Lightning's log
+  level button has no hidden name, and its adaptor picker names each option
+  "Select <name> adaptor" (`SearchableList/ListRow.tsx:42`). The replica
+  names the log level button "Log level: info", the adaptor button "Change
+  adaptor: http" and the proxy URL "Copy proxy URL: <url>", and an adaptor
+  option by its own text, so voice control users can say what they see.

@@ -28,10 +28,11 @@ Every component and every page has a `.stories.tsx` next to it.
   as `session.user` (`.storybook/preview.tsx`).
 - Stories are linted for colour classes like the rest of `src/`, but hex is
   allowed there because it is data (sandbox colours, chart values).
-
-- **A story you add or change passes axe** (`npm run test:stories`, or the
-  Accessibility tab in Storybook). Some older stories still fail; don't add
-  to them. Fix a violation in the component, not the story, unless the story
-  itself is wrong (a missing prop, an empty header the real table fills).
+- **Every story passes axe** (`npm run test:stories`, or the Accessibility
+  tab in Storybook); CI's Stories check fails on any violation. Fix a
+  violation in the component, not the story, unless the story itself is
+  wrong (a missing prop, an empty header the real table fills). The workflow
+  diagram's stories skip only the contrast check (`diagramParameters` in
+  `src/stories/decorators.tsx`).
 
 `npm run build-storybook` checks that stories compile. CI runs it on every PR.
