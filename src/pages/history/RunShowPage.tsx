@@ -117,25 +117,10 @@ export default function RunShowPage({
           project={project}
           label={projectLabel}
           items={[["History", `/projects/${project.id}/history`]]}
-          current={
-            <>
-              Run
-              <span className="pl-2 font-light">{shortUuid(runId)}</span>
-              <div className="mx-2" />
-              {run && snapshotVersion && (
-                <SnapshotVersionChip
-                  version={snapshotVersion}
-                  tooltip={
-                    snapshotVersion === "latest"
-                      ? "This run is based on the latest version of this workflow."
-                      : `This run is based on a snapshot of this workflow that was taken on ${snapshotDate(run.snapshot.insertedAt)}`
-                  }
-                />
-              )}
-            </>
-          }
+          current="Run"
         />
       }
+      title={`Run ${shortUuid(runId)}`}
     />
   );
 
@@ -183,12 +168,25 @@ export default function RunShowPage({
           <div className="@5xl/main:basis-1/3 flex gap-y-6 @5xl/main:flex-col flex-row">
             <DetailList id={`run-detail-${run.id}`} className="flex-1 @5xl/main:flex-none">
               <DetailItem label="Workflow">
-                <TextLink
-                  to={editorPath(project.id, workflow.id, run.id, run.snapshot.lockVersion, workflow, experimentalFeatures)}
-                  className="text-ellipsis"
-                >
-                  {workflow.name}
-                </TextLink>
+                {/* The version this run used sits with the workflow it's a version of. */}
+                <span className="flex min-w-0 items-center gap-2">
+                  <TextLink
+                    to={editorPath(project.id, workflow.id, run.id, run.snapshot.lockVersion, workflow, experimentalFeatures)}
+                    className="text-ellipsis"
+                  >
+                    {workflow.name}
+                  </TextLink>
+                  {snapshotVersion && (
+                    <SnapshotVersionChip
+                      version={snapshotVersion}
+                      tooltip={
+                        snapshotVersion === "latest"
+                          ? "This run is based on the latest version of this workflow."
+                          : `This run is based on a snapshot of this workflow that was taken on ${snapshotDate(run.snapshot.insertedAt)}`
+                      }
+                    />
+                  )}
+                </span>
               </DetailItem>
               <DetailItem label="Work Order" mono>
                 <TextLink to={`/projects/${project.id}/history?filters[workorder_id]=${run.workOrderId}`} title={run.workOrderId}>

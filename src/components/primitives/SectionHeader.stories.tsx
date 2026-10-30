@@ -16,3 +16,4 @@ type Story = StoryObj<typeof SectionHeader>;
 
 export const Default: Story = {};
 export const NoPermission: Story = { args: { permissionsSection: "collaborators" } };
+export const Large: Story = { args: { size: "lg", title: "Data storage", subtitle: "View or modify data storage settings for this project.", action: undefined } };

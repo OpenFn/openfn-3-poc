@@ -27,7 +27,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof DataclipShowPage>
 describe("DataclipShowPage", () => {
   it("shows the dataclip's details and its body", () => {
     renderPage();
-    expect(screen.getByText("Dataclip").textContent).toContain(ID.slice(0, 8));
+    expect(screen.getByRole("heading", { level: 1, name: `Dataclip ${ID.slice(0, 8)}` })).toBeTruthy();
     expect(screen.getByText(ID)).toBeTruthy();
     expect(screen.getByText("http_request")).toBeTruthy();
     expect(screen.queryByText("Wiped")).toBeNull();

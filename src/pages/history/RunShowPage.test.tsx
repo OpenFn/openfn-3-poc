@@ -116,7 +116,7 @@ describe("RunShowPage", () => {
       return { unmount: () => {} };
     })();
     expect(document.getElementById("run-loading")).not.toBeNull();
-    expect(screen.getByText("Run").textContent).toContain(RUN_ID.slice(0, 8));
+    expect(screen.getByRole("heading", { level: 1, name: `Run ${RUN_ID.slice(0, 8)}` })).toBeTruthy();
     unmount();
     document.body.innerHTML = "";
     renderPage({ loading: false, run: null, workflow: null, steps: [] });

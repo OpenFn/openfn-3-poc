@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Header from "../../components/primitives/Header";
+import HistoryTabs from "../../components/history/HistoryTabs";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
-import Tabs from "../../components/primitives/Tabs";
 import Text from "../../components/primitives/Text";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/history/FilterChip";
@@ -296,17 +296,9 @@ export default function HistoryWorkOrdersPage({
   return (
     <PageContent
       header={
-        <Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="History" />}>
+        <Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="History" />} title="History">
           {channelsEnabled && (
-            <Tabs
-              variant="pill"
-              label="History"
-              active="work-orders"
-              tabs={[
-                { id: "work-orders", label: "Work Orders", to: workOrdersHref },
-                { id: "channel-logs", label: "Channel Logs", to: channelLogsHref },
-              ]}
-            />
+            <HistoryTabs active="work-orders" workOrdersHref={workOrdersHref} channelLogsHref={channelLogsHref} />
           )}
         </Header>
       }

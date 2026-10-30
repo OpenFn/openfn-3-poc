@@ -176,9 +176,8 @@ everywhere. Reach for these first:
 | A file upload or drop area | `FileDropZone` |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
 | Sorting and filtering a table in the browser | `useTableSort` from `utils/useTableSort.ts` |
-| "Projects (3)" above a table, with its buttons | `TableTitle` |
 | A status message | `Alert` |
-| Page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
+| Page frame: the page title, "Projects (3)", its main button | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
 
 Props are documented on each component (its comments and types) and shown in
 its stories, so they stay in step with the code. Read the component before

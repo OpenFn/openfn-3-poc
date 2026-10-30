@@ -1,9 +1,10 @@
+import Button from "../../components/primitives/Button";
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ProjectMetrics from "../../components/projects/ProjectMetrics";
-import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
+import SearchInput from "../../components/primitives/SearchInput";
 import { useToast } from "../../components/primitives/Toast";
 import type { CurrentProject } from "../../types/projects";
 import type { SortState } from "../../types/lists";
@@ -70,16 +71,26 @@ export default function WorkflowsIndexPage({
   // The host announces success (its flash); a refusal or a lost connection is said here.
   const failed = (error: unknown) => toast(errorMessage(error), "danger");
   return (
-    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} />} />}>
-      <Centered>
-        <WorkflowsHeader
+    <PageContent
+      header={
+        <Header
+          breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Workflows" />}
+          title="Workflows"
           count={stats.length}
-          projectId={project.id}
-          canCreate={canCreateWorkflow}
-          searchTerm={searchTerm}
-          onSearch={onSearch}
-          onClear={onClear}
-        />
+        >
+          <SearchInput value={searchTerm} onChange={onSearch} onClear={onClear} clearButtonId="clear_search_button" className="w-96 min-w-0 shrink" />
+          <Button
+            id="new-workflow-button"
+            to={`/projects/${project.id}/w/new`}
+            disabled={!canCreateWorkflow}
+            tooltip={canCreateWorkflow ? undefined : "You are not authorized to perform this action."}
+          >
+            Create new workflow
+          </Button>
+        </Header>
+      }
+    >
+      <Centered>
         <ProjectMetrics metrics={metrics} pendingHref={pendingHref} failedHref={failedHref} />
         <div className="mt-8">
           <WorkflowsTable

@@ -1,6 +1,7 @@
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
+import RangePicker from "../../components/projects/health/RangePicker";
 import WorkflowHealth from "../../components/projects/health/WorkflowHealth";
 import type { CurrentProject } from "../../types/projects";
 import type { ErrorSignatures, HealthQuery, HealthRange, Outcomes, RunVolume } from "../../types/workflow-health";
@@ -57,7 +58,10 @@ export default function WorkflowHealthPage({
               current="Health"
             />
           }
-        />
+          title={workflow.name}
+        >
+          <RangePicker days={days} onChange={onDaysChange} retentionDays={project.historyRetentionPeriod} />
+        </Header>
       }
     >
       <Centered className="px-4">
@@ -65,13 +69,10 @@ export default function WorkflowHealthPage({
           <WorkflowHealth
             projectId={project.id}
             workflowId={workflow.id}
-            workflowName={workflow.name}
             days={days}
-            onDaysChange={onDaysChange}
             outcomes={outcomes}
             failures={failures}
             runs={runs}
-            historyRetentionPeriod={project.historyRetentionPeriod}
           />
         </div>
       </Centered>

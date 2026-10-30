@@ -121,6 +121,7 @@ export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, o
   return (
     <>
       <SectionHeader
+        size="lg"
         title="Version control"
         subtitle="View or modify external version control settings for this project."
         permissionsSection={

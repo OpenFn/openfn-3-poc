@@ -24,6 +24,7 @@ export default function SecurityPanel({ security, parent, onSetRequiresMfa }: Pr
   return (
     <>
       <SectionHeader
+        size="lg"
         title="Project security"
         subtitle="View and manage security settings for this project."
         permissionsSection={canEditProject || sandbox ? undefined : "multi-factor authentication settings."}

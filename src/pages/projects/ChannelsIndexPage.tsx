@@ -5,7 +5,6 @@ import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelFormModal from "../../components/projects/channels/ChannelFormModal";
 import ChannelMetrics from "../../components/projects/channels/ChannelMetrics";
 import ChannelsTable from "../../components/projects/channels/ChannelsTable";
-import TableTitle from "../../components/primitives/TableTitle";
 import { useToast } from "../../components/primitives/Toast";
 import { useRouter } from "../../routing/router";
 import type { ChannelForm, ChannelFormValues, ChannelRow } from "../../types/channels";
@@ -66,10 +65,13 @@ export default function ChannelsIndexPage({
 
   return (
     <>
-      <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current={pageTitle} />} />}>
-        <Centered>
-          <ChannelMetrics totalChannels={totalChannels} totalRequests={totalRequests} logsHref={logsHref} />
-          <TableTitle title="Channels" count={channels.length} className="mt-14">
+      <PageContent
+        header={
+          <Header
+            breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current={pageTitle} />}
+            title="Channels"
+            count={channels.length}
+          >
             <Button
               id="new-channel-button"
               disabled={!canCreateChannel}
@@ -78,15 +80,21 @@ export default function ChannelsIndexPage({
             >
               New Channel
             </Button>
-          </TableTitle>
-          <ChannelsTable
-            channels={channels}
-            canEdit={canEditChannel}
-            canDelete={canDeleteChannel}
-            onToggle={(id, v) => void onToggle(id, v).catch(failed)}
-            onEdit={(id) => navigate(`${base}/${id}/edit`)}
-            onDelete={onDelete}
-          />
+          </Header>
+        }
+      >
+        <Centered>
+          <ChannelMetrics totalChannels={totalChannels} totalRequests={totalRequests} logsHref={logsHref} />
+          <div className="mt-8">
+            <ChannelsTable
+              channels={channels}
+              canEdit={canEditChannel}
+              canDelete={canDeleteChannel}
+              onToggle={(id, v) => void onToggle(id, v).catch(failed)}
+              onEdit={(id) => navigate(`${base}/${id}/edit`)}
+              onDelete={onDelete}
+            />
+          </div>
         </Centered>
       </PageContent>
       {form && (

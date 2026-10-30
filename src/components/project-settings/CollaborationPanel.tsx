@@ -66,6 +66,7 @@ export default function CollaborationPanel({
   return (
     <>
       <SectionHeader
+        size="lg"
         title="Project collaboration"
         subtitle="View collaborators and manage alert settings for this project."
         permissionsSection={

@@ -24,8 +24,9 @@ function renderPage(outcomes: HealthQuery<Outcomes> = loading) {
 }
 
 describe("WorkflowHealthPage", () => {
-  it("labels the picker and links the crumbs from the props", () => {
+  it("names the workflow, labels the picker and links the crumbs from the props", () => {
     renderPage();
+    expect(screen.getByRole("heading", { level: 1, name: "Daily sync" })).toBeTruthy();
     // A sandbox shows "parent/child" as "parent:child".
     expect(screen.getByRole("button", { name: "parent:child" })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Workflows" }).getAttribute("href")).toBe("/projects/lightning-sandbox/w");
