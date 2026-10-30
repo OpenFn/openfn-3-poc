@@ -155,6 +155,7 @@ everywhere. Reach for these first:
 | A status chip, badge or tag | `Pill` |
 | Any bordered panel, tile or card | `Card` |
 | A heading inside a page | `Heading` |
+| Any other text (copy, notes, labels, ids) | `Text`, with a `variant` from `.claude/rules/type.md` |
 | Labelled values | `DetailList` + `DetailItem` |
 | A timestamp | `DateTime` |
 | A tooltip | `Tooltip`; `InfoTooltip` for the faded info icon next to a label |
@@ -230,6 +231,7 @@ before writing code it covers.
 | `mock-data.md` | `src/mock-data/`, `kickstart/`: fixtures, queries, models, generated data |
 | `standards.md` | `STANDARDS.md`: pattern numbers never change |
 | `comments.md` | all source: when a comment earns its place, and what it never says |
+| `type.md` | components, pages, themes: `Heading` and `Text`, the named styles, what lint bans |
 
 A new rule goes in the file for the files it governs, not here. If ESLint or
 a test enforces it, the rule names which.

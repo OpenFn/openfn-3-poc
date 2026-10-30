@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 import ElapsedTime from "./ElapsedTime";
 import StepIcon from "./StepIcon";
 import { clonedStepMessage, inspectStepPath, isClonedStep } from "./runHelpers";
+import Text from "../Text";
 import Tooltip from "../Tooltip";
 
 /**
@@ -46,12 +47,12 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
             <Link
               to={`?step=${step.id}${hash}`}
               className={cn(
-                "flex items-center gap-3 border-r-4 text-sm",
+                "flex items-center gap-3 border-r-4",
                 selected ? "border-primary-500 font-semibold" : "border-transparent hover:border-strong"
               )}
             >
               <StepIcon reason={step.exitReason} errorType={step.errorType ?? null} />
-              <span className={cn("flex min-w-0 flex-1 items-center gap-1 pr-1.5", isClone && "opacity-50")}>
+              <Text className={cn("flex min-w-0 flex-1 items-center gap-1 pr-1.5", isClone && "opacity-50")}>
                 {isClone && (
                   <Tooltip content={clonedStepMessage}>
                     <span role="img" aria-label={clonedStepMessage} className="hero-paper-clip-mini mr-1 h-3 w-3" />
@@ -77,7 +78,7 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
                 <span className="grow whitespace-nowrap text-right text-muted">
                   <ElapsedTime startedAt={step.startedAt} finishedAt={step.finishedAt} />
                 </span>
-              </span>
+              </Text>
             </Link>
           </li>
         );

@@ -51,3 +51,31 @@ describe("the data seam lint rule", () => {
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("../../mock-data/models/projects"))).toEqual([]);
   });
 });
+
+describe("the type size lint rule", () => {
+  const typeMessages = async (filePath: string, className: string) => {
+    const code = `export const X = () => <span className="${className}" />;\n`;
+    const [result] = await eslint.lintText(code, { filePath });
+    return (result?.messages ?? []).filter((m) => m.message.startsWith("Type size:"));
+  };
+
+  it.each(["text-sm", "leading-5", "tracking-wide"])("bans %s in history and nowhere else", async (className) => {
+    expect(await typeMessages("src/components/history/Probe.tsx", className)).toHaveLength(1);
+    expect(await typeMessages("src/components/Probe.tsx", className)).toEqual([]);
+  });
+
+  // A later block for the same file replaces the history block's list, so check every file.
+  it("applies to every history component", async () => {
+    const files = Object.keys(sources)
+      .filter((path) => /^\.\/components\/history\/[^/]+\.tsx$/.test(path) && !/\.(test|stories)\.tsx$/.test(path))
+      .map((path) => `src${path.slice(1)}`);
+    expect(files.length).toBeGreaterThan(0);
+    const missing: string[] = [];
+    for (const file of files) {
+      const config = await eslint.calculateConfigForFile(file);
+      const options = (config.rules?.["no-restricted-syntax"] ?? []) as Array<{ message?: string }>;
+      if (!options.some((o) => o?.message?.startsWith("Type size:"))) missing.push(file);
+    }
+    expect(missing).toEqual([]);
+  });
+});

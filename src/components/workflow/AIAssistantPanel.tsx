@@ -118,7 +118,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                   {m.code && (
                     <Card padding="none" className="mt-3 overflow-hidden">
                       <div className="flex items-center gap-2 border-b border-subtle bg-subtle px-3 py-1.5">
-                        <Heading variant="eyebrow" as="p" className="flex-1">
+                        <Heading size="xs" as="p" className="flex-1">
                           Job code
                         </Heading>
                         <CopyButton value={m.code} size="xs">

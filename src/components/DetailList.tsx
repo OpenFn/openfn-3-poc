@@ -7,15 +7,18 @@ const LayoutContext = createContext<Layout>("rows");
 /**
  * Labelled values. `rows` (default) is a divided list with the label left
  * and the value right (run_live `detail_list`); `grid` puts small uppercase
- * labels above their values in columns.
+ * labels above their values in columns. `size="sm"` sets the rows in
+ * 12px, for dense lists such as HTTP headers.
  */
 export function DetailList({
   layout = "rows",
+  size = "md",
   id,
   className,
   children,
 }: {
   layout?: Layout;
+  size?: "sm" | "md";
   id?: string;
   className?: string;
   children: ReactNode;
@@ -25,7 +28,7 @@ export function DetailList({
       <dl
         id={id}
         className={cn(
-          "text-sm",
+          size === "sm" ? "text-xs" : "text-sm",
           layout === "rows" ? "divide-y divide-subtle" : "grid grid-cols-2 gap-4 md:grid-cols-4",
           className
         )}

@@ -6,6 +6,7 @@ import Button from "../Button";
 import ConfirmModal from "../ConfirmModal";
 import Modal from "../Modal";
 import { Radio } from "../Inputs";
+import Text from "../Text";
 
 const plural = (n: number) => (n === 1 ? "" : "s");
 
@@ -93,17 +94,17 @@ function BulkModal({
         )
       }
     >
-      <div className="space-y-3 text-sm text-muted">
+      <Text as="div" className="space-y-3 text-muted">
         {confirm.error && <Alert tone="danger">{errorMessage(confirm.error)}</Alert>}
         {children}
-      </div>
+      </Text>
       {allLabel && (
         <div className="mt-5 grid grid-cols-2 gap-3">
           {button("selected", selectedLabel)}
           {button("all", allLabel)}
           <div className="relative col-span-2 flex justify-center" aria-hidden="true">
             <div className="absolute inset-x-0 top-1/2 border-t border-strong" />
-            <span className="relative bg-surface px-2 text-sm text-muted">OR</span>
+            <Text className="relative bg-surface px-2 text-muted">OR</Text>
           </div>
           <div className="col-span-2 grid">{back}</div>
         </div>
