@@ -2,6 +2,7 @@ import { useState } from "react";
 import AuthPanelLayout, { AuthPanel } from "../../components/auth/AuthPanelLayout";
 import Alert from "../../components/primitives/Alert";
 import TextLink from "../../components/primitives/TextLink";
+import Text from "../../components/primitives/Text";
 import Button from "../../components/primitives/Button";
 import Heading from "../../components/primitives/Heading";
 import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
@@ -63,40 +64,42 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
 
   return (
     <AuthPanelLayout title="Confirm your email address" align="top">
-      <AuthPanel className="text-sm text-muted">
-        <p>
-          Your account is blocked pending email confirmation. We sent a confirmation link to{" "}
-          <span className="font-medium">{email}</span> when you signed up — open it to keep using OpenFn.
-        </p>
-        <p>
-          If that link has expired, request a new one. If the address above is wrong, correct it below and we will
-          send the link there instead.
-        </p>
-        {resent?.status === "sent" && (
-          <Alert tone="info" id="confirmation-email-sent">
-            We have sent a new confirmation link to {email}.
-          </Alert>
-        )}
-        {resent?.status === "throttled" && (
-          <Alert tone="warning" id="confirmation-email-throttled">
-            {resent.message}
-          </Alert>
-        )}
-        {changed?.status === "requested" && (
-          <Alert tone="info" id="email-change-requested">
-            We have sent confirmation instructions to {changed.email}.
-          </Alert>
-        )}
-        {resent?.status === "failed" && (
-          <Alert tone="danger" id="confirmation-email-failed">
-            We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance
-            administrator.
-          </Alert>
-        )}
-        {resend.error && <Alert tone="danger">{errorMessage(resend.error)}</Alert>}
-        <Button id="resend-confirmation-email-button" onClick={() => void resend.run()} pending={resend.pending}>
-          Resend confirmation email
-        </Button>
+      <AuthPanel>
+        <Text as="div" className="space-y-4 text-muted">
+          <p>
+            Your account is blocked pending email confirmation. We sent a confirmation link to{" "}
+            <span className="font-medium">{email}</span> when you signed up — open it to keep using OpenFn.
+          </p>
+          <p>
+            If that link has expired, request a new one. If the address above is wrong, correct it below and we will
+            send the link there instead.
+          </p>
+          {resent?.status === "sent" && (
+            <Alert tone="info" id="confirmation-email-sent">
+              We have sent a new confirmation link to {email}.
+            </Alert>
+          )}
+          {resent?.status === "throttled" && (
+            <Alert tone="warning" id="confirmation-email-throttled">
+              {resent.message}
+            </Alert>
+          )}
+          {changed?.status === "requested" && (
+            <Alert tone="info" id="email-change-requested">
+              We have sent confirmation instructions to {changed.email}.
+            </Alert>
+          )}
+          {resent?.status === "failed" && (
+            <Alert tone="danger" id="confirmation-email-failed">
+              We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance
+              administrator.
+            </Alert>
+          )}
+          {resend.error && <Alert tone="danger">{errorMessage(resend.error)}</Alert>}
+          <Button id="resend-confirmation-email-button" onClick={() => void resend.run()} pending={resend.pending}>
+            Resend confirmation email
+          </Button>
+        </Text>
       </AuthPanel>
 
       <AuthPanel>
@@ -129,9 +132,9 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
         </form>
       </AuthPanel>
 
-      <TextLink className="text-sm" to={logoutTo}>
-        Log out
-      </TextLink>
+      <Text>
+        <TextLink to={logoutTo}>Log out</TextLink>
+      </Text>
     </AuthPanelLayout>
   );
 }
