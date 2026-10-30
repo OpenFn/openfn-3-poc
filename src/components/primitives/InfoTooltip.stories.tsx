@@ -5,7 +5,7 @@ const meta: Meta<typeof InfoTooltip> = {
   title: "Primitives/InfoTooltip",
   component: InfoTooltip,
   args: { title: "How often would you like to hear from us about your OpenFn account?" },
-  decorators: [(Story) => <label className="text-sm/6 font-medium text-strong">Contact preference<Story /></label>],
+  decorators: [(Story) => <span className="text-sm/6 font-medium text-strong">Contact preference<Story /></span>],
 };
 export default meta;
 type Story = StoryObj<typeof InfoTooltip>;
