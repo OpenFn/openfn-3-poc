@@ -12,9 +12,11 @@ export function setUpMonaco(monaco: Monaco) {
     inherit: true,
     rules: [
       { token: "logSource", foreground: "#CBD5E1", fontStyle: "italic" },
-      // vs-dark's string orange is too dark on this background for AA contrast.
+      // vs-dark's string orange and type teal (YAML keys) are too dark on this
+      // background, and on the highlighted line, for AA contrast.
       { token: "string", foreground: "#F0C4A8" },
       { token: "string.value.json", foreground: "#F0C4A8" },
+      { token: "type", foreground: "#5EEAD4" },
     ],
     colors: {
       "editor.foreground": "#E2E8F0",
