@@ -13,6 +13,15 @@ goes back to Lightning's way.
 
 ## Buttons
 
+- **Pending buttons, and disabled buttons that say why, keep keyboard focus.**
+  They're `aria-disabled` and ignore presses, so focus isn't lost when a
+  button goes pending and Tab reaches the tooltip's reason. Lightning
+  disables them natively (`new_inputs.ex:268-280`, `phx-disable-with`), which
+  drops focus and hides the reason from the keyboard. A disabled button with
+  no reason is natively disabled in both.
+- **Disabled buttons are their enabled colour at half strength.** Lightning
+  gives each look its own disabled colours (`new_inputs.ex:232-247`, e.g.
+  success turns a mint `bg-green-300`). One rule for every look, and no mint green.
 - **One focus ring colour.** Lightning's danger and success buttons draw a
   red or green focus outline (`new_inputs.ex:244,249`); the replica uses the
   focus colour on every button, so focus always looks the same.
@@ -27,7 +36,7 @@ goes back to Lightning's way.
 - **Icon buttons share Button's heights**: a square of 28, 32, 36 or
   40px, so an icon lines up with the text buttons beside it. Lightning sizes
   each one by hand, from a bare 20px modal X to 28px editor buttons.
-- **The AI chat's send button is a primary button, paler when disabled.**
+- **The AI chat's send button is a primary button, at half strength when disabled.**
   Lightning turns it grey (`collaborative-editor/components/ChatInput.tsx:368`).
 - **The cancel-run X is grey, darker on hover**. Lightning turns it
   red on hover (`run_live/workorder_component.ex:262,422`). Red is kept for

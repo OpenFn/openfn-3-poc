@@ -28,8 +28,10 @@ let closeShown: (() => void) | undefined;
  * single element that can take a ref; it becomes the trigger. No `content`
  * renders no tooltip. With `copy`, clicking the child copies that text and the
  * tooltip says "Copied!" for 1.5 seconds, then hides, like Lightning's Tooltip
- * and Copy hooks. With `disabled`, the child is a disabled control and a
- * wrapper takes its hover. With `interactive`, the pointer can move onto the
+ * and Copy hooks. With `disabled`, the child is a disabled control: a wrapper
+ * takes its hover and swallows its presses, and a `<button>` stays focusable
+ * (`aria-disabled` in place of `disabled`) so the keyboard can reach the
+ * reason; any other control stays natively disabled. With `interactive`, the pointer can move onto the
  * tooltip, so a link in it can be clicked.
  */
 export default function Tooltip({
@@ -81,15 +83,30 @@ export default function Tooltip({
 
   // The tree is the same whether the control is disabled or not (a `disabled` prop that is passed adds
   // the wrapper), so enabling a control never remounts it.
-  const child = children as ReactElement<{ ref?: Ref<Element>; onClick?: (e: SyntheticEvent) => void; "aria-label"?: string; label?: string }>;
+  const child = children as ReactElement<{
+    ref?: Ref<Element>;
+    onClick?: (e: SyntheticEvent) => void;
+    "aria-label"?: string;
+    label?: string;
+    disabled?: boolean;
+    "aria-disabled"?: boolean;
+    "aria-description"?: string;
+  }>;
   // A tooltip that only repeats the control's name (its `aria-label`, or an IconButton's `label`) isn't linked as its
   // description too, or a screen reader says the name twice.
   const repeatsName = typeof content === "string" && content === (child.props["aria-label"] ?? child.props.label);
   const wrap = disabled !== undefined;
   const onWrapper = !!disabled && !!content;
-  // Disabled controls don't get hover events in every browser, so the wrapper takes them, and it
-  // swallows the click, since a disabled control's click does nothing (not even a clickable row's).
-  const base = onWrapper ? { onClick: (e: SyntheticEvent) => e.stopPropagation() } : child.props;
+  // Disabled controls don't get hover events in every browser, so the wrapper takes them. It
+  // swallows the click before the control sees it (a keyboard press clicks the control itself),
+  // since a disabled control's click does nothing, not even a clickable row's or a form's submit.
+  const swallow = (e: SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const base: { onClick?: ((e: SyntheticEvent) => void) | undefined; onClickCapture?: (e: SyntheticEvent) => void } = onWrapper
+    ? { onClickCapture: swallow }
+    : child.props;
   const ref = useMergeRefs([setReference, onWrapper ? undefined : child.props.ref]);
   // Like Lightning's Copy hook, the click copies and goes no further, even inside a link or a clickable row.
   const onClick = (e: SyntheticEvent) => {
@@ -102,10 +119,17 @@ export default function Tooltip({
   };
   const referenceProps = getReferenceProps({ ...base, ref, onClick });
   if (repeatsName) delete referenceProps["aria-describedby"];
+  const disabledProps = {
+    // A natively disabled control can't take focus to open the tooltip, so a plain <button> is
+    // `aria-disabled` instead; the wrapper swallows its presses. Only a button: the wrapper can't stop
+    // typing in a field. A component child keeps its own `disabled`.
+    ...(child.type === "button" && { disabled: false, "aria-disabled": true }),
+    // The tooltip's aria-describedby lands on the wrapper, so the reason goes on the control for screen readers.
+    ...(typeof content === "string" && !repeatsName && { "aria-description": content }),
+  };
   const trigger = wrap ? (
     <span className={onWrapper ? "inline-flex cursor-not-allowed *:pointer-events-none" : "contents"} {...(onWrapper ? referenceProps : {})}>
-      {/* The tooltip can't open from a disabled control, so the reason goes on it for screen readers. */}
-      {cloneElement(child, onWrapper ? (typeof content === "string" && !repeatsName ? { "aria-description": content } : {}) : referenceProps)}
+      {cloneElement(child, onWrapper ? disabledProps : referenceProps)}
     </span>
   ) : (
     cloneElement(child, referenceProps)

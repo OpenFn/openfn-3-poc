@@ -27,7 +27,7 @@ export const Large: Story = { args: { size: "lg", children: "Create project" } }
 export const AsLink: Story = { args: { to: "/projects", children: "Projects" } };
 export const AsExternalLink: Story = { args: { href: "https://docs.openfn.org", children: "Docs" } };
 
-/** Every look, enabled and disabled (filled buttons at their 300 shade, secondary grey, plain faded). */
+/** Every look, enabled and disabled (each at half strength). */
 export const AllLooks: Story = {
   decorators: [withWhitePanel("w-auto")],
   render: () => (

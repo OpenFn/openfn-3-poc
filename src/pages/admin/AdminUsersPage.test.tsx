@@ -6,6 +6,7 @@ import { ToastProvider } from "../../components/primitives/Toast";
 import type { AdminDeleteUser, AdminUserRow } from "../../types/admin";
 import { RequestError } from "../../utils/errors";
 import AdminUsersPage from "./AdminUsersPage";
+import { isDisabled } from "../../test/disabled";
 
 const rows: AdminUserRow[] = [
   { id: "u1", firstName: "Alice", lastName: "Smith", email: "alice@example.org", role: "user", supportUser: false, disabled: false, scheduledDeletion: null },
@@ -121,7 +122,7 @@ describe("AdminUsersPage", () => {
     expect(dialog.textContent).toContain("This user's account and credential data will be deleted");
     expect(dialog.textContent).toContain("To confirm, type alice@example.org below.");
     const confirm = () => within(dialog).getByRole("button", { name: "Delete account" });
-    expect(confirm().hasAttribute("disabled")).toBe(true);
+    expect(isDisabled(confirm())).toBe(true);
     fireEvent.change(within(dialog).getByLabelText("User email"), { target: { value: "alice@example" } });
     fireEvent.blur(within(dialog).getByLabelText("User email"));
     expect(within(dialog).getByText("This email doesn't match the user's email")).toBeTruthy();

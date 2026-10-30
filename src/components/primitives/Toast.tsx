@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type SyntheticEvent } from "react";
 import { cn } from "../../utils/cn";
 import CloseButton from "./CloseButton";
 import type { Tone } from "./tone";
@@ -78,7 +78,8 @@ interface ToastProps {
 
 /**
  * One toast. Clicking anywhere on it closes it, and so do its X and Escape
- * while focus is inside. Rendered by `ToastProvider`; exported for stories.
+ * while focus is inside; focus then goes back where it came from. Rendered by
+ * `ToastProvider`; exported for stories.
  */
 export function Toast({ tone = "info", children, onClose, timeout }: ToastProps) {
   const c = tones[tone];
@@ -89,6 +90,14 @@ export function Toast({ tone = "info", children, onClose, timeout }: ToastProps)
   useEffect(() => {
     close.current = onClose;
   });
+  // Where focus came from when it moved into the toast, so closing it hands focus back rather than dropping it on the page.
+  const cameFrom = useRef<HTMLElement | null>(null);
+  const closeByHand =
+    onClose &&
+    ((e: SyntheticEvent<HTMLElement>) => {
+      if (e.currentTarget.contains(document.activeElement) && cameFrom.current?.isConnected) cameFrom.current.focus();
+      onClose();
+    });
 
   // Someone still reading or working in it keeps it (WCAG 2.2.1); leaving starts the full wait again.
   useEffect(() => {
@@ -107,16 +116,19 @@ export function Toast({ tone = "info", children, onClose, timeout }: ToastProps)
       data-ui="toast"
       data-tone={tone}
       role={tone === "danger" ? "alert" : "status"}
-      onClick={onClose}
+      onClick={closeByHand}
       onKeyDown={(e) => {
-        if (e.key === "Escape" && onClose) {
+        if (e.key === "Escape" && closeByHand) {
           e.preventDefault();
-          onClose();
+          closeByHand(e);
         }
       }}
       onPointerEnter={() => setHeld((h) => ({ ...h, pointer: true }))}
       onPointerLeave={() => setHeld((h) => ({ ...h, pointer: false }))}
-      onFocus={() => setHeld((h) => ({ ...h, focus: true }))}
+      onFocus={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) cameFrom.current = e.relatedTarget as HTMLElement | null;
+        setHeld((h) => ({ ...h, focus: true }));
+      }}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setHeld((h) => ({ ...h, focus: false }))}
     >
       <span className={cn(c.icon, "h-5 w-5 shrink-0")} />

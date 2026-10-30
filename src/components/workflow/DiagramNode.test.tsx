@@ -8,4 +8,11 @@ describe("DiagramNode", () => {
     expect(screen.getByRole("img", { name: "Step is running" })).toBeTruthy();
     expect(screen.getByRole("img", { name: "Started by Ada Lovelace" })).toBeTruthy();
   });
+
+  it("shows its hidden + while the keyboard is on it, as it does on hover", () => {
+    render(<DiagramNode id="j1" shape="rect" label="Fetch" icon={null} onAddPath={() => {}} />);
+    const reveal = screen.getByRole("button", { name: "Add a path to a new step" }).closest(".opacity-0")!;
+    expect(reveal.classList).toContain("group-hover:opacity-100");
+    expect(reveal.classList).toContain("focus-within:opacity-100");
+  });
 });

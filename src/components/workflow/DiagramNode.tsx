@@ -160,7 +160,7 @@ export default function DiagramNode({
       {onAddPath && (
         <div
           style={{ width: NODE_SIZE, marginLeft: 2, marginTop: -18, justifyContent: "center" }}
-          className="relative z-10 flex items-center opacity-0 transition group-hover:opacity-100"
+          className="relative z-10 flex items-center opacity-0 transition group-hover:opacity-100 focus-within:opacity-100"
         >
           <IconButton
             variant="primary"

@@ -7,6 +7,7 @@ import type { RunRow, StepRow, WorkOrderRow } from "../../types/history";
 import { RequestError } from "../../utils/errors";
 import { formatRelativeDetailed } from "../../utils/format";
 import HistoryWorkOrdersPage, { type HistoryWorkOrdersPageProps, type WorkOrderFilters } from "./HistoryWorkOrdersPage";
+import { isDisabled } from "../../test/disabled";
 
 const step = (id: string, jobId: string, over: Partial<StepRow> = {}): StepRow => ({
   id,
@@ -292,7 +293,7 @@ describe("HistoryWorkOrdersPage", () => {
     expect(within(rowOf("r1")).queryByRole("button", { name: "Retry (run from the start)" })).toBeNull();
     await userEvent.click(document.getElementById("select_r1")!);
     await userEvent.click(document.getElementById(`select_${rows[0]!.id}`)!);
-    expect((screen.getByRole("button", { name: "Retry" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(screen.getByRole("button", { name: "Retry" }))).toBe(true);
   });
 
   it("links the tabs where the host says, and leaves them out without channels", () => {
@@ -421,15 +422,15 @@ describe("HistoryWorkOrdersPage", () => {
     renderPage({ rows: [wo] });
     await tick("c1");
     await userEvent.click(screen.getByRole("button", { name: "Retry from" }));
-    expect(((await screen.findByLabelText("Job j1")) as HTMLInputElement).disabled).toBe(false);
+    expect(isDisabled(((await screen.findByLabelText("Job j1")) as HTMLInputElement))).toBe(false);
     expect((screen.getByLabelText("Job j2") as HTMLInputElement).disabled).toBe(true);
   });
 
   it("disables Cancel and Retry for a mix of pending and finished work orders, and select-all with no rows", async () => {
     const { rerender } = renderPage({ rows: [row("p1", { state: "pending" }), row("f1", { state: "failed" })] });
     await userEvent.click(document.getElementById("select_all")!);
-    expect((screen.getByRole("button", { name: "Cancel" }) as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByRole("button", { name: "Retry" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(screen.getByRole("button", { name: "Cancel" }))).toBe(true);
+    expect(isDisabled(screen.getByRole("button", { name: "Retry" }))).toBe(true);
 
     rerender({ rows: [] });
     expect((document.getElementById("select_all") as HTMLInputElement).disabled).toBe(true);
@@ -542,7 +543,7 @@ describe("HistoryWorkOrdersPage", () => {
     renderPage({ canRunWorkflow: false, rows: [row("p1", { state: "pending" }), row("f1", { state: "failed" })] });
     expect(within(rowOf("p1")).queryByRole("button", { name: "Cancel pending run" })).toBeNull();
     const retry = within(rowOf("f1")).getByRole("button", { name: "You are not authorized to start runs for this project." });
-    expect((retry as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(retry)).toBe(true);
     expect(screen.queryByRole("button", { name: /^Export all/ })).toBeNull();
 
     await userEvent.click(rowOf("f1"));
