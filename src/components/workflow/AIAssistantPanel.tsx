@@ -110,13 +110,13 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             {messages.map((m) =>
               m.role === "user" ? (
                 <div key={m.id} className="flex justify-end">
-                  <div className="max-w-5/6 whitespace-pre-wrap rounded-2xl bg-sunken px-4 py-2.5 text-strong">{m.content}</div>
+                  <div className="max-w-5/6 whitespace-pre-wrap wrap-break-word rounded-2xl bg-sunken px-4 py-2.5 text-strong">{m.content}</div>
                 </div>
               ) : (
-                <div key={m.id} className="leading-relaxed text-strong">
-                  <p className="whitespace-pre-wrap">{m.content}</p>
+                <div key={m.id} className="flex flex-col gap-3 leading-relaxed text-strong">
+                  <p className="whitespace-pre-wrap wrap-break-word">{m.content}</p>
                   {m.code && (
-                    <Card padding="none" className="mt-3 overflow-hidden">
+                    <Card padding="none" className="overflow-hidden">
                       <div className="flex items-center gap-2 border-b border-subtle bg-subtle px-3 py-1.5">
                         <Heading size="xs" as="p" className="flex-1">
                           Job code
@@ -134,12 +134,14 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             )}
           </div>
         ) : sessions.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
-            <div className="mb-2 rounded-full bg-sunken p-5">
+          <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+            <div className="rounded-full bg-sunken p-5">
               <span className="hero-chat-bubble-left-right block h-10 w-10 text-faint" />
             </div>
-            <Heading size="lg">No conversations yet</Heading>
-            <p className="max-w-70 text-sm text-muted">Start chatting below to create your first conversation</p>
+            <div className="flex flex-col items-center gap-2">
+              <Heading size="lg">No conversations yet</Heading>
+              <p className="max-w-70 text-sm text-muted">Start chatting below to create your first conversation</p>
+            </div>
           </div>
         ) : (
           <div className="flex h-full flex-col">
@@ -166,9 +168,9 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                       setSessionId(s.id);
                       setView("chat");
                     }}
-                    className="w-full rounded-lg p-3 text-left hover:bg-hover"
+                    className="flex w-full flex-col gap-1.5 rounded-lg p-3 text-left hover:bg-hover"
                   >
-                    <Heading size="sm" as="h4" className="mb-1.5 truncate">
+                    <Heading size="sm" as="h4" className="truncate">
                       {s.title}
                     </Heading>
                     <div className="flex items-center justify-between gap-3 text-xs text-muted">
@@ -204,8 +206,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
               }}
               placeholder={view === "chat" ? "Ask a follow-up question..." : "Ask me anything about this workflow..."}
               rows={1}
-              className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
-              style={{ height: 52 }}
+              className="block h-13 w-full resize-none border-0 bg-transparent px-4 py-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
             />
             <div className="flex items-center justify-between gap-3 px-3 pb-2">
               <AIDisclaimerFooter />

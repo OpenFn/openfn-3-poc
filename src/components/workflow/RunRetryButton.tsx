@@ -14,7 +14,11 @@ interface Props {
 /** Run / Retry button (RunRetryButton.tsx), primary variant. */
 export default function RunRetryButton({ isRetryable, disabled = false, onRun, onRetry, runLabel = "Run" }: Props) {
   if (!isRetryable) {
-    return <NewRunButton onClick={onRun} disabled={disabled} text={runLabel} />;
+    return (
+      <NewRunButton onClick={onRun} disabled={disabled}>
+        {runLabel}
+      </NewRunButton>
+    );
   }
   return (
     <SplitButton

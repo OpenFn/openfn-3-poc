@@ -128,8 +128,7 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
       <InspectorLayout
         title={TITLES[draft.type]}
         onClose={onClose}
-        showBackButton={isCron}
-        onBack={() => setView("show")}
+        onBack={isCron ? () => setView("show") : undefined}
         footer={<WizardFooter label="Next" onPrimary={() => setView("configure")} onCancel={isCron ? undefined : () => setView("show")} />}
       >
         <WizardBreadcrumb step="choose" />
@@ -157,7 +156,6 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
       <InspectorLayout
         title={TITLES[draft.type]}
         onClose={onClose}
-        showBackButton
         onBack={() => setView("choose")}
         footer={
           <WizardFooter

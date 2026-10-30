@@ -21,11 +21,11 @@ interface Props {
 /** A template's name over its clamped description. */
 function TemplateSummary({ template, lines }: { template: WorkflowTemplate; lines: string }) {
   return (
-    <div className="min-w-0">
+    <div className="flex min-w-0 flex-col gap-0.5">
       <Heading size="sm" as="p" className="truncate">
         {template.name}
       </Heading>
-      <p className={`mt-0.5 text-muted ${lines}`}>{template.description}</p>
+      <p className={`text-muted ${lines}`}>{template.description}</p>
     </div>
   );
 }

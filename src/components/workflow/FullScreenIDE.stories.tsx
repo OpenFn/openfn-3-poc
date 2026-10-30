@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { dataclips, findRun, runLogs, stepsOf } from "../../mock-data/history";
 import { findWorkflowGraph } from "../../mock-data/workflow";
-import { withRouter } from "../../stories/decorators";
+import { withRouter, withCanvas } from "../../stories/decorators";
 import FullScreenIDE from "./FullScreenIDE";
 import ManualRunPanel from "./ManualRunPanel";
+import MiniHistory from "./MiniHistory";
 import RunViewerPanel from "./RunViewerPanel";
 
 const graph = findWorkflowGraph("wf-openhie")!;
@@ -14,7 +15,7 @@ const meta: Meta<typeof FullScreenIDE> = {
   title: "Workflow/FullScreenIDE",
   component: FullScreenIDE,
   parameters: { layout: "fullscreen" },
-  decorators: [withRouter, (Story) => <div className="relative h-[800px]"><Story /></div>],
+  decorators: [withRouter, withCanvas("h-200")],
   args: {
     jobs: graph.jobs,
     job: graph.jobs[0]!,
@@ -54,6 +55,7 @@ export const ViewingRun: Story = {
       <RunViewerPanel
         projectId={graph.projectId}
         run={run}
+        startedBy="webhook trigger"
         steps={stepsOf(run)}
         logs={runLogs["run-1"]!}
         dataclips={dataclips}
@@ -64,3 +66,23 @@ export const ViewingRun: Story = {
     ),
   },
 };
+export const History: Story = {
+  args: {
+    panelState: "history",
+    rightPanel: (
+      <MiniHistory
+        variant="panel"
+        projectId={graph.projectId}
+        workflowId={graph.id}
+        collapsed={false}
+        onToggle={noop}
+        history={[]}
+        selectedRunId={null}
+        onSelectRun={noop}
+        onDeselectRun={noop}
+        onBack={noop}
+      />
+    ),
+  },
+};
+export const NoJob: Story = { args: { job: null } };

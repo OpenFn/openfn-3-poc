@@ -126,9 +126,9 @@ export default function FullScreenIDE({
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
             ) : (
-              <div className="mx-auto max-w-md p-8 text-center text-sm text-muted">
+              <div className="mx-auto max-w-md space-y-2 p-8 text-center text-sm text-muted">
                 <p>The job you're trying to view didn't exist in this version of the workflow.</p>
-                <p className="mt-2 text-muted">You can change versions or select another job.</p>
+                <p className="text-muted">You can change versions or select another job.</p>
               </div>
             )}
           </div>

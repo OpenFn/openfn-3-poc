@@ -69,10 +69,12 @@ export default function MiniHistory({
 
   const list =
     history.length === 0 ? (
-      <div className="flex flex-col items-center p-8 text-center text-muted">
-        <span className="hero-rectangle-stack mb-2 h-8 w-8 opacity-50" />
-        <p className="text-sm font-medium">No related history</p>
-        <p className="mt-1 text-xs text-faint">Why not run it a few times to see some history?</p>
+      <div className="flex flex-col items-center gap-2 p-8 text-center text-muted">
+        <span className="hero-rectangle-stack h-8 w-8 opacity-50" />
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium">No related history</p>
+          <p className="text-xs text-faint">Why not run it a few times to see some history?</p>
+        </div>
       </div>
     ) : (
       <div className="divide-y divide-subtle text-xs">
@@ -174,10 +176,10 @@ export default function MiniHistory({
   if (variant === "panel") {
     return (
       <div className="flex h-full flex-col bg-surface" data-annotation="workflow-editor-versions-and-promote">
-        <div className="flex items-center gap-1 border-b border-subtle bg-subtle px-3 py-2">
+        <div className="flex items-center gap-1 border-b border-subtle bg-subtle py-2 pr-5 pl-3">
           <Heading size="sm">Run History</Heading>
           <FullHistoryLink to={historyHref} />
-          <IconButton icon="hero-x-mark" label="Back to landing" size="xs" className="ml-auto mr-2" onClick={onBack} />
+          <IconButton icon="hero-x-mark" label="Back to landing" size="xs" className="ml-auto" onClick={onBack} />
         </div>
         <div className="flex-1 overflow-y-auto">{list}</div>
       </div>

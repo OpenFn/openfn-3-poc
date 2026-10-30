@@ -14,8 +14,8 @@ interface Props {
   fixedHeight?: boolean;
   /** Children fill the body edge to edge instead of sitting in a padded stack. */
   bare?: boolean;
-  showBackButton?: boolean;
-  onBack?: () => void;
+  /** Shows a Back arrow before the title. */
+  onBack?: (() => void) | undefined;
   "data-testid"?: string;
   /** Inventory id for the annotations panel. */
   annotation?: string;
@@ -33,7 +33,6 @@ export default function InspectorLayout({
   children,
   fixedHeight = false,
   bare = false,
-  showBackButton = false,
   onBack,
   "data-testid": testId,
   annotation = "workflow-editor-inspectors",
@@ -43,9 +42,11 @@ export default function InspectorLayout({
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
       <Card padding="none" className={cn("flex flex-col", fixedHeight ? "h-150" : "max-h-[calc(100vh-8rem)]")}>
         <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
-          <div className="flex items-center gap-2">
-            {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack ?? onClose} />}
-            <Heading as="h2">{title}</Heading>
+          <div className="flex min-w-0 items-center gap-2">
+            {onBack && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack} />}
+            <Heading as="h2" className="min-w-0 wrap-break-word">
+              {title}
+            </Heading>
           </div>
           <CloseButton label="Close panel" onClick={onClose} />
         </div>

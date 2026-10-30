@@ -21,3 +21,5 @@ type Story = StoryObj<typeof ConfigureAdaptorModal>;
 
 export const WithCredential: Story = {};
 export const NoCredentialNeeded: Story = { args: { adaptor: "@openfn/language-http@latest", credentialName: null } };
+export const NeedsCredential: Story = { args: { credentialName: null } };
+export const NoCredentials: Story = { args: { projectId: "project-without-credentials", credentialName: null } };

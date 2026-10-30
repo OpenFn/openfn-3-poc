@@ -19,8 +19,8 @@ interface Props {
   selected?: boolean;
   /** Connected to the selected node. */
   neighbour?: boolean;
-  /** While viewing a run: the path wasn't taken. */
-  didntRun?: boolean;
+  /** False while viewing a run whose path this wasn't. */
+  didRun?: boolean;
   onClick?: () => void;
 }
 
@@ -39,12 +39,12 @@ export default function DiagramEdge({
   enabled = true,
   selected = false,
   neighbour = false,
-  didntRun = false,
+  didRun = true,
   onClick,
 }: Props) {
   const { sx, sy, tx, ty } = edgeEndpoints(source, target);
   const path = bezierPath(sx, sy, tx, ty);
-  const color = edgeColor({ selected, neighbour, enabled, didntRun });
+  const color = edgeColor({ selected, neighbour, enabled, didntRun: !didRun });
   const stroke = selected ? EDGE_COLOR_SELECTED : neighbour ? EDGE_COLOR_NEIGHBOUR : EDGE_COLOR;
   const markerId = `arrow-${id}`;
   const label =
@@ -84,7 +84,7 @@ export default function DiagramEdge({
           style={{ stroke }}
           strokeWidth={2}
           strokeDasharray={enabled ? undefined : "6, 6"}
-          opacity={enabled ? (didntRun ? 0.3 : 1) : 0.5}
+          opacity={enabled ? (didRun ? 1 : 0.3) : 0.5}
           markerEnd={`url(#${markerId})`}
         />
         <path

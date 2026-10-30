@@ -17,3 +17,4 @@ export default meta;
 type Story = StoryObj<typeof TemplateBrowserModal>;
 
 export const Default: Story = {};
+export const NoTemplates: Story = { args: { templates: [] } };

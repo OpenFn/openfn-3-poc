@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { findWorkflowGraph } from "../../mock-data/workflow";
 import { newWorkflowGraph } from "../../utils/workflowGraph";
 import WorkflowDiagram from "./WorkflowDiagram";
+import { withCanvas } from "../../stories/decorators";
 
 const meta: Meta<typeof WorkflowDiagram> = {
   title: "Workflow/WorkflowDiagram",
   component: WorkflowDiagram,
   parameters: { layout: "fullscreen" },
-  decorators: [(Story) => <div className="h-[720px]"><Story /></div>],
+  decorators: [withCanvas("h-180")],
   args: { graph: findWorkflowGraph("wf-openhie")!, selection: null, onSelect: () => {}, onAddPath: () => {} },
 };
 export default meta;
@@ -32,3 +33,4 @@ export const ViewingARun: Story = {
   },
 };
 export const Empty: Story = { args: { graph: newWorkflowGraph("p") } };
+export const Preview: Story = { args: { preview: true } };

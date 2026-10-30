@@ -230,6 +230,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
       <RunViewerPanel
         projectId={project.id}
         run={runs.selectedRun}
+        startedBy={runs.selectedStartedBy}
         steps={steps}
         logs={runs.selectedLogs}
         dataclips={runs.dataclips}
@@ -305,7 +306,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
             onAIClick={() => update({ chat: aiOpen ? null : "true" })}
           >
             {pinnedVersion !== null && (
-              <span className="ml-3" data-annotation="workflow-editor-versions-and-promote">
+              <span className="pl-3" data-annotation="workflow-editor-versions-and-promote">
                 <Pill tone="warning">Read-only</Pill>
               </span>
             )}

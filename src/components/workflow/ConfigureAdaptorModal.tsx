@@ -76,8 +76,8 @@ export default function ConfigureAdaptorModal({
           />
         </div>
 
-        <div>
-          <div className="mb-2 flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
             <Label>Credentials</Label>
             {needsCredentials && <TextLink className="text-sm font-medium">New Credential</TextLink>}
           </div>
@@ -87,8 +87,10 @@ export default function ConfigureAdaptorModal({
             </Card>
           ) : shown.length === 0 ? (
             <Card padding="lg" className="text-center">
-              <p className="mb-3 text-muted">No credentials found in this project</p>
-              <TextLink className="text-sm font-medium">Create a new credential</TextLink>
+              <div className="flex flex-col items-center gap-3">
+                <p className="text-muted">No credentials found in this project</p>
+                <TextLink className="text-sm font-medium">Create a new credential</TextLink>
+              </div>
             </Card>
           ) : (
             <Card padding="none" className="max-h-48 divide-y divide-subtle overflow-y-auto">

@@ -42,3 +42,10 @@ export const IDEOpen: Story = { args: { runDisabled: true } };
 export const Sandbox: Story = {
   args: { project: projects.find((p) => p.parentId !== null) ?? projects[0]!, workflowName: "OpenHIE Workflow" },
 };
+export const NoTrigger: Story = { args: { canRun: false } };
+export const Retry: Story = { args: { runLabel: "Retry" } };
+export const Create: Story = { args: { saveLabel: "Create", hasChanges: true } };
+export const AIOpen: Story = { args: { aiOpen: true } };
+export const LongWorkflowName: Story = {
+  args: { workflowName: "Nightly_sync_of_facility_registry_with_DHIS2_organisation_units_and_district_health_information" },
+};

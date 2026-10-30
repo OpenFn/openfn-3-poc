@@ -177,7 +177,7 @@ export default function WorkflowDiagram({
           if (!source || !target) return null;
           const fromTrigger = triggerIds.has(sourceId);
           const trigger = fromTrigger ? graph.triggers.find((t) => t.id === sourceId) : undefined;
-          const didRun =
+          const taken =
             !!run && (!!run.steps[sourceId] || sourceId === run.startNodeId) && !!run.steps[edge.targetJobId];
           return (
             <DiagramEdge
@@ -190,7 +190,7 @@ export default function WorkflowDiagram({
               enabled={trigger ? trigger.enabled : edge.enabled}
               selected={selectedId === edge.id}
               neighbour={selectedId !== null && (sourceId === selectedId || edge.targetJobId === selectedId)}
-              didntRun={isRun && !didRun}
+              didRun={!isRun || taken}
               onClick={() => onSelect({ kind: "edge", id: edge.id })}
             />
           );

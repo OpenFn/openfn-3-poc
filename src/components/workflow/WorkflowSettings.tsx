@@ -1,3 +1,4 @@
+import { cn } from "../../utils/cn";
 import { useState, type ReactNode } from "react";
 import type { WorkflowGraph } from "../../types/workflow-graph";
 import Button from "../primitives/Button";
@@ -21,12 +22,12 @@ interface Props {
 
 function Section({ title, description, className, children }: { title: string; description?: ReactNode; className?: string; children: ReactNode }) {
   return (
-    <div className={className}>
-      <Heading size="sm" className="mb-2">
-        {title}
-      </Heading>
-      {description && <p className="mb-3 text-sm text-muted">{description}</p>}
-      {children}
+    <div className={cn("flex flex-col", description ? "gap-3" : "gap-2", className)}>
+      <div className="flex flex-col gap-2">
+        <Heading size="sm">{title}</Heading>
+        {description && <p className="text-sm text-muted">{description}</p>}
+      </div>
+      <div>{children}</div>
     </div>
   );
 }
@@ -60,22 +61,24 @@ export default function WorkflowSettings({ graph, projectConcurrency, projectId,
           </>
         }
       >
-        <TextInput
-          id="concurrency"
-          type="number"
-          label="Max Concurrency"
-          placeholder="Unlimited (up to max available)"
-          min={1}
-          disabled={concurrencyDisabled}
-          value={graph.concurrency ?? ""}
-          onChange={(e) => onChange({ concurrency: e.target.value === "" ? null : Number(e.target.value) })}
-        />
-        {concurrencyDisabled && (
-          <p className="mt-2 text-xs italic text-muted">
-            Parallel execution of runs is disabled for this project. This setting will have no effect. You can modify your Project
-            Concurrency setting on the <TextLink to={`/projects/${projectId}/settings`}>project setup</TextLink> page.
-          </p>
-        )}
+        <div className="flex flex-col gap-2">
+          <TextInput
+            id="concurrency"
+            type="number"
+            label="Max Concurrency"
+            placeholder="Unlimited (up to max available)"
+            min={1}
+            disabled={concurrencyDisabled}
+            value={graph.concurrency ?? ""}
+            onChange={(e) => onChange({ concurrency: e.target.value === "" ? null : Number(e.target.value) })}
+          />
+          {concurrencyDisabled && (
+            <p className="text-xs italic text-muted">
+              Parallel execution of runs is disabled for this project. This setting will have no effect. You can modify your Project
+              Concurrency setting on the <TextLink to={`/projects/${projectId}/settings`}>project setup</TextLink> page.
+            </p>
+          )}
+        </div>
       </Section>
       <Section
         title="Reset Workflow"

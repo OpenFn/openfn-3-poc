@@ -18,3 +18,7 @@ type Story = StoryObj<typeof EdgeInspector>;
 export const OnSuccess: Story = {};
 export const FromTrigger: Story = { args: { edge: openhie.edges[0]! } };
 export const JsExpression: Story = { args: { edge: referrals.edges[1]! } };
+export const Disabled: Story = { args: { edge: { ...openhie.edges[1]!, enabled: false } } };
+export const UnsafeExpression: Story = {
+  args: { edge: { ...referrals.edges[1]!, conditionType: "js_expression", conditionExpression: "eval(state.data.code)" } },
+};

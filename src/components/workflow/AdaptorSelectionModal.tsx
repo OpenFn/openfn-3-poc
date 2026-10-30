@@ -71,10 +71,12 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
         header={
           fallback && (
             <Alert tone="info">
-              <p className="mb-1">
-                <span className="font-medium">No adaptor found</span> for "{query}"
-              </p>
-              <p>Try the HTTP adaptor below to connect to any system with a REST API.</p>
+              <div className="flex flex-col gap-1">
+                <p>
+                  <span className="font-medium">No adaptor found</span> for "{query}"
+                </p>
+                <p>Try the HTTP adaptor below to connect to any system with a REST API.</p>
+              </div>
             </Alert>
           )
         }

@@ -19,13 +19,17 @@ interface Props {
 function OptionCard({ icon, title, description, onClick, testId }: { icon: string; title: string; description: string; onClick: () => void; testId: string }) {
   return (
     <Card as="button" data-testid={testId} onClick={onClick} padding="lg" className="h-full text-sm text-muted">
-      <div className="mb-3 w-fit rounded-lg bg-sunken p-2">
-        <span className={cn("block h-5 w-5 text-body", icon)} />
+      <div className="flex flex-col gap-3">
+        <div className="w-fit rounded-lg bg-sunken p-2">
+          <span className={cn("block h-5 w-5 text-body", icon)} />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Heading size="sm" as="p">
+            {title}
+          </Heading>
+          <p>{description}</p>
+        </div>
       </div>
-      <Heading size="sm" as="p">
-        {title}
-      </Heading>
-      <p className="mt-1">{description}</p>
     </Card>
   );
 }
@@ -54,7 +58,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <Label htmlFor="build-with-ai-input">Build with AI</Label>
-              <Pill tone="success">
+              <Pill color="green">
                 <span className="hero-sparkles-micro h-3 w-3" />
                 Recommended
               </Pill>

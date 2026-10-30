@@ -18,6 +18,8 @@ export type RunViewerTab = "log" | "input" | "output";
 interface Props {
   projectId: string;
   run: Run;
+  /** Who or what started the run: a user's email or "webhook trigger". */
+  startedBy: string | null;
   steps: Step[];
   logs: LogLine[];
   dataclips: Dataclip[];
@@ -33,7 +35,7 @@ interface Props {
  * run metadata and the steps it executed on top, then the Logs, Input or
  * Output of the selected step below.
  */
-export default function RunViewerPanel({ projectId, run, steps, logs, dataclips, selectedStepId, onSelectStep, activeTab, mismatch = false }: Props) {
+export default function RunViewerPanel({ projectId, run, startedBy, steps, logs, dataclips, selectedStepId, onSelectStep, activeTab, mismatch = false }: Props) {
   const step = steps.find((s) => s.id === selectedStepId) ?? null;
   const clip = (id: string | null | undefined) => dataclips.find((d) => d.id === id);
 
@@ -66,13 +68,11 @@ export default function RunViewerPanel({ projectId, run, steps, logs, dataclips,
             </DetailItem>
             <DetailItem label="Duration">{formatElapsed(run.startedAt, run.finishedAt)}</DetailItem>
             {run.startedAt && <DetailItem label="Started">{formatLocalDateTime(run.startedAt)}</DetailItem>}
-            {(run.createdBy || run.startingTrigger) && (
-              <DetailItem label="Started by">{run.createdBy ? "editor@openfn.org" : `${run.startingTrigger?.toLowerCase()} trigger`}</DetailItem>
-            )}
+            {startedBy && <DetailItem label="Started by">{startedBy}</DetailItem>}
           </DetailList>
         </div>
-        <div>
-          <Heading size="sm" as="p" className="mb-3 flex items-center gap-1">
+        <div className="flex flex-col gap-3">
+          <Heading size="sm" as="p" className="flex items-center gap-1">
             Run Steps
             <InfoTooltip title="This run may not have executed all steps in the workflow. Only the steps that were executed in this specific run are shown here." />
           </Heading>

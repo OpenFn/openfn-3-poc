@@ -27,4 +27,4 @@ export const WithFooter: Story = {
     ),
   },
 };
-export const BackButtonFixedHeight: Story = { args: { title: "Run from Transform data", showBackButton: true, fixedHeight: true, bare: true } };
+export const BackButtonFixedHeight: Story = { args: { title: "Run from Transform data", onBack: () => {}, fixedHeight: true, bare: true } };
