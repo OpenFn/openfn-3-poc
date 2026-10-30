@@ -159,6 +159,7 @@ describe("Tooltip", () => {
   it("copies on click, says so, and keeps the click from the row around it", async () => {
     const onRowClick = vi.fn();
     render(
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- stands in for a clickable row, to catch the click that bubbles out
       <div onClick={onRowClick}>
         <Tooltip content="2026-10-14 08:30:07 UTC" copy="2026-10-14 08:30:07 UTC"><span>today</span></Tooltip>
       </div>

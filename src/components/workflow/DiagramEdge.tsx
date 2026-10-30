@@ -5,6 +5,7 @@ import {
   EDGE_COLOR_SELECTED,
   bezierPath,
   conditionGlyph,
+  conditionName,
   edgeColor,
   edgeEndpoints,
 } from "./diagramGeometry";
@@ -112,8 +113,16 @@ export default function DiagramEdge({
           alignItems: "center",
           opacity: enabled ? 1 : 0.9,
         }}
-        className="cursor-pointer"
+        role="button"
+        tabIndex={0}
+        aria-label={`${conditionName(conditionType)} path${conditionLabel ? `: ${conditionLabel}` : ""}`}
+        className="cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         onClick={handle}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          onClick?.();
+        }}
         onPointerDown={(e) => e.stopPropagation()}
         data-testid={`edge-label-${id}`}
       >

@@ -67,13 +67,23 @@ export default function DiagramNode({
       style={disabled ? { opacity: 0.5 } : undefined}
       data-id={id}
       data-testid={shape === "circle" ? `trigger-node-${id}` : `job-node-${id}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick?.();
-      }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <div className="flex cursor-pointer">
+      {/* Focusable and picked with Enter or Space, as React Flow's nodes are in Lightning. */}
+      <div
+        role="button"
+        tabIndex={0}
+        className="flex cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.();
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          onClick?.();
+        }}
+      >
         <div className="relative">
           {run && shape === "rect" && (
             <Tooltip content={runningHint}>
@@ -160,14 +170,14 @@ export default function DiagramNode({
       {onAddPath && (
         <div
           style={{ width: NODE_SIZE, marginLeft: 2, marginTop: -18, justifyContent: "center" }}
-          className="relative z-10 flex items-center opacity-0 transition group-hover:opacity-100 focus-within:opacity-100"
+          className="pointer-events-none relative z-10 flex items-center opacity-0 transition group-hover:opacity-100 focus-within:opacity-100"
         >
           <IconButton
             variant="primary"
             size="xs"
             icon={<span className="hero-plus pointer-events-none h-4 w-4" aria-hidden="true" />}
             label="Add a path to a new step"
-            className="ml-1 rounded-lg"
+            className="pointer-events-auto ml-1 rounded-lg"
             onClick={(e) => {
               e.stopPropagation();
               onAddPath();
