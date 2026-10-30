@@ -20,6 +20,9 @@ list page; `src/pages/profile/TokensPage.tsx` (props only) and its
 example. A page that will move to Lightning follows pattern 11, page and
 wrapper.
 
+**What good looks like** is in [PRINCIPLES.md](./PRINCIPLES.md). Read it
+before building or reviewing a component.
+
 ## Commands
 
 - `npm run dev` — start dev server
