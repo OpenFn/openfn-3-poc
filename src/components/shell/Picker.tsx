@@ -139,7 +139,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
         onSelect={go}
         placeholder={placeholder}
         inputAddon={
-          // eslint-disable-next-line no-restricted-syntax -- the shortcut <kbd>, allowlisted
+          // eslint-disable-next-line no-restricted-syntax -- debt: the shortcut <kbd> is code-sm, but Text can't render a kbd
           <kbd className="hidden items-center gap-1 rounded px-2 py-1 text-xs text-faint ring-1 ring-strong sm:inline-flex">
             <span>{isMac ? "⌘" : "Ctrl"}</span>
             <span>P</span>
