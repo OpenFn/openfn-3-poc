@@ -1,5 +1,6 @@
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
+import { EmptyState } from "../../components/primitives/Table";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import DataclipDetailsCard, { DataclipBodyCard } from "../../components/history/DataclipDetailsCard";
 import JsonViewer from "../../components/history/JsonViewer";
@@ -36,10 +37,21 @@ export default function DataclipShowPage({ project, projectLabel, dataclip, body
         />
       }
     >
-      <Centered>
+      <Centered className="space-y-6">
         <DataclipDetailsCard dataclip={dataclip} />
-        <DataclipBodyCard wiped={dataclip.wipedAt !== null}>
-          <JsonViewer body={body} />
+        <DataclipBodyCard>
+          {dataclip.wipedAt !== null ? (
+            <div className="flex h-full items-center">
+              <EmptyState
+                variant="plain"
+                icon="hero-eye-slash"
+                title="No Data Available"
+                message="This dataclip's data has been wiped in accordance with the project's data retention policy."
+              />
+            </div>
+          ) : (
+            <JsonViewer body={body} />
+          )}
         </DataclipBodyCard>
       </Centered>
     </PageContent>

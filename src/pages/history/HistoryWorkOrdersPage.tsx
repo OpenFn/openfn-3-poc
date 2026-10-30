@@ -5,6 +5,7 @@ import Tabs from "../../components/primitives/Tabs";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/history/FilterChip";
 import HistorySearchBar from "../../components/history/HistorySearchBar";
+import Text from "../../components/primitives/Text";
 import {
   BulkCancelModal,
   BulkRerunModal,
@@ -417,20 +418,22 @@ export default function HistoryWorkOrdersPage({
           )}
         </div>
 
-        <HistorySearchBar
-          fields={historySearchFields}
-          selected={filters.searchFields}
-          onToggle={(id) => apply({ searchFields: toggle(filters.searchFields, id) })}
-          term={filters.searchTerm}
-          onSearch={(searchTerm) => apply({ searchTerm })}
-        />
+        <div className="mt-2">
+          <HistorySearchBar
+            fields={historySearchFields}
+            selected={filters.searchFields}
+            onToggle={(id) => apply({ searchFields: toggle(filters.searchFields, id) })}
+            term={filters.searchTerm}
+            onSearch={(searchTerm) => apply({ searchTerm })}
+          />
+        </div>
 
         {filters.searchTerm && (
-          <div className="m-2 truncate text-sm text-muted">
+          <Text as="div" className="m-2 truncate text-muted">
             {page.totalEntries}
             {capped && "+"} work orders with runs matching "{filters.searchTerm}"
-            {capped && <span className="text-xs"> (try more specific filters)</span>}
-          </div>
+            {capped && <Text variant="body-sm"> (try more specific filters)</Text>}
+          </Text>
         )}
 
         <div className="mt-2">

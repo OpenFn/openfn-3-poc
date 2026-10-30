@@ -75,3 +75,4 @@ export const Filtered: Story = {
   },
 };
 export const ReadOnly: Story = { args: { canRunWorkflow: false } };
+export const Error: Story = { args: { state: "error" } };

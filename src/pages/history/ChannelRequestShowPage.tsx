@@ -6,7 +6,7 @@ import Pill from "../../components/primitives/Pill";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import {
   BodyViewer,
-  HeadersTable,
+  HeadersList,
   ResponseEmpty,
   SectionSizeBadge,
   StatusCodeBadge,
@@ -14,7 +14,7 @@ import {
 import ChannelRequestSummary from "../../components/history/ChannelRequestSummary";
 import ChannelTiming from "../../components/history/ChannelTiming";
 import WipedDataViewer from "../../components/history/WipedDataViewer";
-import { errorCategory, humanizeError } from "../../components/history/channelHelpers";
+import { errorCategory, humanizeError } from "../../components/history/channelErrors";
 import type { ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
 import type { CurrentProject } from "../../types/projects";
 import { shortUuid } from "../../utils/format";
@@ -104,7 +104,7 @@ export default function ChannelRequestShowPage({
               >
                 {event?.requestHeaders && (
                   <Disclosure variant="section" title="Headers">
-                    <HeadersTable headers={event.requestHeaders} />
+                    <HeadersList headers={event.requestHeaders} />
                   </Disclosure>
                 )}
                 {event && showRequestBody && (
@@ -141,7 +141,7 @@ export default function ChannelRequestShowPage({
                   <>
                     {event?.responseHeaders && (
                       <Disclosure variant="section" title="Headers">
-                        <HeadersTable headers={event.responseHeaders} />
+                        <HeadersList headers={event.responseHeaders} />
                       </Disclosure>
                     )}
                     {event && showResponseBody && (

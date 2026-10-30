@@ -44,3 +44,14 @@ export const TwoRunsExpanded: Story = { args: { ...base, workOrder: row("wo-2"),
 export const Selected: Story = { args: { ...base, workOrder: row("wo-4"), selected: true } };
 export const Rejected: Story = { args: { ...base, workOrder: row("wo-5") } };
 export const Pending: Story = { args: { ...base, workOrder: { ...row("wo-1"), state: "pending" } } };
+export const WipedInput: Story = {
+  args: { ...base, workOrder: { ...row("wo-1"), dataclipWiped: true }, dataStorageHref: "/projects/p/settings#data-storage" },
+};
+export const ReadOnly: Story = { args: { ...base, workOrder: row("wo-1"), canRunWorkflow: false } };
+export const LongWorkflowName: Story = {
+  args: {
+    ...base,
+    workOrder: { ...row("wo-1"), workflowName: "Nightly patient registration sync from the district health information system to OpenHIE" },
+  },
+};
+export const NoRuns: Story = { args: { ...base, workOrder: { ...row("wo-5"), runs: [], workflowHref: null } } };

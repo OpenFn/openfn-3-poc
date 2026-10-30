@@ -11,7 +11,7 @@ import Text from "../primitives/Text";
 import ElapsedTime from "./ElapsedTime";
 import StatePill from "../domain/StatePill";
 import UuidChip from "../primitives/UuidChip";
-import { RunCard } from "./RunDetails";
+import { RunCard } from "./RunCard";
 import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
@@ -166,10 +166,16 @@ export default function WorkOrderTableRow({
                   />
                 ) : canRunWorkflow ? (
                   <WipedTooltip message={zeroPersistence} dataStorageHref={dataStorageHref}>
-                    <IconButton icon="hero-arrow-path-mini" label={zeroPersistence} tooltip={false} size="xs" disabled />
+                    <IconButton icon="hero-arrow-path-mini" label="Retry (run from the start)" tooltip={false} size="xs" disabled />
                   </WipedTooltip>
                 ) : (
-                  <IconButton icon="hero-arrow-path-mini" label="You are not authorized to start runs for this project." size="xs" disabled />
+                  <IconButton
+                    icon="hero-arrow-path-mini"
+                    label="Retry (run from the start)"
+                    tooltip="You are not authorized to start runs for this project."
+                    size="xs"
+                    disabled
+                  />
                 ))}
               <Pill>{runs.length}</Pill>
               <span className={cn(expanded ? "hero-chevron-up" : "hero-chevron-down", "size-4 text-faint")} />

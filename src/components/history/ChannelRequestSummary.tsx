@@ -8,7 +8,7 @@ import TextLink from "../primitives/TextLink";
 import Text from "../primitives/Text";
 import { MethodBadge, RequestPathDisplay, StatusCodeBadge } from "./ChannelRequestParts";
 import { ChannelStatePill } from "../domain/StatePill";
-import { humanizeError } from "./channelHelpers";
+import { humanizeError } from "./channelErrors";
 import { formatUs, shortUuid } from "../../utils/format";
 import CopyButton from "../primitives/CopyButton";
 

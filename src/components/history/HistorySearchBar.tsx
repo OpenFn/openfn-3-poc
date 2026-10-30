@@ -32,7 +32,7 @@ export default function HistorySearchBar({
   }
 
   return (
-    <div className="mt-2 flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <form
         className="flex-1"
         onSubmit={(e) => {

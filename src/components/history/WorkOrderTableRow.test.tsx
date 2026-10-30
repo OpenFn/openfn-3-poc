@@ -55,7 +55,7 @@ describe("WorkOrderTableRow", () => {
       </Table>
     );
     const rows = screen.getAllByRole("row").length;
-    fireEvent.click(screen.getByRole("button", { name: zeroPersistenceMessage }).parentElement!);
+    fireEvent.click(screen.getByRole("button", { name: "Retry (run from the start)" }).parentElement!);
     expect(screen.getAllByRole("row")).toHaveLength(rows);
   });
 });

@@ -183,10 +183,7 @@ export default function RunShowPage({
           <div className="@5xl/main:basis-1/3 flex gap-y-6 @5xl/main:flex-col flex-row">
             <DetailList id={`run-detail-${run.id}`} className="flex-1 @5xl/main:flex-none">
               <DetailItem label="Workflow">
-                <TextLink
-                  to={editorPath(project.id, workflow.id, run.id, run.snapshot.lockVersion, workflow, experimentalFeatures)}
-                  className="text-ellipsis"
-                >
+                <TextLink to={editorPath(project.id, workflow.id, run.id, run.snapshot.lockVersion, workflow, experimentalFeatures)}>
                   {workflow.name}
                 </TextLink>
               </DetailItem>

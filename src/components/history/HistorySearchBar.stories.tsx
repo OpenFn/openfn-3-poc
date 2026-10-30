@@ -23,3 +23,5 @@ export const Default: Story = {
   args: { fields: historySearchFields, selected: ["log"], onToggle: () => {}, term: "", onSearch: () => {} },
   render: (args) => <Demo {...args} />,
 };
+export const WithTerm: Story = { ...Default, args: { ...Default.args, term: "timeout" } };
+export const NoFieldsSelected: Story = { ...Default, args: { ...Default.args, selected: [] } };
