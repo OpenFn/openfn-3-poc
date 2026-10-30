@@ -12,8 +12,10 @@ The rules below are ours.
 - Compose, don't configure. Pass content through `children` and named slots
   (`title`, `footer`), not boolean props. Use compound parts only where
   callers repeat or reorder the pieces (`Table`, `Menu`).
-- Primitives know nothing about Lightning. Domain components wrap them and
-  add the meaning.
+- Primitives know nothing about Lightning: no product wording, permissions or
+  sandbox logic. Domain components wrap them and add the meaning.
+- `className` on a primitive is only for placement (`flex-1`, `w-full`,
+  `shrink-0`, `min-w-0`, grid placement), never for how it looks.
 - Never work around a primitive. If it can't do the job, extend it.
 - The parent owns the space between children. No outer margins.
 - A component's stories are its spec: one per state it can be in (empty,
