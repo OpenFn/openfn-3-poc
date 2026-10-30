@@ -65,6 +65,7 @@ export default function ProjectsPicker({ id, type, projects, granted = [], selec
       {/* Lightning's data-confirm on the remove button. */}
       {confirming && (
         <ConfirmModal
+          key={confirming.id}
           open
           onClose={() => setConfirming(null)}
           onConfirm={() => {

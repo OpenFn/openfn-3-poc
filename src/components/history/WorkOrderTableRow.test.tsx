@@ -21,6 +21,18 @@ const workOrder: WorkOrderRow = {
   dataclipHref: "/projects/p1/dataclips/7f6e5d4c-0000-4000-8000-000000000002/show",
 };
 
+const run: RunRow = {
+  id: "run-1",
+  state: "success",
+  insertedAt: "2026-10-01T10:00:00Z",
+  claimedAt: "2026-10-01T10:00:00Z",
+  startedAt: "2026-10-01T10:00:00Z",
+  finishedAt: "2026-10-01T10:01:00Z",
+  updatedAt: "2026-10-01T10:01:00Z",
+  href: "/projects/p1/runs/run-1",
+  steps: [],
+};
+
 const noop = () => {};
 const props = { selected: false, onSelect: noop, canRunWorkflow: true, dataStorageHref: null, onCancel: noop, onRetry: noop, onCancelRun: noop, onRetryStep: noop };
 
@@ -37,18 +49,16 @@ describe("WorkOrderTableRow", () => {
     expect(openTooltips()[0]).toContain(zeroPersistenceMessage);
   });
 
+  it("tells a screen reader why a wiped work order's retry is disabled", () => {
+    render(
+      <Table header={null}>
+        <WorkOrderTableRow {...props} workOrder={{ ...workOrder, runs: [run] }} />
+      </Table>
+    );
+    expect(screen.getByRole("button", { name: "Retry (run from the start)" }).getAttribute("aria-description")).toBe(zeroPersistenceMessage);
+  });
+
   it("leaves the row collapsed when the disabled retry's wrapper is clicked", () => {
-    const run: RunRow = {
-      id: "run-1",
-      state: "success",
-      insertedAt: "2026-10-01T10:00:00Z",
-      claimedAt: "2026-10-01T10:00:00Z",
-      startedAt: "2026-10-01T10:00:00Z",
-      finishedAt: "2026-10-01T10:01:00Z",
-      updatedAt: "2026-10-01T10:01:00Z",
-      href: "/projects/p1/runs/run-1",
-      steps: [],
-    };
     render(
       <Table header={null}>
         <WorkOrderTableRow {...props} workOrder={{ ...workOrder, runs: [run] }} />

@@ -115,7 +115,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                 </div>
               ) : (
                 // eslint-disable-next-line no-restricted-syntax -- debt: relaxed line height for chat replies has no Text style
-                <div key={m.id} className="leading-relaxed text-strong">
+                <div key={m.id} className="space-y-3 leading-relaxed text-strong">
                   <p className="whitespace-pre-wrap">{m.content}</p>
                   {m.code && (
                     <Card padding="none" className="overflow-hidden">
@@ -172,7 +172,7 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
                     }}
                     className="flex w-full flex-col gap-1.5 rounded-lg p-3 text-left hover:bg-hover"
                   >
-                    <Heading size="sm" as="h3" className="mb-1.5 truncate">
+                    <Heading size="sm" as="h3" className="truncate">
                       {s.title}
                     </Heading>
                     <Text as="div" variant="body-sm" className="flex items-center justify-between gap-3 text-muted">

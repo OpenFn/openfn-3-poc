@@ -64,7 +64,7 @@ export function DetailItem({
   }
   return (
     <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
-      <dt className="shrink-0 font-medium text-muted">{label}</dt>
+      <dt className="min-w-0 wrap-break-word font-medium text-muted">{label}</dt>
       <Value mono={mono} className="min-w-0 wrap-break-word text-right text-strong">{children}</Value>
     </div>
   );

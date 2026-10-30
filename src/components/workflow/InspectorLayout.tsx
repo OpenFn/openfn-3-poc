@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
@@ -38,6 +38,18 @@ export default function InspectorLayout({
   "data-testid": testId,
   annotation = "workflow-editor-inspectors",
 }: Props) {
+  // The full title shows on hover only while it is cut off.
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const [truncated, setTruncated] = useState(false);
+  useLayoutEffect(() => {
+    const heading = titleRef.current?.firstElementChild;
+    if (!heading) return;
+    const measure = () => setTruncated(heading.scrollWidth > heading.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, [title]);
   return (
     <div className="pointer-events-auto w-screen max-w-md p-6" data-testid={testId} data-annotation={annotation}>
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
@@ -45,9 +57,9 @@ export default function InspectorLayout({
         <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
           <div className="flex min-w-0 items-center gap-2">
             {onBack && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack} />}
-            <Tooltip content={title}>
+            <Tooltip content={truncated && title}>
               {/* Heading takes no ref, so this span is the trigger. */}
-              <span className="min-w-0">
+              <span ref={titleRef} className="min-w-0">
                 <Heading as="h2" className="truncate">
                   {title}
                 </Heading>

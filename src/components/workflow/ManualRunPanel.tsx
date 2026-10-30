@@ -168,7 +168,7 @@ export default function ManualRunPanel({
             <Heading className="min-w-0 wrap-break-word">{selected.name || "Unnamed"}</Heading>
             <IconButton icon="hero-pencil" label="Rename" size="xs" />
           </div>
-          <Text as="div" variant="body-sm" className="mt-1 flex items-center gap-2 text-muted">
+          <Text as="div" variant="body-sm" className="flex items-center gap-2 text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
             <span>•</span>
             <span>{formatLocalDate(selected.insertedAt)}</span>

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { cloneElement, type ReactElement } from "react";
 import TextLink from "../primitives/TextLink";
 import Tooltip from "../primitives/Tooltip";
 
@@ -37,7 +37,8 @@ export default function WipedTooltip({
         </>
       }
     >
-      {children}
+      {/* The content isn't a string, so Tooltip doesn't describe the control; the reason goes on it here. */}
+      {cloneElement(children as ReactElement<{ "aria-description"?: string }>, { "aria-description": message })}
     </Tooltip>
   );
 }

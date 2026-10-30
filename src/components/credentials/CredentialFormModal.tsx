@@ -558,6 +558,7 @@ export default function CredentialFormModal({
         {/* Lightning's data-confirm on the delete button. */}
         {confirmingEnvDelete && (
           <ConfirmModal
+            key={env.key}
             open
             onClose={() => setConfirmingEnvDelete(false)}
             onConfirm={() => {
