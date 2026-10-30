@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Modal from "../primitives/Modal";
+import Text from "../primitives/Text";
 import type { CredentialRow } from "../../types/credentials";
 
 interface Props {
@@ -36,10 +37,10 @@ export default function CredentialDeletionModal({ onClose, credential, onDelete 
           </Button>
         }
       >
-        <div className="space-y-3 text-sm text-muted">
+        <Text as="div" className="space-y-3 text-muted">
           <p>{activityNote}</p>
           <p>Contact your instance administrator for more details.</p>
-        </div>
+        </Text>
       </Modal>
     );
   }
