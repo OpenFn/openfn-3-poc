@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { useFieldControl } from "./fieldControl";
 import Text from "./Text";
 import Tooltip from "./Tooltip";
 
@@ -27,10 +28,12 @@ type Props = BaseProps & ({ label: string } | { labelledBy: string } | { tooltip
 /**
  * Lightning's toggle switch (new_inputs.ex `type="toggle"`): primary-600
  * when on, with a check / cross in the knob. A hidden checkbox mirrors the
- * state, as Lightning's does, so forms and tests can read it.
+ * state, as Lightning's does, so forms and tests can read it. In a `Field`
+ * with errors it gets a red ring.
  */
 export default function Toggle({ checked, onChange, label, note, description, disabled = false, id, tooltip, labelledBy, name }: Props) {
   const labelId = useId();
+  const field = useFieldControl();
   const button = (
     <button
       id={id}
@@ -41,13 +44,16 @@ export default function Toggle({ checked, onChange, label, note, description, di
       // An unlabelled switch is named by its tooltip, as Lightning's toggle input is.
       aria-label={label || labelledBy ? undefined : tooltip}
       disabled={disabled}
+      aria-invalid={field["aria-invalid"]}
+      aria-describedby={field["aria-describedby"]}
       data-ui="toggle"
       onClick={() => onChange?.(!checked)}
       className={cn(
         "relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
         checked ? "bg-primary-600" : "bg-emphasis",
-        "disabled:cursor-not-allowed disabled:opacity-50"
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "aria-invalid:ring-2 aria-invalid:ring-invalid aria-invalid:ring-offset-2"
       )}
     >
       <span

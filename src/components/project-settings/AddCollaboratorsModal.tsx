@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../primitives/Button";
-import { FieldError, TextInput } from "../primitives/Inputs";
+import { TextInput } from "../primitives/Inputs";
 import IconButton from "../primitives/IconButton";
 import FormModal from "../primitives/FormModal";
 import RoleSelect from "./RoleSelect";
@@ -54,22 +54,20 @@ export default function AddCollaboratorsModal({ existingEmails, onCancel, onSave
       {rows.map((r, i) => {
         const error = errorFor(r);
         return (
-          <div key={i}>
-            <div className="flex items-center gap-4">
-              <TextInput
-                fieldClassName="flex-1"
-                aria-label="Email"
-                placeholder="email@example.com"
-                required
-                value={r.email}
-                onChange={(e) => update(i, { email: e.target.value })}
-              />
-              <RoleSelect value={r.role} onChange={(role) => update(i, { role })} />
-              {rows.length > 1 && (
-                <IconButton icon="hero-minus-circle" label="Remove row" onClick={() => setRows(rows.filter((_, j) => j !== i))} />
-              )}
-            </div>
-            {error && <FieldError>{error}</FieldError>}
+          <div key={i} className="flex items-start gap-4">
+            <TextInput
+              fieldClassName="flex-1"
+              aria-label="Email"
+              placeholder="email@example.com"
+              required
+              value={r.email}
+              errors={error ? [error] : []}
+              onChange={(e) => update(i, { email: e.target.value })}
+            />
+            <RoleSelect value={r.role} onChange={(role) => update(i, { role })} />
+            {rows.length > 1 && (
+              <IconButton icon="hero-minus-circle" label="Remove row" className="mt-2" onClick={() => setRows(rows.filter((_, j) => j !== i))} />
+            )}
           </div>
         );
       })}

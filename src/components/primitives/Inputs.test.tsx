@@ -2,7 +2,8 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { pickOption } from "../../test/select";
-import { Select } from "./Inputs";
+import { Checkbox, Field, Radio, Select, TextInput } from "./Inputs";
+import RadioCards from "./RadioCards";
 
 const roles: [string, string][] = [
   ["Viewer", "viewer"],
@@ -220,5 +221,135 @@ describe("Select", () => {
     await key("ArrowDown");
     act(() => screen.getByLabelText("Next field").focus());
     expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+});
+
+/** The text of the elements an element's aria-describedby points at. */
+const description = (el: Element) =>
+  (el.getAttribute("aria-describedby") ?? "")
+    .split(" ")
+    .map((id) => document.getElementById(id)?.textContent?.trim())
+    .join(" ");
+
+describe("Field", () => {
+  it("ties the control to its hint and errors, and marks it invalid", () => {
+    render(<TextInput label="Name" hint="Lowercase only." errors={["can't be blank"]} />);
+    const input = screen.getByRole("textbox", { name: "Name" });
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(description(input)).toBe("Lowercase only. can't be blank");
+  });
+
+  it("fails a control with no label and no hidden name, and passes one in a labelled Field", () => {
+    expect(() => render(<TextInput />)).toThrow("TextInput has no name");
+    expect(() => render(<Select options={["a"]} value="a" />)).toThrow("Select has no name");
+    render(
+      <Field id="secret" label="Password">
+        <TextInput id="secret" disabled />
+      </Field>
+    );
+    expect(screen.getByRole("textbox", { name: "Password" })).toBeTruthy();
+  });
+
+  it("gives a control inside a labelled Field that Field's errors", () => {
+    render(
+      <Field id="secret" label="Password" errors={["can't be blank"]}>
+        <TextInput id="secret" />
+      </Field>
+    );
+    const input = screen.getByRole("textbox", { name: "Password" });
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(description(input)).toBe("can't be blank");
+  });
+
+  it("keeps an info tooltip out of the control's name", () => {
+    render(<TextInput label="Adaptor" info="Choose an adaptor." />);
+    expect(screen.getByRole("textbox", { name: "Adaptor" })).toBeTruthy();
+  });
+
+  it("leaves a control without errors unmarked", () => {
+    render(<TextInput label="Name" hint="Lowercase only." />);
+    expect(screen.getByRole("textbox", { name: "Name" }).hasAttribute("aria-invalid")).toBe(false);
+  });
+
+  it("marks only the control whose field has errors in a row", () => {
+    render(
+      <div>
+        <TextInput aria-label="Email" errors={["has invalid format"]} />
+        <Select aria-label="Role" options={["viewer"]} value="viewer" />
+      </div>
+    );
+    expect(screen.getByRole("textbox", { name: "Email" }).getAttribute("aria-invalid")).toBe("true");
+    expect(screen.getByRole("button", { name: /Role/ }).hasAttribute("aria-invalid")).toBe(false);
+  });
+
+  it("ties a Select to its errors", () => {
+    render(<Select label="Role" options={["viewer"]} value="" errors={["can't be blank"]} />);
+    const button = screen.getByRole("button", { name: /Role/ });
+    expect(button.getAttribute("aria-invalid")).toBe("true");
+    expect(description(button)).toBe("can't be blank");
+  });
+
+  it("ties a Select to errors that arrive after it mounts, and lets go when they clear", () => {
+    const select = (errors: string[]) => <Select label="Role" options={["viewer"]} value="" errors={errors} />;
+    const { rerender } = render(select([]));
+    const button = screen.getByRole("button", { name: /Role/ });
+    rerender(select(["can't be blank"]));
+    expect(description(button)).toBe("can't be blank");
+    rerender(select([]));
+    expect(button.hasAttribute("aria-describedby")).toBe(false);
+  });
+
+  it("puts the star and an info tooltip after the label, keeping the name to the label", () => {
+    render(<TextInput label="Environment name" required info="Names let a workflow pick values." />);
+    expect((screen.getByRole("textbox", { name: /^Environment name\s*\*$/ }) as HTMLInputElement).required).toBe(true);
+    screen.getByRole("button", { name: "Names let a workflow pick values." });
+  });
+
+  it("shows a badge beside the label without adding it to the control's name", () => {
+    render(<TextInput label="Build with AI" aside={<span>Recommended</span>} />);
+    screen.getByRole("textbox", { name: "Build with AI" });
+    screen.getByText("Recommended");
+  });
+
+  it("as a group, names a fieldset with its label and disables every control in it", () => {
+    render(
+      <Field group label="Response" hint="When to reply." disabled>
+        <Radio name="r" label="Immediately" />
+        <Radio name="r" label="On completion" />
+      </Field>
+    );
+    const group = screen.getByRole("group", { name: "Response" });
+    expect(description(group)).toBe("When to reply.");
+    for (const radio of screen.getAllByRole("radio")) expect(radio.matches(":disabled")).toBe(true);
+  });
+
+  it("gives a checkbox the error look through its field", () => {
+    render(
+      <Field errors={["must be accepted"]}>
+        <Checkbox label="Make client global" />
+      </Field>
+    );
+    expect(screen.getByRole("checkbox", { name: "Make client global" }).getAttribute("aria-invalid")).toBe("true");
+  });
+});
+
+describe("RadioCards", () => {
+  it("is a named group of radios that reports the picked value", () => {
+    const onChange = vi.fn();
+    render(
+      <RadioCards
+        aria-label="Authentication type"
+        value="basic"
+        onChange={onChange}
+        options={[
+          { value: "basic", label: "Basic" },
+          { value: "api", label: "API key" },
+        ]}
+      />
+    );
+    screen.getByRole("group", { name: "Authentication type" });
+    expect((screen.getByRole("radio", { name: "Basic" }) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole("radio", { name: "API key" }));
+    expect(onChange).toHaveBeenCalledWith("api");
   });
 });

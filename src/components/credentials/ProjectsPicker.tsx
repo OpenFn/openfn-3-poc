@@ -38,6 +38,7 @@ export default function ProjectsPicker({ id, type, projects, granted = [], selec
       <Select
         id={selectId}
         value=""
+        aria-label={prompt}
         prompt={prompt}
         errors={errors}
         options={available.map((p) => ({ label: p.name, value: p.id }))}

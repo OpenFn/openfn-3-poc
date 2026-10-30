@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Field } from "./Inputs";
 import Toggle from "./Toggle";
 
 const meta: Meta<typeof Toggle> = { title: "Primitives/Toggle", component: Toggle, args: { checked: true, tooltip: "Enabled" } };
@@ -13,3 +14,11 @@ export const WithLabel: Story = {
 export const WithNote: Story = { args: { checked: false, label: "Require MFA?", note: "(currently optional for this project)" } };
 export const Disabled: Story = { args: { disabled: true } };
 export const WithTooltip: Story = { args: { disabled: true, tooltip: "Only owners can change this" } };
+/** In a Field with errors the switch gets a red ring. */
+export const WithError: Story = {
+  render: (args) => (
+    <Field errors={["must be on to require MFA"]}>
+      <Toggle {...args} checked={false} label="Require MFA" />
+    </Field>
+  ),
+};

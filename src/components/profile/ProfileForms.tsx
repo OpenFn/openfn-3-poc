@@ -2,10 +2,9 @@ import type { FormEvent, ReactNode } from "react";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
-import InfoTooltip from "../primitives/InfoTooltip";
 import { PasswordInput, Select, TextInput } from "../primitives/Inputs";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "../../types/profile";
-import { contactPreferenceOptions, contactPreferenceTooltip } from "../../constants";
+import { contactPreferenceHint, contactPreferenceOptions } from "../../constants";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";
@@ -62,12 +61,9 @@ export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onS
       <TextInput label="First name" required autoComplete="given-name" {...form.fieldProps("firstName")} />
       <TextInput label="Last name" required autoComplete="family-name" {...form.fieldProps("lastName")} />
       <Select
-        label={
-          <>
-            Contact preference<span className="text-danger-500"> *</span>
-            <InfoTooltip title={contactPreferenceTooltip} />
-          </>
-        }
+        label="Contact preference"
+        required
+        hint={contactPreferenceHint}
         options={contactPreferenceOptions}
         {...form.fieldProps("contactPreference")}
       />

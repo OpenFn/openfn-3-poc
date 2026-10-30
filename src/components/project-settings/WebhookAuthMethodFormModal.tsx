@@ -1,13 +1,13 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import CopyButton from "../primitives/CopyButton";
 import { Field, TextInput } from "../primitives/Inputs";
 import FormModal from "../primitives/FormModal";
 import Modal from "../primitives/Modal";
+import RadioCards from "../primitives/RadioCards";
 import Text from "../primitives/Text";
 import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "../../types/project-settings";
-import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
@@ -42,23 +42,6 @@ function SecretField({ id, value, type, revealed, onShow }: { id: string; value:
         </Button>
       )}
     </div>
-  );
-}
-
-function TypeOption({ selected, icon, children, onSelect }: { selected: boolean; icon: string; children: ReactNode; onSelect: () => void }) {
-  return (
-    <label
-      className={cn(
-        // eslint-disable-next-line no-restricted-syntax -- a control: the auth type card owns its type
-        "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-subtle bg-surface p-2 text-sm shadow-xs",
-        selected && "outline-2 outline-offset-2 outline-focus"
-      )}
-    >
-      {/* eslint-disable-next-line no-restricted-syntax -- visually hidden radio; the card around it is the control */}
-      <input type="radio" name="auth_type" className="sr-only" checked={selected} onChange={onSelect} />
-      <span className={cn(icon, "h-10 w-10")} />
-      {children}
-    </label>
   );
 }
 
@@ -178,12 +161,15 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
       >
         <div className="space-y-4">
           {next.error && <Alert tone="danger">{errorMessage(next.error)}</Alert>}
-          <TypeOption selected={choice === "basic"} icon="hero-globe-alt" onSelect={() => setChoice("basic")}>
-            Basic HTTP Authentication (username &amp; password)
-          </TypeOption>
-          <TypeOption selected={choice === "api"} icon="hero-code-bracket-square" onSelect={() => setChoice("api")}>
-            API Key Authentication (‘x-api-key’ header)
-          </TypeOption>
+          <RadioCards
+            aria-label="Authentication type"
+            value={choice}
+            onChange={setChoice}
+            options={[
+              { value: "basic", icon: "hero-globe-alt", label: "Basic HTTP Authentication (username & password)" },
+              { value: "api", icon: "hero-code-bracket-square", label: "API Key Authentication (‘x-api-key’ header)" },
+            ]}
+          />
         </div>
       </Modal>
     );

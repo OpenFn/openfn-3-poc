@@ -18,7 +18,7 @@ const panels = (
   <>
     <AuthPanel>
       <AuthPanelTitle>Authentication Code</AuthPanelTitle>
-      <TextInput id="code" placeholder="XXXXXX" />
+      <TextInput id="code" aria-label="Authentication code" placeholder="XXXXXX" />
       <Button className="w-full">Verify</Button>
       <AuthPanelHint>Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code.</AuthPanelHint>
     </AuthPanel>

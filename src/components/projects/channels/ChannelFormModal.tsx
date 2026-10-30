@@ -75,6 +75,7 @@ export default function ChannelFormModal({
         {...f.fieldProps("destinationCredentialId")}
       />
       <Field
+        group
         label="Client Credentials"
         hint={<HintWithLink href={`${settingsHref}#webhook_security`}>Credentials that you can use to access this channel</HintWithLink>}
       >

@@ -39,6 +39,7 @@ export default function AuthTwoFactorPage() {
         <form onSubmit={onSubmit} className="space-y-4">
           <TextInput
             id="user_code"
+            aria-label={method === "backup_code" ? "Backup code" : "Authentication code"}
             name="code"
             required
             autoComplete="one-time-code"

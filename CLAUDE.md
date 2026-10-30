@@ -153,7 +153,7 @@ everywhere. Reach for these first:
 | An icon-only action | `IconButton` (always give it a `label`) |
 | The X that closes a modal, toast or panel | `CloseButton` |
 | A button that opens a menu | `ButtonMenu`; `SplitButton` when the button also has its own action |
-| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()` and `data-ui="field"` (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
+| A form control | `TextInput`, `PasswordInput`, `TextArea`, `Select`, `Checkbox`, `Radio` from `Inputs`; wrap anything else in `Field` with `controlClasses()`, `data-ui="field"` and `useFieldControl()`; `info` and `aside` on a field put a tooltip or a badge or link beside its label (tests pick from a `Select` with `pickOption` in `src/test/select.ts`) |
 | A name that becomes a URL-safe slug | `NameField` |
 | A dialog | `Modal` |
 | A dialog around one form | `FormModal` |
@@ -164,6 +164,8 @@ everywhere. Reach for these first:
 | Show / hide a section | `Disclosure` |
 | Switching views | `Tabs` |
 | Picking one value from a few | `SegmentedControl` |
+| A set of radios or checkboxes under one label | `Field group` |
+| Picking one of a few options drawn as cards | `RadioCards` |
 | Searching or filtering a list | `SearchInput` |
 | A status chip, badge or tag | `Pill` |
 | Any bordered panel, tile or card | `Card` |

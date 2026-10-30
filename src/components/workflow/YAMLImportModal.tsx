@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../primitives/Button";
 import FileDropZone from "../primitives/FileDropZone";
 import FormModal from "../primitives/FormModal";
-import { FieldError } from "../primitives/Inputs";
+import { Field } from "../primitives/Inputs";
 import CodeEditor from "./CodeEditor";
 
 interface Props {
@@ -40,28 +40,29 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
           {mode === "upload" ? "Paste text" : "Upload a file"}
         </Button>
       </div>
-      <div className="h-80">
-        {mode === "upload" ? (
-          <FileDropZone
-            accept=".yaml,.yml"
-            label="Upload or drop a YAML file."
-            hint="YML or YAML, up to 8MB"
-            invalidMessage="File must be .yml or .yaml format"
-            onFile={(file) =>
-              void file.text().then((t) => {
-                setYaml(t);
-                setMode("paste");
-              })
-            }
-            className="h-full"
-          />
-        ) : (
-          <div className="h-full overflow-hidden rounded-lg">
-            <CodeEditor value={yaml} onChange={setYaml} language="yaml" ariaLabel="Workflow YAML" />
-          </div>
-        )}
-      </div>
-      {error && <FieldError>{error}</FieldError>}
+      <Field errors={error ? [error] : []}>
+        <div className="h-80">
+          {mode === "upload" ? (
+            <FileDropZone
+              accept=".yaml,.yml"
+              label="Upload or drop a YAML file."
+              hint="YML or YAML, up to 8MB"
+              invalidMessage="File must be .yml or .yaml format"
+              onFile={(file) =>
+                void file.text().then((t) => {
+                  setYaml(t);
+                  setMode("paste");
+                })
+              }
+              className="h-full"
+            />
+          ) : (
+            <div className="h-full overflow-hidden rounded-lg">
+              <CodeEditor value={yaml} onChange={setYaml} language="yaml" ariaLabel="Workflow YAML" />
+            </div>
+          )}
+        </div>
+      </Field>
     </FormModal>
   );
 }

@@ -491,12 +491,9 @@ export default function CredentialFormModal({
         <div className="space-y-6">
           <TextInput
             id="environment-name-input"
-            label={
-              <>
-                Environment name<span className="text-danger-500"> *</span>
-                <InfoTooltip title={environmentTooltip} />
-              </>
-            }
+            label="Environment name"
+            required
+            info={environmentTooltip}
             placeholder="e.g., production, staging, development, test, qa"
             value={shownName}
             errors={[...(nameError ? [nameError] : []), ...(envServerErrors[env.key] ?? [])]}

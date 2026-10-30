@@ -91,6 +91,32 @@ goes back to Lightning's way.
   grey with white text (`state_pill`); the replica keeps every status pill
   pale, so a list never mixes pale and solid.
 
+## Fields
+
+- **A field with an error turns the typed text red too.** Lightning only
+  reddens the border (`new_inputs.ex`). Red text makes the wrong value easy
+  to spot. A dropdown's prompt stays dark; only a chosen value turns red.
+- **The manual run's JSON error sits under the editor.** Lightning puts it
+  above (`manual-run-panel/views/CustomView.tsx:91`). Every field in the
+  replica reads label, hint, control, error.
+- **The landing screen's "Recommended" badge sits at the right end of the
+  label row.** Lightning puts it next to "Build with AI". Every field keeps
+  its label, star and info icon on the left and one link or badge on the
+  right, as Lightning does for "New Credential".
+- **A picked option card has a primary border; the focus outline only shows
+  for the keyboard.** Lightning's webhook auth type cards draw the focus
+  outline round the picked card, so picked and focused look the same.
+
+- **Info icons are a grey outline everywhere.** Lightning's LiveView pages
+  draw a faded primary icon (`Common.tooltip`, `common.ex`); the
+  collaborative editor draws a grey outline (`ConfigureAdaptorModal.tsx`).
+  The replica uses the grey outline.
+
+
+- **Contact preference explains itself in a hint.** Lightning hides the
+  explanation in an info tooltip. The replica shows a shorter version under
+  the label, so people see what "Critical" means before they choose.
+
 ## File uploads
 
 - **One drop zone for both uploads.** Lightning styles the manual run upload

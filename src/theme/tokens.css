@@ -52,6 +52,13 @@
   --ring-color-focus: var(--color-primary-600);
   --outline-color-focus: var(--color-primary-600);
 
+  /* Validation: one red for an invalid control's border, ring, typed text
+     and message. Dark enough for text contrast on white. */
+  --text-color-invalid: var(--color-danger-700);
+  --border-color-invalid: var(--color-danger-700);
+  --ring-color-invalid: var(--color-danger-700);
+  --outline-color-invalid: var(--color-danger-700);
+
   /* info is blue, which is what both apps draw for alerts, toasts and
      "running". */
   --color-info-50: var(--color-blue-50);
