@@ -110,7 +110,7 @@ export default function VolumeBars({
         </Text>
         <div className="flex flex-1 flex-col">
           {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
-          <div className="relative flex flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
+          <div className="relative flex min-h-0 flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
             {ticks.slice(1).map((t, i) => (
               <div key={i} className="pointer-events-none absolute inset-x-0 border-t border-subtle" style={{ bottom: `${(t / ceiling) * 100}%` }} />
             ))}
