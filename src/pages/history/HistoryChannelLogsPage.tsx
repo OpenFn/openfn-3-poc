@@ -1,6 +1,6 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
-import Tabs from "../../components/Tabs";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
+import Tabs from "../../components/primitives/Tabs";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelRequestsTable from "../../components/history/ChannelRequestsTable";
 import FilterChip, { FilterMenu } from "../../components/history/FilterChip";

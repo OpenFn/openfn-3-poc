@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from "react";
 import type { WorkflowGraph } from "../../types/workflow-graph";
-import Button from "../Button";
-import ConfirmModal from "../ConfirmModal";
-import Heading from "../Heading";
-import { TextInput } from "../Inputs";
-import TextLink from "../TextLink";
-import Toggle from "../Toggle";
+import Button from "../primitives/Button";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Heading from "../primitives/Heading";
+import { TextInput } from "../primitives/Inputs";
+import TextLink from "../primitives/TextLink";
+import Toggle from "../primitives/Toggle";
 import InspectorLayout from "./InspectorLayout";
 
 interface Props {

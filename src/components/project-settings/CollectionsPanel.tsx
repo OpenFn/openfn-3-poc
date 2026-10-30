@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "../Button";
-import SectionHeader from "../SectionHeader";
-import CollectionDeleteModal from "./CollectionDeleteModal";
+import Button from "../primitives/Button";
+import SectionHeader from "../primitives/SectionHeader";
+import CollectionDeleteModal from "../domain/CollectionDeleteModal";
 import CollectionFormModal from "./CollectionFormModal";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 import CollectionsTable from "./CollectionsTable";

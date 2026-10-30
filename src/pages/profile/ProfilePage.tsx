@@ -1,21 +1,18 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import UserInfo from "../../components/profile/UserInfo";
 import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "../../components/profile/ProfileForms";
 import MfaCard from "../../components/profile/MfaCard";
 import GithubCard from "../../components/profile/GithubCard";
 import ExperimentalFeaturesCard from "../../components/profile/ExperimentalFeaturesCard";
 import DeleteAccountCard from "../../components/profile/DeleteAccountCard";
-import UserDeletionModal from "../../components/admin/UserDeletionModal";
+import UserDeletionModal from "../../components/domain/UserDeletionModal";
 import type {
-  AccountDeletionSettings,
   BasicInfoValues,
   ChangeEmailValues,
   ChangePasswordValues,
-  GithubAccessSettings,
-  MfaSettings,
   MfaSetupResult,
-  ProfileDetail,
+  ProfilePageData,
 } from "../../types/profile";
 
 /**
@@ -24,24 +21,7 @@ import type {
  * each action. The host announces success (its flash) and moves the user on
  * where Lightning does.
  */
-export interface ProfilePageProps {
-  /**
-   * The signed-in user. The basic information form starts from these values
-   * when it mounts or `user.id` changes; new values for the same user don't
-   * reset what's being typed.
-   */
-  user: ProfileDetail;
-  mfa: MfaSettings;
-  /**
-   * Linking happens in another tab, so the host watches for it to finish, then
-   * sends the new `status` and announces "GitHub account linked successfully",
-   * or "Oops! GitHub account failed to link. Please try again" (Lightning's
-   * `OauthTokenAdded` / `OauthTokenFailed` events).
-   */
-  github: GithubAccessSettings;
-  /** The user's "experimental_features" preference. */
-  experimentalFeatures: boolean;
-  deletion: AccountDeletionSettings;
+export interface ProfilePageProps extends ProfilePageData {
   /** The deletion modal is open (/profile/:id/delete, for the user's own id). */
   deleting: boolean;
 

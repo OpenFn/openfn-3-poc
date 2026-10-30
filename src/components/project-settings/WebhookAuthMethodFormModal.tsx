@@ -1,10 +1,10 @@
 import { useState, type ReactNode } from "react";
-import Alert from "../Alert";
-import Button from "../Button";
-import CopyButton from "../CopyButton";
-import { Field, TextInput } from "../Inputs";
-import FormModal from "../FormModal";
-import Modal from "../Modal";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import CopyButton from "../primitives/CopyButton";
+import { Field, TextInput } from "../primitives/Inputs";
+import FormModal from "../primitives/FormModal";
+import Modal from "../primitives/Modal";
 import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "../../types/project-settings";
 import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";

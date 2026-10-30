@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { CredentialProjectRef } from "../../types/credentials";
-import ConfirmModal from "../ConfirmModal";
-import { Select } from "../Inputs";
-import Pill from "../Pill";
+import ConfirmModal from "../primitives/ConfirmModal";
+import { Select } from "../primitives/Inputs";
+import Pill from "../primitives/Pill";
 
 interface Props {
   id: string;

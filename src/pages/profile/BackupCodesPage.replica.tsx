@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { backupCodes, regenerateFakeBackupCodes } from "../../mock-data/tokens";
 import { simulateRequest } from "../../mock-data/request";
 import { useCurrentUser } from "../../session/session";

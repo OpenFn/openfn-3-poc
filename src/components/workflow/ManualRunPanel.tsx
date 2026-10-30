@@ -2,21 +2,22 @@ import { useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
 import type { Dataclip } from "../../mock-data/models/history";
 import { cn } from "../../utils/cn";
-import DataclipTypePill from "../history/DataclipTypePill";
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
-import { FieldError } from "../Inputs";
+import DataclipTypePill from "../domain/DataclipTypePill";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import FileDropZone from "../primitives/FileDropZone";
+import Heading from "../primitives/Heading";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
+import { FieldError } from "../primitives/Inputs";
 import CodeEditor from "./CodeEditor";
-import Tabs from "../Tabs";
+import Tabs from "../primitives/Tabs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
-import SearchInput from "../SearchInput";
+import SearchInput from "../primitives/SearchInput";
 import { matchesQuery } from "../../utils/search";
-import { formatLocalDate, formatShortLocalDateTime, shortUuid, uuidOf } from "../../utils/format";
-import Tooltip from "../Tooltip";
+import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
+import Tooltip from "../primitives/Tooltip";
 
 type Tab = "empty" | "custom" | "existing";
 
@@ -91,26 +92,14 @@ export default function ManualRunPanel({
       {tab === "custom" && (
         <div className={cn("flex h-full flex-col", embedded ? "pt-2" : "pt-3")}>
           <div className="shrink-0 px-3">
-            <Card dashed padding="sm" className="mt-2 flex flex-col items-center text-sm/6 text-muted">
-              <span className="hero-cloud-arrow-up size-8 text-faint" />
-              <p className="mt-2">
-                <label className="link font-semibold">
-                  {/* eslint-disable-next-line no-restricted-syntax -- hidden file input; the label around it is the control */}
-                  <input
-                    type="file"
-                    accept=".json"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) void file.text().then(setBody);
-                    }}
-                  />
-                  Upload a file
-                </label>{" "}
-                or drag and drop
-              </p>
-              <p className="text-xs/5">JSON, up to 8MB</p>
-            </Card>
+            <FileDropZone
+              accept=".json"
+              label="Upload a file or drag and drop"
+              hint="JSON, up to 8MB"
+              invalidMessage="Invalid file format. Please only upload: JSON"
+              onFile={(file) => void file.text().then((text) => setBody(prettyJson(text)))}
+              className="mt-2"
+            />
             <div className="flex items-center gap-2 py-2 text-sm text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">
               <span />
               OR

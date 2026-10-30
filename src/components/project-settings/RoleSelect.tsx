@@ -1,4 +1,4 @@
-import { Select } from "../Inputs";
+import { Select } from "../primitives/Inputs";
 import type { ProjectRole } from "../../types/projects";
 import { collaboratorRoles } from "../../constants";
 import { capitalize } from "../../utils/format";

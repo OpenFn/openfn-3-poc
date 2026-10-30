@@ -12,11 +12,11 @@ import { FailureBreakdownDonut, OutcomesDonut } from "./HealthDonuts";
 import RangePicker from "./RangePicker";
 import StepFailureBars from "./StepFailureBars";
 import TriageTable from "./TriageTable";
-import Alert from "../../Alert";
-import Card from "../../Card";
-import Heading from "../../Heading";
-import Spinner from "../../Spinner";
-import Tabs from "../../Tabs";
+import Alert from "../../primitives/Alert";
+import Card from "../../primitives/Card";
+import Heading from "../../primitives/Heading";
+import Spinner from "../../primitives/Spinner";
+import Tabs from "../../primitives/Tabs";
 import VolumeBars from "./VolumeBars";
 import { FRAME } from "./palette";
 

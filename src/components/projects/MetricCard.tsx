@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Card from "../Card";
-import Heading from "../Heading";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
 
 /**
  * A stat tile (DashboardComponents.metric_card): a small title, a big

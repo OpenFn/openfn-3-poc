@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import { projectMetricsFor } from "../../utils/history";
 import { workflowStatsFor } from "../../mock-data/dashboard-stats";
@@ -10,7 +10,7 @@ import { permissionsFor } from "../../permissions";
 import { useCurrentUser } from "../../session/session";
 import { matchesQuery } from "../../utils/search";
 import { useUrlParams } from "../../utils/useUrlParams";
-import { compareBy, type SortValue } from "../../components/useTableSort";
+import { compareBy, type SortValue } from "../../utils/useTableSort";
 import type { WorkflowRow } from "../../types/workflows";
 import { FAILURE_STATES } from "../../types/workflow-health";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";

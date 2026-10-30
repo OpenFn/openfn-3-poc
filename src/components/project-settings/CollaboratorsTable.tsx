@@ -1,7 +1,7 @@
-import Button from "../Button";
-import { Select } from "../Inputs";
-import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import { useToast } from "../Toast";
+import Button from "../primitives/Button";
+import { Select } from "../primitives/Inputs";
+import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import { useToast } from "../primitives/Toast";
 import { digestOptions } from "../../constants";
 import type { CollaboratorRow, Digest } from "../../types/project-settings";
 import { errorMessage } from "../../utils/errors";

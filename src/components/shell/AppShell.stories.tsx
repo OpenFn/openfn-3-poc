@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ReactRouterAdapter } from "../../routing/ReactRouterAdapter";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import AppShell from "./AppShell";
-import Header from "../Header";
-import { Centered, PageContent } from "../PageContent";
+import Header from "../primitives/Header";
+import { Centered, PageContent } from "../primitives/PageContent";
 import { projects } from "../../mock-data/projects";
 
 const meta: Meta = { title: "Shell/AppShell", parameters: { layout: "fullscreen" } };

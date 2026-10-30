@@ -1,6 +1,6 @@
 # Themes can't fully restyle CodeViewer
 
-`CodeViewer` (`src/components/CodeViewer.tsx`) is Monaco, which takes its colours and font from a JS theme, not from the page's CSS. Every app theme shows the same dark slate viewer in Fira Code, so under GDS the log and dataclip viewers don't match the rest of the page.
+`CodeViewer` (`src/components/primitives/CodeViewer.tsx`) is Monaco, which takes its colours and font from a JS theme, not from the page's CSS. Every app theme shows the same dark slate viewer in Fira Code, so under GDS the log and dataclip viewers don't match the rest of the page.
 
 What CSS can and can't reach, checked in the browser:
 

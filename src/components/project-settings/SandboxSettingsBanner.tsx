@@ -1,5 +1,5 @@
-import Alert, { type AlertTone } from "../Alert";
-import TextLink from "../TextLink";
+import Alert, { type AlertTone } from "../primitives/Alert";
+import TextLink from "../primitives/TextLink";
 import type { ParentProjectRef } from "../../types/project-settings";
 
 type Scope = "local" | "editable" | "inherited";

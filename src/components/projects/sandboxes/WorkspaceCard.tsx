@@ -3,10 +3,10 @@ import { useRouter } from "../../../routing/router";
 import type { SandboxRow } from "../../../types/sandboxes";
 import { cn } from "../../../utils/cn";
 import { formatUtcDate } from "../../../utils/format";
-import Card from "../../Card";
-import Heading from "../../Heading";
-import Pill from "../../Pill";
-import Tooltip from "../../Tooltip";
+import Card from "../../primitives/Card";
+import Heading from "../../primitives/Heading";
+import Pill from "../../primitives/Pill";
+import Tooltip from "../../primitives/Tooltip";
 import SandboxActions from "./SandboxActions";
 
 function deletionTooltip(iso: string) {

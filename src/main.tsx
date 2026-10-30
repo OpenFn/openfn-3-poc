@@ -5,7 +5,7 @@ import { HashRouter } from "react-router-dom";
 import "./index.css";
 import "./monacoSetup";
 import App from "./App.tsx";
-import { ToastProvider } from "./components/Toast";
+import { ToastProvider } from "./components/primitives/Toast";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { AnnotationsProvider } from "./annotations/AnnotationsContext";
 import SettingsMenu from "./components/devtools/SettingsMenu";

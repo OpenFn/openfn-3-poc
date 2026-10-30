@@ -1,7 +1,7 @@
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import TextLink from "../primitives/TextLink";
 
 /**
  * The "MFA Required for Project" card (project_live/mfa_required.html.heex):

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import AuthPanelLayout, { AuthPanel } from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/Alert";
-import TextLink from "../../components/TextLink";
-import Button from "../../components/Button";
-import Heading from "../../components/Heading";
-import { PasswordInput, TextInput } from "../../components/Inputs";
+import Alert from "../../components/primitives/Alert";
+import TextLink from "../../components/primitives/TextLink";
+import Button from "../../components/primitives/Button";
+import Heading from "../../components/primitives/Heading";
+import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";

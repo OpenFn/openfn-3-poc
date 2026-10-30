@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { apiTokens, generateFakeToken } from "../../mock-data/tokens";
 import { simulateRequest } from "../../mock-data/request";
 import TokensPage from "./TokensPage";

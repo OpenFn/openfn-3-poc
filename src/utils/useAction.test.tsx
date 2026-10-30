@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../components/Toast";
+import { ToastProvider } from "../components/primitives/Toast";
 import { useAction, useActions } from "./useAction";
 
 /** A promise the test settles by hand. */

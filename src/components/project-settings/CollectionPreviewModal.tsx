@@ -1,5 +1,5 @@
-import Modal from "../Modal";
-import TextLink from "../TextLink";
+import Modal from "../primitives/Modal";
+import TextLink from "../primitives/TextLink";
 
 interface Props {
   name: string;

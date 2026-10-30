@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import TextLink from "../TextLink";
-import Tooltip from "../Tooltip";
+import TextLink from "../primitives/TextLink";
+import Tooltip from "../primitives/Tooltip";
 
 /**
  * The tooltip on a control the retention policy disabled: what was lost,

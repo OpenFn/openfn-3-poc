@@ -16,7 +16,7 @@ const files = walk(root)
   .filter((f) => !f.includes(`${sep}mock-data${sep}`) && !f.includes(`${sep}stories${sep}`))
   .map((f) => ({ path: relative(root, f), src: readFileSync(f, 'utf8') }))
 
-const isPrimitive = (p) => p.startsWith('components/') && !p.slice(11).includes('/')
+const isPrimitive = (p) => p.startsWith('components/primitives/')
 const isFeature = (p) => p.startsWith('components/') && !isPrimitive(p)
 const isPage = (p) => p.startsWith('pages/')
 
@@ -42,8 +42,8 @@ for (const f of consumers)
   }
 const dupes = [...seen.values()].filter((n) => n > 1).reduce((a, n) => a + n, 0)
 
-const primNames = prims.map((f) => f.path.replace(/^components\/|\.tsx?$/g, ''))
-const primImports = count(consumers, /from ['"](?:\.\.\/)+components\/(?!.*\/)[A-Za-z]+['"]|from ['"]\.\.\/[A-Z][A-Za-z]+['"]/g)
+const primNames = prims.map((f) => f.path.replace(/^components\/primitives\/|\.tsx?$/g, ''))
+const primImports = count(consumers, /from ['"](?:\.\.\/)+(?:components\/)?primitives\/[A-Za-z]+['"]/g)
 
 // Palette shades, not the named colours (src/theme/tokens.css) or the brand
 // and status scales. White and black with an alpha are allowed.

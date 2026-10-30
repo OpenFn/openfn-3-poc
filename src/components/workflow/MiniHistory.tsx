@@ -2,14 +2,14 @@ import { useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
 import type { Run, WorkOrder } from "../../mock-data/models/history";
 import { cn } from "../../utils/cn";
-import Card from "../Card";
-import Heading from "../Heading";
-import IconButton from "../IconButton";
-import UuidChip from "../UuidChip";
-import StatePill from "../history/StatePill";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import IconButton from "../primitives/IconButton";
+import UuidChip from "../primitives/UuidChip";
+import StatePill from "../domain/StatePill";
 import RunBadge from "./RunBadge";
 import { formatDuration, formatRelative, uuidOf } from "../../utils/format";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 const Dot = () => <span className="text-strong">&bull;</span>;
 

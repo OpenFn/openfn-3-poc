@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { authRedirectUri } from "../../utils/urls";
 import type { AuthProvider, AuthProviderValues } from "../../types/admin";
-import Alert from "../Alert";
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import { Checkbox, PasswordInput, TextInput } from "../Inputs";
-import TextLink from "../TextLink";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import { Checkbox, PasswordInput, TextInput } from "../primitives/Inputs";
+import TextLink from "../primitives/TextLink";
 import { cn } from "../../utils/cn";
 import { RequestError, errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";

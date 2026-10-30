@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
-import Card from "../Card";
-import DateTime from "../DateTime";
-import { DetailItem, DetailList } from "../DetailList";
-import Heading from "../Heading";
-import TextLink from "../TextLink";
-import Text from "../Text";
+import Card from "../primitives/Card";
+import DateTime from "../primitives/DateTime";
+import { DetailItem, DetailList } from "../primitives/DetailList";
+import Heading from "../primitives/Heading";
+import TextLink from "../primitives/TextLink";
+import Text from "../primitives/Text";
 import { MethodBadge, RequestPathDisplay, StatusCodeBadge } from "./ChannelRequestParts";
-import { ChannelStatePill } from "./StatePill";
+import { ChannelStatePill } from "../domain/StatePill";
 import { humanizeError } from "./channelHelpers";
 import { formatUs, shortUuid } from "../../utils/format";
-import CopyButton from "../CopyButton";
+import CopyButton from "../primitives/CopyButton";
 
 function Group({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
   return (

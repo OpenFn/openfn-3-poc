@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Alert from "../Alert";
-import Card from "../Card";
+import Alert from "../primitives/Alert";
+import Card from "../primitives/Card";
 import { cn } from "../../utils/cn";
 
 /**

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import SectionHeader from "../../components/SectionHeader";
+import SectionHeader from "../../components/primitives/SectionHeader";
 import CredentialIndex from "../../components/credentials/CredentialIndex";
 import NewCredentialMenuButton, { projectCredentialMenuOptions } from "../../components/credentials/NewCredentialMenuButton";
 import CollaborationPanel from "../../components/project-settings/CollaborationPanel";
@@ -10,37 +10,27 @@ import CollectionsPanel from "../../components/project-settings/CollectionsPanel
 import DataStoragePanel from "../../components/project-settings/DataStoragePanel";
 import GithubSyncPanel from "../../components/project-settings/GithubSyncPanel";
 import HistoryExportsPanel from "../../components/project-settings/HistoryExportsPanel";
-import ProjectDeletionModal from "../../components/project-settings/ProjectDeletionModal";
+import ProjectDeletionModal from "../../components/domain/ProjectDeletionModal";
 import ProjectSetupPanel from "../../components/project-settings/ProjectSetupPanel";
 import SandboxSettingsBanner from "../../components/project-settings/SandboxSettingsBanner";
 import SecurityPanel from "../../components/project-settings/SecurityPanel";
-import Tabs from "../../components/Tabs";
+import Tabs from "../../components/primitives/Tabs";
 import WebhookSecurityPanel from "../../components/project-settings/WebhookSecurityPanel";
 import { defaultSettingsHash, projectSettingsTabs } from "../../components/project-settings/tabs";
-import DeleteSandboxModal from "../../components/projects/sandboxes/DeleteSandboxModal";
+import DeleteSandboxModal from "../../components/domain/DeleteSandboxModal";
 import { useRouter } from "../../routing/router";
 import type {
   AddCollaboratorsResult,
-  CollaborationSettings,
   CollaboratorValues,
-  CollectionsSettings,
-  CredentialsSettings,
-  DataStorageSettings,
   DataStorageValues,
   Digest,
-  GithubSyncSettings,
-  HistoryExportRow,
   InviteValues,
-  ParentProjectRef,
   ProjectIdentityValues,
+  ProjectSettingsPageData,
   ReauthValues,
-  SecuritySettings,
-  SetupSettings,
   WebhookAuthMethodValues,
-  WebhookSecuritySettings,
 } from "../../types/project-settings";
 import type { CredentialActions, KeychainCredentialActions } from "../../types/credentials";
-import type { CurrentProject } from "../../types/projects";
 import { cn } from "../../utils/cn";
 
 /**
@@ -49,23 +39,11 @@ import { cn } from "../../utils/cn";
  * the others. "Async action" in STANDARDS.md says how the host answers each
  * action. The host announces success (its flash).
  */
-export interface ProjectSettingsPageProps extends CredentialActions, KeychainCredentialActions {
-  project: CurrentProject;
+export interface ProjectSettingsPageProps extends ProjectSettingsPageData, CredentialActions, KeychainCredentialActions {
   /** The picker's label, "parent/child" for a sandbox. */
   projectLabel: string;
-  /** A sandbox's parent; null for a top-level project. */
-  parent: ParentProjectRef | null;
   /** The deletion modal is open (/settings/delete). */
   deleting: boolean;
-  setup: SetupSettings;
-  credentials: CredentialsSettings;
-  collections: CollectionsSettings;
-  webhookSecurity: WebhookSecuritySettings;
-  collaboration: CollaborationSettings;
-  security: SecuritySettings;
-  githubSync: GithubSyncSettings;
-  dataStorage: DataStorageSettings;
-  historyExports: HistoryExportRow[];
 
   onSaveIdentity: (values: ProjectIdentityValues) => Promise<void>;
   /** Saves Concurrency Override: 1 for one run at a time, null for parallel. */

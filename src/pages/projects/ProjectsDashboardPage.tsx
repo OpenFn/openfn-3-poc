@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "../../components/Button";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Button from "../../components/primitives/Button";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import CreateProjectModal from "../../components/projects/CreateProjectModal";
 import ProjectsTable from "../../components/projects/ProjectsTable";
 import WelcomeBanner from "../../components/projects/WelcomeBanner";

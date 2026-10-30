@@ -1,7 +1,7 @@
-import Button from "../../components/Button";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
-import UserDeletionModal from "../../components/admin/UserDeletionModal";
+import Button from "../../components/primitives/Button";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
+import UserDeletionModal from "../../components/domain/UserDeletionModal";
 import UsersTable from "../../components/admin/UsersTable";
 import type { AdminDeleteUser, AdminUserRow } from "../../types/admin";
 import { useAction } from "../../utils/useAction";

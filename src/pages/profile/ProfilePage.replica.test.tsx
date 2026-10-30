@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import { session } from "../../mock-data/users";
 import { RouterProvider, type Router } from "../../routing/router";
 import SessionProvider from "../../session/SessionProvider";

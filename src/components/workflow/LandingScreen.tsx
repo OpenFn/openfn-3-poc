@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { cn } from "../../utils/cn";
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import { Label } from "../Inputs";
-import Pill from "../Pill";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import { Label } from "../primitives/Inputs";
+import Pill from "../primitives/Pill";
+import TextLink from "../primitives/TextLink";
 import AIDisclaimerFooter from "./AIDisclaimerFooter";
 
 interface Props {

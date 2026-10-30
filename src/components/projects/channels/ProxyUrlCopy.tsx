@@ -1,4 +1,4 @@
-import Tooltip from "../../Tooltip";
+import Tooltip from "../../primitives/Tooltip";
 import { cn } from "../../../utils/cn";
 
 /**

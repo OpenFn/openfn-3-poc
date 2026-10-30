@@ -1,7 +1,7 @@
 import type { SandboxRow } from "../../../types/sandboxes";
-import Card from "../../Card";
-import Heading from "../../Heading";
-import TextLink from "../../TextLink";
+import Card from "../../primitives/Card";
+import Heading from "../../primitives/Heading";
+import TextLink from "../../primitives/TextLink";
 import WorkspaceCard from "./WorkspaceCard";
 
 /**

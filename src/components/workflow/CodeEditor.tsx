@@ -1,7 +1,7 @@
 import Editor, { type OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { cn } from "../../utils/cn";
-import { setUpMonaco } from "../monacoTheme";
+import { setUpMonaco } from "../../theme/monacoTheme";
 
 interface Props {
   value: string;

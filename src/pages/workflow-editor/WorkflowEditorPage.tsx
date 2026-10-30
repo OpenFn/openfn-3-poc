@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { Navigate, useParams } from "react-router-dom";
-import Pill from "../../components/Pill";
-import { useToast } from "../../components/Toast";
+import Pill from "../../components/primitives/Pill";
+import { useToast } from "../../components/primitives/Toast";
 import AdaptorConfigModals, { type AdaptorModal } from "../../components/workflow/AdaptorConfigModals";
 import AIAssistantPanel from "../../components/workflow/AIAssistantPanel";
 import EdgeInspector from "../../components/workflow/EdgeInspector";

@@ -1,5 +1,5 @@
-import FormModal from "../FormModal";
-import { TextInput } from "../Inputs";
+import FormModal from "../primitives/FormModal";
+import { TextInput } from "../primitives/Inputs";
 import type { CredentialRow } from "../../types/credentials";
 import { useForm } from "../../utils/useForm";
 import { isValidEmail } from "../../utils/validate";

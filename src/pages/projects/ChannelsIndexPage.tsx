@@ -1,12 +1,12 @@
-import Button from "../../components/Button";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Button from "../../components/primitives/Button";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelFormModal from "../../components/projects/channels/ChannelFormModal";
 import ChannelMetrics from "../../components/projects/channels/ChannelMetrics";
 import ChannelsTable from "../../components/projects/channels/ChannelsTable";
-import TableTitle from "../../components/TableTitle";
-import { useToast } from "../../components/Toast";
+import TableTitle from "../../components/primitives/TableTitle";
+import { useToast } from "../../components/primitives/Toast";
 import { useRouter } from "../../routing/router";
 import type { ChannelForm, ChannelFormValues, ChannelRow } from "../../types/channels";
 import type { CurrentProject } from "../../types/projects";

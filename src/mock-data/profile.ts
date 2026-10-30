@@ -1,8 +1,7 @@
 /**
  * Profile page settings (/profile). Static fixtures only.
  */
-import type { ProfilePageProps } from "../pages/profile/ProfilePage";
-import type { MfaSetupResult } from "../types/profile";
+import type { MfaSetupResult, ProfilePageData } from "../types/profile";
 import type { User } from "./models/users";
 
 /** VersionControl.github_enabled?(): the demo instance has no GitHub app configured, like the reference. */
@@ -32,7 +31,7 @@ function fakeQrCodeSrc() {
 export const fakeMfaSetup: MfaSetupResult = { secret: "DEMOFAKESECRETNOTREAL234", qrCodeSrc: fakeQrCodeSrc() };
 
 /** The profile page's data for a user, as Lightning's ProfileLive would send it. */
-export function profilePropsFor(user: User): Omit<ProfilePageProps, "deleting" | `on${string}`> {
+export function profilePropsFor(user: User): ProfilePageData {
   return {
     user: {
       id: user.id,

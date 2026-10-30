@@ -1,7 +1,7 @@
 import type { SandboxRow } from "../../../types/sandboxes";
 import { useAction } from "../../../utils/useAction";
-import Button from "../../Button";
-import IconButton from "../../IconButton";
+import Button from "../../primitives/Button";
+import IconButton from "../../primitives/IconButton";
 import BranchesIcon from "./BranchesIcon";
 
 /**

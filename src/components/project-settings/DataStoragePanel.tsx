@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import Alert from "../Alert";
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import { Radio, Select } from "../Inputs";
-import SectionHeader from "../SectionHeader";
-import TextLink from "../TextLink";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import { Radio, Select } from "../primitives/Inputs";
+import SectionHeader from "../primitives/SectionHeader";
+import TextLink from "../primitives/TextLink";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { DataStorageSettings, DataStorageValues } from "../../types/project-settings";
 import type { RetentionPolicy } from "../../types/projects";

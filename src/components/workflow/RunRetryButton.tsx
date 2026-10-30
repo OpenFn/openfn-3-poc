@@ -1,5 +1,5 @@
-import { MenuItem } from "../Menu";
-import SplitButton from "../SplitButton";
+import { MenuItem } from "../primitives/Menu";
+import SplitButton from "../primitives/SplitButton";
 import NewRunButton from "./NewRunButton";
 
 interface Props {

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import type { LiveDashboardData } from "../../types/admin";
 import { cn } from "../../utils/cn";
-import Alert from "../Alert";
-import Card from "../Card";
-import { DetailItem, DetailList } from "../DetailList";
-import Heading from "../Heading";
-import Pill from "../Pill";
-import TextLink from "../TextLink";
+import Alert from "../primitives/Alert";
+import Card from "../primitives/Card";
+import { DetailItem, DetailList } from "../primitives/DetailList";
+import Heading from "../primitives/Heading";
+import Pill from "../primitives/Pill";
+import TextLink from "../primitives/TextLink";
 
 type Data = LiveDashboardData;
 

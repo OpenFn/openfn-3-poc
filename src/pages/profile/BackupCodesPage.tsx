@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import BackupCodesCard from "../../components/profile/BackupCodesCard";
 import MfaDisabledNotice from "../../components/profile/MfaDisabledNotice";
 import type { BackupCode } from "../../types/tokens";

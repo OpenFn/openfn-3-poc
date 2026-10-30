@@ -1,6 +1,6 @@
-import ButtonMenu from "../ButtonMenu";
-import { MenuItem } from "../Menu";
-import Pill from "../Pill";
+import ButtonMenu from "../primitives/ButtonMenu";
+import { MenuItem } from "../primitives/Menu";
+import Pill from "../primitives/Pill";
 import { showCredentialModal, userCredentialMenuOptions, type NewCredentialOption } from "./credentialModalEvents";
 
 interface Props {

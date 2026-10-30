@@ -7,7 +7,7 @@ Button's looks are `primary`, `secondary` and `plain`, with `tone`
 
 - `src/components/workflow/EditorHeader.tsx:83`: the workflow name in the
   editor header, bare text that renames on click.
-- `src/components/history/LogViewer.tsx:31`: the log-level menu trigger (icon,
+- `src/components/domain/LogViewer.tsx:32`: the log-level menu trigger (icon,
   level, chevron) on the dark log background.
 - `src/components/workflow/VersionDropdown.tsx:29`: the "latest" / "v3" menu
   trigger, styled to look like a `Pill`.

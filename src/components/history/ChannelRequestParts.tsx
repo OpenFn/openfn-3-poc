@@ -1,13 +1,13 @@
 import type { ChannelEvent } from "../../types/channels";
 import { cn } from "../../utils/cn";
-import Card from "../Card";
-import { DetailItem, DetailList } from "../DetailList";
-import Pill, { type PillColor } from "../Pill";
-import type { Tone } from "../tone";
+import Card from "../primitives/Card";
+import { DetailItem, DetailList } from "../primitives/DetailList";
+import Pill, { type PillColor } from "../primitives/Pill";
+import type { Tone } from "../primitives/tone";
 import { formatBinaryBytes as formatBytes } from "../../utils/format";
-import CopyButton from "../CopyButton";
-import { EmptyState } from "../Table";
-import Text from "../Text";
+import CopyButton from "../primitives/CopyButton";
+import { EmptyState } from "../primitives/Table";
+import Text from "../primitives/Text";
 
 /*
  * Building blocks of the channel request page

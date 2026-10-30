@@ -2,9 +2,9 @@ import type { CollectionFormValues } from "../../types/admin";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
-import FormModal from "../FormModal";
-import { Select } from "../Inputs";
-import NameField from "../NameField";
+import FormModal from "../primitives/FormModal";
+import { Select } from "../primitives/Inputs";
+import NameField from "../primitives/NameField";
 
 interface Props {
   /** The collection being edited; omit to create one. */

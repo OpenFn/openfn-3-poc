@@ -1,6 +1,6 @@
 import type { ProjectMetrics as Metrics } from "../../types/workflows";
 import MetricCard from "./MetricCard";
-import TextLink from "../TextLink";
+import TextLink from "../primitives/TextLink";
 
 /**
  * The four stat cards on the workflows index (DashboardComponents

@@ -1,10 +1,10 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ProjectMetrics from "../../components/projects/ProjectMetrics";
 import WorkflowsHeader from "../../components/projects/WorkflowsHeader";
 import WorkflowsTable from "../../components/projects/WorkflowsTable";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import type { CurrentProject } from "../../types/projects";
 import type { SortState } from "../../types/lists";
 import type { ProjectMetrics as Metrics, WorkflowRow } from "../../types/workflows";

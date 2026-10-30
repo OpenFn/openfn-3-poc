@@ -3,11 +3,11 @@ import type { MergePreviewResult, MergeValues } from "../../../types/sandboxes";
 import { errorMessage } from "../../../utils/errors";
 import { formatGracePeriod } from "../../../utils/format";
 import { useAction } from "../../../utils/useAction";
-import Alert from "../../Alert";
-import FormModal from "../../FormModal";
-import { Checkbox, Select } from "../../Inputs";
-import Pill from "../../Pill";
-import Spinner from "../../Spinner";
+import Alert from "../../primitives/Alert";
+import FormModal from "../../primitives/FormModal";
+import { Checkbox, Select } from "../../primitives/Inputs";
+import Pill from "../../primitives/Pill";
+import Spinner from "../../primitives/Spinner";
 
 interface State {
   /** The latest preview that arrived. Merge always sends its target. */
