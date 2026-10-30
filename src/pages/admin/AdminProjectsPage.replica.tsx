@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { adminProjectRows } from "../../mock-data/admin";
 import { purgeDeletedAfterDays } from "../../mock-data/project-settings";
 import { findProject } from "../../mock-data/projects";

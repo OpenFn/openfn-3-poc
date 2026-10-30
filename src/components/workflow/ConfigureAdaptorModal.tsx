@@ -4,12 +4,12 @@ import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
 import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { resolvedAdaptorVersion } from "../../mock-data/adaptors";
-import Button from "../Button";
-import Card from "../Card";
-import InfoTooltip from "../InfoTooltip";
-import { Field, Label, Radio, Select } from "../Inputs";
-import Modal from "../Modal";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import InfoTooltip from "../primitives/InfoTooltip";
+import { Field, Label, Radio, Select } from "../primitives/Inputs";
+import Modal from "../primitives/Modal";
+import TextLink from "../primitives/TextLink";
 import { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorIcon from "./AdaptorIcon";
 

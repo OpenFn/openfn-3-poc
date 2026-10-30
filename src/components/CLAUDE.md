@@ -1,8 +1,7 @@
 # Building components
 
-Rules for adding or changing anything in `src/components/`. The root
-CLAUDE.md has the primitives table (which component to reach for) and the
-data seam; this file is how the components themselves are built.
+How components are built. Which one to reach for is the root CLAUDE.md
+table; where a new one goes is `.claude/rules/components.md`.
 
 ## Themes and libraries
 
@@ -76,17 +75,9 @@ Every tooltip is a `Tooltip`, never a browser `title`.
 
 ## Feature components
 
-`src/components/<area>/` holds one panel or section of a page
-(`WorkOrdersTable`, `WebhookSecurityPanel`). They're often used once, and
-that's fine: they're the unit we wire to the backend and annotate. They
-compose primitives and don't carry their own button, input, modal or menu
-styling.
-
-- **Need something that doesn't exist yet?** If it's general, add or extend a
-  primitive. If it's specific to an area, make a feature component. Either
-  way, add its story first.
-- When a pattern repeats across three or more feature components, it's a
-  primitive waiting to happen. Promote it.
-- Before adding a variant to a feature component, check whether a primitive
-  already covers it. Prefer a slightly different look over a second
-  implementation.
+`<area>/` and `domain/` hold one panel or section of a page
+(`WorkOrdersTable`, `WebhookSecurityPanel`). Used once is fine: they're the
+unit we wire to the backend and annotate. They compose primitives and carry
+no button, input, modal or menu styling of their own. Before adding a
+variant, check whether a primitive already covers it: a slightly different
+look beats a second implementation.

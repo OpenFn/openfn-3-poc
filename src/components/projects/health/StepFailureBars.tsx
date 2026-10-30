@@ -2,7 +2,7 @@ import { formatNumber } from "../../../utils/format";
 import type { ErrorSignature } from "../../../types/workflow-health";
 import { cn } from "../../../utils/cn";
 import { EMPTY, FAILED, UNATTRIBUTED, adaptorLabel } from "./palette";
-import Tooltip from "../../Tooltip";
+import Tooltip from "../../primitives/Tooltip";
 
 const NO_STEP = "no-step";
 

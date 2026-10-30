@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { CurrentProject } from "../../types/projects";
-import { Breadcrumb, BreadcrumbPicker, Breadcrumbs } from "../Breadcrumbs";
+import { Breadcrumb, BreadcrumbPicker, Breadcrumbs } from "../primitives/Breadcrumbs";
 import PickerButton from "./PickerButton";
 
 interface Props {

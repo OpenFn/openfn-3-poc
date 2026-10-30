@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import type { ChannelForm, ChannelRow } from "../../types/channels";
 import { RequestError } from "../../utils/errors";
 import { pickOption } from "../../test/select";

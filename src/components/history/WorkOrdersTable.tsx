@@ -1,8 +1,8 @@
-import Button from "../Button";
-import IconButton from "../IconButton";
-import { Checkbox } from "../Inputs";
-import Pagination from "../Pagination";
-import { Table, Td, Th, Tr } from "../Table";
+import Button from "../primitives/Button";
+import IconButton from "../primitives/IconButton";
+import { Checkbox } from "../primitives/Inputs";
+import Pagination from "../primitives/Pagination";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import type { WorkOrderRow } from "../../types/history";
 import type { PageInfo, SortState } from "../../types/lists";
 import { activeStates } from "../../constants";

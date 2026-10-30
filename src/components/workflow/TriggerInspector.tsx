@@ -2,14 +2,14 @@ import { useState, type ReactNode } from "react";
 import { webhookUrl } from "../../utils/urls";
 import type { EditorTrigger } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
-import Button from "../Button";
-import Card from "../Card";
-import Disclosure from "../Disclosure";
-import { Field, Label, Radio, TextInput } from "../Inputs";
-import Pill from "../Pill";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Disclosure from "../primitives/Disclosure";
+import { Field, Label, Radio, TextInput } from "../primitives/Inputs";
+import Pill from "../primitives/Pill";
+import TextLink from "../primitives/TextLink";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
-import CopyButton from "../CopyButton";
+import CopyButton from "../primitives/CopyButton";
 
 const TITLES = { webhook: "On webhook call", cron: "On a schedule" } as const;
 

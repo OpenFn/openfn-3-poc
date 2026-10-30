@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { adaptors, resolvedAdaptorVersion } from "../../mock-data/adaptors";
 import type { Adaptor } from "../../types/adaptors";
-import Alert from "../Alert";
-import Modal from "../Modal";
+import Alert from "../primitives/Alert";
+import Modal from "../primitives/Modal";
 import AdaptorIcon from "./AdaptorIcon";
-import SearchList, { type SearchListSection } from "../SearchList";
+import SearchList, { type SearchListSection } from "../primitives/SearchList";
 import { matchesQuery } from "../../utils/search";
 
 interface Props {

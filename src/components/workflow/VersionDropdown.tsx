@@ -1,7 +1,7 @@
 import type { WorkflowSnapshot } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
 import { formatLocalDateTime } from "../../utils/format";
-import Menu, { MenuHeader, MenuItem } from "../Menu";
+import Menu, { MenuHeader, MenuItem } from "../primitives/Menu";
 
 interface Props {
   snapshots: WorkflowSnapshot[];

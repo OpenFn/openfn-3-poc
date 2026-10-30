@@ -1,11 +1,11 @@
 import type { AdminUserRow as User } from "../../types/admin";
-import SearchInput from "../SearchInput";
-import ButtonMenu from "../ButtonMenu";
-import { MenuItem } from "../Menu";
-import { Table, Td, Th, Tr } from "../Table";
-import { useTableSort, type SortValue } from "../useTableSort";
+import SearchInput from "../primitives/SearchInput";
+import ButtonMenu from "../primitives/ButtonMenu";
+import { MenuItem } from "../primitives/Menu";
+import { Table, Td, Th, Tr } from "../primitives/Table";
+import { useTableSort, type SortValue } from "../../utils/useTableSort";
 import { formatShortDateTime } from "../../utils/format";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 type SortKey = "first_name" | "last_name" | "email" | "role" | "enabled" | "support_user" | "scheduled_deletion";
 

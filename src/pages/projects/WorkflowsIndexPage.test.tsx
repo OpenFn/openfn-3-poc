@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import type { WorkflowRow } from "../../types/workflows";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
 import { isDisabled } from "../../test/disabled";

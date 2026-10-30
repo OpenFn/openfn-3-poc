@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import Card from "../Card";
-import Heading from "../Heading";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
 
 interface Props {
   title: string;

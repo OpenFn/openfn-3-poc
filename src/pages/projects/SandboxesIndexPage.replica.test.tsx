@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import Button from "../../components/Button";
-import { ToastProvider } from "../../components/Toast";
+import Button from "../../components/primitives/Button";
+import { ToastProvider } from "../../components/primitives/Toast";
 import { findUser, session } from "../../mock-data/users";
 import { sandboxColorPalette } from "../../constants";
 import { fixturesUnder, type SandboxFixture } from "../../mock-data/sandboxes";

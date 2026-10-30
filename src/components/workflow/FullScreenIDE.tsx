@@ -1,10 +1,10 @@
 import { useState, type ReactNode } from "react";
 import type { EditorJob } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
-import Button from "../Button";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
-import Tabs from "../Tabs";
+import Button from "../primitives/Button";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
+import Tabs from "../primitives/Tabs";
 import AdaptorDisplay from "./AdaptorDisplay";
 import AdaptorDocs, { AdaptorMetadata } from "./AdaptorDocs";
 import CodeEditor from "./CodeEditor";
@@ -13,7 +13,7 @@ import NewRunButton from "./NewRunButton";
 import RunBadge from "./RunBadge";
 import RunRetryButton from "./RunRetryButton";
 import type { RunViewerTab } from "./RunViewerPanel";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 export type IDEPanelState = "run-viewer" | "history" | "create-run" | undefined;
 

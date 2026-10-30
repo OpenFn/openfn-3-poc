@@ -1,5 +1,5 @@
 import { cn } from "../../utils/cn";
-import TextLink from "../TextLink";
+import TextLink from "../primitives/TextLink";
 
 /** "Please use AI responsibly. Never share PII." (AIDisclaimerFooter.tsx). `muted` is the quieter one, without the icon. */
 export default function AIDisclaimerFooter({ variant = "default" }: { variant?: "default" | "muted" }) {

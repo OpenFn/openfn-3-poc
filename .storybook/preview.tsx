@@ -28,6 +28,8 @@ const withSession: Decorator = (Story) => (
 
 const preview: Preview = {
   parameters: {
+    // The tiers first, as in src/components/ (.claude/rules/components.md), then the areas, then pages.
+    options: { storySort: { order: ["Primitives", "Domain", "Shell", "*", "Pages"] } },
     controls: {
       matchers: {
         color: /(background|color)$/i,

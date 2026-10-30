@@ -1,5 +1,5 @@
-import FormModal from "../FormModal";
-import { Select, TextInput } from "../Inputs";
+import FormModal from "../primitives/FormModal";
+import { Select, TextInput } from "../primitives/Inputs";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
 import type { CredentialRef, KeychainCredentialRow, KeychainCredentialValues } from "../../types/credentials";

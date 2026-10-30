@@ -1,6 +1,6 @@
-import FormModal from "../FormModal";
-import { TextArea } from "../Inputs";
-import NameField from "../NameField";
+import FormModal from "../primitives/FormModal";
+import { TextArea } from "../primitives/Inputs";
+import NameField from "../primitives/NameField";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";

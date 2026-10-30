@@ -1,12 +1,12 @@
 import type { Annotation, InventoryRow } from "../../annotations/source";
-import Button from "../Button";
-import Disclosure from "../Disclosure";
-import Heading from "../Heading";
-import IconButton from "../IconButton";
-import Pill from "../Pill";
-import type { Tone } from "../tone";
-import { EmptyState } from "../Table";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Disclosure from "../primitives/Disclosure";
+import Heading from "../primitives/Heading";
+import IconButton from "../primitives/IconButton";
+import Pill from "../primitives/Pill";
+import type { Tone } from "../primitives/tone";
+import { EmptyState } from "../primitives/Table";
+import TextLink from "../primitives/TextLink";
 import Markdown from "./Markdown";
 
 interface Props {

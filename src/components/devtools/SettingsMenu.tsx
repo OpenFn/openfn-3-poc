@@ -2,14 +2,14 @@ import { useTheme } from "../../theme/theme-context";
 import type { ThemeMeta } from "../../theme/themes";
 import { useAnnotations } from "../../annotations/annotations-context";
 import { cn } from "../../utils/cn";
-import Heading from "../Heading";
-import CloseButton from "../CloseButton";
-import IconButton from "../IconButton";
-import { Radio } from "../Inputs";
-import Popover from "../Popover";
-import Toggle from "../Toggle";
+import Heading from "../primitives/Heading";
+import CloseButton from "../primitives/CloseButton";
+import IconButton from "../primitives/IconButton";
+import { Radio } from "../primitives/Inputs";
+import Popover from "../primitives/Popover";
+import Toggle from "../primitives/Toggle";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 /**
  * Floating settings button in the bottom-right corner. Its panel opens and

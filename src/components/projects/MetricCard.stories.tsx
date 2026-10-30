@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import MetricCard from "./MetricCard";
-import TextLink from "../TextLink";
+import TextLink from "../primitives/TextLink";
 
 const meta: Meta<typeof MetricCard> = {
   title: "Projects/MetricCard",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { hasActivityInProjects } from "../../mock-data/profile";
 import { simulateRequest } from "../../mock-data/request";
 import { users } from "../../mock-data/users";

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
-import { EmptyState } from "../Table";
-import Button from "../Button";
+import { EmptyState } from "../primitives/Table";
+import Button from "../primitives/Button";
 import { credentialIndexDataFor, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
 import { projects } from "../../mock-data/projects";
 import { session } from "../../mock-data/users";

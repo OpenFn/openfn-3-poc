@@ -1,6 +1,6 @@
-import Heading from "../Heading";
-import Modal from "../Modal";
-import TextLink from "../TextLink";
+import Heading from "../primitives/Heading";
+import Modal from "../primitives/Modal";
+import TextLink from "../primitives/TextLink";
 import type { WebhookAuthMethodRow, WebhookUsageRef } from "../../types/project-settings";
 
 /**

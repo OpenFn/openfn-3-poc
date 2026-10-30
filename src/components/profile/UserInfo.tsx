@@ -1,5 +1,5 @@
-import DateTime from "../DateTime";
-import Heading from "../Heading";
+import DateTime from "../primitives/DateTime";
+import Heading from "../primitives/Heading";
 import type { ProfileDetail } from "../../types/profile";
 
 /** Left column of /profile (profile_live/components.ex `user_info`). */

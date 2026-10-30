@@ -1,6 +1,6 @@
-import Button from "../Button";
-import { MenuItem } from "../Menu";
-import SplitButton from "../SplitButton";
+import Button from "../primitives/Button";
+import { MenuItem } from "../primitives/Menu";
+import SplitButton from "../primitives/SplitButton";
 
 interface Props {
   onClick: () => void;

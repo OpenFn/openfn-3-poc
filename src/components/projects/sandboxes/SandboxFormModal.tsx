@@ -1,8 +1,8 @@
 import type { SandboxForm, SandboxValues } from "../../../types/sandboxes";
 import { urlSafeName } from "../../../utils/format";
 import { useForm } from "../../../utils/useForm";
-import FormModal from "../../FormModal";
-import NameField from "../../NameField";
+import FormModal from "../../primitives/FormModal";
+import NameField from "../../primitives/NameField";
 import ColorPalette from "./ColorPalette";
 
 /**

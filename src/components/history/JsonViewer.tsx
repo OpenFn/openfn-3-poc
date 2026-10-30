@@ -1,7 +1,7 @@
 import type { DataclipBody } from "../../types/history";
-import CodeViewer from "../CodeViewer";
-import CopyButton from "../CopyButton";
-import { EmptyState } from "../Table";
+import CodeViewer from "../primitives/CodeViewer";
+import CopyButton from "../primitives/CopyButton";
+import { EmptyState } from "../primitives/Table";
 
 /**
  * A dataclip body in the dark code viewer (react/components/CodeViewer.tsx,

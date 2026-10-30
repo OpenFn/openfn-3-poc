@@ -1,10 +1,10 @@
 import { formatNumber } from "../../../utils/format";
 import { historyUrl, stateUrl } from "../../../utils/history";
 import type { ErrorSignature, FailureState } from "../../../types/workflow-health";
-import Button from "../../Button";
-import Card from "../../Card";
-import Pill from "../../Pill";
-import { Table, Td, Th, Tr } from "../../Table";
+import Button from "../../primitives/Button";
+import Card from "../../primitives/Card";
+import Pill from "../../primitives/Pill";
+import { Table, Td, Th, Tr } from "../../primitives/Table";
 import { DOT, EMPTY, FAILURE_COLORS, adaptorLabel } from "./palette";
 
 // One tip per error type the worker reports (TriageTable.tsx `TIPS`).

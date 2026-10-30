@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from "react";
-import Button from "../Button";
-import Card from "../Card";
-import ConfirmModal from "../ConfirmModal";
-import { DetailItem, DetailList } from "../DetailList";
-import Pill from "../Pill";
-import SectionHeader from "../SectionHeader";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import ConfirmModal from "../primitives/ConfirmModal";
+import { DetailItem, DetailList } from "../primitives/DetailList";
+import Pill from "../primitives/Pill";
+import SectionHeader from "../primitives/SectionHeader";
+import TextLink from "../primitives/TextLink";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { GithubSyncSettings } from "../../types/project-settings";
 import { useAction } from "../../utils/useAction";

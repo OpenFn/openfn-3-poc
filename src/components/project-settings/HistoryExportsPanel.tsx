@@ -1,4 +1,4 @@
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../primitives/SectionHeader";
 import HistoryExportsTable from "./HistoryExportsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { HistoryExportRow } from "../../types/project-settings";

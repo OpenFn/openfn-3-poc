@@ -1,8 +1,8 @@
 import type { ChannelForm, ChannelFormValues } from "../../../types/channels";
-import FormModal from "../../FormModal";
-import { Checkbox, Field, Select, TextInput } from "../../Inputs";
-import Toggle from "../../Toggle";
-import TextLink from "../../TextLink";
+import FormModal from "../../primitives/FormModal";
+import { Checkbox, Field, Select, TextInput } from "../../primitives/Inputs";
+import Toggle from "../../primitives/Toggle";
+import TextLink from "../../primitives/TextLink";
 import { useForm } from "../../../utils/useForm";
 import { blank } from "../../../utils/validate";
 import ProxyUrlCopy from "./ProxyUrlCopy";

@@ -1,8 +1,8 @@
-import Alert from "../Alert";
-import Button from "../Button";
-import Card from "../Card";
-import InfoTooltip from "../InfoTooltip";
-import SectionHeader from "../SectionHeader";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import InfoTooltip from "../primitives/InfoTooltip";
+import SectionHeader from "../primitives/SectionHeader";
 import type { BackupCode } from "../../types/tokens";
 import { useCopy } from "../../utils/useCopy";
 

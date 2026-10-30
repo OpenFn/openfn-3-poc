@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import MaintenanceCard from "../../components/admin/MaintenanceCard";
 import { useAction } from "../../utils/useAction";
 

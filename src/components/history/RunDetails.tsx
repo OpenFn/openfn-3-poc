@@ -1,16 +1,16 @@
 import type { RunRow, StepRow } from "../../types/history";
 import { shortUuid } from "../../utils/format";
-import Card from "../Card";
-import IconButton from "../IconButton";
-import DateTime from "../DateTime";
-import TextLink from "../TextLink";
-import Text from "../Text";
+import Card from "../primitives/Card";
+import IconButton from "../primitives/IconButton";
+import DateTime from "../primitives/DateTime";
+import TextLink from "../primitives/TextLink";
+import Text from "../primitives/Text";
 import ElapsedTime from "./ElapsedTime";
-import StepIcon from "./StepIcon";
+import StepIcon from "../domain/StepIcon";
 import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { clonedStepMessage, zeroPersistenceMessage } from "./runHelpers";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 /** The rerun icon on a finished step (run_live/components.ex `step_rerun_tag`). */
 function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStorageHref: string | null; onRetry: () => void }) {

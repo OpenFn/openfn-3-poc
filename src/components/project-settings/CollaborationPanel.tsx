@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Button from "../Button";
-import InfoTooltip from "../InfoTooltip";
-import SectionHeader from "../SectionHeader";
-import { useToast } from "../Toast";
-import Toggle from "../Toggle";
+import Button from "../primitives/Button";
+import InfoTooltip from "../primitives/InfoTooltip";
+import SectionHeader from "../primitives/SectionHeader";
+import { useToast } from "../primitives/Toast";
+import Toggle from "../primitives/Toggle";
 import AddCollaboratorsModal from "./AddCollaboratorsModal";
 import CollaboratorsTable from "./CollaboratorsTable";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";

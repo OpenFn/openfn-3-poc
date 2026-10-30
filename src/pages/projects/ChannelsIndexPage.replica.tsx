@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import { channelsIn, findChannel, projectCredentialOptions, webhookAuthMethods } from "../../mock-data/channels";
 import { findProject, projects } from "../../mock-data/projects";

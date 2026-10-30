@@ -1,12 +1,12 @@
 import { useState, type ReactNode } from "react";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
-import Alert from "../Alert";
-import Button from "../Button";
-import ConfirmModal from "../ConfirmModal";
-import Modal from "../Modal";
-import { Radio } from "../Inputs";
-import Text from "../Text";
+import Alert from "../primitives/Alert";
+import Button from "../primitives/Button";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Modal from "../primitives/Modal";
+import { Radio } from "../primitives/Inputs";
+import Text from "../primitives/Text";
 
 const plural = (n: number) => (n === 1 ? "" : "s");
 

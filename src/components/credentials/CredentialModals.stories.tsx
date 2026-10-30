@@ -4,7 +4,7 @@ import OauthClientFormModal from "./OauthClientFormModal";
 import KeychainCredentialFormModal from "./KeychainCredentialFormModal";
 import TransferCredentialModal from "./TransferCredentialModal";
 import CredentialDeletionModal from "./CredentialDeletionModal";
-import ConfirmModal from "../ConfirmModal";
+import ConfirmModal from "../primitives/ConfirmModal";
 import { deleteKeychainMessage, deleteOauthClientMessage } from "./messages";
 import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialTypes, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
 import { projects } from "../../mock-data/projects";

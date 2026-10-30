@@ -1,6 +1,6 @@
 import { formatNumber } from "../../../utils/format";
 import { Link } from "../../../routing/router";
-import TextLink from "../../TextLink";
+import TextLink from "../../primitives/TextLink";
 import { DOT, EMPTY, FRAME, LEGEND, percent } from "./palette";
 
 export interface Slice {

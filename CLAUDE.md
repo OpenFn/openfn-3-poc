@@ -47,9 +47,10 @@ wrapper.
   inventory id (e.g. `history-work-orders` → `HistoryWorkOrdersPage.tsx`).
   A view that follows pattern 11 (page and wrapper) adds a
   `<Name>.replica.tsx` wrapper beside it, and `App.tsx` routes to that.
-- `src/components/` — the component library: primitives at the top level,
-  app chrome (sidebar, project picker, user menu) in `shell/`, feature
-  components in area subfolders. See **Components** below.
+- `src/components/` — the component library: primitives in `primitives/`,
+  Lightning pieces shared by two or more areas in `domain/`, app chrome
+  (sidebar, project picker, user menu) in `shell/`, feature components in
+  area subfolders. See **Components** below.
 - `src/types/` — the contract shapes pages and components take
   (`WorkOrderRow`, `CurrentProject`, …), written by hand, one file per area.
   Types only. Lint stops them importing the replica's models.
@@ -126,9 +127,12 @@ visual drift and the richer fixture data. Add new screens to the specs in
 
 ## Components
 
-The design system has two layers.
+Components sit in tiers (primitives, `domain/`, the shell, one folder per
+area) with pages on top, and imports only go down; ESLint enforces it.
+Where a new component goes, and the patterns for recurring tasks, are in
+`.claude/rules/components.md`.
 
-**Primitives** (`src/components/*.tsx`) are small, general and used
+**Primitives** (`src/components/primitives/`) are small, general and used
 everywhere. Reach for these first:
 
 | Need | Use |
@@ -164,7 +168,7 @@ everywhere. Reach for these first:
 | An inline link | `TextLink` |
 | Read-only code, a log or a dataclip | `CodeViewer` |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
-| Sorting and filtering a table in the browser | `useTableSort` from `useTableSort.ts` |
+| Sorting and filtering a table in the browser | `useTableSort` from `utils/useTableSort.ts` |
 | "Projects (3)" above a table, with its buttons | `TableTitle` |
 | A status message | `Alert` |
 | Page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
@@ -232,6 +236,7 @@ before writing code it covers.
 | `standards.md` | `STANDARDS.md`: pattern numbers never change |
 | `comments.md` | all source: when a comment earns its place, and what it never says |
 | `type.md` | components, pages, themes: `Heading` and `Text`, the named styles, what lint bans |
+| `components.md` | `src/components/`, `src/pages/`: the tiers, where a new component goes, and the patterns for recurring tasks |
 
 A new rule goes in the file for the files it governs, not here. If ESLint or
 a test enforces it, the rule names which.

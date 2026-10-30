@@ -1,6 +1,6 @@
 import type { WorkOrderDisplayState } from "../../types/workflows";
 import { cn } from "../../utils/cn";
-import DateTime from "../DateTime";
+import DateTime from "../primitives/DateTime";
 import { capitalize } from "../../utils/format";
 import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "../../theme/runStateColours";
 
