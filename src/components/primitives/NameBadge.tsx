@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Text from "./Text";
 
 /**
  * "Your project will be named `my-project`." (Lightning's `name_badge`,
@@ -10,7 +11,7 @@ export default function NameBadge({ name, children }: { name: string; children?:
   return (
     <span>
       {children}
-      <span className="ml-1 rounded-md border border-strong bg-warning-100 p-1 font-mono text-xs">{name}</span>.
+      <Text variant="code-sm" className="ml-1 rounded-md border border-strong bg-warning-100 p-1">{name}</Text>.
     </span>
   );
 }

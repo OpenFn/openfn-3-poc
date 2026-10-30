@@ -1,5 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import Heading from "./Heading";
+import Text from "./Text";
 
 type Layout = "rows" | "grid";
 const LayoutContext = createContext<Layout>("rows");
@@ -58,15 +60,21 @@ export function DetailItem({
   if (layout === "grid") {
     return (
       <div className={className}>
-        <dt className="text-xs font-medium uppercase tracking-wide text-muted">{label}</dt>
-        <dd className={cn("mt-1 break-words text-strong", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
+        <Heading size="xs" as="dt">{label}</Heading>
+        <Value mono={mono} className={cn("mt-1 wrap-break-words text-strong", valueClassName)}>{children}</Value>
       </div>
     );
   }
   return (
     <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
       <dt className="font-medium text-muted">{label}</dt>
-      <dd className={cn("text-right text-strong", mono && "font-mono text-xs", valueClassName)}>{children}</dd>
+      <Value mono={mono} className={cn("text-right text-strong", valueClassName)}>{children}</Value>
     </div>
   );
+}
+
+// A plain value takes the list's size; a mono one is always code-sm.
+function Value({ mono, className, children }: { mono: boolean; className: string; children?: ReactNode }) {
+  if (mono) return <Text as="dd" variant="code-sm" className={className}>{children}</Text>;
+  return <dd className={className}>{children}</dd>;
 }

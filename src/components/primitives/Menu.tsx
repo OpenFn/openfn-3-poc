@@ -11,6 +11,8 @@ import { Fragment, type MouseEvent, type ReactNode } from "react";
 import { Link } from "../../routing/router";
 import { cn } from "../../utils/cn";
 import { floatingPanelClasses, type FloatingAlign, type PanelProps } from "./floating";
+import Text from "./Text";
+import Heading from "./Heading";
 
 interface MenuProps {
   /**
@@ -80,7 +82,7 @@ export function MenuItem({ icon, to, href, onClick, selected, tone, disabled = f
       {icon && <span className={cn(icon, "mt-0.5 h-4 w-4 shrink-0", tone === "danger" ? "text-danger-500" : "text-faint")} />}
       <span className="min-w-0 flex-1">
         <span className={cn("block", selected && "font-medium text-strong")}>{children}</span>
-        {description && <span className="mt-0.5 block text-xs text-muted">{description}</span>}
+        {description && <Text variant="body-sm" className="mt-0.5 block text-muted">{description}</Text>}
       </span>
       {selected && <span className="hero-check mt-0.5 h-4 w-4 shrink-0 text-primary-600" />}
     </>
@@ -129,8 +131,10 @@ export function MenuSection({ heading, children }: { heading?: ReactNode; childr
   return (
     <HeadlessMenuSection>
       {heading && (
-        <HeadlessMenuHeading className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-muted">
-          {heading}
+        <HeadlessMenuHeading as={Fragment}>
+          <Heading size="xs" as="div" className="px-4 pb-1 pt-2">
+            {heading}
+          </Heading>
         </HeadlessMenuHeading>
       )}
       {children}

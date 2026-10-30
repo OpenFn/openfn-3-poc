@@ -1,6 +1,7 @@
 import { useId, useState, type ReactNode } from "react";
 import FormModal from "./FormModal";
 import { TextInput } from "./Inputs";
+import Text from "./Text";
 
 /** A text field the user fills in to confirm, e.g. "type the project name". */
 export interface Confirmation {
@@ -73,7 +74,7 @@ export default function ConfirmModal({
       title={title}
       size="sm"
       formId={formId ?? fallbackId}
-      formClassName="text-sm text-muted space-y-3"
+      formClassName="space-y-3"
       onSubmit={() => onConfirm(typed)}
       submitLabel={confirmLabel}
       submitTone={tone}
@@ -82,7 +83,9 @@ export default function ConfirmModal({
       submitTooltip={disabled ? confirmation?.disabledTooltip : undefined}
       cancelLabel={cancelLabel}
     >
-      {children}
+      <Text as="div" className="space-y-3 text-muted">
+        {children}
+      </Text>
       {confirmation && (
         <TextInput
           id={confirmation.id}

@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 import { controlClasses } from "./controlClasses";
 import { floatingPanelClasses } from "./floating";
 import IconButton from "./IconButton";
+import Text from "./Text";
 
 /**
  * Form controls. Every control shares one look (`controlClasses`) and sits
@@ -264,7 +265,7 @@ function Choice({ label, hint, className, ...rest }: ChoiceProps & { type: "chec
       <input data-ui="choice" className={cn(choiceClasses, hint && "mt-1", className)} {...rest} />
       <span>
         {label}
-        {hint && <span className="block text-xs text-muted">{hint}</span>}
+        {hint && <Text variant="body-sm" className="block text-muted">{hint}</Text>}
       </span>
     </label>
   );

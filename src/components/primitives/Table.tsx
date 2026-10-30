@@ -1,6 +1,7 @@
 import type { MouseEvent, ReactNode, TdHTMLAttributes } from "react";
 import { Link } from "../../routing/router";
 import { cn } from "../../utils/cn";
+import Text from "./Text";
 
 /**
  * Lightning's table components (components/table.ex): a ringed, rounded
@@ -188,8 +189,16 @@ export function EmptyState({
     <>
       {icon && <span className={cn(icon, "mx-auto block text-faint", plain ? "mb-2 h-8 w-8" : "h-12 w-12")} />}
       {buttonText && <span className="mt-2 block text-xs font-semibold text-muted">{buttonText}</span>}
-      {title && <span className={cn("block font-medium text-strong", plain ? "text-sm" : "mt-2 text-xs")}>{title}</span>}
-      {message && <div className={cn(plain ? "mt-1 text-sm text-muted" : "mt-2 text-xs text-muted")}>{message}</div>}
+      {title && (
+        <Text variant={plain ? "label-md" : "label-sm"} className={cn("block text-strong", !plain && "mt-2")}>
+          {title}
+        </Text>
+      )}
+      {message && (
+        <Text as="div" variant={plain ? "body-md" : "body-sm"} className={cn("text-muted", plain ? "mt-1" : "mt-2")}>
+          {message}
+        </Text>
+      )}
       {children && <div className="mt-2">{children}</div>}
     </>
   );

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Card from "./Card";
 import Heading from "./Heading";
+import Text from "./Text";
 
 export type DisclosureVariant = "card" | "section" | "inline";
 
@@ -37,10 +38,10 @@ export default function Disclosure({ id, title, titleRight, note, defaultOpen = 
   if (variant === "inline") {
     return (
       <HeadlessDisclosure as="div" id={id} defaultOpen={defaultOpen}>
-        <DisclosureButton className="group flex items-center gap-1.5 text-sm font-medium text-strong">
+        <DisclosureButton className="group flex items-center gap-1.5 text-strong">
           {chevron("h-3.5 w-3.5")}
-          {title}
-          {note && <span className="text-xs text-faint">({note})</span>}
+          <Text variant="label-md">{title}</Text>
+          {note && <Text variant="body-sm" className="text-faint">({note})</Text>}
           {titleRight}
         </DisclosureButton>
         <DisclosurePanel className="mt-2">{children}</DisclosurePanel>
