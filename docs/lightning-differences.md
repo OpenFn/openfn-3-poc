@@ -75,6 +75,9 @@ goes back to Lightning's way.
   editor's included, and a project page's breadcrumb ends with the page's
   name ("Workflows"). Lightning shows no `>` after the picker, and the
   Workflows page shows the picker alone.
+- **Channels' last crumb stays "Channels" while its form is open.**
+  Lightning changes it to "New Channel" or "Edit Channel"; the replica's
+  form is a modal over the list, so the page underneath hasn't changed.
 - **"Create new workflow" is a link**, since it opens a page; disabled, it's a
   disabled button with the reason, as in Lightning, where it's always a
   button.
