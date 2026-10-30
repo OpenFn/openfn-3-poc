@@ -8,6 +8,7 @@ import { Link } from "../../routing/router";
 export function Breadcrumbs({ children }: { children: ReactNode }) {
   return (
     <nav className="flex" aria-label="Breadcrumbs">
+      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Safari drops list semantics when list-style is none; the role puts them back */}
       <ol
         role="list"
         className="flex items-center space-x-2 [&>li.breadcrumb-item_.breadcrumb-separator]:hidden [&>li+li.breadcrumb-item_.breadcrumb-separator]:flex"

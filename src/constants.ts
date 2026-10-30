@@ -4,6 +4,15 @@
  */
 import type { HistoryWorkOrderState, RunState, SearchFieldId } from "./types/history";
 import type { HealthRange } from "./types/workflow-health";
+import type { EdgeConditionType } from "./types/workflow-graph";
+
+/** A path's conditions (EdgeForm): label, value. A path from a trigger offers only Always and On Match. */
+export const edgeConditionOptions: [label: string, value: EdgeConditionType][] = [
+  ["Always", "always"],
+  ["On Success", "on_job_success"],
+  ["On Failure", "on_job_failure"],
+  ["On Match", "js_expression"],
+];
 
 /** Role options for the user form (User.RolesEnum, capitalised, sorted). */
 export const userRoleOptions: [label: string, value: string][] = [

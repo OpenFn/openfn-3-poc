@@ -3,6 +3,7 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
@@ -218,6 +219,8 @@ export default defineConfig([
     plugins: { local },
     rules: { 'local/disable-needs-reason': 'error' },
   },
+  // Accessibility. Stories stay in: they are the components' specs.
+  { files: ['src/**/*.tsx'], ...jsxA11y.flatConfigs.recommended },
   {
     // Stories set fixed canvas sizes, so they're left out.
     files: ['src/**/*.{ts,tsx}'],

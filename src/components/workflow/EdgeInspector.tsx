@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { EdgeConditionType, EditorEdge } from "../../types/workflow-graph";
+import { edgeConditionOptions } from "../../constants";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Disclosure from "../primitives/Disclosure";
@@ -25,17 +26,9 @@ interface Props {
 export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fromTrigger = !!edge.sourceTriggerId;
-  const options: [label: string, value: EdgeConditionType][] = fromTrigger
-    ? [
-        ["Always", "always"],
-        ["On Match", "js_expression"],
-      ]
-    : [
-        ["Always", "always"],
-        ["On Success", "on_job_success"],
-        ["On Failure", "on_job_failure"],
-        ["On Match", "js_expression"],
-      ];
+  const options = fromTrigger
+    ? edgeConditionOptions.filter(([, value]) => value === "always" || value === "js_expression")
+    : edgeConditionOptions;
   const expression = edge.conditionExpression ?? "";
   const unsafe = /(\bimport\b|\brequire\b|\bprocess\b|\bawait\b|\beval\b)/.test(expression);
 

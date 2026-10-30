@@ -153,3 +153,16 @@ goes back to Lightning's way.
   names the log level button "Log level: info", the adaptor button "Change
   adaptor: http" and the proxy URL "Copy proxy URL: <url>", and an adaptor
   option by its own text, so voice control users can say what they see.
+
+## Keyboard
+
+- **Picking a step or path with the keyboard moves focus into its
+  inspector.** In Lightning, Enter selects a React Flow node and focus stays
+  on it, so the inspector is only reached by tabbing past the rest of the
+  diagram. The replica puts focus on the inspector's first field, and when
+  the inspector closes, focus goes back to the step. A click leaves focus
+  where it is, as in Lightning.
+- **Escape closes the inspector from inside one of its fields.** Lightning's
+  keyboard provider ignores Escape in inputs, so a keyboard user in the
+  inspector would have no way back to the diagram. Elsewhere in the editor,
+  Escape in an input still does nothing.

@@ -23,6 +23,7 @@ describe("Button", () => {
     const onParentClick = vi.fn();
     const onSubmit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
     const form = (pending: boolean) => (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- catches the click that bubbles out of the button
       <div onClick={onParentClick}>
         <form onSubmit={onSubmit}>
           <Button type="submit" pending={pending} onClick={onClick}>Save</Button>
