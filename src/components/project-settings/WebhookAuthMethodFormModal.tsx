@@ -5,6 +5,7 @@ import CopyButton from "../primitives/CopyButton";
 import { Field, TextInput } from "../primitives/Inputs";
 import FormModal from "../primitives/FormModal";
 import Modal from "../primitives/Modal";
+import Text from "../primitives/Text";
 import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "../../types/project-settings";
 import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";
@@ -48,6 +49,7 @@ function TypeOption({ selected, icon, children, onSelect }: { selected: boolean;
   return (
     <label
       className={cn(
+        // eslint-disable-next-line no-restricted-syntax -- a control: the auth type card owns its type
         "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-subtle bg-surface p-2 text-sm shadow-xs",
         selected && "outline-2 outline-offset-2 outline-focus"
       )}
@@ -125,37 +127,38 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
       >
         <form
           id="reauthentication-form"
-          className="space-y-4 text-sm"
           onSubmit={(e) => {
             e.preventDefault();
             void reveal.run();
           }}
         >
-          <p>
-            You're required to reauthenticate yourself before viewing the webhook{" "}
-            {authType === "basic" ? "Password" : "API Key"}
-          </p>
-          {reveal.error && <Alert tone="danger">{errorMessage(reveal.error)}</Alert>}
-          <TextInput
-            id="user_password"
-            type="password"
-            label="Password"
-            autoComplete="new-password"
-            value={reauthValues.password}
-            onChange={(e) => setReauthValues({ ...reauthValues, password: e.target.value })}
-          />
-          <div className="flex items-center gap-2 text-muted">
-            <hr className="flex-1 border-strong" />
-            OR
-            <hr className="flex-1 border-strong" />
-          </div>
-          <TextInput
-            id="user_code"
-            label="2FA Code"
-            inputMode="numeric"
-            value={reauthValues.code}
-            onChange={(e) => setReauthValues({ ...reauthValues, code: e.target.value })}
-          />
+          <Text as="div" className="space-y-4">
+            <p>
+              You're required to reauthenticate yourself before viewing the webhook{" "}
+              {authType === "basic" ? "Password" : "API Key"}
+            </p>
+            {reveal.error && <Alert tone="danger">{errorMessage(reveal.error)}</Alert>}
+            <TextInput
+              id="user_password"
+              type="password"
+              label="Password"
+              autoComplete="new-password"
+              value={reauthValues.password}
+              onChange={(e) => setReauthValues({ ...reauthValues, password: e.target.value })}
+            />
+            <div className="flex items-center gap-2 text-muted">
+              <hr className="flex-1 border-strong" />
+              OR
+              <hr className="flex-1 border-strong" />
+            </div>
+            <TextInput
+              id="user_code"
+              label="2FA Code"
+              inputMode="numeric"
+              value={reauthValues.code}
+              onChange={(e) => setReauthValues({ ...reauthValues, code: e.target.value })}
+            />
+          </Text>
         </form>
       </Modal>
     );
