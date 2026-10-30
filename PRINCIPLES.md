@@ -45,7 +45,7 @@ The rules below are ours.
 
 - **Page:** breadcrumb, title, main action on the right, tabs, then content.
 - **Field:** label, hint, control, error. Every control has a disabled and an
-  error look.
+  error look. See Forms below.
 - **Switch or checkbox:** a switch takes effect now; a checkbox is part of a
   form you submit.
 - **Status:** one badge per kind of status, with the same words and colours
@@ -57,6 +57,34 @@ The rules below are ours.
 - **Loading:** skeletons for content, a spinner inside the button for
   actions, one full-screen loader.
 - **Icon button:** always a label and a tooltip.
+
+## Forms
+
+A form is built from four blocks, each with one job: a container (a card,
+a pop-up or the sign-in card), a `Form`, a `Field` for each question, and
+the control inside it. A page fills them in and never lays out labels,
+errors or buttons itself.
+
+- **One order:** label, hint, control, error. The hint sits close under its
+  label; the error sits under the control.
+- **The label row:** the label, the required star and an info icon on the
+  left; at most one link that acts on the field, or a badge, on the right.
+  Explain a choice people need before choosing in the hint, not an info icon.
+- **Every control has a name:** a visible label, or `aria-label` where there's
+  no room for one. A control without fails in development.
+- **A set of radios or checkboxes** sits under one label as a group.
+  Disabling the group disables every control in it.
+- **One look for every control:** one border colour, filled or empty; the same
+  focus outline as everything else; grey outline info icons.
+- **One red for errors, from one place.** The border, the typed text and the
+  message turn the same red. Keep error text short.
+- **Our errors only.** The browser's own required-field bubbles are off.
+  Errors show when you leave a field or press Save, never while typing.
+- **Never disable Save for invalid values.** Show the errors on Save, then
+  move focus to the first one.
+- **Buttons are placed by the container:** on the right, main action last, on
+  pages and in pop-ups alike. The sign-in card is the one exception: its single
+  action runs the full width.
 
 ## Where we're heading
 
