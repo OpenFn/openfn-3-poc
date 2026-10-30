@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNode, Ref } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactElement, ReactNode, Ref } from "react";
 import { Link } from "../routing/router";
 import { cn } from "../utils/cn";
 import Spinner from "./Spinner";
@@ -23,25 +23,22 @@ const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", 
 // Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
 // text on nothing: hover darkens the text only, so an icon sits on any surface, white or grey.
 // Text needs a white surface: on the grey page plain (4.39:1) and plain danger (4.33:1) fall
-// below 4.5:1. A pressed toggle (`aria-pressed`) gets a tint. Disabled has no hover: filled looks turn their
-// 300 shade with white text, secondary goes grey, and plain is faded to half strength, as
-// Lightning draws them (`new_inputs.ex` button, the editor's Run / Retry). Plain writes its
-// hover as `hover:` with `disabled:` undoing it, so a caller's own `hover:` colour replaces it;
-// a `not-disabled:hover:` class would outrank it.
+// below 4.5:1. A pressed toggle (`aria-pressed`) gets a tint. Disabled is the same colour at half
+// strength for every look, with no hover, not Lightning's 300 shades (its disabled green is a loud
+// mint with white text). Plain writes its hover as `hover:` with `disabled:` undoing it, so a
+// caller's own `hover:` colour replaces it; a `not-disabled:hover:` class would outrank it.
 const lookClasses = {
-  primary: "bg-primary-600 not-disabled:hover:bg-primary-500 disabled:bg-primary-300 text-inverse shadow-xs",
-  secondary:
-    "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs disabled:bg-subtle disabled:text-faint disabled:ring-subtle",
-  plain:
-    "text-muted hover:text-body disabled:text-muted disabled:opacity-50 aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
-  danger: "bg-danger-600 not-disabled:hover:bg-danger-500 disabled:bg-danger-300 text-inverse shadow-xs",
-  success: "bg-success-600 not-disabled:hover:bg-success-500 disabled:bg-success-300 text-inverse shadow-xs",
-  "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600 disabled:opacity-50",
+  primary: "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse shadow-xs",
+  secondary: "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs",
+  plain: "text-muted hover:text-body disabled:text-muted aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
+  danger: "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse shadow-xs",
+  success: "bg-success-600 not-disabled:hover:bg-success-500 text-inverse shadow-xs",
+  "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600",
 };
 
 function buttonClasses(look: keyof typeof lookClasses, size: ButtonSize = "md", className?: string) {
   return cn(
-    "rounded-md text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed",
+    "rounded-md text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed disabled:opacity-50",
     sizeClasses[size],
     lookClasses[look],
     className
@@ -62,8 +59,8 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Shown on hover (often why it's disabled). */
   tooltip?: string | undefined;
   /**
-   * The action is in flight: the button is disabled and shows a spinner
-   * before its label. Pass `useAction().pending` or let `FormModal` /
+   * The action is in flight: the button shows a spinner before its label and
+   * ignores presses, but keeps focus (`aria-disabled`, not `disabled`). Pass `useAction().pending` or let `FormModal` /
    * `ConfirmModal` manage it.
    */
   pending?: boolean;
@@ -71,7 +68,8 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
   /** Which side of the label the icon goes: `left` (the default), or `right` for an arrow or a menu's chevron. Does nothing without an `icon`. */
   iconPosition?: "left" | "right" | undefined;
-  ref?: Ref<HTMLButtonElement>;
+  /** The `<button>`, or the `<a>` when it renders a link. */
+  ref?: Ref<HTMLButtonElement | HTMLAnchorElement>;
   children: ReactNode;
 }
 
@@ -85,7 +83,7 @@ type Props = BaseProps & ButtonLook;
 
 /**
  * Pass `to` or `href` to get a link that looks the same; disabled, it's a
- * plain disabled button. `pending` disables it and shows a spinner while a
+ * plain disabled button. `pending` blocks presses and shows a spinner while a
  * request runs (STANDARDS.md pattern 1). `xs` is the table row action.
  * `variant="plain"` is text with no fill or border, IconButton's default.
  */
@@ -108,6 +106,7 @@ export default function Button({
   iconPosition = "left",
   ref,
   children,
+  onClick,
   ...rest
 }: Props) {
   const disabled = disabledProp || pending;
@@ -119,6 +118,18 @@ export default function Button({
     "data-variant": variant,
     "data-tone": tone,
     "aria-busy": pending || undefined,
+  };
+  // A natively disabled button drops the focus it holds, so a pending one stays focusable and
+  // swallows the press instead: preventDefault stops a submit button sending its form again, and
+  // stopPropagation keeps the click from a parent's handler, as a disabled button's would be.
+  const pendingProps = {
+    "aria-disabled": pending || rest["aria-disabled"] || undefined,
+    onClick: (e: MouseEvent<HTMLButtonElement>) => {
+      if (pending) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else onClick?.(e);
+    },
   };
   const iconEl = pending ? (
     <Spinner size={size === "xs" ? "xs" : "sm"} label="Working" />
@@ -137,28 +148,28 @@ export default function Button({
     </>
   );
   // Links take the same handlers and aria props as buttons.
-  const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
+  const link = { ...(rest as AnchorHTMLAttributes<HTMLAnchorElement>), onClick: onClick as AnchorHTMLAttributes<HTMLAnchorElement>["onClick"], ...shared, target, rel: rel ?? (target === "_blank" ? "noreferrer" : undefined) };
   const wrap = (el: ReactElement) => (
-    <Tooltip content={tooltip} disabled={disabled && !pending}>
+    <Tooltip content={tooltip} disabled={disabledProp}>
       {el}
     </Tooltip>
   );
   if (to && !disabled) {
     return wrap(
-      <Link to={to} {...link}>
+      <Link ref={ref as Ref<HTMLAnchorElement>} to={to} {...link}>
         {content}
       </Link>
     );
   }
   if (href && !disabled) {
     return wrap(
-      <a href={href} download={download} {...link}>
+      <a ref={ref as Ref<HTMLAnchorElement>} href={href} download={download} {...link}>
         {content}
       </a>
     );
   }
   return wrap(
-    <button ref={ref} type={type} disabled={disabled} {...shared} {...rest}>
+    <button ref={ref as Ref<HTMLButtonElement>} type={type} disabled={disabledProp} {...shared} {...rest} {...pendingProps}>
       {content}
     </button>
   );

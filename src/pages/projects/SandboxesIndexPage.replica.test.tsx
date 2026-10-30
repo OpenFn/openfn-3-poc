@@ -8,6 +8,7 @@ import { sandboxColorPalette } from "../../constants";
 import { fixturesUnder, type SandboxFixture } from "../../mock-data/sandboxes";
 import SessionProvider from "../../session/SessionProvider";
 import SandboxesIndexPageReplica from "./SandboxesIndexPage.replica";
+import { isDisabled } from "../../test/disabled";
 
 const ROOT = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const FHIR = "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f";
@@ -133,8 +134,8 @@ describe("SandboxesIndexPageReplica", () => {
     await waitFor(() => expect(screen.getByTestId("where").textContent).toBe(`/projects/${FHIR}/sandboxes`));
     const mine = screen.getByText("mine").closest("[id^=sandbox-card-]")!.id.replace("sandbox-card-", "");
     for (const kind of ["branch-rewire", "edit", "delete"]) {
-      expect((document.querySelector(`#${kind}-sandbox-${mine} button`) as HTMLButtonElement).disabled).toBe(false);
-      expect((document.querySelector(`#${kind}-sandbox-${FHIR} button`) as HTMLButtonElement).disabled).toBe(true);
+      expect(isDisabled((document.querySelector(`#${kind}-sandbox-${mine} button`) as HTMLButtonElement))).toBe(false);
+      expect(isDisabled(document.querySelector(`#${kind}-sandbox-${FHIR} button`))).toBe(true);
     }
   }, 10_000);
   it("previews the merge into the parent with Lightning's badges, then toasts the merge and opens the parent's workflows", async () => {

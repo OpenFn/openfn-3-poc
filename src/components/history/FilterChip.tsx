@@ -4,6 +4,7 @@ import IconButton from "../IconButton";
 import { Checkbox, TextInput } from "../Inputs";
 import Menu, { MenuItem } from "../Menu";
 import Popover from "../Popover";
+import Text from "../Text";
 
 /**
  * A filter chip that shows a filter's state and opens its dropdown
@@ -46,6 +47,7 @@ export default function FilterChip({
       data-ui="tag"
       data-variant={active ? "active" : "default"}
       className={cn(
+        // eslint-disable-next-line no-restricted-syntax -- a control, like Button: it owns its type
         "inline-flex items-center gap-x-1 rounded-full border text-sm font-medium transition-colors",
         active ? "border-primary-200 bg-primary-50 text-primary-700" : "border-subtle bg-sunken text-body hover:bg-emphasis",
         clearable && "pr-1.5"
@@ -130,7 +132,7 @@ export function FilterDateRange({
   const id = useId();
   return (
     <div className="space-y-3 px-4 py-3">
-      <div className="text-sm text-muted">{title}</div>
+      <Text as="div" className="text-muted">{title}</Text>
       <TextInput
         id={`${id}-after`}
         type="datetime-local"

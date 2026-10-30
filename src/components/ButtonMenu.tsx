@@ -27,7 +27,8 @@ export default function ButtonMenu({ label, variant = "secondary", align, classN
       align={align}
       className={className}
       trigger={
-        <Button variant={variant} pending={pending} disabled={disabled} icon="hero-chevron-down" iconPosition="right">
+        // Headless UI's own key and pointer handlers on the trigger ignore `pending`, so it's disabled too.
+        <Button variant={variant} pending={pending} disabled={disabled || pending} icon="hero-chevron-down" iconPosition="right">
           {label}
         </Button>
       }

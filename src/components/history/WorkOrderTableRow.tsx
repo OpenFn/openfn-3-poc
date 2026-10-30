@@ -7,6 +7,7 @@ import type { WorkOrderRow } from "../../types/history";
 import { activeStates } from "../../constants";
 import DateTime from "../DateTime";
 import TextLink from "../TextLink";
+import Text from "../Text";
 import ElapsedTime from "./ElapsedTime";
 import StatePill from "./StatePill";
 import UuidChip from "../UuidChip";
@@ -102,7 +103,7 @@ export default function WorkOrderTableRow({
               title={
                 <>
                   {wo.workflowName}
-                  <span className="block text-xs text-faint">Click to view</span>
+                  <Text variant="body-sm" className="block text-faint">Click to view</Text>
                 </>
               }
             >

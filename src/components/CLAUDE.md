@@ -7,7 +7,8 @@ data seam; this file is how the components themselves are built.
 ## Themes and libraries
 
 Primitives expose their look to the themes through `data-ui` (and
-`data-variant` for the variant, `data-tone` for the tone). Theme CSS targets those hooks, never
+`data-variant` for the variant, `data-tone` for the tone, `data-size` for
+the size). Theme CSS targets those hooks, never
 element selectors or utility classes, so a new primitive or variant needs its
 hook, and the GDS theme is worth a look after styling changes.
 
@@ -48,7 +49,7 @@ the same name on every component:
 | Prop | Answers | Values |
 |---|---|---|
 | `tone` | What does it mean? | `neutral`, `info`, `success`, `warning`, `danger`, one list shared by every component; each takes the part it supports. Leave it off for the component's usual colour |
-| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Tabs `line`, `pill`; Heading `default`, `eyebrow`; SearchList `palette`, `field` |
+| `variant` | How loud is it, or which of its looks? | The component's own list, loudest first: Button `primary`, `secondary`, `plain`; Tabs `line`, `pill`; SearchList `palette`, `field`; Text's type styles, `body-md` to `code-sm` (`.claude/rules/type.md`) |
 | `size` | How big is it? | `xs`, `sm`, `md`, `lg`, `xl`. Each component takes the steps it needs. Button and IconButton share one height per step, so they line up side by side; other components' steps are their own for now |
 
 - Meaning only goes in `tone`. `danger` is never a `variant`, so

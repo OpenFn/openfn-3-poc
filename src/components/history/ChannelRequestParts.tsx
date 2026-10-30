@@ -7,6 +7,7 @@ import type { Tone } from "../tone";
 import { formatBinaryBytes as formatBytes } from "../../utils/format";
 import CopyButton from "../CopyButton";
 import { EmptyState } from "../Table";
+import Text from "../Text";
 
 /*
  * Building blocks of the channel request page
@@ -31,10 +32,10 @@ export function MethodBadge({ method }: { method: string | null | undefined }) {
 
 export function RequestPathDisplay({ event }: { event: ChannelEvent | undefined }) {
   return (
-    <span className="break-all font-mono text-sm text-strong">
+    <Text variant="code-md" className="break-all text-strong">
       {event?.requestPath}
       {event?.requestQueryString && <span className="text-faint">?{event.requestQueryString}</span>}
-    </span>
+    </Text>
   );
 }
 
@@ -56,12 +57,12 @@ export function StatusCodeBadge({ status }: { status: number | null | undefined 
 }
 
 export function SectionSizeBadge({ size }: { size: number }) {
-  return <span className="font-mono text-xs text-faint">{formatBytes(size)}</span>;
+  return <Text variant="code-sm" className="text-faint">{formatBytes(size)}</Text>;
 }
 
 export function HeadersTable({ headers }: { headers: [string, string][] }) {
   return (
-    <DetailList className="text-xs">
+    <DetailList size="sm">
       {headers.map(([name, value], i) => (
         // Headers repeat (set-cookie, via), so the key is the position.
         <DetailItem key={i} label={name} mono>
@@ -106,27 +107,27 @@ export function BodyViewer({
   }
   if (ct && !isText(ct)) {
     return (
-      <div className="flex items-center gap-2 py-4 text-sm text-muted">
+      <Text as="div" className="flex items-center gap-2 py-4 text-muted">
         <Pill square mono>
           {contentTypeLabel(ct)}
         </Pill>
         {size != null && <span>{formatBytes(size)}</span>}
-        {hash && <span className="font-mono text-xs text-faint">SHA256: {hash}</span>}
-      </div>
+        {hash && <Text variant="code-sm" className="text-faint">SHA256: {hash}</Text>}
+      </Text>
     );
   }
   // The stored size is in bytes; so is the comparison (components.ex used byte_size).
   const previewBytes = preview == null ? 0 : new TextEncoder().encode(preview).length;
   if (preview == null) {
     return (
-      <div className="py-4 text-sm text-muted">
+      <Text as="div" className="py-4 text-muted">
         Body not captured
-        {size != null && <span className="ml-1 text-xs text-faint">({formatBytes(size)})</span>}
-      </div>
+        {size != null && <Text variant="body-sm" className="ml-1 text-faint">({formatBytes(size)})</Text>}
+      </Text>
     );
   }
   return (
-    <div className="space-y-1 text-xs text-faint">
+    <Text as="div" variant="body-sm" className="space-y-1 text-faint">
       <Card muted padding="none" className="relative">
         <div className="absolute right-2 top-2 flex items-center gap-1.5">
           {ct && (
@@ -149,7 +150,7 @@ export function BodyViewer({
           Preview: {formatBytes(previewBytes)} of {formatBytes(size)}
         </div>
       )}
-    </div>
+    </Text>
   );
 }
 

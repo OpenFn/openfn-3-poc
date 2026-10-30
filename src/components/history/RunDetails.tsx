@@ -4,6 +4,7 @@ import Card from "../Card";
 import IconButton from "../IconButton";
 import DateTime from "../DateTime";
 import TextLink from "../TextLink";
+import Text from "../Text";
 import ElapsedTime from "./ElapsedTime";
 import StepIcon from "./StepIcon";
 import WipedTooltip from "./WipedTooltip";
@@ -57,7 +58,7 @@ export function StepListItem({
   onRetry: () => void;
 }) {
   return (
-    <div id={`step-${step.id}`} role="row" className={cn("flex items-center text-xs text-muted hover:bg-surface", step.cloned && "opacity-50")}>
+    <Text as="div" variant="body-sm" id={`step-${step.id}`} role="row" className={cn("flex items-center text-muted hover:bg-surface", step.cloned && "opacity-50")}>
       <div role="cell" className="flex flex-1 items-center gap-2 py-2 pl-4">
         <StepIcon reason={step.exitReason} errorType={step.errorType} />
         <TextLink to={step.href} variant="plain" className="whitespace-nowrap text-strong hover:text-primary-500">
@@ -84,7 +85,7 @@ export function StepListItem({
           {step.errorType && `:${step.errorType}`}
         </span>
       </div>
-    </div>
+    </Text>
   );
 }
 
@@ -136,7 +137,7 @@ export function RunCard({
   const steps = run.steps;
   return (
     <Card id={`run_${run.id}`} padding="none" className="overflow-hidden">
-      <div className="flex items-center bg-emphasis text-xs">
+      <Text as="div" variant="body-sm" className="flex items-center bg-emphasis">
         <div className="flex flex-1 items-center gap-1 py-2 pl-4">
           Run
           <TextLink to={run.href} title={run.id} className="font-mono">
@@ -174,7 +175,7 @@ export function RunCard({
             />
           )}
         </div>
-      </div>
+      </Text>
       <div role="rowgroup" id={`run-${run.id}`} className={cn("bg-sunken", steps.length && "border-t border-strong")}>
         {steps.map((step) => (
           <StepListItem key={step.id} step={step} canRunWorkflow={canRunWorkflow} dataStorageHref={dataStorageHref} onRetry={() => onRetryStep(step.id)} />

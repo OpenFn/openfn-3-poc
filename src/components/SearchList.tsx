@@ -172,7 +172,7 @@ export default function SearchList<T>({
                   {divider && <div role="separator" className="my-2 border-t border-subtle" />}
                   <div role="group" className={look.section}>
                     {section.heading && (
-                      <Heading variant="eyebrow" className={look.heading}>
+                      <Heading size="xs" className={look.heading}>
                         {section.heading}
                       </Heading>
                     )}
