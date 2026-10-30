@@ -16,7 +16,7 @@
  * A token swap can't reach everything (button shape, field borders,
  * focus states), so each theme may add a component layer. That layer
  * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
- * (button, link, field, form-group, label, hint, error-message, choice,
+ * (button, link, field, form-group, label, label-row, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
  * page-title-row, page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.
@@ -274,20 +274,22 @@ html[data-theme="light"] {
     border-color: var(--color-gray-300);
     box-shadow: var(--shadow-xs);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    &[aria-invalid="true"] { border-color: var(--border-color-invalid); }
     &:focus {
       outline: none;
       border-color: var(--ui-brand);
       box-shadow: var(--ui-halo);
     }
   }
-  [data-ui="form-group"][data-invalid] [data-ui="field"]:focus {
-    border-color: var(--color-red-500);
+  [data-ui="field"][aria-invalid="true"]:focus {
+    border-color: var(--border-color-invalid);
     box-shadow: 0 0 0 4px rgb(239 68 68 / 0.15);
   }
 
   :is([data-ui="choice"], input[type="checkbox"], input[type="radio"]) {
     border-color: var(--color-gray-300);
     color: var(--ui-brand);
+    &[aria-invalid="true"] { border-color: var(--border-color-invalid); }
     &:focus-visible { outline: none; box-shadow: var(--ui-halo); }
   }
 
@@ -783,11 +785,11 @@ html[data-theme="gds"] {
     flex-direction: column;
     border-left: var(--ui-emphasis-border) solid var(--ui-error);
     padding-left: 15px;
-    [data-ui="label"] { order: -3; }
+    :is([data-ui="label"], [data-ui="label-row"]) { order: -3; }
     [data-ui="hint"] { order: -2; }
     [data-ui="error-message"] { order: -1; margin: 0 0 10px; }
-    [data-ui="field"] { border-color: var(--ui-error); }
   }
+  [data-ui="field"][aria-invalid="true"] { border-color: var(--ui-error); }
   [data-ui="error-message"] {
     color: var(--ui-error);
     font-weight: 700;

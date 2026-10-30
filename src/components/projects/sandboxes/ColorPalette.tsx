@@ -1,5 +1,5 @@
 import { sandboxColorPalette } from "../../../constants";
-import { Label } from "../../primitives/Inputs";
+import { Field } from "../../primitives/Inputs";
 
 /**
  * The sandbox colour picker (SandboxLive.Components.color_palette): a grid
@@ -15,15 +15,14 @@ export default function ColorPalette({
   onChange: (hex: string) => void;
 }) {
   return (
-    <fieldset>
-      <Label className="mb-2 block">Color</Label>
-      <div
-        role="radiogroup"
-        className="grid w-fit select-none grid-cols-4 gap-0.5 sm:grid-cols-8"
-        aria-label="Choose a color for your sandbox"
-      >
+    <Field group label="Color" aria-label="Choose a color for your sandbox">
+      <div className="grid w-fit select-none grid-cols-4 gap-0.5 sm:grid-cols-8">
         {sandboxColorPalette.map((hex) => (
-          <label key={hex} className="relative cursor-pointer transition-transform hover:z-10 hover:scale-102">
+          // The radio is hidden, so the swatch shows its keyboard focus.
+          <label
+            key={hex}
+            className="relative cursor-pointer rounded-xs transition-transform hover:z-10 hover:scale-102 has-focus-visible:z-10 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
+          >
             {/* eslint-disable-next-line no-restricted-syntax -- a swatch is the control here, so the radio itself is visually hidden */}
             <input
               type="radio"
@@ -43,6 +42,6 @@ export default function ColorPalette({
       <p className="sr-only" aria-live="polite">
         Selected: {value ?? "none"}
       </p>
-    </fieldset>
+    </Field>
   );
 }

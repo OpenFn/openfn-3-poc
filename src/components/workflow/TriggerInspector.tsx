@@ -5,7 +5,7 @@ import { cn } from "../../utils/cn";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Disclosure from "../primitives/Disclosure";
-import { Field, Label, Radio, TextInput } from "../primitives/Inputs";
+import { Field, Radio, TextInput } from "../primitives/Inputs";
 import Pill from "../primitives/Pill";
 import TextLink from "../primitives/TextLink";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
@@ -182,20 +182,21 @@ export default function TriggerInspector({ trigger, onChange, onClose }: Props) 
                 </Text>
               </Card>
             </WebhookUrlField>
-            <div className="space-y-2">
-              <Label className="block">Response</Label>
-              {[IMMEDIATELY, ON_COMPLETE].map((o) => (
-                <Card key={o.value} padding="sm" className="hover:bg-hover">
-                  <Radio
-                    name="webhook-reply"
-                    label={o.label}
-                    hint={o.description}
-                    checked={draft.webhookReply === o.value}
-                    onChange={() => setDraft((d) => ({ ...d, webhookReply: o.value }))}
-                  />
-                </Card>
-              ))}
-            </div>
+            <Field group label="Response">
+              <div className="space-y-2">
+                {[IMMEDIATELY, ON_COMPLETE].map((o) => (
+                  <Card key={o.value} padding="sm" className="hover:bg-hover">
+                    <Radio
+                      name="webhook-reply"
+                      label={o.label}
+                      hint={o.description}
+                      checked={draft.webhookReply === o.value}
+                      onChange={() => setDraft((d) => ({ ...d, webhookReply: o.value }))}
+                    />
+                  </Card>
+                ))}
+              </div>
+            </Field>
           </>
         ) : (
           <TextInput

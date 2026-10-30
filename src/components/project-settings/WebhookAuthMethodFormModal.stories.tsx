@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { within } from "storybook/test";
 import WebhookAuthMethodFormModal from "./WebhookAuthMethodFormModal";
 import { generateApiKey, projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
 import { projects } from "../../mock-data/projects";
@@ -27,7 +28,7 @@ const choose =
   (n: number): NonNullable<Story["play"]> =>
   async ({ canvasElement }) => {
     const doc = canvasElement.ownerDocument;
-    doc.querySelectorAll<HTMLInputElement>('input[name="auth_type"]')[n]!.click();
+    within(doc.body).getAllByRole("radio")[n]!.click();
     await tick();
     clickButton(doc, "Next");
   };

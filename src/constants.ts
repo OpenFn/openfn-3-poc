@@ -26,8 +26,9 @@ export const contactPreferenceOptions: [label: string, value: string][] = [
   ["Anytime", "any"],
 ];
 
-export const contactPreferenceTooltip =
-  "How often would you like to hear from us about your OpenFn account? Choose 'Anytime' to stay in up to date with all information, or 'Critical' if you prefer to be notified only about issues affecting your projects and account status.";
+/** Shown as the field's hint; Lightning shows a longer version in a tooltip. */
+export const contactPreferenceHint =
+  "How often we email you about your account. Anytime: all updates. Critical: only issues affecting your projects or account.";
 
 /** Roles offered when adding or inviting collaborators. */
 export const collaboratorRoles = ["viewer", "editor", "admin"] as const;

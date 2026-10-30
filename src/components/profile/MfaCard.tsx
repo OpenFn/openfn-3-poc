@@ -1,5 +1,4 @@
-import { useState } from "react";
-import Alert from "../primitives/Alert";
+import { useEffect, useRef, useState } from "react";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Heading from "../primitives/Heading";
@@ -7,10 +6,9 @@ import { TextInput } from "../primitives/Inputs";
 import Modal from "../primitives/Modal";
 import SectionHeader from "../primitives/SectionHeader";
 import TextLink from "../primitives/TextLink";
-import Toggle from "../primitives/Toggle";
 import Card from "../primitives/Card";
+import Form from "../primitives/Form";
 import type { MfaSettings, MfaSetupResult } from "../../types/profile";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
@@ -26,17 +24,19 @@ interface Props {
 }
 
 /**
- * The MFA card on /profile (profile_live/mfa_component.html.heex). The switch
- * doesn't save on its own: off → on asks the host for a secret and shows the
- * setup form; on → off asks to confirm "Disable MFA". With MFA on it links to
- * the recovery codes. The secret lives here only while the setup form is open.
+ * The MFA card on /profile (profile_live/mfa_component.html.heex). Lightning
+ * uses a switch, but neither way takes effect at once, so the card has buttons
+ * (PRINCIPLES.md, Switch or checkbox): "Set up MFA" asks the host for a secret
+ * and shows the setup form, whose Cancel closes it; "Disable MFA" asks to
+ * confirm. With MFA on it links to the recovery codes. The secret lives here
+ * only while the setup form is open.
  */
 export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Props) {
   const id = "mfa_section";
   const [setup, setSetup] = useState<MfaSetupResult | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
-  // After a confirmed setup the switch stays on until the host's props say MFA is on.
+  // After a confirmed setup the card shows MFA as on until the host's props say so.
   const [confirmed, setConfirmed] = useState(false);
   const [lastEnabled, setLastEnabled] = useState(mfa.enabled);
   if (lastEnabled !== mfa.enabled) {
@@ -58,14 +58,26 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
     },
     { onError: "toast" }
   );
+  // Opening or closing setup removes the button that had focus: move focus to
+  // the code field when it opens, and back to the card's button when it closes.
+  const wasSetup = useRef(false);
+  useEffect(() => {
+    if (setup !== null && !wasSetup.current) document.getElementById("mfa-code")?.focus();
+    if (setup === null && wasSetup.current) document.getElementById("mfa-action")?.focus();
+    wasSetup.current = setup !== null;
+  }, [setup]);
   const enabled = mfa.enabled || confirmed;
   const show = enabled || setup !== null;
+  const action = enabled ? (
+    <Button id="mfa-action" variant="secondary" disabled={form.pending} onClick={() => setConfirmDisable(true)}>
+      Disable MFA
+    </Button>
+  ) : setup ? undefined : (
+    <Button id="mfa-action" pending={start.pending} onClick={() => void start.run()}>
+      Set up MFA
+    </Button>
+  );
 
-  const toggle = () => {
-    if (enabled) setConfirmDisable(true);
-    else if (setup) setSetup(null);
-    else void start.run();
-  };
 
   return (
     <Card
@@ -77,8 +89,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
           This adds an additional layer of security to your account by requiring more than just a password to sign in.
         </span>
       }
-      // The switch shows the choice at once while setup starts, and goes back if it fails.
-      action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
+      action={action}
     >
       {show && (
         <Text as="div" className="space-y-5 border-t border-strong pt-5">
@@ -105,31 +116,33 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 Unable to scan? You can use <TextLink onClick={() => setShowSecret(true)}>this secret key</TextLink> to
                 manually configure your authenticator app.
               </p>
-              <form
+              <Form
                 id="set_totp_form"
-                className="max-w-md space-y-4"
-                onSubmit={form.submit(async ({ code }) => {
+                className="max-w-md"
+                actions={
+                  <>
+                    <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">
+                      Save
+                    </Button>
+                  </>
+                }
+                {...form.formProps(async ({ code }) => {
                   await onConfirm(code);
                   setConfirmed(true);
                   setSetup(null);
                 })}
               >
                 <TextInput
+                  id="mfa-code"
                   label="Verify the code from the app"
                   autoComplete="one-time-code"
                   placeholder="XXXXXX"
                   {...form.fieldProps("code")}
                 />
-                {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
-                <div className="flex gap-1">
-                  <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" pending={form.pending}>
-                    Save
-                  </Button>
-                </div>
-              </form>
+              </Form>
               <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
                 <Text className="text-muted">
                   <code>{setup.secret}</code>

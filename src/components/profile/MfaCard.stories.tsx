@@ -24,13 +24,13 @@ export const Enabled: Story = { args: { mfa: { enabled: true, backupCodesHref: "
 
 const enabled = { mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } };
 const settle = () => new Promise((r) => setTimeout(r, 50));
-const flip: Story["play"] = async ({ canvasElement }) => {
-  canvasElement.querySelector<HTMLButtonElement>("#toggle-mfa-switch")?.click();
+const pressAction: Story["play"] = async ({ canvasElement }) => {
+  canvasElement.querySelector<HTMLButtonElement>("#mfa-action")?.click();
   await settle();
 };
 /** Opens setup, types a code and presses Save. */
 const submitCode: Story["play"] = async (ctx) => {
-  await flip(ctx);
+  await pressAction(ctx);
   const doc = ctx.canvasElement.ownerDocument;
   const input = doc.querySelector<HTMLInputElement>('#set_totp_form input[placeholder="XXXXXX"]')!;
   // Set the value the way a keystroke does, so React's onChange sees it.
@@ -40,8 +40,8 @@ const submitCode: Story["play"] = async (ctx) => {
   doc.querySelector<HTMLButtonElement>('#set_totp_form button[type="submit"]')?.click();
 };
 
-/** The switch turned on: the setup form with the QR code. */
-export const SetupOpen: Story = { play: flip };
+/** "Set up MFA" pressed: the setup form with the QR code. */
+export const SetupOpen: Story = { play: pressAction };
 
 /** The host refuses the code: the message shows on the field. */
 export const CodeError: Story = {
@@ -55,10 +55,10 @@ export const Saving: Story = { args: { onConfirm: () => new Promise(() => {}) },
 /** "this secret key" pressed: the secret for manual setup. */
 export const SecretShown: Story = {
   play: async (ctx) => {
-    await flip(ctx);
+    await pressAction(ctx);
     await userEvent.click(within(ctx.canvasElement).getByText("this secret key"));
   },
 };
 
-/** The switch turned off with MFA on: the confirm dialog. */
-export const ConfirmDisable: Story = { args: enabled, play: flip };
+/** "Disable MFA" pressed: the confirm dialog. */
+export const ConfirmDisable: Story = { args: enabled, play: pressAction };

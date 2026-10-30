@@ -9,7 +9,7 @@ import FileDropZone from "../primitives/FileDropZone";
 import Heading from "../primitives/Heading";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
-import { FieldError } from "../primitives/Inputs";
+import { Field } from "../primitives/Inputs";
 import CodeEditor from "./CodeEditor";
 import Tabs from "../primitives/Tabs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
@@ -106,14 +106,9 @@ export default function ManualRunPanel({
               <span />
             </Text>
           </div>
-          <div className="flex min-h-48 flex-1 flex-col overflow-hidden">
-            {parseError && (
-              <div className="px-3">
-                <FieldError>{parseError}</FieldError>
-              </div>
-            )}
-            <CodeEditor value={body} onChange={setBody} language="json" ariaLabel="Custom input" />
-          </div>
+          <Field errors={parseError ? [parseError] : []} className="flex min-h-48 flex-1 flex-col overflow-hidden">
+            <CodeEditor value={body} onChange={setBody} language="json" ariaLabel="Custom input" className="min-h-0 flex-1" />
+          </Field>
         </div>
       )}
       {tab === "existing" && (
@@ -221,7 +216,11 @@ export default function ManualRunPanel({
       footer={
         <InspectorFooter
           rightButtons={
-            <NewRunButton onClick={run} disabled={fromEdge || !!parseError}>
+            <NewRunButton
+              onClick={run}
+              disabled={fromEdge || !!parseError}
+              disabledReason={parseError ? "Fix the JSON input to run" : undefined}
+            >
               Run From Here
             </NewRunButton>
           }

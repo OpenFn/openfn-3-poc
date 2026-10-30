@@ -83,7 +83,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const isMac = useMemo(() => typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform), []);
+  const isMac = useMemo(() => typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent), []);
 
   const items = useMemo(() => filterPickerItems(allItems, searchTerm), [allItems, searchTerm]);
 

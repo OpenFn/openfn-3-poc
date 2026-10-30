@@ -1,9 +1,8 @@
-import Alert from "../../components/primitives/Alert";
 import Header from "../../components/primitives/Header";
 import Button from "../../components/primitives/Button";
+import Form from "../../components/primitives/Form";
 import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
-import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";
 
@@ -47,12 +46,16 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
           Looks like this is a fresh install of OpenFn Lightning. Create a superuser account to manage projects and
           users.
         </p>
-        {form.error && (
-          <Alert tone="danger" className="mt-4">
-            {errorMessage(form.error)}
-          </Alert>
-        )}
-        <form id="superuser-registration-form" onSubmit={form.submit(onSave)} className="mt-4 grid w-1/2 gap-4" aria-busy={form.pending || undefined}>
+        <Form
+          id="superuser-registration-form"
+          {...form.formProps(onSave)}
+          className="mt-4 w-1/2"
+          actions={
+            <Button type="submit">
+              Save
+            </Button>
+          }
+        >
           <TextInput id="first_name" name="first_name" label="First name" {...form.fieldProps("firstName")} />
           <TextInput id="last_name" name="last_name" label="Last name" {...form.fieldProps("lastName")} />
           <TextInput id="email" name="email" type="email" label="Email" {...form.fieldProps("email")} />
@@ -64,10 +67,7 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
             autoComplete="new-password"
             {...form.fieldProps("passwordConfirmation")}
           />
-          <Button type="submit" pending={form.pending} className="justify-self-start">
-            Save
-          </Button>
-        </form>
+        </Form>
       </Centered>
     </PageContent>
   );

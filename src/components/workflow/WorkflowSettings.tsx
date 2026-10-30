@@ -4,8 +4,8 @@ import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Heading from "../primitives/Heading";
 import { TextInput } from "../primitives/Inputs";
-import TextLink from "../primitives/TextLink";
 import Toggle from "../primitives/Toggle";
+import TextLink from "../primitives/TextLink";
 import InspectorLayout from "./InspectorLayout";
 import Text from "../primitives/Text";
 

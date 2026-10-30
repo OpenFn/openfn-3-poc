@@ -33,7 +33,7 @@ describe("useForm", () => {
     const { result } = setup();
     const save = vi.fn();
 
-    act(() => result.current.submit(save)());
+    act(() => result.current.formProps(save).onSubmit());
     expect(result.current.errors).toEqual({ name: ["can't be blank"], email: ["can't be blank"] });
     expect(save).not.toHaveBeenCalled();
   });
@@ -46,7 +46,7 @@ describe("useForm", () => {
     });
 
     // submit() doesn't return the save's promise, so wait for its result.
-    act(() => result.current.submit(() => Promise.reject(new RequestError("Invalid", { fieldErrors: { email: ["has already been taken"] } })))());
+    act(() => result.current.formProps(() => Promise.reject(new RequestError("Invalid", { fieldErrors: { email: ["has already been taken"] } }))).onSubmit());
     await waitFor(() => expect(result.current.errors.email).toEqual(["has already been taken"]));
     expect(result.current.error).toBeNull();
 
@@ -62,7 +62,7 @@ describe("useForm", () => {
     });
     expect(result.current.dirty).toBe(true);
 
-    act(() => result.current.submit(() => Promise.resolve())());
+    act(() => result.current.formProps(() => Promise.resolve()).onSubmit());
     await waitFor(() => expect(result.current.dirty).toBe(false));
     expect(result.current.values).toEqual({ name: "Ada", email: "ada@example.com" });
   });
@@ -74,7 +74,7 @@ describe("useForm", () => {
       result.current.set("email", "ada@example.com");
     });
 
-    act(() => result.current.submit(() => Promise.reject(new Error("Server down")))());
+    act(() => result.current.formProps(() => Promise.reject(new Error("Server down"))).onSubmit());
     await waitFor(() => expect(result.current.error?.message).toBe("Server down"));
     expect(result.current.dirty).toBe(true);
     expect(result.current.values.name).toBe("Ada");

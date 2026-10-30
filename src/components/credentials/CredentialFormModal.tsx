@@ -491,12 +491,9 @@ export default function CredentialFormModal({
         <div className="space-y-6">
           <TextInput
             id="environment-name-input"
-            label={
-              <>
-                Environment name<span className="text-danger-500"> *</span>
-                <InfoTooltip title={environmentTooltip} />
-              </>
-            }
+            label="Environment name"
+            required
+            info={environmentTooltip}
             placeholder="e.g., production, staging, development, test, qa"
             value={shownName}
             errors={[...(nameError ? [nameError] : []), ...(envServerErrors[env.key] ?? [])]}
@@ -535,7 +532,7 @@ export default function CredentialFormModal({
               onChange={(e) => patchEnv(env.key, { body: e.target.value })}
             />
           ) : (
-            <fieldset className="space-y-6">
+            <div className="space-y-6">
               {fields.map((f) => (
                 <SchemaInput
                   key={`${env.key}-${f.key}`}
@@ -550,7 +547,7 @@ export default function CredentialFormModal({
                   }}
                 />
               ))}
-            </fieldset>
+            </div>
           )}
         </div>
         {envs.length > 1 && (

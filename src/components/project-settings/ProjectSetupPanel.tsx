@@ -1,15 +1,19 @@
-import Alert from "../primitives/Alert";
+import { useState } from "react";
 import Button from "../primitives/Button";
 import { TextArea, TextInput } from "../primitives/Inputs";
 import SectionHeader from "../primitives/SectionHeader";
 import NameField from "../primitives/NameField";
 import TextLink from "../primitives/TextLink";
-import Toggle from "../primitives/Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import Card from "../primitives/Card";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Form from "../primitives/Form";
+import { useToast } from "../primitives/Toast";
+import Toggle from "../primitives/Toggle";
 import type { ParentProjectRef, ProjectIdentityValues, SetupSettings } from "../../types/project-settings";
 import { errorMessage } from "../../utils/errors";
 import { urlSafeName } from "../../utils/format";
+import { useChosenValue } from "../../utils/useChosenValue";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
 
@@ -26,8 +30,8 @@ interface Props {
 /**
  * The Setup tab (`#project`, settings.html.heex:67-313): Project Identity
  * form, Concurrency Override, Export, and the danger zone. As in Lightning,
- * Identity's Save is enabled whenever the user can edit; Concurrency's waits
- * for a change.
+ * Identity's Save is enabled whenever the user can edit. Concurrency is a
+ * switch that saves at once.
  */
 export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSaveConcurrency }: Props) {
   const { canEditProject, canDeleteProject } = setup;
@@ -36,7 +40,12 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
     initial: { rawName: setup.name, description: setup.description },
     validate: ({ rawName }) => ({ rawName: blank(urlSafeName(rawName)) }),
   });
-  const concurrency = useForm({ initial: { serial: setup.concurrency === 1 } });
+  const toast = useToast();
+  // One setting, so it saves as you switch it (a switch takes effect now), after a confirm when turning it on.
+  const serial = useChosenValue(setup.concurrency === 1, (on: boolean) => onSaveConcurrency(on ? 1 : null), (e) =>
+    toast(errorMessage(e), "danger")
+  );
+  const [confirmingSerial, setConfirmingSerial] = useState(false);
 
   return (
     <>
@@ -63,7 +72,15 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
           )
         }
       >
-        <form id="project-settings-form" className="space-y-4" onSubmit={identity.submit(onSaveIdentity)}>
+        <Form
+          id="project-settings-form"
+          {...identity.formProps(onSaveIdentity)}
+          actions={
+            <Button id="project-identity-submit-btn" type="submit" disabled={!canEditProject}>
+              Save
+            </Button>
+          }
+        >
           <NameField
             id="project-settings-form_raw_name"
             label="Project name"
@@ -87,16 +104,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
             maxLength={240}
             {...identity.fieldProps("description")}
           />
-          {identity.error && <Alert tone="danger">{errorMessage(identity.error)}</Alert>}
-          <Button
-            id="project-identity-submit-btn"
-            type="submit"
-            disabled={!canEditProject}
-            pending={identity.pending}
-          >
-            Save
-          </Button>
-        </form>
+        </Form>
       </Card>
 
       <Card
@@ -114,34 +122,28 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
           </span>
         }
       >
-        <form
-          id="project-concurrency-form"
-          className="space-y-4"
-          onSubmit={concurrency.submit(({ serial }) => onSaveConcurrency(serial ? 1 : null))}
+        <Toggle
+          id="project-concurrency-switch"
+          checked={serial.value}
+          onChange={(on) => (on ? setConfirmingSerial(true) : serial.choose(false))}
+          disabled={!canEditProject || setup.concurrencyLimitMessage !== null}
+          label="Disable parallel execution"
+          note="(No more than one run at a time)"
+          // The plan's reason, shown under the switch it disables.
+          description={setup.concurrencyLimitMessage ?? undefined}
+        />
+        <ConfirmModal
+          open={confirmingSerial}
+          onClose={() => setConfirmingSerial(false)}
+          title="Disable parallel execution"
+          confirmLabel="Disable parallel execution"
+          onConfirm={() => {
+            serial.choose(true);
+            setConfirmingSerial(false);
+          }}
         >
-          <Toggle
-            id="project-concurrency-switch"
-            checked={concurrency.values.serial}
-            onChange={(serial) => concurrency.set("serial", serial)}
-            disabled={!canEditProject}
-            label="Disable parallel execution"
-            note="(No more than one run at a time)"
-          />
-          {concurrency.values.serial && concurrency.dirty && (
-            <Alert tone="warning" header="Heads Up!">
-              <p>Disabling parallel run execution may significantly reduce the overall throughput of your project.</p>
-            </Alert>
-          )}
-          {concurrency.error && <Alert tone="danger">{errorMessage(concurrency.error)}</Alert>}
-          <Button
-            id="project-concurrency-submit-btn"
-            type="submit"
-            disabled={!(concurrency.dirty && canEditProject)}
-            pending={concurrency.pending}
-          >
-            Save
-          </Button>
-        </form>
+          <p>Disabling parallel run execution may significantly reduce the overall throughput of your project.</p>
+        </ConfirmModal>
       </Card>
 
       <Card

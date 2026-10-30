@@ -321,7 +321,7 @@ describe("SandboxesIndexPage", () => {
     const ticked = () =>
       Array.from(screen.getByRole("dialog").querySelectorAll<HTMLInputElement>("li input"))
         .filter((i) => i.checked)
-        .map((i) => i.closest("label")!.textContent);
+        .map((i) => i.labels![0]!.textContent);
     const submit = () => document.getElementById("merge-sandbox-submit") as HTMLButtonElement;
     const target = () => screen.getByRole("button", { name: /^Target project/ });
     const openMerge = async (props: Partial<SandboxesIndexPageProps> = {}) => {
@@ -336,7 +336,7 @@ describe("SandboxesIndexPage", () => {
       const { onPreviewMerge } = await openMerge();
       expect(onPreviewMerge).toHaveBeenCalledWith("s1", null);
       expect(ticked()).toEqual(["Changed oneChangedDiverged", "Brand newNew", "Sandbox creds", "cache-a", "cache-b"]);
-      expect(tick("Gone in sandbox").closest("label")!.textContent).toContain("Deleted in sandbox");
+      expect(tick("Gone in sandbox").labels![0]!.textContent).toContain("Deleted in sandbox");
       expect(target().textContent).toBe("openhie-project");
       const text = screen.getByRole("dialog").textContent;
       expect(text).toContain("overwrite their counterparts in openhie-project.");

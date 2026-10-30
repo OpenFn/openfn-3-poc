@@ -5,14 +5,17 @@ import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../util
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { resolvedAdaptorVersion } from "../../mock-data/adaptors";
 import Button from "../primitives/Button";
+import IconButton from "../primitives/IconButton";
 import Card from "../primitives/Card";
-import InfoTooltip from "../primitives/InfoTooltip";
-import { Field, Label, Radio, Select } from "../primitives/Inputs";
+import { Field, Radio, Select } from "../primitives/Inputs";
 import Modal from "../primitives/Modal";
 import TextLink from "../primitives/TextLink";
 import { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorIcon from "./AdaptorIcon";
 import Text from "../primitives/Text";
+
+const CREDENTIALS_HELP =
+  "If the system you're working with requires authentication, choose a credential with login details (secrets) that will allow this job to connect. If you're not connecting to an external system you don't need a credential.";
 
 interface Props {
   isOpen: boolean;
@@ -58,12 +61,13 @@ export default function ConfigureAdaptorModal({
       footer={<Button onClick={onClose}>Close</Button>}
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-3 items-end gap-4">
-          <Field className="col-span-2" label={<>Adaptor<InfoTooltip title={ADAPTOR_HELP} /></>}>
-            <Card padding="sm" className="flex items-center gap-2">
-              <AdaptorIcon name={adaptor} size="md" />
+        <div className="grid grid-cols-3 gap-4">
+          <Field className="col-span-2" label="Adaptor" info={ADAPTOR_HELP}>
+            {/* As tall as the Version field beside it. */}
+            <Card padding="none" className="flex items-center gap-2 py-1.5 pl-3 pr-1.5">
+              <AdaptorIcon name={adaptor} size="sm" />
               <span className="flex-1 truncate font-medium text-strong">{adaptorDisplayName(adaptor)}</span>
-              <Button variant="secondary" size="sm" onClick={onChangeAdaptor} aria-label="Change adaptor">
+              <Button variant="secondary" size="xs" onClick={onChangeAdaptor} aria-label="Change adaptor">
                 Change
               </Button>
             </Card>
@@ -77,15 +81,12 @@ export default function ConfigureAdaptorModal({
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <Label>Credentials</Label>
-            {needsCredentials && (
-              <Text variant="label-md">
-                <TextLink>New Credential</TextLink>
-              </Text>
-            )}
-          </div>
+        <Field
+          group
+          label="Credentials"
+          info={CREDENTIALS_HELP}
+          aside={needsCredentials && <TextLink>New Credential</TextLink>}
+        >
           {!needsCredentials ? (
             <Card muted padding="lg" className="text-center text-muted">
               <Text as="p">This adaptor does not require credentials.</Text>
@@ -115,17 +116,13 @@ export default function ConfigureAdaptorModal({
                         </Text>
                       }
                     />
-                    {selected && (
-                      <Text>
-                        <TextLink onClick={() => onCredentialChange(null)}>Clear</TextLink>
-                      </Text>
-                    )}
+                    {selected && <IconButton icon="hero-x-mark" label="Clear credential selection" onClick={() => onCredentialChange(null)} />}
                   </div>
                 );
               })}
             </Card>
           )}
-        </div>
+        </Field>
       </div>
     </Modal>
   );

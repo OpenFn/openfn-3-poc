@@ -1,13 +1,12 @@
 import type { AdminUserRow, UserFormValues } from "../../types/admin";
 import type { UserRole } from "../../types/users";
 import { userRoleOptions } from "../../constants";
-import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
+import Form from "../primitives/Form";
 import { Checkbox, PasswordInput, Select, TextInput } from "../primitives/Inputs";
-import Toggle from "../primitives/Toggle";
 
 interface Props {
   /** The account being edited; omit for /settings/users/new. */
@@ -49,7 +48,21 @@ export default function UserForm({ user, onSave, cancelHref }: Props) {
 
   return (
     <div id={`user-${user?.id ?? "new"}`}>
-      <form id="user-form" className="w-1/2 space-y-2" onSubmit={form.submit(onSave)} aria-busy={form.pending || undefined}>
+      <Form
+        id="user-form"
+        className="w-1/2"
+        {...form.formProps(onSave)}
+        actions={
+          <>
+            <Button variant="secondary" to={cancelHref}>
+              Cancel
+            </Button>
+            <Button id="save-user" type="submit">
+              Save
+            </Button>
+          </>
+        }
+      >
         <TextInput id="user_first_name" name="first_name" label="First Name" {...form.fieldProps("firstName")} />
         <TextInput id="user_last_name" name="last_name" label="Last Name" {...form.fieldProps("lastName")} />
         <TextInput id="user_email" name="email" label="Email" {...form.fieldProps("email")} />
@@ -63,7 +76,7 @@ export default function UserForm({ user, onSave, cancelHref }: Props) {
           errors={form.errors.role}
           onChange={(e) => set("role", e.target.value as UserRole)}
         />
-        <Toggle id="user_support_user" name="support_user" checked={values.supportUser} onChange={(v) => set("supportUser", v)} label="Support User" />
+        <Checkbox id="user_support_user" name="support_user" checked={values.supportUser} onChange={(e) => set("supportUser", e.target.checked)} label="Support User" />
         {values.supportUser && (
           <Alert id="heads-up-description" tone="warning" header="Heads Up!">
             <p>This user will be able to access ALL projects that have support access enabled</p>
@@ -84,22 +97,7 @@ export default function UserForm({ user, onSave, cancelHref }: Props) {
             />
           </>
         )}
-
-        {form.error && (
-          <Alert tone="danger" className="mt-4">
-            {errorMessage(form.error)}
-          </Alert>
-        )}
-
-        <div className="flex gap-1">
-          <Button id="save-user" type="submit" pending={form.pending}>
-            Save
-          </Button>
-          <Button variant="secondary" to={cancelHref}>
-            Cancel
-          </Button>
-        </div>
-      </form>
+      </Form>
     </div>
   );
 }

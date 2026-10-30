@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
-import { Label } from "../primitives/Inputs";
+import { Field } from "../primitives/Inputs";
 import Pill from "../primitives/Pill";
 import TextLink from "../primitives/TextLink";
 import AIDisclaimerFooter from "./AIDisclaimerFooter";
@@ -54,14 +54,16 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
           Where would you like to start today?
         </Heading>
         {aiAssistantEnabled && (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="build-with-ai-input">Build with AI</Label>
+          <Field
+            id="build-with-ai-input"
+            label="Build with AI"
+            aside={
               <Pill color="green">
                 <span className="hero-sparkles-micro h-3 w-3" />
                 Recommended
               </Pill>
-            </div>
+            }
+          >
             <Card padding="none" className="focus-within:shadow-card">
               {/* eslint-disable-next-line no-restricted-syntax -- debt: chat composer; TextArea has no borderless variant (also AIAssistantPanel) */}
               <textarea
@@ -86,7 +88,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
                 </Button>
               </div>
             </Card>
-          </div>
+          </Field>
         )}
         <div className="grid gap-4 md:grid-cols-2">
           <OptionCard

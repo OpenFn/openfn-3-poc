@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
+import Toggle from "../primitives/Toggle";
 import type { CurrentProject } from "../../types/projects";
 import type { WorkflowSnapshot } from "../../types/workflow-graph";
 import IconButton from "../primitives/IconButton";
 import ProjectBreadcrumbs from "../shell/ProjectBreadcrumbs";
-import Toggle from "../primitives/Toggle";
 import NewRunButton from "./NewRunButton";
 import SaveButton from "./SaveButton";
 import VersionDropdown from "./VersionDropdown";
@@ -94,6 +94,7 @@ export default function EditorHeader({
       {children}
 
       <div className="ml-auto flex items-center gap-2">
+        {/* The workflow's on/off state: a switch, though it waits for Save. */}
         <Toggle checked={enabled} onChange={onEnabledChange} tooltip={enabled ? "Disable workflow" : "Enable workflow"} />
         <IconButton icon="hero-adjustments-vertical" label="Workflow settings" active={settingsOpen} onClick={onSettingsClick} />
         {canRun && (

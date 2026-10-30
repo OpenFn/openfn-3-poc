@@ -6,7 +6,6 @@ import AdaptorDisplay, { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorConfigModals, { type AdaptorModal } from "./AdaptorConfigModals";
 import ConfirmModal from "../primitives/ConfirmModal";
 import IconButton from "../primitives/IconButton";
-import InfoTooltip from "../primitives/InfoTooltip";
 import { Field, TextInput } from "../primitives/Inputs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
@@ -71,14 +70,7 @@ export default function JobInspector({
     <>
       <InspectorLayout title={job.name} onClose={onClose} footer={footer} data-testid="job-inspector">
         <TextInput id="name" label="Job Name" value={job.name} onChange={(e) => onChange({ name: e.target.value })} />
-        <Field
-          label={
-            <>
-              Adaptor
-              <InfoTooltip title={ADAPTOR_HELP} />
-            </>
-          }
-        >
+        <Field label="Adaptor" info={ADAPTOR_HELP}>
           <AdaptorDisplay
             adaptor={job.adaptor}
             credentialName={job.credentialName}

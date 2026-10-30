@@ -128,7 +128,7 @@ describe("CredentialFormModal", () => {
 
   it("shows each credential type's icon after its name, as Lightning does", () => {
     renderModal({ credential: undefined, secrets: undefined, credentialTypes: [{ key: "dhis2", name: "dhis2" }] });
-    const icon = (key: string) => document.getElementById(`credential-schema-picker_selected_${key}`)!.closest("label")!.querySelector("img")!.getAttribute("src");
+    const icon = (key: string) => (document.getElementById(`credential-schema-picker_selected_${key}`) as HTMLInputElement).labels![0]!.querySelector("img")!.getAttribute("src");
     expect(icon("dhis2")).toBe("/images/adaptors/dhis2-square.png");
     expect(icon("raw")).toBe("/images/raw.png");
     expect(icon("oc1")).toBe("/images/oauth-2.png");

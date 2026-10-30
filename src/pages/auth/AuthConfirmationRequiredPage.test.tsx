@@ -57,17 +57,19 @@ describe("AuthConfirmationRequiredPage", () => {
     expect(await screen.findByText(/We could not send that email just now/)).toBeTruthy();
   });
 
-  it("needs a different, well-formed address and a password before it will ask", () => {
-    renderPage();
-    expect(update().hasAttribute("disabled")).toBe(true);
-    fill("una@example.org", "secret");
-    expect(update().hasAttribute("disabled")).toBe(true);
-    fill("not an email", "secret");
-    expect(update().hasAttribute("disabled")).toBe(true);
-    fill("typo-fixed@example.com", "");
-    expect(update().hasAttribute("disabled")).toBe(true);
-    fill("typo-fixed@example.com", "secret");
-    expect(update().hasAttribute("disabled")).toBe(false);
+  it("says why it won't ask until the address is different and well formed and there's a password", () => {
+    const { onChangeEmail } = renderPage();
+    const submitWith = (email: string, password: string) => {
+      fill(email, password);
+      fireEvent.click(update());
+    };
+    submitWith("una@example.org", "secret");
+    expect(screen.getByText("must be different from the current one")).toBeTruthy();
+    submitWith("not an email", "secret");
+    expect(screen.getByText("must have the @ sign and no spaces")).toBeTruthy();
+    submitWith("typo-fixed@example.com", "");
+    expect(screen.getByText("can't be blank")).toBeTruthy();
+    expect(onChangeEmail).not.toHaveBeenCalled();
   });
 
   it("asks with the address and password, then says where the instructions went and forgets the password", async () => {
