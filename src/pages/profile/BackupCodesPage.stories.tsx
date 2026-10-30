@@ -14,6 +14,7 @@ const meta: Meta<typeof BackupCodesPage> = {
     mfaEnabled: true,
     onRegenerate: async () => {},
     onPrint: () => {},
+    profileHref: "/profile",
   },
 };
 export default meta;

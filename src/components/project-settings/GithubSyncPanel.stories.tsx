@@ -29,3 +29,8 @@ export const ConnectAccount: Story = {
   args: { githubSync: { ...notConfigured, enabled: true, canInstall: true, canInitiateSync: true, userConnected: false } },
 };
 export const ViewerConnected: Story = { args: { githubSync: { ...connected, canInstall: false, canInitiateSync: false } } };
+/** The account is connected but the project has no repository yet. */
+export const ConnectRepository: Story = {
+  args: { githubSync: { ...notConfigured, enabled: true, canInstall: true, canInitiateSync: true, userConnected: true, connection: null } },
+};
+export const Sandbox: Story = { args: { ...Connected.args, sandbox: true } };

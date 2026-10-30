@@ -33,3 +33,4 @@ export const WithProvider: Story = {
     </ToastProvider>
   ),
 };
+export const LongText: Story = { args: { tone: "danger", children: "Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox) could not be saved: the workflow has unsaved changes in another tab" } };

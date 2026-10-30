@@ -17,14 +17,15 @@ function StepRerun({ step, dataStorageHref, onRetry }: { step: StepRow; dataStor
   if (step.inputWiped)
     return (
       <WipedTooltip message={zeroPersistenceMessage} dataStorageHref={dataStorageHref}>
-        <IconButton icon="hero-play-circle-mini" label={zeroPersistenceMessage} tooltip={false} disabled />
+        <IconButton icon="hero-play-circle-mini" label="Run this step with the latest version of this workflow" tooltip={false} disabled />
       </WipedTooltip>
     );
   if (step.jobDeleted)
     return (
       <IconButton
         icon="hero-play-circle-mini"
-        label="This step has been deleted and cannot be retried. Try running from other steps"
+        label="Run this step with the latest version of this workflow"
+        tooltip="This step has been deleted and cannot be retried. Try running from other steps"
         disabled
       />
     );

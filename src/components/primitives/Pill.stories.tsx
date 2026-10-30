@@ -15,3 +15,7 @@ export const Info: Story = { args: { tone: "info", children: "New" } };
 export const TagColour: Story = { args: { color: "purple", mono: true, children: "step_result" } };
 export const Square: Story = { args: { color: "primary", square: true, children: "latest" } };
 export const Removable: Story = { args: { color: "blue", children: "openhie-project", onRemove: () => {} } };
+export const Mono: Story = { args: { mono: true, children: "v2.14.3" } };
+export const LongText: Story = { args: { color: "blue", children: "kenya-moh-community-health-referrals-sandbox", onRemove: () => {} } };
+/** `title` shows as a tooltip on hover. */
+export const WithTooltip: Story = { args: { tone: "warning", children: "Read-only", title: "Sandboxes can't edit this setting" } };

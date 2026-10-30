@@ -75,3 +75,47 @@ export const Field: Story = {
     );
   },
 };
+
+const longProject: Project = { ...projects[0]!, id: "long-name", name: "Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)" };
+
+/** A section with no items shows its `empty` message under its heading. */
+export const EmptySection: Story = {
+  render: () => (
+    <div className="p-4">
+      <SearchList<Adaptor>
+        variant="field"
+        sections={[
+          { key: "in-project", heading: "Adaptors in this project", items: [], empty: "No adaptors in this project yet" },
+          { key: "all", heading: "All adaptors", items: adaptors.slice(0, 3) },
+        ]}
+        getKey={(a) => a.id}
+        query=""
+        onQueryChange={() => {}}
+        onSelect={() => {}}
+        placeholder="Search for an adaptor to connect..."
+        renderItem={(a) => <span className="text-strong">{a.name}</span>}
+      />
+    </div>
+  ),
+};
+
+/** A long project name wraps inside its row. */
+export const LongRow: Story = {
+  render: () => (
+    <SearchList<Project>
+      variant="palette"
+      items={[longProject, ...projects]}
+      getKey={(p) => p.id}
+      query=""
+      onQueryChange={() => {}}
+      onSelect={() => {}}
+      placeholder="Search projects..."
+      renderItem={(p) => (
+        <>
+          <span className="hero-folder mr-2 h-5 w-5 shrink-0" />
+          <span className="grow">{p.name}</span>
+        </>
+      )}
+    />
+  ),
+};

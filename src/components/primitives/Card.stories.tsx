@@ -22,3 +22,10 @@ export const Large: Story = { args: { padding: "lg" } };
 export const Muted: Story = { args: { muted: true } };
 export const Dashed: Story = { args: { dashed: true, className: "text-center text-sm text-muted", children: "Drop a file here" } };
 export const Clickable: Story = { args: { as: "button", onClick: () => {}, children: "Start from a template" } };
+export const LongTitle: Story = {
+  args: {
+    title: "Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)",
+    description: "Fetch overdue referrals and upsert them as DHIS2 tracker events every fifteen minutes.",
+    action: <Button variant="secondary">Edit</Button>,
+  },
+};

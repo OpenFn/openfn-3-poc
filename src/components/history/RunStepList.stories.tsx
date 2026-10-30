@@ -18,3 +18,11 @@ export const Default: Story = {
 export const Selected: Story = {
   args: { run, steps: stepsOf(run), selectedStepId: "step-1b", projectId: "p", workflowId: "wf-openhie" },
 };
+const steps = stepsOf(run);
+const args = { run, selectedStepId: null, projectId: "p", workflowId: "wf-openhie" };
+export const Running: Story = {
+  args: { ...args, steps: steps.map((s, i) => (i === steps.length - 1 ? { ...s, exitReason: null, finishedAt: null } : s)) },
+};
+export const LongName: Story = {
+  args: { ...args, steps: steps.map((s, i) => (i === 0 ? { ...s, jobName: "Fetch every registered patient from the district health information system" } : s)) },
+};

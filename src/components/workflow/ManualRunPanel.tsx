@@ -92,14 +92,13 @@ export default function ManualRunPanel({
       {tab === "empty" && <p className="px-6 pt-4 pb-8 text-center text-muted">Use an empty JSON object as the input for this run.</p>}
       {tab === "custom" && (
         <div className={cn("flex h-full flex-col", embedded ? "pt-2" : "pt-3")}>
-          <div className="shrink-0 px-3">
+          <div className="shrink-0 px-3 pt-2">
             <FileDropZone
               accept=".json"
               label="Upload a file or drag and drop"
               hint="JSON, up to 8MB"
               invalidMessage="Invalid file format. Please only upload: JSON"
               onFile={(file) => void file.text().then((text) => setBody(prettyJson(text)))}
-              className="mt-2"
             />
             <Text as="div" className="flex items-center gap-2 py-2 text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">
               <span />
@@ -164,12 +163,12 @@ export default function ManualRunPanel({
   const selectedView = selected && (
     <div className="flex h-full flex-col">
       <div className={cn("flex items-center justify-between gap-4 pb-4", embedded ? "px-3 pt-3" : "px-6 pt-4")}>
-        <div>
+        <div className="flex min-w-0 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <Heading>{selected.name || "Unnamed"}</Heading>
+            <Heading className="min-w-0 wrap-break-word">{selected.name || "Unnamed"}</Heading>
             <IconButton icon="hero-pencil" label="Rename" size="xs" />
           </div>
-          <Text as="div" variant="body-sm" className="mt-1 flex items-center gap-2 text-muted">
+          <Text as="div" variant="body-sm" className="flex items-center gap-2 text-muted">
             <span className="capitalize">{selected.type.replace("_", " ")}</span>
             <span>•</span>
             <span>{formatLocalDate(selected.insertedAt)}</span>
@@ -212,22 +211,31 @@ export default function ManualRunPanel({
       onClose={onClose}
       fixedHeight
       bare
-      showBackButton
+      onBack={onClose}
       annotation="workflow-editor-manual-run"
-      footer={<InspectorFooter rightButtons={<NewRunButton
+      footer={
+        <InspectorFooter
+          rightButtons={
+            <NewRunButton
               onClick={run}
-              text="Run From Here"
               disabled={fromEdge || !!parseError}
               disabledReason={parseError ? "Fix the JSON input to run" : undefined}
-            />} />}
+            >
+              Run From Here
+            </NewRunButton>
+          }
+        />
+      }
     >
       {fromEdge ? (
         edgeMessage
       ) : selected ? (
         selectedView
       ) : (
-        <div className="mt-4 flex h-full min-h-0 flex-col">
-          <Tabs variant="pill" fill className="mx-3" tabs={tabOptions} active={tab} onChange={setTab} />
+        <div className="flex h-full min-h-0 flex-col">
+          <div className="px-3 pt-4">
+            <Tabs variant="pill" fill tabs={tabOptions} active={tab} onChange={setTab} />
+          </div>
           {tabContent}
         </div>
       )}

@@ -60,7 +60,7 @@ export function SectionSizeBadge({ size }: { size: number }) {
   return <Text variant="code-sm" className="text-faint">{formatBytes(size)}</Text>;
 }
 
-export function HeadersTable({ headers }: { headers: [string, string][] }) {
+export function HeadersList({ headers }: { headers: [string, string][] }) {
   return (
     <DetailList size="sm">
       {headers.map(([name, value], i) => (

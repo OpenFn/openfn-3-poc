@@ -9,6 +9,8 @@ import { deleteKeychainMessage, deleteOauthClientMessage } from "./messages";
 import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialTypes, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
 import { projects } from "../../mock-data/projects";
 import { users } from "../../mock-data/users";
+import type { CredentialSecretsResult, StoredOauthToken } from "../../types/credentials";
+import { RequestError } from "../../utils/errors";
 
 const meta: Meta = { title: "Credentials/Modals" };
 export default meta;
@@ -86,4 +88,76 @@ export const DeleteKeychainCredential: Story = {
       <p>Do you want to proceed with this action?</p>
     </ConfirmModal>
   ),
+};
+
+const tick = () => new Promise((r) => setTimeout(r));
+const submit: NonNullable<Story["play"]> = async ({ canvasElement }) => {
+  canvasElement.ownerDocument.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
+};
+const refused = () => Promise.reject(new Error("The server could not complete that request."));
+
+/** The OAuth credential with every stored token changed as `patch` says. */
+const oauthSecrets = (patch: Partial<StoredOauthToken>): CredentialSecretsResult => ({
+  environments: secretsOf(2).environments.map((e) => ({ ...e, oauth: e.oauth && { ...e.oauth, ...patch } })),
+});
+const editOauth = (secrets: CredentialSecretsResult, credential = credentials[2]!) => (
+  <CredentialFormModal open onClose={noop} credential={credential} secrets={secrets} {...credentialForm} />
+);
+
+/** Signed in, with who signed in. */
+export const OauthSignedIn: Story = {
+  render: () => editOauth(oauthSecrets({ userInfo: { name: "Amy Admin", email: "amy@openfn.org" } })),
+};
+/** The ticked permissions differ from the token's: Save waits until it's signed in again. */
+export const OauthScopesChanged: Story = { render: () => editOauth(oauthSecrets({ scopes: [] })) };
+export const OauthReauthorize: Story = { render: () => editOauth(oauthSecrets({ status: "reauthorize" })) };
+export const OauthUnavailable: Story = { render: () => editOauth(oauthSecrets({ status: "unavailable" })) };
+export const OauthClientNotFound: Story = {
+  render: () => editOauth(secretsOf(2), { ...credentials[2]!, oauthClient: null }),
+};
+/** The host refuses one environment: the message shows on that environment and above the tabs. */
+export const EnvironmentRefused: Story = {
+  render: () => (
+    <CredentialFormModal
+      open
+      onClose={noop}
+      credential={credentials[1]!}
+      secrets={secretsOf(1)}
+      schema={{ fields: fieldsForSchema(credentials[1]!.schema) }}
+      {...credentialForm}
+      onSave={() =>
+        Promise.reject(
+          new RequestError("Invalid credential", {
+            fieldErrors: { [`environments.${secretsOf(1).environments[0]!.name}`]: ["name has already been taken"] },
+          })
+        )
+      }
+    />
+  ),
+  play: submit,
+};
+export const SaveFailed: Story = {
+  render: () => (
+    <CredentialFormModal
+      open
+      onClose={noop}
+      credential={credentials[1]!}
+      secrets={secretsOf(1)}
+      schema={{ fields: fieldsForSchema(credentials[1]!.schema) }}
+      {...credentialForm}
+      onSave={refused}
+    />
+  ),
+  play: submit,
+};
+export const TransferFailed: Story = {
+  render: () => <TransferCredentialModal open onClose={noop} credential={credentials[0]!} onTransfer={refused} onRevoke={save} />,
+  play: async (context) => {
+    const input = context.canvasElement.ownerDocument.querySelector<HTMLInputElement>("#receiver_email")!;
+    // Set the value the way a keystroke does, so React's onChange sees it.
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "someone@example.org");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await tick();
+    await submit(context);
+  },
 };

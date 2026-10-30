@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdaptorDocs, { AdaptorMetadata } from "./AdaptorDocs";
+import { withWhitePanel } from "../../stories/decorators";
 
 const meta: Meta<typeof AdaptorDocs> = {
   title: "Workflow/AdaptorDocs",
   component: AdaptorDocs,
-  decorators: [(Story) => <div className="w-[480px] p-2"><Story /></div>],
+  decorators: [withWhitePanel("w-120")],
   args: { adaptor: "@openfn/language-http@latest" },
 };
 export default meta;

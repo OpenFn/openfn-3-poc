@@ -29,3 +29,5 @@ export const LongLog: Story = {
     revealLine: 40_000,
   },
 };
+/** An empty dataclip, or a log before its first line. */
+export const Empty: Story = { args: { ariaLabel: "Run log", language: "openFnLogs", value: "" } };

@@ -27,3 +27,5 @@ export const LargeDataclip: Story = {
     },
   },
 };
+/** The host is still fetching the body. */
+export const Loading: Story = { args: { body: undefined } };

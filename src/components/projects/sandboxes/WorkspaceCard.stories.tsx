@@ -20,3 +20,20 @@ export const Sandbox: Story = { args: { workspace: rows[0]!, isRoot: false, isCu
 export const ScheduledForDeletion: Story = {
   args: { workspace: rows.find((r) => r.scheduledDeletion)!, isRoot: false, isCurrent: false },
 };
+/** The sandbox you're in: the "active" badge. */
+export const Current: Story = { args: { workspace: rows[0]!, isRoot: false, isCurrent: true } };
+export const LongName: Story = {
+  args: {
+    workspace: { ...rows[0]!, name: "fhir-mapping-for-the-national-patient-registry-integration-v2", env: "staging-for-district-rollout" },
+    isRoot: false,
+    isCurrent: true,
+  },
+};
+/** Restore is greyed with the plan's reason. */
+export const RestoreBlocked: Story = {
+  args: {
+    workspace: { ...rows.find((r) => r.scheduledDeletion)!, canCancelDeletion: true, restoreBlockedReason: "Upgrade to restore more sandboxes" },
+    isRoot: false,
+    isCurrent: false,
+  },
+};

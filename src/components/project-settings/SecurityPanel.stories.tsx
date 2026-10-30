@@ -19,3 +19,5 @@ export const Optional: Story = {};
 export const Required: Story = { args: { security: { requiresMfa: true, canEditProject: true, canRequireMfa: true } } };
 export const NoPermission: Story = { args: { security: { requiresMfa: false, canEditProject: false, canRequireMfa: false } } };
 export const Sandbox: Story = { args: { parent: { name: "openhie-project", settingsHref: "/projects/p1/settings" } } };
+/** The plan doesn't include required MFA: the switch is off and says why. */
+export const PlanLimited: Story = { args: { security: { requiresMfa: false, canEditProject: true, canRequireMfa: false } } };

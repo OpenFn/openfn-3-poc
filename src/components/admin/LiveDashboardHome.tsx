@@ -50,7 +50,14 @@ function Limit({ label, used, limit }: { label: string; used: number; limit: num
  * the route sits outside the app shell and the page is labelled as an
  * approximation.
  */
-export default function LiveDashboardHome({ data }: { data: Data }) {
+export default function LiveDashboardHome({
+  data,
+  backHref,
+}: {
+  data: Data;
+  /** Where "Back to Lightning" goes. */
+  backHref: string;
+}) {
   const totalMemory = data.memory.reduce((s, m) => s + m.value, 0);
   const versions = [
     { label: "Elixir", value: data.versions.elixir, className: "from-purple-600 to-primary-500" },
@@ -66,7 +73,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
             Static approximation of <strong>Phoenix LiveDashboard</strong>, a third-party page mounted by Lightning at
             /dashboard. Not interactive.
           </span>
-          <TextLink to="/settings/projects">Back to Lightning</TextLink>
+          <TextLink to={backHref}>Back to Lightning</TextLink>
         </div>
       </Alert>
       <div className="h-28 bg-primary-900 text-inverse">

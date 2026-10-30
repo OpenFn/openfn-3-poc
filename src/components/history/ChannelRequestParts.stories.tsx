@@ -3,7 +3,7 @@ import Disclosure from "../primitives/Disclosure";
 import { channelRequests } from "../../mock-data/channel-requests";
 import {
   BodyViewer,
-  HeadersTable,
+  HeadersList,
   MethodBadge,
   RequestPathDisplay,
   ResponseEmpty,
@@ -26,7 +26,7 @@ export const RequestSection: Story = {
   render: (args) => (
     <Disclosure {...args}>
       <Disclosure variant="section" title="Headers">
-        <HeadersTable headers={event.requestHeaders!} />
+        <HeadersList headers={event.requestHeaders!} />
       </Disclosure>
       <Disclosure variant="section" title="Body" titleRight={<SectionSizeBadge size={152} />}>
         <BodyViewer
@@ -73,3 +73,44 @@ export const NoResponse: Story = {
     </Disclosure>
   ),
 };
+
+export const CredentialError: Story = {
+  args: { title: "Response", padded: false, children: null },
+  render: (args) => (
+    <Disclosure {...args}>
+      <ResponseEmpty
+        type="credential"
+        errorCode="oauth_refresh_failed"
+        humanMessage="OAuth token refresh failed — the destination credential could not be renewed"
+      />
+    </Disclosure>
+  ),
+};
+
+export const RedactedHeader: Story = {
+  args: { title: "Headers", padded: false, children: null },
+  render: (args) => (
+    <Disclosure {...args}>
+      <HeadersList
+        headers={[
+          ["content-type", "application/json"],
+          ["authorization", "[REDACTED]"],
+        ]}
+      />
+    </Disclosure>
+  ),
+};
+
+const json: [string, string][] = [["content-type", "application/json"]];
+const body = (props: Parameters<typeof BodyViewer>[0]): Story => ({
+  args: { title: "Body", padded: false, children: null },
+  render: (args) => (
+    <Disclosure {...args}>
+      <BodyViewer {...props} />
+    </Disclosure>
+  ),
+});
+export const NoBody = body({ preview: null, hash: null, size: 0, headers: json });
+export const BinaryBody = body({ preview: null, hash: "9f86d081884c7d659a2feaa0c55ad015", size: 48_213, headers: [["content-type", "application/pdf"]] });
+export const BodyNotCaptured = body({ preview: null, hash: null, size: 2_048, headers: json });
+export const BodyPreviewTruncated = body({ preview: '{"entry":[{"resource":', hash: null, size: 120_000, headers: json });

@@ -15,6 +15,8 @@ export interface BackupCodesPageProps {
   onRegenerate: () => Promise<void>;
   /** Opens the printable copy. */
   onPrint: () => void;
+  /** The profile page, where MFA is turned on. */
+  profileHref: string;
 }
 
 /**
@@ -23,7 +25,7 @@ export interface BackupCodesPageProps {
  * that. Props only, so it can run unchanged in Lightning; the replica's data
  * and toasts live in BackupCodesPage.replica.tsx.
  */
-export default function BackupCodesPage({ codes, mfaEnabled, onRegenerate, onPrint }: BackupCodesPageProps) {
+export default function BackupCodesPage({ codes, mfaEnabled, onRegenerate, onPrint, profileHref }: BackupCodesPageProps) {
   const regenerate = useAction(onRegenerate, { onError: "toast" });
   return (
     <PageContent header={<Header title="Two-factor backup codes" />}>
@@ -33,11 +35,11 @@ export default function BackupCodesPage({ codes, mfaEnabled, onRegenerate, onPri
             Recovery codes can be used to access your account in the event you lose access to your device and cannot
             receive two-factor authentication codes.
           </p>
-          {!mfaEnabled && <MfaDisabledNotice />}
+          {!mfaEnabled && <MfaDisabledNotice profileHref={profileHref} />}
           <BackupCodesCard
             codes={codes}
             onRegenerate={() => regenerate.run()}
-            regenerating={regenerate.pending}
+            pending={regenerate.pending}
             onPrint={onPrint}
           />
         </div>

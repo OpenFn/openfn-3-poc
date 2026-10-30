@@ -20,3 +20,5 @@ type Story = StoryObj<typeof Donut>;
 
 export const TwoSlices: Story = {};
 export const Empty: Story = { args: { slices: [] } };
+/** A single slice is drawn as a full ring. */
+export const OneSlice: Story = { args: { slices: [{ key: "a", label: "Success", color: "#0ca30c", value: 80, href: "/" }] } };

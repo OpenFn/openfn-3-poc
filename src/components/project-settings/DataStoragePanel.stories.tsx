@@ -34,3 +34,11 @@ export const PlanLimited: Story = {
   args: { dataStorage: { ...unset, historyRetentionPeriod: 7, periods: [7], limitMessage: "Upgrade your plan for longer retention." } },
 };
 export const ReadOnly: Story = { args: { dataStorage: { ...unset, canEdit: false } } };
+/** A failed save: the form keeps its values and shows the message above Save. */
+export const SaveFailed: Story = {
+  args: { onSave: () => Promise.reject(new Error("The server could not complete that request.")) },
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector<HTMLButtonElement>("#input-output-retention-period-submit-btn")?.click();
+  },
+};
+export const Sandbox: Story = { args: { sandbox: true } };

@@ -80,22 +80,24 @@ export default function GithubSyncPanel({ githubSync, sandbox, onInitiateSync, o
           </p>
         )}
         {/* github_sync_component.ex `confirm_connection_removal_modal` */}
-        <ConfirmModal
-          open={confirmRemove}
-          onClose={() => setConfirmRemove(false)}
-          onConfirm={async () => {
-            await onRemoveConnection();
-            setConfirmRemove(false);
-          }}
-          title="Remove Integration?"
-          confirmLabel="Disconnect"
-          tone="danger"
-        >
-          <p>
-            You are about to disconnect this project from GitHub. Until you reconnect, you will not be able to sync
-            this project to GitHub.
-          </p>
-        </ConfirmModal>
+        {confirmRemove && (
+          <ConfirmModal
+            open
+            onClose={() => setConfirmRemove(false)}
+            onConfirm={async () => {
+              await onRemoveConnection();
+              setConfirmRemove(false);
+            }}
+            title="Remove Integration?"
+            confirmLabel="Disconnect"
+            tone="danger"
+          >
+            <p>
+              You are about to disconnect this project from GitHub. Until you reconnect, you will not be able to sync
+              this project to GitHub.
+            </p>
+          </ConfirmModal>
+        )}
       </div>
     );
   } else if (canInstall && !userConnected) {

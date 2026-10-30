@@ -110,14 +110,16 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
       <Card
         title="Concurrency Override"
         description={
-          <>
-            By default, runs are executed concurrently in accordance to limits set on individual workflows. In some
-            situations, you may want to prevent concurrent execution across all workflows in a project.
-            <span className="mt-2 block">
+          <span className="block space-y-2">
+            <span className="block">
+              By default, runs are executed concurrently in accordance to limits set on individual workflows. In some
+              situations, you may want to prevent concurrent execution across all workflows in a project.
+            </span>
+            <span className="block">
               Disabling parallel run execution ensures that only one run is executed at a time, regardless of
               workflow, for this entire project.
             </span>
-          </>
+          </span>
         }
       >
         <Toggle

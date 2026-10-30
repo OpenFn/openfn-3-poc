@@ -31,3 +31,23 @@ export const Copy: Story = {
     children: <span className="cursor-pointer">today at 8:30:07 AM</span>,
   },
 };
+/** `interactive`: the pointer can move onto the tooltip to click its link. */
+export const Interactive: Story = {
+  args: {
+    interactive: true,
+    content: (
+      <>
+        Only project owners and admins can do this.{" "}
+        <a href="https://docs.openfn.org" className="underline">
+          Learn more
+        </a>
+      </>
+    ),
+  },
+};
+export const LongContent: Story = {
+  args: {
+    content:
+      "This workflow has unsaved changes. Save them before running a step, or the run will use the last saved version of every job.",
+  },
+};

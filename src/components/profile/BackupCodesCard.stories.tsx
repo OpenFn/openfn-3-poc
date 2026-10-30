@@ -9,4 +9,4 @@ const meta: Meta<typeof BackupCodesCard> = {
 };
 export default meta;
 export const Default: StoryObj<typeof BackupCodesCard> = {};
-export const Regenerating: StoryObj<typeof BackupCodesCard> = { args: { regenerating: true } };
+export const Pending: StoryObj<typeof BackupCodesCard> = { args: { pending: true } };

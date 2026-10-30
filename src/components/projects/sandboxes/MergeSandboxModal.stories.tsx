@@ -38,3 +38,5 @@ export const MergeFails: Story = {
     },
   },
 };
+/** The preview is still loading. */
+export const Loading: Story = { args: { onPreview: () => new Promise(() => {}) } };

@@ -8,6 +8,7 @@ import { RequestError } from "../../utils/errors";
 import { formatRelativeDetailed } from "../../utils/format";
 import HistoryWorkOrdersPage, { type HistoryWorkOrdersPageProps, type WorkOrderFilters } from "./HistoryWorkOrdersPage";
 import { isDisabled } from "../../test/disabled";
+import { tooltipOf } from "../../test/tooltip";
 
 const step = (id: string, jobId: string, over: Partial<StepRow> = {}): StepRow => ({
   id,
@@ -542,8 +543,9 @@ describe("HistoryWorkOrdersPage", () => {
   it("starts no runs for a viewer who can't run workflows", async () => {
     renderPage({ canRunWorkflow: false, rows: [row("p1", { state: "pending" }), row("f1", { state: "failed" })] });
     expect(within(rowOf("p1")).queryByRole("button", { name: "Cancel pending run" })).toBeNull();
-    const retry = within(rowOf("f1")).getByRole("button", { name: "You are not authorized to start runs for this project." });
+    const retry = within(rowOf("f1")).getByRole("button", { name: "Retry (run from the start)" });
     expect(isDisabled(retry)).toBe(true);
+    expect(await tooltipOf(retry)).toBe("You are not authorized to start runs for this project.");
     expect(screen.queryByRole("button", { name: /^Export all/ })).toBeNull();
 
     await userEvent.click(rowOf("f1"));
@@ -566,7 +568,7 @@ describe("HistoryWorkOrdersPage", () => {
     const wo = row("c1", { runs: [run("r1", [step("s1", "j1", { inputWiped: true })])] });
     const { rerender } = renderPage({ rows: [wo] });
     await userEvent.click(rowOf("c1"));
-    const rerun = () => within(document.getElementById("step-s1")!).getByRole("button", { name: /cannot be rerun since no input data has been stored/ });
+    const rerun = () => within(document.getElementById("step-s1")!).getByRole("button", { name: "Run this step with the latest version of this workflow" });
     expect((rerun() as HTMLButtonElement).disabled).toBe(true);
     await userEvent.hover(rerun().parentElement!);
     expect((await screen.findByRole("link", { name: "Go to data storage settings" })).getAttribute("href")).toBe("/projects/p1/settings#data-storage");

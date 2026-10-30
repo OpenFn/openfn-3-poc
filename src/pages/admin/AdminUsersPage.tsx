@@ -18,6 +18,8 @@ export interface AdminUsersPageProps {
   onDelete: (email: string) => Promise<void>;
   /** Closes the deletion dialog. */
   onClose: () => void;
+  /** Where "New User" goes. */
+  newUserHref: string;
 }
 
 /**
@@ -26,14 +28,14 @@ export interface AdminUsersPageProps {
  * Props only, so it can run unchanged in Lightning; the replica's data and
  * routing live in AdminUsersPage.replica.tsx.
  */
-export default function AdminUsersPage({ users, deleteUser, onCancelDeletion, onDelete, onClose }: AdminUsersPageProps) {
+export default function AdminUsersPage({ users, deleteUser, onCancelDeletion, onDelete, onClose, newUserHref }: AdminUsersPageProps) {
   const cancel = useAction(onCancelDeletion, { onError: "toast" });
 
   return (
     <PageContent
       header={
         <Header title="Users">
-          <Button to="/settings/users/new" icon="hero-plus-solid">
+          <Button to={newUserHref} icon="hero-plus-solid">
             New User
           </Button>
         </Header>

@@ -27,6 +27,7 @@ export default function AdminUsersPageReplica() {
   return (
     <AdminUsersPage
       users={rows}
+      newUserHref="/settings/users/new"
       deleteUser={
         target ? { id: target.id, email: target.email, scheduledDeletion: target.scheduledDeletion, hasActivityInProjects } : null
       }

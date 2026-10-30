@@ -12,7 +12,7 @@ export default function MaintenanceCard({
   title,
   description,
   onRun,
-  running = false,
+  pending = false,
 }: {
   id?: string;
   /** The Run button's id (Lightning's `refresh-adaptors-button`). */
@@ -20,8 +20,8 @@ export default function MaintenanceCard({
   title: string;
   description: ReactNode;
   onRun?: () => void;
-  /** Disables the button while the action runs. */
-  running?: boolean;
+  /** Shows the Run button pending while the action runs. */
+  pending?: boolean;
 }) {
   return (
     <Card
@@ -31,7 +31,7 @@ export default function MaintenanceCard({
       description={description}
       action={
         // Named after its card, so two "Run"s read apart; pending keeps focus and says busy.
-        <Button id={buttonId} onClick={onRun} pending={running} aria-label={`Run ${title}`}>
+        <Button id={buttonId} onClick={onRun} pending={pending} aria-label={`Run ${title}`}>
           Run
         </Button>
       }

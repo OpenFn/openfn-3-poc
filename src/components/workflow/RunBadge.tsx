@@ -15,7 +15,7 @@ export default function RunBadge({
   className?: string;
 }) {
   return (
-    <Pill tone="info" onRemove={onClose} className={className}>
+    <Pill color="blue" onRemove={onClose} className={className}>
       Run {shortUuid(uuidOf(runId), 7)}
     </Pill>
   );

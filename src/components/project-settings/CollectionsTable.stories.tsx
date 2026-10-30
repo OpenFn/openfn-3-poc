@@ -25,3 +25,13 @@ type Story = StoryObj<typeof CollectionsTable>;
 export const Default: Story = {};
 export const Empty: Story = { args: { collections: [] } };
 export const ReadOnly: Story = { args: { canManage: false } };
+/** A preview is loading: its button spins and the other previews wait. */
+export const Previewing: Story = { args: { previewingId: collections[0]?.id ?? null } };
+export const LongName: Story = {
+  args: {
+    collections: [
+      { ...collections[0]!, name: "patient-registrations-from-the-district-health-information-system-nightly-export-2026" },
+      ...collections.slice(1),
+    ],
+  },
+};

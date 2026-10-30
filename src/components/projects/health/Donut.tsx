@@ -72,8 +72,7 @@ export default function Donut({
               angle += (s.value / total) * 360;
               return (
                 <Link key={s.key} to={s.href} tabIndex={-1}>
-                  {/* eslint-disable-next-line no-restricted-syntax -- the gap between slices, as Lightning's chart draws it */}
-                  <path d={arc(from, angle)} fill={s.color} stroke="#fff" strokeWidth={2} className="cursor-pointer">
+                  <path d={arc(from, angle)} fill={s.color} stroke="var(--background-color-surface)" strokeWidth={2} className="cursor-pointer">
                     <title>{`${s.label}: ${formatNumber(s.value)} (${percent(s.value, total)})`}</title>
                   </path>
                 </Link>

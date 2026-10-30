@@ -81,19 +81,22 @@ export default function WorkflowsTable({
 
   return (
     <>
-      <ConfirmModal
-        open={deletingId !== null}
-        onClose={() => setDeletingId(null)}
-        onConfirm={async () => {
-          if (deletingId) await onDelete?.(deletingId);
-          setDeletingId(null);
-        }}
-        title="Delete workflow"
-        confirmLabel="Delete"
-        tone="danger"
-      >
-        <p>Are you sure you&apos;d like to delete this workflow?</p>
-      </ConfirmModal>
+      {deletingId && (
+        <ConfirmModal
+          key={deletingId}
+          open
+          onClose={() => setDeletingId(null)}
+          onConfirm={async () => {
+            await onDelete?.(deletingId);
+            setDeletingId(null);
+          }}
+          title="Delete workflow"
+          confirmLabel="Delete"
+          tone="danger"
+        >
+          <p>Are you sure you&apos;d like to delete this workflow?</p>
+        </ConfirmModal>
+      )}
       <Table
         id="workflows-table"
         header={

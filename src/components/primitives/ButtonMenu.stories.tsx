@@ -41,3 +41,8 @@ export const AddNew: Story = {
     ),
   },
 };
+
+export const Disabled: Story = { args: { disabled: true } };
+
+/** A request in flight: the button shows a spinner and won't open. */
+export const Pending: Story = { args: { pending: true } };

@@ -19,3 +19,18 @@ export const ScheduledDeletion: Story = {
   },
 };
 export const Empty: Story = { args: { users: [] } };
+/** Long unspaced names and emails, to check they wrap or truncate rather than overflow. */
+export const LongValues: Story = {
+  args: {
+    users: users.map((u, i) =>
+      i === 0
+        ? {
+            ...u,
+            firstName: "Amelia-Oluwaseun-Alexandrina",
+            lastName: "Van-Der-Westhuizen-Montgomery-Okonkwo",
+            email: "amelia.oluwaseun-van-der-westhuizen.health-informatics@ministry-of-health.example.org",
+          }
+        : u
+    ),
+  },
+};

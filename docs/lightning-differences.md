@@ -81,6 +81,10 @@ goes back to Lightning's way.
 - **"Create new workflow" is a link**, since it opens a page; disabled, it's a
   disabled button with the reason, as in Lightning, where it's always a
   button.
+- **A workflow panel's title stays on one line.** A long node name ends
+  in "…", with the full title on hover. Lightning wraps it
+  (`collaborative-editor/components/inspector/InspectorLayout.tsx`), which
+  makes the header a different height for each node.
 
 ## Tags
 

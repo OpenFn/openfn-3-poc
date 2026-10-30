@@ -41,3 +41,5 @@ export const Viewer: Story = {
 export const AtLimit: Story = {
   args: { collaboration: { ...collaboration, addBlockedReason: "You have reached the collaborator limit for your plan." } },
 };
+export const Sandbox: Story = { args: { sandbox: true } };
+export const Empty: Story = { args: { collaboration: { ...collaboration, collaborators: [] } } };

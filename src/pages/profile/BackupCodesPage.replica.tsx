@@ -26,6 +26,7 @@ export default function BackupCodesPageReplica() {
         toast("New Backup Codes Generated!");
       }}
       onPrint={() => window.print()}
+      profileHref="/profile"
     />
   );
 }

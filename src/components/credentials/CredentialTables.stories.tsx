@@ -40,3 +40,46 @@ export const OauthClients: Story = {
 export const KeychainCredentials: Story = {
   render: () => <KeychainCredentialsTable rows={keychainCredentials} emptyState={null} actions={actions} />,
 };
+/** Long names, ids and paths wrap inside their columns. */
+export const LongValues: Story = {
+  render: () => {
+    const long = "district-health-information-system-production-instance-for-the-national-ministry-of-health";
+    return (
+      <div className="space-y-8">
+        <CredentialsTable
+          rows={credentials.map((c) => ({ ...c, name: `${c.name} ${long}`, externalId: `ext-${long}` }))}
+          showOwner
+          emptyState={null}
+          actions={actions}
+        />
+        <OauthClientsTable
+          rows={oauthClients.map((c) => ({ ...c, name: `${c.name} ${long}`, authorizationEndpoint: `https://auth.example.org/${long}/oauth2/authorize` }))}
+          showOwner
+          emptyState={null}
+          actions={actions}
+        />
+        <KeychainCredentialsTable
+          rows={keychainCredentials.map((k) => ({ ...k, name: `${k.name} ${long}`, path: `$.data.${long}.credential_id` }))}
+          emptyState={null}
+          actions={actions}
+        />
+      </div>
+    );
+  },
+};
+export const OauthClientsEmpty: Story = {
+  render: () => (
+    <OauthClientsTable
+      rows={[]}
+      emptyState={<EmptyState message="No OAuth clients found." buttonText="Create a new OAuth client" onClick={() => {}} />}
+    />
+  ),
+};
+export const KeychainEmpty: Story = {
+  render: () => (
+    <KeychainCredentialsTable
+      rows={[]}
+      emptyState={<EmptyState message="No keychain credentials found." buttonText="Create a new keychain credential" onClick={() => {}} />}
+    />
+  ),
+};

@@ -52,6 +52,11 @@ export function useEditorRuns(graph: WorkflowGraph, runId: string | null) {
       dataclips: dataclipsIn(graph.projectId),
       selectedRun,
       selectedSteps,
+      selectedStartedBy: !selectedRun
+        ? null
+        : selectedRun.createdBy
+          ? "editor@openfn.org"
+          : selectedRun.startingTrigger && `${selectedRun.startingTrigger.toLowerCase()} trigger`,
       selectedLogs: selectedRun ? logsOf(selectedRun) : [],
       overlay,
       demoRunId,

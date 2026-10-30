@@ -59,7 +59,9 @@ export default function JobInspector({
         </>
       }
       rightButtons={
-        <NewRunButton onClick={onRunFromHere} text="Run From Here" variant={needsConnect ? "secondary" : "primary"} tooltip="⌘ Enter" />
+        <NewRunButton onClick={onRunFromHere} variant={needsConnect ? "secondary" : "primary"} tooltip="⌘ Enter">
+          Run From Here
+        </NewRunButton>
       }
     />
   );

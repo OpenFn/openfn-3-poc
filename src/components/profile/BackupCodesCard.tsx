@@ -14,13 +14,13 @@ import Text from "../primitives/Text";
 export default function BackupCodesCard({
   codes,
   onRegenerate,
-  regenerating = false,
+  pending = false,
   onPrint,
 }: {
   codes: BackupCode[];
   onRegenerate?: () => void;
   /** Shows the regenerate button pending. */
-  regenerating?: boolean;
+  pending?: boolean;
   /** Opens the printable copy. */
   onPrint?: () => void;
 }) {
@@ -70,7 +70,7 @@ export default function BackupCodesCard({
           title="Generate new backup codes"
           subtitle="When you generate new backup codes, you must copy or print the new codes. Your old codes won't work anymore."
           action={
-            <Button variant="secondary" size="lg" onClick={onRegenerate} pending={regenerating}>
+            <Button variant="secondary" size="lg" onClick={onRegenerate} pending={pending}>
               Generate new backup codes
             </Button>
           }

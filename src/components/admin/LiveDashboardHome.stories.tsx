@@ -8,7 +8,7 @@ const meta: Meta<typeof LiveDashboardHome> = {
   component: LiveDashboardHome,
   decorators: [withRouter],
   parameters: { layout: "fullscreen" },
-  args: { data: liveDashboard },
+  args: { data: liveDashboard, backHref: "/settings/projects" },
 };
 export default meta;
 type Story = StoryObj<typeof LiveDashboardHome>;

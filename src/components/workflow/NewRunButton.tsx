@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Button from "../primitives/Button";
 import { MenuItem } from "../primitives/Menu";
 import SplitButton from "../primitives/SplitButton";
@@ -9,8 +10,9 @@ interface Props {
   disabled?: boolean;
   /** Hover text while disabled, saying why: "Fix the JSON input to run". */
   disabledReason?: string | undefined;
-  isRunning?: boolean;
-  text?: string | undefined;
+  pending?: boolean;
+  /** The label; "Run" when not given. */
+  children?: ReactNode;
   variant?: "primary" | "secondary";
   /** Hover text while it can run (the shortcut). None while disabled or running, when the shortcut does nothing. */
   tooltip?: string;
@@ -25,17 +27,17 @@ export default function NewRunButton({
   onRunWithCustomInputClick,
   disabled = false,
   disabledReason,
-  isRunning = false,
-  text = "Run",
+  pending = false,
+  children = "Run",
   variant = "primary",
   tooltip = "⌘ Enter",
 }: Props) {
-  const content = isRunning ? "Processing" : text;
-  const hover = isRunning ? undefined : disabled ? disabledReason : tooltip;
+  const content = pending ? "Processing" : children;
+  const hover = pending ? undefined : disabled ? disabledReason : tooltip;
 
   if (!onRunWithCustomInputClick) {
     return (
-      <Button variant={variant} onClick={onClick} disabled={disabled} pending={isRunning} tooltip={hover} icon="hero-play-solid">
+      <Button variant={variant} onClick={onClick} disabled={disabled} pending={pending} tooltip={hover} icon="hero-play-solid">
         {content}
       </Button>
     );
@@ -47,7 +49,7 @@ export default function NewRunButton({
       variant={variant}
       onClick={onClick}
       disabled={disabled}
-      pending={isRunning}
+      pending={pending}
       tooltip={hover}
       menuLabel="Open run options"
       menu={

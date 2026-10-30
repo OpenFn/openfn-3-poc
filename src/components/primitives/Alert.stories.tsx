@@ -23,3 +23,9 @@ export const Info: Story = {
 };
 export const Success: Story = { args: { tone: "success", header: undefined, children: "Changes you make here will sync to the parent project on merge." } };
 export const Danger: Story = { args: { tone: "danger", header: "1 channel will accept unauthenticated requests" } };
+export const LongTitle: Story = {
+  args: {
+    tone: "danger",
+    header: "3 channels in Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox) will accept unauthenticated requests",
+  },
+};

@@ -30,7 +30,7 @@ export default function AdminMaintenancePage({ onRefreshAdaptors, onRefreshIcons
             title="Refresh Adaptor Registry"
             description="Re-fetch the list of available adaptors and their versions."
             onRun={() => void adaptors.run()}
-            running={adaptors.pending}
+            pending={adaptors.pending}
           />
           <MaintenanceCard
             id="refresh-icons-card"
@@ -38,7 +38,7 @@ export default function AdminMaintenancePage({ onRefreshAdaptors, onRefreshIcons
             title="Refresh Adaptor Icons"
             description="Re-fetch icons for every adaptor and replace rows whose icon has changed. Does not touch adaptor metadata or version history."
             onRun={() => void icons.run()}
-            running={icons.pending}
+            pending={icons.pending}
           />
         </div>
       </Centered>

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import type { DataclipDetail } from "../../types/history";
 import DataclipDetailsCard, { DataclipBodyCard } from "./DataclipDetailsCard";
 import JsonViewer from "./JsonViewer";
+import { EmptyState } from "../primitives/Table";
 
 const dataclip: DataclipDetail = {
   id: "7f3a91c2-4d8e-4b1a-9c6f-2e5d8a1b3c4d",
@@ -25,12 +26,23 @@ export const Wiped: Story = { args: { dataclip: wiped } };
 export const BodyCard: Story = {
   args: { dataclip },
   render: () => (
-    <DataclipBodyCard wiped={false}>
+    <DataclipBodyCard>
       <JsonViewer body={{ text: body }} />
     </DataclipBodyCard>
   ),
 };
 export const WipedBodyCard: Story = {
   args: { dataclip: wiped },
-  render: () => <DataclipBodyCard wiped />,
+  render: () => (
+    <DataclipBodyCard>
+      <div className="flex h-full items-center">
+        <EmptyState
+          variant="plain"
+          icon="hero-eye-slash"
+          title="No Data Available"
+          message="This dataclip's data has been wiped in accordance with the project's data retention policy."
+        />
+      </div>
+    </DataclipBodyCard>
+  ),
 };

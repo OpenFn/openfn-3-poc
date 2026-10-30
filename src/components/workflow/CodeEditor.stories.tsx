@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import CodeEditor from "./CodeEditor";
+import { withCanvas } from "../../stories/decorators";
 
 const meta: Meta<typeof CodeEditor> = {
   title: "Workflow/CodeEditor",
   component: CodeEditor,
-  decorators: [(Story) => <div className="h-64"><Story /></div>],
+  decorators: [withCanvas("h-64")],
 };
 export default meta;
 type Story = StoryObj<typeof CodeEditor>;

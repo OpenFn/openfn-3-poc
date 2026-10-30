@@ -410,13 +410,15 @@ export default function HistoryWorkOrdersPage({
           )}
         </div>
 
-        <HistorySearchBar
-          fields={historySearchFields}
-          selected={filters.searchFields}
-          onToggle={(id) => apply({ searchFields: toggle(filters.searchFields, id) })}
-          term={filters.searchTerm}
-          onSearch={(searchTerm) => apply({ searchTerm })}
-        />
+        <div className="mt-2">
+          <HistorySearchBar
+            fields={historySearchFields}
+            selected={filters.searchFields}
+            onToggle={(id) => apply({ searchFields: toggle(filters.searchFields, id) })}
+            term={filters.searchTerm}
+            onSearch={(searchTerm) => apply({ searchTerm })}
+          />
+        </div>
 
         {filters.searchTerm && (
           <Text as="div" className="m-2 truncate text-muted">

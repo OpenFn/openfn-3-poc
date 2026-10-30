@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { errorCategory, humanizeError } from "./channelHelpers";
+import { errorCategory, humanizeError } from "./channelErrors";
 
 const transport = ["nxdomain", "econnrefused", "ehostunreach", "enetunreach", "closed", "econnreset", "econnaborted", "epipe", "connect_timeout", "response_timeout", "timeout"];
 const credential = ["credential_missing_auth_fields", "credential_environment_not_found", "oauth_refresh_failed", "oauth_reauthorization_required"];

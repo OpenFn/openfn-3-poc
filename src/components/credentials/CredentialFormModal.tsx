@@ -400,9 +400,9 @@ export default function CredentialFormModal({
               checked={selected === o.key}
               onChange={() => pickType(o.key)}
               label={
-                <span className="inline-flex items-center font-medium">
+                <span className="inline-flex items-center gap-1 font-medium">
                   {o.name}
-                  {o.logo && <img src={o.logo} alt="" className="ml-1 h-3 w-3" />}
+                  {o.logo && <img src={o.logo} alt="" className="h-3 w-3" />}
                 </span>
               }
             />
@@ -556,21 +556,24 @@ export default function CredentialFormModal({
           </Button>
         )}
         {/* Lightning's data-confirm on the delete button. */}
-        <ConfirmModal
-          open={confirmingEnvDelete}
-          onClose={() => setConfirmingEnvDelete(false)}
-          onConfirm={() => {
-            setEnvs(envs.filter((e) => e.key !== env.key));
-            setTab(0);
-            setNameDraft(null);
-            setConfirmingEnvDelete(false);
-          }}
-          title="Delete environment"
-          confirmLabel="Delete"
-          tone="danger"
-        >
-          <p>Are you sure you want to delete the {env.name} environment?</p>
-        </ConfirmModal>
+        {confirmingEnvDelete && (
+          <ConfirmModal
+            key={env.key}
+            open
+            onClose={() => setConfirmingEnvDelete(false)}
+            onConfirm={() => {
+              setEnvs(envs.filter((e) => e.key !== env.key));
+              setTab(0);
+              setNameDraft(null);
+              setConfirmingEnvDelete(false);
+            }}
+            title="Delete environment"
+            confirmLabel="Delete"
+            tone="danger"
+          >
+            <p>Are you sure you want to delete the {env.name} environment?</p>
+          </ConfirmModal>
+        )}
       </Card>
 
       <Card as="section" title="Projects access" description="Select projects that can use this credential">

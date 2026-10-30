@@ -16,9 +16,9 @@ import Card from "../../primitives/Card";
 import Heading from "../../primitives/Heading";
 import Spinner from "../../primitives/Spinner";
 import Tabs from "../../primitives/Tabs";
+import Text from "../../primitives/Text";
 import VolumeBars from "./VolumeBars";
 import { FRAME } from "./palette";
-import Text from "../../primitives/Text";
 
 type Tab = "Work orders" | "Runs";
 

@@ -3,13 +3,12 @@ import type { DataclipDetail } from "../../types/history";
 import Card from "../primitives/Card";
 import DateTime from "../primitives/DateTime";
 import { DetailItem, DetailList } from "../primitives/DetailList";
-import { EmptyState } from "../primitives/Table";
 import DataclipTypePill from "../domain/DataclipTypePill";
 
 /** The "Dataclip Details" metadata card (dataclip_live/show.ex). */
 export default function DataclipDetailsCard({ dataclip }: { dataclip: DataclipDetail }) {
   return (
-    <Card title="Dataclip Details" padding="lg" className="mb-6">
+    <Card title="Dataclip Details" padding="lg">
       <DetailList layout="grid">
         <DetailItem label="ID" mono>
           {dataclip.id}
@@ -33,22 +32,11 @@ export default function DataclipDetailsCard({ dataclip }: { dataclip: DataclipDe
   );
 }
 
-/** The dataclip page's body card: the JSON viewer, or "No Data Available". */
-export function DataclipBodyCard({ wiped, children }: { wiped: boolean; children?: ReactNode }) {
+/** The dataclip page's body card: a fixed-height frame for the JSON viewer or "No Data Available". */
+export function DataclipBodyCard({ children }: { children: ReactNode }) {
   return (
     <Card padding="none" className="h-96 overflow-hidden">
-      {wiped ? (
-        <div className="flex h-full items-center">
-          <EmptyState
-            variant="plain"
-            icon="hero-eye-slash"
-            title="No Data Available"
-            message="This dataclip's data has been wiped in accordance with the project's data retention policy."
-          />
-        </div>
-      ) : (
-        children
-      )}
+      {children}
     </Card>
   );
 }

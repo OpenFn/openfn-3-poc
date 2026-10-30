@@ -36,3 +36,10 @@ export const Trigger: Story = {
   },
 };
 export const DisabledTrigger: Story = { args: { ...Trigger.args, disabled: true } };
+export const Running: Story = { args: { runState: "running" } };
+export const Crash: Story = { args: { runState: "crash", runMeta: "3s" } };
+export const StartedBy: Story = { args: { ...Trigger.args, startedBy: "editor@openfn.org", runMeta: "12/03/2026, 09:15:00" } };
+export const AuthLock: Story = { args: { ...Trigger.args, secondaryIcon: <span className="hero-lock-closed block h-full w-full" /> } };
+export const LongName: Story = {
+  args: { label: "Transform_patient_registrations_into_FHIR_bundles_for_the_national_shared_health_record" },
+};

@@ -18,8 +18,10 @@ export default function NewCredentialMenuButton({ id = "credential-options-menu-
       <ButtonMenu label="Add new" variant="primary">
         {options.map((o) => (
           <MenuItem key={o.target} disabled={o.disabled} onClick={() => showCredentialModal(o.target)}>
-            {o.label}
-            {o.badge && <Pill className="ml-2">{o.badge}</Pill>}
+            <span className="flex items-center gap-2">
+              {o.label}
+              {o.badge && <Pill>{o.badge}</Pill>}
+            </span>
           </MenuItem>
         ))}
       </ButtonMenu>

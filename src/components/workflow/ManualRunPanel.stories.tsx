@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { dataclips } from "../../mock-data/history";
 import ManualRunPanel from "./ManualRunPanel";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel, withWhitePanel } from "../../stories/decorators";
 
 const meta: Meta<typeof ManualRunPanel> = {
   title: "Workflow/ManualRunPanel",
@@ -22,5 +22,5 @@ export const CustomInput: Story = { args: { title: "Pick a custom input", initia
 export const FromEdge: Story = { args: { title: "Run Workflow", fromEdge: true } };
 export const Embedded: Story = {
   args: { mode: "embedded", onClosePanel: () => {} },
-  decorators: [(Story) => <div className="w-[420px] h-full bg-surface"><Story /></div>],
+  decorators: [withWhitePanel("h-full w-105")],
 };

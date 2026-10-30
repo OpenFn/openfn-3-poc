@@ -97,8 +97,14 @@ export default function EditorHeader({
         {/* The workflow's on/off state: a switch, though it waits for Save. */}
         <Toggle checked={enabled} onChange={onEnabledChange} tooltip={enabled ? "Disable workflow" : "Enable workflow"} />
         <IconButton icon="hero-adjustments-vertical" label="Workflow settings" active={settingsOpen} onClick={onSettingsClick} />
-        {canRun && <NewRunButton onClick={onRun} onRunWithCustomInputClick={onRunWithCustomInput} disabled={runDisabled} text={runLabel} />}
-        <SaveButton onClick={onSave} hasChanges={hasChanges} label={saveLabel} />
+        {canRun && (
+          <NewRunButton onClick={onRun} onRunWithCustomInputClick={onRunWithCustomInput} disabled={runDisabled}>
+            {runLabel}
+          </NewRunButton>
+        )}
+        <SaveButton onClick={onSave} hasChanges={hasChanges}>
+          {saveLabel}
+        </SaveButton>
       </div>
 
       <IconButton

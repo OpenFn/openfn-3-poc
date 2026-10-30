@@ -63,23 +63,26 @@ export default function ProjectsPicker({ id, type, projects, granted = [], selec
         </div>
       )}
       {/* Lightning's data-confirm on the remove button. */}
-      <ConfirmModal
-        open={!!confirming}
-        onClose={() => setConfirming(null)}
-        onConfirm={() => {
-          if (confirming) remove(confirming.id);
-          setConfirming(null);
-        }}
-        title="Revoke project access"
-        confirmLabel="Revoke access"
-        tone="danger"
-      >
-        <p>
-          Warning: This credential is in use by the following workflows: {confirming?.workflowsUsing?.join(", ")}. If you
-          revoke access to the &quot;{confirming?.name}&quot; project, runs for those workflows will probably fail until you
-          provide a new credential. Are you sure you want to revoke access?
-        </p>
-      </ConfirmModal>
+      {confirming && (
+        <ConfirmModal
+          key={confirming.id}
+          open
+          onClose={() => setConfirming(null)}
+          onConfirm={() => {
+            remove(confirming.id);
+            setConfirming(null);
+          }}
+          title="Revoke project access"
+          confirmLabel="Revoke access"
+          tone="danger"
+        >
+          <p>
+            Warning: This credential is in use by the following workflows: {confirming.workflowsUsing?.join(", ")}. If you
+            revoke access to the &quot;{confirming.name}&quot; project, runs for those workflows will probably fail until you
+            provide a new credential. Are you sure you want to revoke access?
+          </p>
+        </ConfirmModal>
+      )}
     </div>
   );
 }

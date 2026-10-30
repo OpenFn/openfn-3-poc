@@ -33,3 +33,4 @@ export const ViewingARun: Story = {
   },
 };
 export const Empty: Story = { args: { graph: newWorkflowGraph("p") } };
+export const Preview: Story = { args: { preview: true } };

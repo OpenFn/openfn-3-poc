@@ -58,7 +58,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
             id="build-with-ai-input"
             label="Build with AI"
             aside={
-              <Pill tone="success">
+              <Pill color="green">
                 <span className="hero-sparkles-micro h-3 w-3" />
                 Recommended
               </Pill>

@@ -1,9 +1,10 @@
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
+import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   title: string;
@@ -14,8 +15,8 @@ interface Props {
   fixedHeight?: boolean;
   /** Children fill the body edge to edge instead of sitting in a padded stack. */
   bare?: boolean;
-  showBackButton?: boolean;
-  onBack?: () => void;
+  /** Shows a Back arrow before the title. */
+  onBack?: (() => void) | undefined;
   "data-testid"?: string;
   /** Inventory id for the annotations panel. */
   annotation?: string;
@@ -33,19 +34,37 @@ export default function InspectorLayout({
   children,
   fixedHeight = false,
   bare = false,
-  showBackButton = false,
   onBack,
   "data-testid": testId,
   annotation = "workflow-editor-inspectors",
 }: Props) {
+  // The full title shows on hover only while it is cut off.
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const [truncated, setTruncated] = useState(false);
+  useLayoutEffect(() => {
+    const heading = titleRef.current?.firstElementChild;
+    if (!heading) return;
+    const measure = () => setTruncated(heading.scrollWidth > heading.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, [title]);
   return (
     <div className="pointer-events-auto w-screen max-w-md p-6" data-testid={testId} data-annotation={annotation}>
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
       <Card padding="none" className={cn("flex flex-col", fixedHeight ? "h-150" : "max-h-[calc(100vh-8rem)]")}>
         <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
-          <div className="flex items-center gap-2">
-            {showBackButton && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack ?? onClose} />}
-            <Heading as="h2">{title}</Heading>
+          <div className="flex min-w-0 items-center gap-2">
+            {onBack && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack} />}
+            <Tooltip content={truncated && title}>
+              {/* Heading takes no ref, so this span is the trigger. */}
+              <span ref={titleRef} className="min-w-0">
+                <Heading as="h2" className="truncate">
+                  {title}
+                </Heading>
+              </span>
+            </Tooltip>
           </div>
           <CloseButton label="Close panel" onClick={onClose} />
         </div>

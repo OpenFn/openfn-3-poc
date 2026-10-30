@@ -18,6 +18,7 @@ export default function AdminUserEditPageReplica() {
   return (
     <AdminUserEditPage
       user={user ?? null}
+      cancelHref="/settings/users"
       onSave={async () => {
         await simulateRequest();
         toast(user ? "User updated successfully" : "User created successfully");

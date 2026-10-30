@@ -43,7 +43,7 @@ interface Props {
   /** Saves the form. Rejects with field errors (`rawName`, `owner`) or a message, shown by the form. */
   onSave: (values: AdminProjectFormValues) => Promise<void>;
   /** Where Cancel goes. */
-  cancelTo?: string;
+  cancelHref: string;
 }
 
 /**
@@ -53,7 +53,7 @@ interface Props {
  * exactly one owner shows why and sends nothing. The host checks both again
  * and replies its own owner error.
  */
-export default function AdminProjectForm({ project, users, onSave, cancelTo = "/settings/projects" }: Props) {
+export default function AdminProjectForm({ project, users, onSave, cancelHref }: Props) {
   const [rawName, setRawName] = useState(project?.name ?? "");
   const [roles, setRoles] = useState<Record<string, Role>>(() =>
     Object.fromEntries(users.map((u) => [u.id, project?.members.find((m) => m.userId === u.id)?.role ?? ""]))
@@ -92,7 +92,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
         error={[ownerError, otherError].filter(Boolean).join(" ") || null}
         actions={
           <>
-            <Button variant="secondary" to={cancelTo}>
+            <Button variant="secondary" to={cancelHref}>
               Cancel
             </Button>
             <Button type="submit">

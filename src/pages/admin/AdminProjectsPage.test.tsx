@@ -40,7 +40,10 @@ function renderPage(props: Partial<React.ComponentProps<typeof AdminProjectsPage
   render(
     <RouterProvider value={router}>
       <ToastProvider>
-        <AdminProjectsPage projects={rows} form={null} deleteProject={null} gracePeriodDays={7} {...handlers} {...props} />
+        <AdminProjectsPage projects={rows} form={null} deleteProject={null} gracePeriodDays={7}
+          newProjectHref="/settings/projects/new"
+          cancelHref="/settings/projects"
+          {...handlers} {...props} />
       </ToastProvider>
     </RouterProvider>
   );

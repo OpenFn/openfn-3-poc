@@ -194,8 +194,8 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Project settings" />} title="Project settings" />}>
       <Centered>
         {/* Keyed by project so panel state resets when the project picker switches projects. */}
-        <div key={project.id} id="project-settings-container" className="flex h-full">
-          <Tabs orientation="vertical" label="Project settings" className="flex-none pr-8" tabs={projectSettingsTabs} active={active} />
+        <div key={project.id} id="project-settings-container" className="flex h-full gap-8">
+          <Tabs orientation="vertical" label="Project settings" className="flex-none" tabs={projectSettingsTabs} active={active} />
           <div className="min-w-0 grow">
             {projectSettingsTabs.map((t) => (
               <div
