@@ -3,6 +3,7 @@ import { Link } from "../../routing/router";
 import type { PageInfo } from "../../types/lists";
 import { cn } from "../../utils/cn";
 import { useUrlParams } from "../../utils/useUrlParams";
+import Text from "./Text";
 
 interface Props {
   /** The page shown, as the server paged it. Each page links to this URL with `?page=` changed. */
@@ -45,7 +46,7 @@ export default function Pagination({ page, actions }: Props) {
   return (
     <div data-ui="pagination" className="bg-surface px-4 py-3 flex items-center justify-between sm:px-6 rounded-b-lg">
       <div className="flex items-center space-x-4">
-        <p className="text-sm text-body">
+        <Text as="p" className="text-body">
           {totalEntries === 0 ? (
             "No results found"
           ) : (
@@ -54,7 +55,7 @@ export default function Pagination({ page, actions }: Props) {
               <span className="font-medium">{totalEntries}</span> total results
             </>
           )}
-        </p>
+        </Text>
         {actions && <div className="flex items-center">{actions}</div>}
       </div>
       <nav className="relative z-0 inline-flex rounded-md shadow-xs -space-x-px" aria-label="Pagination">

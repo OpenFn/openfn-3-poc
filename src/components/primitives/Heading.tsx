@@ -24,7 +24,7 @@ export default function Heading({
   children,
 }: {
   size?: HeadingSize;
-  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "div" | "span" | "legend";
+  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "div" | "span" | "legend" | "dt";
   id?: string;
   className?: string;
   children: ReactNode;

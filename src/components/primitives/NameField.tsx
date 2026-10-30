@@ -3,6 +3,7 @@ import { cn } from "../../utils/cn";
 import { urlSafeName } from "../../utils/format";
 import { TextInput } from "./Inputs";
 import NameBadge from "./NameBadge";
+import Text from "./Text";
 
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
   id: string;
@@ -54,15 +55,15 @@ export default function NameField({
         {...rest}
       />
       {!(hideBadgeOnError && errors.length > 0) && name !== "" && (
-        <p className="text-xs text-muted">
+        <Text as="p" variant="body-sm" className="text-muted">
           <NameBadge name={name}>{badgeLabel}</NameBadge>
-        </p>
+        </Text>
       )}
       {!(hideBadgeOnError && errors.length > 0) && name === "" && exampleName && (
-        <p className="text-xs text-faint">
+        <Text as="p" variant="body-sm" className="text-faint">
           {badgeLabel}
-          <span className="ml-1 rounded-md border border-subtle bg-subtle p-1 font-mono text-xs">{exampleName}</span>.
-        </p>
+          <Text variant="code-sm" className="ml-1 rounded-md border border-subtle bg-subtle p-1">{exampleName}</Text>.
+        </Text>
       )}
     </div>
   );

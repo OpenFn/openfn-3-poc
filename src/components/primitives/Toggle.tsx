@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import Text from "./Text";
 import Tooltip from "./Tooltip";
 
 interface Props {
@@ -65,13 +66,13 @@ export default function Toggle({ checked, onChange, label, note, description, di
         </Tooltip>
         <input type="checkbox" name={name} checked={checked} readOnly tabIndex={-1} aria-hidden="true" className="hidden" />
         {label && (
-          <span id={labelId} className="text-sm text-muted">
+          <Text id={labelId} className="text-muted">
             <span className="font-medium text-strong">{label}</span>
             {note && <> {note}</>}
-          </span>
+          </Text>
         )}
       </div>
-      {description && <p className="text-sm text-muted">{description}</p>}
+      {description && <Text as="p" className="text-muted">{description}</Text>}
     </div>
   );
 }

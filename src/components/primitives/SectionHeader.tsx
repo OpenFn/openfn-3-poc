@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Heading from "./Heading";
+import Text from "./Text";
 
 interface Props {
   title: ReactNode;
@@ -20,11 +21,11 @@ export default function SectionHeader({ title, subtitle, action, permissionsSect
     <div className="flex items-start justify-between gap-4">
       <div>
         <Heading>{title}</Heading>
-        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+        {subtitle && <Text as="p" className="mt-1 text-muted">{subtitle}</Text>}
         {permissionsSection && (
-          <p className="mt-2 text-sm text-danger-700">
+          <Text as="p" className="mt-2 text-danger-700">
             Role based permissions: You cannot modify this project's {permissionsSection}
-          </p>
+          </Text>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}
