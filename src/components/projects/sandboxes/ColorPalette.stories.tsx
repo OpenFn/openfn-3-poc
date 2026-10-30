@@ -15,4 +15,3 @@ export default meta;
 type Story = StoryObj<typeof ColorPalette>;
 
 export const Default: Story = {};
-export const Disabled: Story = { args: { disabled: true } };

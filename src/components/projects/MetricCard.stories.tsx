@@ -15,3 +15,4 @@ export const Default: Story = {};
 export const WithLink: Story = {
   args: { title: "Work Orders in failed state", value: 26, suffix: "2.0%", link: <TextLink href="#">View all</TextLink> },
 };
+export const LongTitle: Story = { args: { title: "Work Orders in a failed state over the last 30 days", value: 26, suffix: "2.0%" } };

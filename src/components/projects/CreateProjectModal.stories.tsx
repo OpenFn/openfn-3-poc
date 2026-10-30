@@ -28,6 +28,9 @@ export const ServerFieldError: Story = {
   },
 };
 
+/** Create is still out: the button shows pending. */
+export const Pending: Story = { args: { onCreate: () => new Promise(() => {}) }, play: ServerFieldError.play! };
+
 /** The server's error is keyed `name`, which isn't a form field: it shows as an Alert in the modal instead. */
 export const ServerErrorOnOtherField: Story = {
   args: {

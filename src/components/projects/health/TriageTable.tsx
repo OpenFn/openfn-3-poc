@@ -5,6 +5,7 @@ import Button from "../../primitives/Button";
 import Card from "../../primitives/Card";
 import Pill from "../../primitives/Pill";
 import { Table, Td, Th, Tr } from "../../primitives/Table";
+import Text from "../../primitives/Text";
 import { DOT, EMPTY, FAILURE_COLORS, adaptorLabel } from "./palette";
 
 // One tip per error type the worker reports (TriageTable.tsx `TIPS`).
@@ -68,11 +69,15 @@ function Signature({ signature }: { signature: ErrorSignature }) {
         {color && <span aria-hidden="true" className={DOT} style={{ backgroundColor: color }} />}
         {state ?? errorTypeOf(signature)}
       </p>
-      <p className="border-l-2 border-strong pl-2 font-mono text-strong" style={{ borderColor: color }}>
+      <Text as="p" variant="code-md" className="border-l-2 border-strong pl-2 text-strong" style={{ borderColor: color }}>
         {signature.exit_reason}:{errorTypeOf(signature)}
         {signature.step_name && ` @ ${signature.step_name}`}
-      </p>
-      {signature.adaptor && <p className="font-mono text-muted">{adaptorLabel(signature.adaptor)}</p>}
+      </Text>
+      {signature.adaptor && (
+        <Text as="p" variant="code-md" className="text-muted">
+          {adaptorLabel(signature.adaptor)}
+        </Text>
+      )}
     </div>
   );
 }

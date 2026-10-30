@@ -25,7 +25,7 @@ export default function WorkflowsHeader({
 }) {
   const { navigate } = useRouter();
   return (
-    <TableTitle title="Workflows" count={count} className="mb-6">
+    <TableTitle title="Workflows" count={count}>
       <SearchInput value={searchTerm} onChange={onSearch} onClear={onClear} clearButtonId="clear_search_button" className="w-96" />
       {/* A button, as in Lightning, so it can be disabled with a reason. */}
       <Button

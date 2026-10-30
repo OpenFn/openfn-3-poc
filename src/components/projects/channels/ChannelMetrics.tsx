@@ -13,7 +13,7 @@ export default function ChannelMetrics({
   logsHref: string;
 }) {
   return (
-    <div className="mb-8 grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-2 gap-6">
       <MetricCard title="Total Channels" value={totalChannels} />
       <MetricCard title="Total Requests" value={totalRequests} link={<TextLink to={logsHref}>View all</TextLink>} />
     </div>

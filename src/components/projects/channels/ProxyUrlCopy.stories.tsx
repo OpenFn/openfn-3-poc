@@ -12,4 +12,6 @@ export default meta;
 type Story = StoryObj<typeof ProxyUrlCopy>;
 
 export const Default: Story = {};
-export const Truncated: Story = { args: { icon: true, className: "max-w-64" } };
+export const Truncated: Story = {
+  args: { leading: <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-faint" />, className: "max-w-64" },
+};

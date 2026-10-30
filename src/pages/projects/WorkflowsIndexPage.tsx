@@ -72,14 +72,16 @@ export default function WorkflowsIndexPage({
   return (
     <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} />} />}>
       <Centered>
-        <WorkflowsHeader
-          count={stats.length}
-          projectId={project.id}
-          canCreate={canCreateWorkflow}
-          searchTerm={searchTerm}
-          onSearch={onSearch}
-          onClear={onClear}
-        />
+        <div className="mb-6">
+          <WorkflowsHeader
+            count={stats.length}
+            projectId={project.id}
+            canCreate={canCreateWorkflow}
+            searchTerm={searchTerm}
+            onSearch={onSearch}
+            onClear={onClear}
+          />
+        </div>
         <ProjectMetrics metrics={metrics} pendingHref={pendingHref} failedHref={failedHref} />
         <div className="mt-8">
           <WorkflowsTable

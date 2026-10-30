@@ -1,6 +1,7 @@
 import type { WorkOrderDisplayState } from "../../types/workflows";
 import { cn } from "../../utils/cn";
 import DateTime from "../primitives/DateTime";
+import Text from "../primitives/Text";
 import { capitalize } from "../../utils/format";
 import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "../../theme/runStateColours";
 
@@ -39,7 +40,11 @@ export default function WorkOrderStatus({
         </span>
         <span className={cn(TEXT[state], "font-medium")}>{text}</span>
       </div>
-      {updatedAt && <DateTime value={updatedAt} className="mt-1 ml-4 block text-xs" />}
+      {updatedAt && (
+        <Text as="div" variant="body-sm" className="mt-1 ml-4">
+          <DateTime value={updatedAt} />
+        </Text>
+      )}
     </div>
   );
 }

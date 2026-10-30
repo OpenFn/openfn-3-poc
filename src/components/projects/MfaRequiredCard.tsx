@@ -1,6 +1,7 @@
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 
 /**
@@ -8,7 +9,7 @@ import TextLink from "../primitives/TextLink";
  * a red warning icon, why access is blocked, and a link to the profile page
  * where MFA is turned on.
  */
-export default function MfaRequiredCard({ title = "MFA Required for Project" }: { title?: string }) {
+export default function MfaRequiredCard() {
   return (
     <Card padding="lg" className="max-w-lg space-y-5">
       <div className="flex items-start gap-4">
@@ -16,11 +17,11 @@ export default function MfaRequiredCard({ title = "MFA Required for Project" }: 
           <span className="hero-exclamation-triangle h-6 w-6 text-danger-600" aria-hidden="true" />
         </span>
         <div className="space-y-2">
-          <Heading>{title}</Heading>
-          <p className="text-sm text-muted">
+          <Heading>MFA Required for Project</Heading>
+          <Text as="p" className="text-muted">
             This project requires all members to use multi-factor authentication. Please enable MFA for{" "}
             <TextLink to="/profile">your account</TextLink> in order to gain access.
-          </p>
+          </Text>
         </div>
       </div>
       <div className="flex justify-end">

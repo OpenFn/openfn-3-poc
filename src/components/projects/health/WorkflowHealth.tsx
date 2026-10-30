@@ -17,6 +17,7 @@ import Card from "../../primitives/Card";
 import Heading from "../../primitives/Heading";
 import Spinner from "../../primitives/Spinner";
 import Tabs from "../../primitives/Tabs";
+import Text from "../../primitives/Text";
 import VolumeBars from "./VolumeBars";
 import { FRAME } from "./palette";
 
@@ -147,4 +148,8 @@ function Panel<T>({ query, card = false, children }: { query: HealthQuery<T>; ca
 }
 
 /** The small gray note at the right of a card's title. */
-const meta = (text: string) => <span className="text-xs text-muted">{text}</span>;
+const meta = (text: string) => (
+  <Text variant="body-sm" className="text-muted">
+    {text}
+  </Text>
+);

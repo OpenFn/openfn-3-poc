@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { ChannelRow } from "../../../types/channels";
-import { cn } from "../../../utils/cn";
 import Button from "../../primitives/Button";
 import ConfirmModal from "../../primitives/ConfirmModal";
 import { EmptyState, Table, Td, Th, Tr } from "../../primitives/Table";
 import Toggle from "../../primitives/Toggle";
 import DateTime from "../../primitives/DateTime";
+import Text from "../../primitives/Text";
 import TextLink from "../../primitives/TextLink";
 import ProxyUrlCopy from "./ProxyUrlCopy";
 
@@ -53,15 +53,21 @@ export default function ChannelsTable({
       >
         {channels.map((channel) => (
           <Tr key={channel.id} id={`channel-${channel.id}`}>
-            <Td className={cn("max-w-60 font-medium wrap-break-word", channel.enabled ? "text-strong" : "text-faint")}>
-              {channel.name}
+            <Td className="max-w-60 wrap-break-word">
+              <Text variant="label-md" className={channel.enabled ? "text-strong" : "text-faint"}>
+                {channel.name}
+              </Text>
             </Td>
             <Td className="max-w-80">
-              <div className="flex items-center gap-1.5 font-mono text-muted">
+              <Text as="div" variant="code-md" className="flex items-center gap-1.5 text-muted">
                 <span className="hero-arrow-right-start-on-rectangle h-4 w-4 shrink-0 text-faint" />
                 <span className="min-w-0 wrap-break-word">{channel.destinationUrl}</span>
-              </div>
-              <ProxyUrlCopy url={channel.proxyUrl} icon className="mt-1" />
+              </Text>
+              <ProxyUrlCopy
+                url={channel.proxyUrl}
+                leading={<span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-faint" />}
+                className="mt-1"
+              />
             </Td>
             <Td>
               <TextLink to={channel.logsHref}>{channel.requestCount}</TextLink>

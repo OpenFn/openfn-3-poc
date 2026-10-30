@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+import Text from "../../primitives/Text";
 import Tooltip from "../../primitives/Tooltip";
 import { cn } from "../../../utils/cn";
 
@@ -5,10 +7,10 @@ import { cn } from "../../../utils/cn";
  * A channel's proxy URL that copies itself on click (ChannelLive.Helpers
  * .proxy_url_copy): the tooltip offers the copy and says "Copied!" after it,
  * as Lightning's Copy hook does. The host and path truncate from the left so
- * the channel id stays visible. `icon` adds the inbound arrow used in the
- * channels table. The host builds the URL; it knows its own address.
+ * the channel id stays visible. `leading` goes before the URL, such as an
+ * icon. The host builds the URL; it knows its own address.
  */
-export default function ProxyUrlCopy({ url, icon = false, className }: { url: string; icon?: boolean; className?: string }) {
+export default function ProxyUrlCopy({ url, leading, className }: { url: string; leading?: ReactNode; className?: string }) {
   const [scheme, rest] = url.includes("://") ? [url.split("://")[0] + "://", url.split("://")[1]] : ["", url];
 
   return (
@@ -26,13 +28,13 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
         }}
         className={cn("group flex min-w-0 cursor-pointer items-center gap-1.5 text-muted hover:text-body", className)}
       >
-        {icon && <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-faint" />}
-        <span className="flex min-w-0 font-mono text-xs">
+        {leading}
+        <Text variant="code-sm" className="flex min-w-0">
           <span className="shrink-0">{scheme}</span>
           <span className="truncate" style={{ direction: "rtl", textAlign: "left" }}>
             {rest}
           </span>
-        </span>
+        </Text>
         <span className="hero-clipboard-document h-4 w-4 shrink-0 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
     </Tooltip>
