@@ -3,6 +3,14 @@ name: CI
 on:
   pull_request:
     branches: [main]
+    # Skip when only docs change. Later lines win: annotations/ is bundled into
+    # the app (the annotations panel), so it still runs CI.
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!docs/**"
+      - "!.claude/**"
+      - "annotations/**"
 
 jobs:
   build:
