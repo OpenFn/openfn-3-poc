@@ -7,6 +7,7 @@ import Modal from "../primitives/Modal";
 import AdaptorIcon from "./AdaptorIcon";
 import SearchList, { type SearchListSection } from "../primitives/SearchList";
 import { matchesQuery } from "../../utils/search";
+import Text from "../primitives/Text";
 
 interface Props {
   isOpen: boolean;
@@ -27,7 +28,7 @@ function RowContent({ id, title, size }: { id: string; title: string; size: "sm"
       <AdaptorIcon name={pkg} size={size} />
       <div className="text-strong">
         {title}
-        <div className="text-sm text-muted">Latest: {resolvedAdaptorVersion(pkg)}</div>
+        <Text as="div" className="text-muted">Latest: {resolvedAdaptorVersion(pkg)}</Text>
       </div>
     </>
   );

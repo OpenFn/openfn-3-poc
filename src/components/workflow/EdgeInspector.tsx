@@ -8,6 +8,7 @@ import TextLink from "../primitives/TextLink";
 import Toggle from "../primitives/Toggle";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 interface Props {
   edge: EditorEdge;
@@ -90,7 +91,7 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
             className="h-24 bg-code font-mono text-code"
           />
           <Disclosure variant="inline" defaultOpen={false} title="How to write expressions">
-            <div className="space-y-1 text-xs text-muted">
+            <Text as="div" variant="body-sm" className="space-y-1 text-muted">
               <p>Use the state from the previous step to decide whether this step should run.</p>
               <p>Must be a single JavaScript expression with `state` in scope.</p>
               <p>
@@ -100,11 +101,15 @@ export default function EdgeInspector({ edge, onChange, onDelete, onClose }: Pro
                 </TextLink>{" "}
                 for more details.
               </p>
-            </div>
+            </Text>
           </Disclosure>
         </div>
       )}
-      {fromTrigger && <p className="text-xs italic text-muted">This path will be active if its trigger is enabled</p>}
+      {fromTrigger && (
+        <Text as="p" variant="body-sm" className="italic text-muted">
+          This path will be active if its trigger is enabled
+        </Text>
+      )}
       <ConfirmModal
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}

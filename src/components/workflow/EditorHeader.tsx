@@ -8,6 +8,7 @@ import NewRunButton from "./NewRunButton";
 import SaveButton from "./SaveButton";
 import VersionDropdown from "./VersionDropdown";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 interface Props {
   project: CurrentProject;
@@ -71,7 +72,7 @@ export default function EditorHeader({
   children,
 }: Props) {
   return (
-    <div className="relative z-50 flex h-20 flex-none items-center gap-2 border-b border-subtle bg-surface text-sm shadow-xs sm:px-4">
+    <Text as="div" className="relative z-50 flex h-20 flex-none items-center gap-2 border-b border-subtle bg-surface shadow-xs sm:px-4">
       <div className="flex min-w-0 items-center">
         <ProjectBreadcrumbs
           project={project}
@@ -108,6 +109,6 @@ export default function EditorHeader({
         className="ml-2 rounded-full"
         onClick={onAIClick}
       />
-    </div>
+    </Text>
   );
 }

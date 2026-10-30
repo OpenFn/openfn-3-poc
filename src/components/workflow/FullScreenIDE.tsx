@@ -14,6 +14,7 @@ import RunBadge from "./RunBadge";
 import RunRetryButton from "./RunRetryButton";
 import type { RunViewerTab } from "./RunViewerPanel";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 export type IDEPanelState = "run-viewer" | "history" | "create-run" | undefined;
 
@@ -126,10 +127,10 @@ export default function FullScreenIDE({
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
             ) : (
-              <div className="mx-auto max-w-md p-8 text-center text-sm text-muted">
+              <Text as="div" className="mx-auto max-w-md p-8 text-center text-muted">
                 <p>The job you're trying to view didn't exist in this version of the workflow.</p>
                 <p className="mt-2 text-muted">You can change versions or select another job.</p>
-              </div>
+              </Text>
             )}
           </div>
           {!docsCollapsed && (
@@ -191,6 +192,7 @@ export default function FullScreenIDE({
                           setRunCollapsed(false);
                         }}
                         className={cn(
+                          // eslint-disable-next-line no-restricted-syntax -- a control: the vertical run tab sets its own type
                           "whitespace-nowrap rounded p-1 text-xs hover:bg-emphasis",
                           runTab === t ? "text-primary-600 font-medium" : "text-muted"
                         )}

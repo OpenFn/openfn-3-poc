@@ -16,6 +16,7 @@ export default function AdaptorIcon({ name, size = "md" }: { name: string; size?
   const url = adaptorIconUrl(name);
   if (!url) {
     return (
+      // eslint-disable-next-line no-restricted-syntax -- debt: 12px semibold initial has no Text style
       <div className={cn(sizeClasses[size], "flex items-center justify-center rounded-md bg-emphasis text-xs font-semibold text-muted")}>
         {short[0]?.toUpperCase() || "?"}
       </div>
