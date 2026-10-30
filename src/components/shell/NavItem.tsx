@@ -36,11 +36,11 @@ export default function NavItem({ to, href, target = "_blank", icon, label, acti
   );
 
   return href ? (
-    <a href={href} target={target} rel="noreferrer" className={className} data-ui="nav-link">
+    <a href={href} target={target} rel="noreferrer" className={className} aria-label={label} data-ui="nav-link">
       {content}
     </a>
   ) : (
-    <Link to={to ?? "#"} className={className} aria-current={active ? "page" : undefined} data-ui="nav-link">
+    <Link to={to ?? "#"} className={className} aria-current={active ? "page" : undefined} aria-label={label} data-ui="nav-link">
       {content}
     </Link>
   );

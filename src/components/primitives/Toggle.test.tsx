@@ -13,8 +13,13 @@ describe("Toggle", () => {
     expect(openTooltips()).toEqual(["Only owners can change this"]);
   });
 
+  it("won't typecheck without a label, labelledBy or tooltip to name it", () => {
+    // @ts-expect-error a switch has no text of its own
+    render(<Toggle checked />);
+  });
+
   it("adds no hover wrapper to a disabled switch with nothing to say", () => {
-    render(<Toggle checked disabled />);
+    render(<Toggle checked disabled label="Require MFA" />);
     expect(screen.getByRole("switch").parentElement!.className).toBe("contents");
   });
 

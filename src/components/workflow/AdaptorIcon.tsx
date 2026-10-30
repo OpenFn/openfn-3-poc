@@ -21,5 +21,6 @@ export default function AdaptorIcon({ name, size = "md" }: { name: string; size?
       </div>
     );
   }
-  return <img src={url} alt={short} className={cn(sizeClasses[size], "object-cover")} />;
+  // The name is always printed beside the icon, so the image is decorative.
+  return <img src={url} alt="" className={cn(sizeClasses[size], "object-cover")} />;
 }

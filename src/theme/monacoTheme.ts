@@ -10,9 +10,10 @@ export function setUpMonaco(monaco: Monaco) {
   monaco.editor.defineTheme("default", {
     base: "vs-dark",
     inherit: true,
-    rules: [{ token: "logSource", foreground: "#868686", fontStyle: "italic" }],
+    rules: [{ token: "logSource", foreground: "#CBD5E1", fontStyle: "italic" }],
     colors: {
       "editor.foreground": "#E2E8F0",
+      "editorLineNumber.foreground": "#CBD5E1",
       "editor.background": "#334155",
       "editor.lineHighlightBackground": "#475569",
       "editor.selectionBackground": "#4f5b66",

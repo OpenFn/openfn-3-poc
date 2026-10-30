@@ -57,7 +57,7 @@ export default function AdaptorSelectionModal({ isOpen, onClose, onSelect, adapt
       ];
 
   return (
-    <Modal open={isOpen} onClose={onClose} size="md">
+    <Modal open={isOpen} onClose={onClose} size="md" label="Select an adaptor">
       <SearchList<Row>
         variant="field"
         listLabel="Adaptor options"

@@ -30,6 +30,8 @@ interface Props {
    * that lay out their own content (pickers, browsers, wizards).
    */
   bare?: boolean;
+  /** Names the dialog for screen readers when no `title` is shown (none given, or `bare`). */
+  label?: string;
   className?: string;
 }
 
@@ -38,9 +40,9 @@ interface Props {
  * optional description, body and footer. Escape and clicking outside close
  * it; focus is trapped inside while it's open.
  */
-export default function Modal({ open, onClose, title, description, children, footer, size = "lg", bare = false, className }: Props) {
+export default function Modal({ open, onClose, title, description, children, footer, size = "lg", bare = false, label, className }: Props) {
   return (
-    <Dialog open={open} onClose={onClose} transition className="relative z-200" data-ui="modal">
+    <Dialog open={open} onClose={onClose} transition aria-label={title && !bare ? undefined : label} className="relative z-200" data-ui="modal">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-overlay backdrop-blur-xs transition-opacity duration-200 ease-out data-closed:opacity-0"

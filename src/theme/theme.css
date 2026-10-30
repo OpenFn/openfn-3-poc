@@ -208,8 +208,8 @@ html[data-theme="light"] {
 
   /* Links: blurple, underlined only on hover. */
   [data-ui="link"] {
-    --color-primary-400: var(--ui-brand);
-    --color-primary-500: var(--ui-brand-hover);
+    --text-color-link: var(--ui-brand);
+    --text-color-link-hover: var(--ui-brand-hover);
   }
 
   /* ---- Statuses and messages --------------------------------- */
@@ -598,8 +598,8 @@ html[data-theme="gds"] {
      property, so `tone="danger"` (link-danger, red) and per-call
      colour classes still win. */
   [data-ui="link"] {
-    --color-primary-400: var(--ui-link);
-    --color-primary-500: var(--ui-link-hover);
+    --text-color-link: var(--ui-link);
+    --text-color-link-hover: var(--ui-link-hover);
     text-decoration: underline;
     text-underline-offset: 0.15em;
     &:hover { text-decoration-thickness: 3px; }

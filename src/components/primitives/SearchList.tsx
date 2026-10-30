@@ -1,6 +1,6 @@
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import { EmptyState } from "./Table";
-import { Fragment, useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Heading from "./Heading";
 import SearchInput from "./SearchInput";
@@ -167,32 +167,30 @@ export default function SearchList<T>({
               if (section.items.length === 0 && !section.empty) return null;
               const divider = variant === "palette" && shownBefore && section.items.length > 0;
               shownBefore = true;
+              // A border, not a separator element: a listbox may hold only options and groups.
               return (
-                <Fragment key={section.key}>
-                  {divider && <div role="separator" className="my-2 border-t border-subtle" />}
-                  <div role="group" className={look.section}>
-                    {section.heading && (
-                      <Heading size="xs" className={look.heading}>
-                        {section.heading}
-                      </Heading>
-                    )}
-                    {section.items.length === 0 && <EmptyState variant="plain" message={section.empty} />}
-                    {section.items.map((item) => {
-                      const selected = isSelected(item);
-                      return (
-                        <ComboboxOption
-                          key={getKey(item)}
-                          value={item}
-                          aria-label={getLabel?.(item)}
-                          aria-selected={selected}
-                          className={look.option}
-                        >
-                          {({ focus }) => <>{renderItem(item, { active: focus, selected })}</>}
-                        </ComboboxOption>
-                      );
-                    })}
-                  </div>
-                </Fragment>
+                <div key={section.key} role="group" className={cn(look.section, divider && "mt-2 border-t border-subtle pt-2")}>
+                  {section.heading && (
+                    <Heading size="xs" className={look.heading}>
+                      {section.heading}
+                    </Heading>
+                  )}
+                  {section.items.length === 0 && <EmptyState variant="plain" message={section.empty} />}
+                  {section.items.map((item) => {
+                    const selected = isSelected(item);
+                    return (
+                      <ComboboxOption
+                        key={getKey(item)}
+                        value={item}
+                        aria-label={getLabel?.(item)}
+                        aria-selected={selected}
+                        className={look.option}
+                      >
+                        {({ focus }) => <>{renderItem(item, { active: focus, selected })}</>}
+                      </ComboboxOption>
+                    );
+                  })}
+                </div>
               );
             })
           )}
