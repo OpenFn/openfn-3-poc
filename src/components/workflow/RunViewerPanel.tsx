@@ -5,13 +5,13 @@ import { finalRunStates } from "../../constants";
 import { formatElapsed, formatLocalDateTime, uuidOf } from "../../utils/format";
 import { cn } from "../../utils/cn";
 import CodeEditor from "./CodeEditor";
-import StatePill from "../history/StatePill";
-import StepIcon from "../history/StepIcon";
-import UuidChip from "../UuidChip";
-import LogViewer from "../history/LogViewer";
-import { DetailItem, DetailList } from "../DetailList";
-import Heading from "../Heading";
-import InfoTooltip from "../InfoTooltip";
+import StatePill from "../domain/StatePill";
+import StepIcon from "../domain/StepIcon";
+import UuidChip from "../primitives/UuidChip";
+import LogViewer from "../domain/LogViewer";
+import { DetailItem, DetailList } from "../primitives/DetailList";
+import Heading from "../primitives/Heading";
+import InfoTooltip from "../primitives/InfoTooltip";
 
 export type RunViewerTab = "log" | "input" | "output";
 

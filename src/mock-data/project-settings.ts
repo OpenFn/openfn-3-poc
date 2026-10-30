@@ -10,8 +10,7 @@ import { credentialIndexDataFor, credentials, credentialsFixture, keychainRowsFo
 import { findProject, projects } from "./projects";
 import { findUser } from "./users";
 import { permissionsFor } from "../permissions";
-import type { ProjectSettingsPageProps } from "../pages/project-settings/ProjectSettingsPage";
-import type { CollaboratorRow, GithubRepoConnection, WebhookAuthMethodRow } from "../types/project-settings";
+import type { CollaboratorRow, GithubRepoConnection, ProjectSettingsPageData, WebhookAuthMethodRow } from "../types/project-settings";
 import type { Collection, ProjectFile, ProjectSettings, VcsFixture, WebhookAuthMethod } from "./models/project-settings";
 import type { Project, ProjectMember } from "./models/projects";
 import type { User } from "./models/users";
@@ -263,7 +262,7 @@ function descendantCount(projectId: string): number {
 export function projectSettingsPropsFor(
   { project, supportAccess, collections, authMethods, connection, credentials: credentialLists }: SettingsFixture,
   viewer: User
-): Omit<ProjectSettingsPageProps, "projectLabel" | "deleting" | `on${string}`> {
+): ProjectSettingsPageData {
   const perms = permissionsFor(project, viewer);
   const parent = findProject(project.parentId ?? undefined);
   const settingsHref = `/projects/${project.id}/settings`;

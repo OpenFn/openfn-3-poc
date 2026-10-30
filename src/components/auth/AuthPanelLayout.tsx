@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import Card from "../Card";
-import Heading from "../Heading";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
 import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
 
 /**

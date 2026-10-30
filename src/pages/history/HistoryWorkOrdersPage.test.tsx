@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import { RouterProvider, type Router } from "../../routing/router";
 import type { RunRow, StepRow, WorkOrderRow } from "../../types/history";
 import { RequestError } from "../../utils/errors";

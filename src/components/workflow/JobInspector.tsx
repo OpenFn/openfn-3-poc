@@ -4,10 +4,10 @@ import { adaptorShortName } from "../../utils/adaptors";
 import type { EditorJob } from "../../types/workflow-graph";
 import AdaptorDisplay, { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorConfigModals, { type AdaptorModal } from "./AdaptorConfigModals";
-import ConfirmModal from "../ConfirmModal";
-import IconButton from "../IconButton";
-import InfoTooltip from "../InfoTooltip";
-import { Field, TextInput } from "../Inputs";
+import ConfirmModal from "../primitives/ConfirmModal";
+import IconButton from "../primitives/IconButton";
+import InfoTooltip from "../primitives/InfoTooltip";
+import { Field, TextInput } from "../primitives/Inputs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Disclosure from "../Disclosure";
+import Disclosure from "../primitives/Disclosure";
 import { channelRequests } from "../../mock-data/channel-requests";
 import {
   BodyViewer,

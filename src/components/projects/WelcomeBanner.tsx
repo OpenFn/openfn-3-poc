@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import TextLink from "../TextLink";
+import TextLink from "../primitives/TextLink";
 
 const PARAGRAPH =
   "Click on a project to get started. If you need some help, head to docs.openfn.org or community.openfn.org to learn more.";

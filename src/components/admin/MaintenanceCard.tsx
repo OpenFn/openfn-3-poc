@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Button from "../Button";
-import Card from "../Card";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
 
 /**
  * One action card on the Maintenance page (maintenance_live/index.html.heex):

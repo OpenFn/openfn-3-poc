@@ -1,6 +1,6 @@
-import Toggle from "../Toggle";
-import Card from "../Card";
-import { useToast } from "../Toast";
+import Toggle from "../primitives/Toggle";
+import Card from "../primitives/Card";
+import { useToast } from "../primitives/Toast";
 import { errorMessage } from "../../utils/errors";
 import { useChosenValue } from "../../utils/useChosenValue";
 

@@ -1,21 +1,21 @@
 import { useState } from "react";
-import IconButton from "../IconButton";
-import { Checkbox } from "../Inputs";
-import Pill from "../Pill";
-import { Td, Tr } from "../Table";
+import IconButton from "../primitives/IconButton";
+import { Checkbox } from "../primitives/Inputs";
+import Pill from "../primitives/Pill";
+import { Td, Tr } from "../primitives/Table";
 import type { WorkOrderRow } from "../../types/history";
 import { activeStates } from "../../constants";
-import DateTime from "../DateTime";
-import TextLink from "../TextLink";
-import Text from "../Text";
+import DateTime from "../primitives/DateTime";
+import TextLink from "../primitives/TextLink";
+import Text from "../primitives/Text";
 import ElapsedTime from "./ElapsedTime";
-import StatePill from "./StatePill";
-import UuidChip from "../UuidChip";
+import StatePill from "../domain/StatePill";
+import UuidChip from "../primitives/UuidChip";
 import { RunCard } from "./RunDetails";
 import WipedTooltip from "./WipedTooltip";
 import { cn } from "../../utils/cn";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 /**
  * A work order row in History plus, when expanded, its runs and steps

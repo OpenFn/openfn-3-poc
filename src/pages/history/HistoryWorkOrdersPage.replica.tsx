@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { projectLabel } from "../../components/shell/projectPickerItems";
 import { historySearchFields, historyStatuses } from "../../constants";
 import { findDataclip, stepsOf, workOrdersIn } from "../../mock-data/history";

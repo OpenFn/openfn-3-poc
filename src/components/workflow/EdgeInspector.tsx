@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { EdgeConditionType, EditorEdge } from "../../types/workflow-graph";
-import Button from "../Button";
-import ConfirmModal from "../ConfirmModal";
-import Disclosure from "../Disclosure";
-import { Select, TextArea, TextInput } from "../Inputs";
-import TextLink from "../TextLink";
-import Toggle from "../Toggle";
+import Button from "../primitives/Button";
+import ConfirmModal from "../primitives/ConfirmModal";
+import Disclosure from "../primitives/Disclosure";
+import { Select, TextArea, TextInput } from "../primitives/Inputs";
+import TextLink from "../primitives/TextLink";
+import Toggle from "../primitives/Toggle";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   edge: EditorEdge;

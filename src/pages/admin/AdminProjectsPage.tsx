@@ -1,9 +1,9 @@
-import Button from "../../components/Button";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Button from "../../components/primitives/Button";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import AdminProjectForm from "../../components/admin/AdminProjectForm";
 import AdminProjectsTable from "../../components/admin/AdminProjectsTable";
-import ProjectDeletionModal from "../../components/project-settings/ProjectDeletionModal";
+import ProjectDeletionModal from "../../components/domain/ProjectDeletionModal";
 import type { AdminDeleteProject, AdminProjectForm as FormData, AdminProjectFormValues, AdminProjectRow } from "../../types/admin";
 import { useAction } from "../../utils/useAction";
 

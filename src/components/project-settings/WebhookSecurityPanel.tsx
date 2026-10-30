@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../Button";
-import Card from "../Card";
-import SectionHeader from "../SectionHeader";
-import TextLink from "../TextLink";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import SectionHeader from "../primitives/SectionHeader";
+import TextLink from "../primitives/TextLink";
 import LinkedUsageModal from "./LinkedUsageModal";
 import WebhookAuthMethodDeleteModal from "./WebhookAuthMethodDeleteModal";
 import WebhookAuthMethodFormModal from "./WebhookAuthMethodFormModal";

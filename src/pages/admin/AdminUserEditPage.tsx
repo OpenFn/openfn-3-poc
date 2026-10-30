@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import UserForm from "../../components/admin/UserForm";
 import type { AdminUserRow, UserFormValues } from "../../types/admin";
 

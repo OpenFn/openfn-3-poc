@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import AdminMaintenancePage from "./AdminMaintenancePage";
 
 function renderPage(props: Partial<React.ComponentProps<typeof AdminMaintenancePage>> = {}) {

@@ -1,6 +1,6 @@
-import TextLink from "../TextLink";
-import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import Button from "../Button";
+import TextLink from "../primitives/TextLink";
+import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import Button from "../primitives/Button";
 import { linkedUsageSummary } from "../../utils/format";
 import type { WebhookAuthMethodRow } from "../../types/project-settings";
 

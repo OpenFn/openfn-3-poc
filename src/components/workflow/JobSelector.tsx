@@ -1,6 +1,6 @@
 import type { EditorJob } from "../../types/workflow-graph";
-import ButtonMenu from "../ButtonMenu";
-import { MenuItem } from "../Menu";
+import ButtonMenu from "../primitives/ButtonMenu";
+import { MenuItem } from "../primitives/Menu";
 
 /**
  * The job name dropdown at the start of the IDE header (JobSelector.tsx):

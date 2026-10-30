@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { templateGraph } from "../../utils/workflowGraph";
 import type { WorkflowTemplate } from "../../types/workflow-graph";
-import Button from "../Button";
-import Card from "../Card";
-import Heading from "../Heading";
-import Modal from "../Modal";
-import SearchInput from "../SearchInput";
+import Button from "../primitives/Button";
+import Card from "../primitives/Card";
+import Heading from "../primitives/Heading";
+import Modal from "../primitives/Modal";
+import SearchInput from "../primitives/SearchInput";
 import WorkflowDiagram from "./WorkflowDiagram";
 import { matchesQuery } from "../../utils/search";
 

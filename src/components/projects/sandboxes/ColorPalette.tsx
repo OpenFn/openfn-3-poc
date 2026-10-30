@@ -1,5 +1,5 @@
 import { sandboxColorPalette } from "../../../constants";
-import { Label } from "../../Inputs";
+import { Label } from "../../primitives/Inputs";
 
 /**
  * The sandbox colour picker (SandboxLive.Components.color_palette): a grid

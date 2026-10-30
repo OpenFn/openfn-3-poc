@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useToast } from "../components/Toast";
+import { useToast } from "../components/primitives/Toast";
 import { errorMessage, RequestError } from "./errors";
 
 /** The lifecycle of one request: idle, pending, or failed. */

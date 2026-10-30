@@ -66,3 +66,24 @@ export interface AccountDeletionSettings {
   /** Already scheduled for deletion and still has project activity: the modal only explains why it can't go ahead. Only true when `hasActivityInProjects` is. */
   blocked: boolean;
 }
+
+/** What the host sends the profile page (ProfilePageProps adds the deletion modal and the actions). */
+export interface ProfilePageData {
+  /**
+   * The signed-in user. The basic information form starts from these values
+   * when it mounts or `user.id` changes; new values for the same user don't
+   * reset what's being typed.
+   */
+  user: ProfileDetail;
+  mfa: MfaSettings;
+  /**
+   * Linking happens in another tab, so the host watches for it to finish, then
+   * sends the new `status` and announces "GitHub account linked successfully",
+   * or "Oops! GitHub account failed to link. Please try again" (Lightning's
+   * `OauthTokenAdded` / `OauthTokenFailed` events).
+   */
+  github: GithubAccessSettings;
+  /** The user's "experimental_features" preference. */
+  experimentalFeatures: boolean;
+  deletion: AccountDeletionSettings;
+}

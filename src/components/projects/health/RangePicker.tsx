@@ -1,6 +1,6 @@
 import { HEALTH_RANGES } from "../../../constants";
 import type { HealthRange } from "../../../types/workflow-health";
-import SegmentedControl from "../../SegmentedControl";
+import SegmentedControl from "../../primitives/SegmentedControl";
 
 /**
  * The health page's time range (assets/js/health/RangePicker.tsx): a radio

@@ -1,10 +1,10 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import IconButton from "../IconButton";
-import { Checkbox, TextInput } from "../Inputs";
-import Menu, { MenuItem } from "../Menu";
-import Popover from "../Popover";
-import Text from "../Text";
+import IconButton from "../primitives/IconButton";
+import { Checkbox, TextInput } from "../primitives/Inputs";
+import Menu, { MenuItem } from "../primitives/Menu";
+import Popover from "../primitives/Popover";
+import Text from "../primitives/Text";
 
 /**
  * A filter chip that shows a filter's state and opens its dropdown

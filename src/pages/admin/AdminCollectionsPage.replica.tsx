@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { adminCollectionRows, collectionProjectOptions } from "../../mock-data/admin";
 import { simulateRequest } from "../../mock-data/request";
 import type { AdminCollectionRow } from "../../types/admin";

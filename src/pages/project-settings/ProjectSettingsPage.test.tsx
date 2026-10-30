@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import userEvent from "@testing-library/user-event";
 import type { CredentialRow, KeychainCredentialRow } from "../../types/credentials";
 import type { CollaboratorRow, WebhookAuthMethodRow } from "../../types/project-settings";

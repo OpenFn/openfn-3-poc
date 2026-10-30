@@ -1,6 +1,6 @@
-import Alert from "../Alert";
-import CopyButton from "../CopyButton";
-import { TextInput } from "../Inputs";
+import Alert from "../primitives/Alert";
+import CopyButton from "../primitives/CopyButton";
+import { TextInput } from "../primitives/Inputs";
 
 /**
  * The banner shown once after "Generate New Token"

@@ -1,8 +1,8 @@
-import { Table, Td, Th, Tr } from "../Table";
-import Button from "../Button";
-import DateTime from "../DateTime";
-import Heading from "../Heading";
-import IconButton from "../IconButton";
+import { Table, Td, Th, Tr } from "../primitives/Table";
+import Button from "../primitives/Button";
+import DateTime from "../primitives/DateTime";
+import Heading from "../primitives/Heading";
+import IconButton from "../primitives/IconButton";
 import type { ApiToken } from "../../types/tokens";
 
 /**

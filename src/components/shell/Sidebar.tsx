@@ -4,7 +4,7 @@ import { cn } from "../../utils/cn";
 import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
-import Tooltip from "../Tooltip";
+import Tooltip from "../primitives/Tooltip";
 
 /** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
 export type SidebarMenu = "project" | "profile" | "admin";

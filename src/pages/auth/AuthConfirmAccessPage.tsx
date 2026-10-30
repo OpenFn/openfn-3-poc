@@ -5,11 +5,11 @@ import AuthPanelLayout, {
   AuthPanelTitle,
   HavingProblems,
 } from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/Alert";
-import TextLink from "../../components/TextLink";
-import Button from "../../components/Button";
-import UserAvatar from "../../components/UserAvatar";
-import { PasswordInput, TextInput } from "../../components/Inputs";
+import Alert from "../../components/primitives/Alert";
+import TextLink from "../../components/primitives/TextLink";
+import Button from "../../components/primitives/Button";
+import UserAvatar from "../../components/primitives/UserAvatar";
+import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 

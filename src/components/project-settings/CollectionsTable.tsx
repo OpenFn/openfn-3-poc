@@ -1,7 +1,7 @@
-import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import { useTableSort, type SortValue } from "../useTableSort";
-import Button from "../Button";
-import IconButton from "../IconButton";
+import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import { useTableSort, type SortValue } from "../../utils/useTableSort";
+import Button from "../primitives/Button";
+import IconButton from "../primitives/IconButton";
 import type { CollectionRow } from "../../types/project-settings";
 import { formatBytes } from "../../utils/format";
 

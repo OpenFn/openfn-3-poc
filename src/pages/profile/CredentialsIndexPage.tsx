@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import CredentialIndex from "../../components/credentials/CredentialIndex";
 import NewCredentialMenuButton from "../../components/credentials/NewCredentialMenuButton";
 import type { CredentialActions, CredentialIndexData } from "../../types/credentials";

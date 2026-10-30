@@ -1,4 +1,4 @@
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/primitives/Toast";
 import { projectsOverviewFor } from "../../mock-data/dashboard-stats";
 import { simulateRequest } from "../../mock-data/request";
 import { useCurrentUser } from "../../session/session";

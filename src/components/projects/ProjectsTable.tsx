@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { useRouter } from "../../routing/router";
 import type { ProjectOverview } from "../../types/workflows";
-import { EmptyState, Table, Td, Th, Tr } from "../Table";
-import TableTitle from "../TableTitle";
-import DateTime from "../DateTime";
-import Button from "../Button";
-import TextLink from "../TextLink";
-import { useTableSort, type SortValue } from "../useTableSort";
+import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import TableTitle from "../primitives/TableTitle";
+import DateTime from "../primitives/DateTime";
+import Button from "../primitives/Button";
+import TextLink from "../primitives/TextLink";
+import { useTableSort, type SortValue } from "../../utils/useTableSort";
 import { capitalize } from "../../utils/format";
 
 const sortMap: Record<"name" | "last_updated_at", (p: ProjectOverview) => SortValue> = {

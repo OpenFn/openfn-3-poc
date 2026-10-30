@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -96,19 +97,19 @@ const colourRules = ({ palette = true, literals = true, amber = false } = {}) =>
     : []),
 ]
 
-// Pages and feature components compose primitives (src/components/*.tsx).
+// Pages and feature components compose primitives (src/components/primitives/).
 const rawControl = {
   selector: 'JSXOpeningElement[name.name=/^(button|input|select|textarea|table)$/]',
   message:
     'Raw control: use Button, IconButton, the Inputs controls or Table. If this element deliberately is not that control, disable it with a reason.',
 }
 
-// Type size comes from Text or Heading (src/components/Text.tsx). Weight,
+// Type size comes from Text or Heading (src/components/primitives/Text.tsx). Weight,
 // italic and mono stay classes: they emphasise text inside its size. Only the
-// history area is held to it so far.
+// history area and domain/ are held to it so far.
 const typeRules = banned(
   '\\b(?:text-(?:xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
-  'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/Text.tsx.'
+  'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/primitives/Text.tsx.'
 )
 
 const srcRules = (colours) => ['error', ...designRules, ...colours, liveViewAttribute]
@@ -157,6 +158,37 @@ const sessionImports = {
   message: 'Take the user and permissions as props; the replica reads the session.',
 }
 
+const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.test.{ts,tsx}']
+const seamImports = (extra = []) => [
+  'error',
+  { paths: routerImports, patterns: [modelImports, mockDataImports, sessionImports, ...extra] },
+]
+
+// Each folder in src/components/ other than primitives/ and domain/ is an
+// area of feature components (history/, credentials/, …) or the app shell (shell/).
+const areas = fs
+  .readdirSync(new URL('./src/components', import.meta.url), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && !['primitives', 'domain'].includes(entry.name))
+  .map((entry) => entry.name)
+const tiers = 'See .claude/rules/components.md, Tiers.'
+const pageImports = {
+  regex: '(^|/)pages(/|$)',
+  message: `Only App.tsx, src/index.ts and a page's own .replica.tsx import a page. Move what you need into src/types/ or a component. ${tiers}`,
+}
+const primitiveImports = {
+  // From primitives/, `../x` is a sibling folder in src/components/.
+  regex: '^\\.\\./[^.]|(^|/)pages(/|$)',
+  message: `A primitive uses only other primitives (and utils, types, theme). Pass the feature in as a prop or children. ${tiers}`,
+}
+const domainImports = {
+  regex: '^\\.\\./(?!primitives(/|$))[^.]|(^|/)pages(/|$)',
+  message: `A domain component uses only primitives and other domain components. Pass the feature in as a prop or children. ${tiers}`,
+}
+const otherAreaImports = (area) => ({
+  regex: `^(\\.\\./)+(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
+  message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
+})
+
 // The design system runs outside Lightning too (the replica, Storybook), so it
 // can't lean on LiveView or the browser URL. URLs go through src/routing.
 const hostMessage = 'Design-system code must not depend on LiveView or the browser URL; use useRouter() from src/routing/router.'
@@ -191,22 +223,22 @@ export default defineConfig([
   },
   {
     files: ['src/pages/**/*.tsx', 'src/components/*/**/*.tsx'],
-    ignores: ['**/*.stories.tsx'],
+    ignores: ['src/components/primitives/**', '**/*.stories.tsx'],
     rules: { 'no-restricted-syntax': consumerRules(colourRules()) },
   },
   {
-    files: ['src/components/history/**/*.tsx'],
+    files: ['src/components/history/**/*.tsx', 'src/components/domain/**/*.tsx'],
     ignores: ['**/*.stories.tsx', '**/*.test.tsx'],
     rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules] },
   },
   // Raw palette colours, confined to the files that are about colour.
   // Tag colours:
-  { files: ['src/components/Pill.tsx'], rules: { 'no-restricted-syntax': srcRules(colourRules({ palette: false })) } },
+  { files: ['src/components/primitives/Pill.tsx'], rules: { 'no-restricted-syntax': srcRules(colourRules({ palette: false })) } },
   // The theme files and the run-state map:
   { files: ['src/theme/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
   // Monaco's theme, the sandbox colours (user data) and the health charts' palette:
   {
-    files: ['src/components/monacoTheme.ts', 'src/constants.ts', 'src/components/projects/health/palette.ts'],
+    files: ['src/theme/monacoTheme.ts', 'src/constants.ts', 'src/components/projects/health/palette.ts'],
     rules: { 'no-restricted-syntax': srcRules(colourRules({ literals: false })) },
   },
   // Chart palettes:
@@ -219,11 +251,12 @@ export default defineConfig([
   { files: ['src/**/*.test.{ts,tsx}', 'src/mock-data/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
   {
     files: ['src/pages/**/*.test.tsx', 'src/components/*/**/*.test.tsx'],
+    ignores: ['src/components/primitives/**'],
     rules: { 'no-restricted-syntax': consumerRules([]) },
   },
   // Stories are checked for colour too. Hex stays allowed: it is data there (sandbox colours, chart values).
   { files: ['src/**/*.stories.tsx'], rules: { 'no-restricted-syntax': ['error', ...colourRules({ literals: false })] } },
-  { files: ['src/components/Menu.stories.tsx'], rules: { 'no-restricted-syntax': ['error', ...colourRules({ literals: false, amber: true })] } },
+  { files: ['src/components/primitives/Menu.stories.tsx'], rules: { 'no-restricted-syntax': ['error', ...colourRules({ literals: false, amber: true })] } },
   // The amber notices (support user, experimental):
   {
     files: ['src/components/shell/UserMenu.tsx', 'src/components/shell/Sidebar.tsx'],
@@ -247,7 +280,7 @@ export default defineConfig([
   {
     // Annotations navigate through the router adapter too.
     files: ['src/annotations/**/*.{ts,tsx}'],
-    rules: { 'no-restricted-imports': ['error', { paths: routerImports }] },
+    rules: { 'no-restricted-imports': ['error', { paths: routerImports, patterns: [pageImports] }] },
   },
   {
     // The data seam: components, pages and utils get records and permission
@@ -256,20 +289,48 @@ export default defineConfig([
     // fixtures. An import that still crosses the seam says why, with
     // `-- wiring: …` (it stays) or `-- debt: …` (page not yet split).
     files: ['src/components/**/*.{ts,tsx}', 'src/pages/**/*.{ts,tsx}', 'src/utils/**/*.{ts,tsx}'],
-    ignores: ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.test.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: routerImports,
-          patterns: [modelImports, mockDataImports, sessionImports],
-        },
-      ],
-    },
+    ignores: seamIgnores,
+    rules: { 'no-restricted-imports': seamImports() },
+  },
+  // The tiers: imports only go down, pages → feature components → domain →
+  // primitives. A primitive uses only other primitives; a domain component
+  // uses primitives and domain; a feature component uses those, the shell and
+  // its own area. These blocks repeat the seam's patterns, because a later
+  // block replaces an earlier one's options.
+  {
+    files: ['src/components/primitives/**/*.{ts,tsx}'],
+    ignores: seamIgnores,
+    rules: { 'no-restricted-imports': seamImports([primitiveImports]) },
+  },
+  {
+    files: ['src/components/domain/**/*.{ts,tsx}'],
+    ignores: seamIgnores,
+    rules: { 'no-restricted-imports': seamImports([domainImports]) },
+  },
+  ...areas.map((area) => ({
+    files: [`src/components/${area}/**/*.{ts,tsx}`],
+    ignores: seamIgnores,
+    rules: { 'no-restricted-imports': seamImports([otherAreaImports(area), pageImports]) },
+  })),
+  { files: ['src/utils/**/*.{ts,tsx}'], ignores: seamIgnores, rules: { 'no-restricted-imports': seamImports([pageImports]) } },
+  {
+    // Only the route table, the package entry and a page's own wrapper import a page.
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      ...seamIgnores,
+      'src/pages/**',
+      'src/components/**',
+      'src/utils/**',
+      'src/types/**',
+      'src/annotations/**',
+      'src/App.tsx',
+      'src/index.ts',
+    ],
+    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports] }] },
   },
   {
     // Contract shapes are written by hand, never built on models or fixtures.
     files: ['src/types/**/*.ts'],
-    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, mockDataImports] }] },
+    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, mockDataImports, pageImports] }] },
   },
 ])

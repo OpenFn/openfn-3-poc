@@ -1,7 +1,7 @@
 /** Project settings panels: collections, webhook auth, exports, GitHub sync. Types only: no data, no behaviour. */
 
 import type { CredentialIndexData, KeychainCredentialRow } from "./credentials";
-import type { ProjectRole, RetentionPolicy } from "./projects";
+import type { CurrentProject, ProjectRole, RetentionPolicy } from "./projects";
 
 export type WebhookAuthType = "basic" | "api";
 
@@ -213,4 +213,20 @@ export interface CredentialsSettings extends CredentialIndexData {
   canCreateProjectCredential: boolean;
   canCreateKeychainCredential: boolean;
   canEditKeychainCredential: boolean;
+}
+
+/** What the host sends the project settings page, one field per tab (ProjectSettingsPageProps adds the picker label, the deletion modal and the actions). */
+export interface ProjectSettingsPageData {
+  project: CurrentProject;
+  /** A sandbox's parent; null for a top-level project. */
+  parent: ParentProjectRef | null;
+  setup: SetupSettings;
+  credentials: CredentialsSettings;
+  collections: CollectionsSettings;
+  webhookSecurity: WebhookSecuritySettings;
+  collaboration: CollaborationSettings;
+  security: SecuritySettings;
+  githubSync: GithubSyncSettings;
+  dataStorage: DataStorageSettings;
+  historyExports: HistoryExportRow[];
 }

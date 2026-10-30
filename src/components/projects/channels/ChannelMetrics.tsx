@@ -1,5 +1,5 @@
 import MetricCard from "../MetricCard";
-import TextLink from "../../TextLink";
+import TextLink from "../../primitives/TextLink";
 
 /** The two stat cards above the channels table: Total Channels and Total Requests, with "View all" to the channel logs. */
 export default function ChannelMetrics({

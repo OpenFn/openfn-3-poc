@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/Toast";
+import { ToastProvider } from "../../components/primitives/Toast";
 import { RouterProvider, type Router } from "../../routing/router";
 import type { MergePreviewResult, MergeWorkflowRow, SandboxForm, SandboxRow } from "../../types/sandboxes";
 import { RequestError } from "../../utils/errors";

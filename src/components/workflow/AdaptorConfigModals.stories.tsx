@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import Button from "../Button";
+import Button from "../primitives/Button";
 import { findWorkflowGraph } from "../../mock-data/workflow";
 import AdaptorConfigModals, { type AdaptorModal } from "./AdaptorConfigModals";
 

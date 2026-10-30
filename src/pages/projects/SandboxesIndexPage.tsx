@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Button from "../../components/Button";
-import Header from "../../components/Header";
-import { Centered, PageContent } from "../../components/PageContent";
+import Button from "../../components/primitives/Button";
+import Header from "../../components/primitives/Header";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import TableTitle from "../../components/TableTitle";
-import DeleteSandboxModal from "../../components/projects/sandboxes/DeleteSandboxModal";
+import TableTitle from "../../components/primitives/TableTitle";
+import DeleteSandboxModal from "../../components/domain/DeleteSandboxModal";
 import MergeSandboxModal from "../../components/projects/sandboxes/MergeSandboxModal";
 import SandboxFormModal from "../../components/projects/sandboxes/SandboxFormModal";
 import WorkspaceList from "../../components/projects/sandboxes/WorkspaceList";

@@ -1,8 +1,8 @@
-import Alert from "../../components/Alert";
-import Header from "../../components/Header";
-import Button from "../../components/Button";
-import { PasswordInput, TextInput } from "../../components/Inputs";
-import { Centered, PageContent } from "../../components/PageContent";
+import Alert from "../../components/primitives/Alert";
+import Header from "../../components/primitives/Header";
+import Button from "../../components/primitives/Button";
+import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
+import { Centered, PageContent } from "../../components/primitives/PageContent";
 import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";

@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
-import ConfirmModal from "../ConfirmModal";
-import ButtonMenu from "../ButtonMenu";
-import { MenuItem } from "../Menu";
-import { EmptyState } from "../Table";
+import ConfirmModal from "../primitives/ConfirmModal";
+import ButtonMenu from "../primitives/ButtonMenu";
+import { MenuItem } from "../primitives/Menu";
+import { EmptyState } from "../primitives/Table";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
 import CredentialFormModal from "./CredentialFormModal";
 import OauthClientFormModal from "./OauthClientFormModal";

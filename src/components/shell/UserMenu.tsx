@@ -1,5 +1,5 @@
-import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../Menu";
-import UserAvatar from "../UserAvatar";
+import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../primitives/Menu";
+import UserAvatar from "../primitives/UserAvatar";
 
 /** What the account menu shows of the signed-in user. */
 export interface MenuUser {

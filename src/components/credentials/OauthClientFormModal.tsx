@@ -1,9 +1,9 @@
 import { useState } from "react";
-import FormModal from "../FormModal";
-import Alert from "../Alert";
-import Card from "../Card";
-import Pill from "../Pill";
-import { Checkbox, Field, PasswordInput, TextInput } from "../Inputs";
+import FormModal from "../primitives/FormModal";
+import Alert from "../primitives/Alert";
+import Card from "../primitives/Card";
+import Pill from "../primitives/Pill";
+import { Checkbox, Field, PasswordInput, TextInput } from "../primitives/Inputs";
 import ProjectsPicker from "./ProjectsPicker";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
