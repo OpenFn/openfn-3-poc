@@ -6,13 +6,16 @@ import Pagination from "../primitives/Pagination";
 import Pill from "../primitives/Pill";
 import DateTime from "../primitives/DateTime";
 import { Table, Td, Th, Tr } from "../primitives/Table";
+import Text from "../primitives/Text";
 import AuditChanges from "./AuditChanges";
 
 function TwoLine({ label, sub }: { label: string; sub: string }) {
   return (
     <>
       <div className="truncate text-strong">{label}</div>
-      <div className="truncate text-xs">{sub}</div>
+      <Text as="div" variant="body-sm" className="truncate">
+        {sub}
+      </Text>
     </>
   );
 }
