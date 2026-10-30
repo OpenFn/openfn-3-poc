@@ -184,8 +184,7 @@ function toggleTooltip(triggerType: string, enabled: boolean, lifecycle: boolean
 function Count({ value, to, children }: { value: number; to: string; children: ReactNode }) {
   return (
     <>
-      {/* eslint-disable-next-line no-restricted-syntax -- debt: 18px count has no Text style */}
-      <div className="text-lg">{value > 0 ? <TextLink to={to}>{value}</TextLink> : <span className="text-faint">0</span>}</div>{" "}
+      <Text as="div" variant="stat-sm">{value > 0 ? <TextLink to={to}>{value}</TextLink> : <span className="text-faint">0</span>}</Text>{" "}
       <Text as="div" variant="body-sm" className="mt-1">{value > 0 ? children : "N/A"}</Text>
     </>
   );

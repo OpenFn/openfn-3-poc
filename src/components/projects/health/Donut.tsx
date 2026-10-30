@@ -82,12 +82,11 @@ export default function Donut({
           )}
         </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          {/* eslint-disable-next-line no-restricted-syntax -- debt: 24px stat number has no Text style */}
-          <span className="text-2xl font-semibold text-strong">{middle.value}</span>
+          <Text variant="stat-md" className="text-strong">{middle.value}</Text>
           <Text variant="body-sm" className="text-muted">{middle.label}</Text>
         </div>
       </div>
-      <ul className={LEGEND}>
+      <Text as="ul" className={LEGEND}>
         {slices.map(({ key, label, color, value, href }) => (
           <li key={key}>
             <TextLink to={href} variant="plain" className="flex items-center gap-1.5">
@@ -98,7 +97,7 @@ export default function Donut({
             </TextLink>
           </li>
         ))}
-      </ul>
+      </Text>
     </div>
   );
 }

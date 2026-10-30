@@ -29,6 +29,9 @@ found 44 combinations of size, weight and spacing.
 | `label-sm` | 12px medium | A small name beside or above a value |
 | `code-md` | 14px mono | An id or path in 14px copy |
 | `code-sm` | 12px mono | Hashes, byte sizes, log lines |
+| `stat-lg` | 30px bold | The number a metric card is about |
+| `stat-md` | 24px semibold | The total in the middle of a chart |
+| `stat-sm` | 18px | A count that stands alone in a table cell |
 
 `variant` is the one prop: it picks which of `Text`'s looks, as Prop names
 (`src/components/CLAUDE.md`) uses it on every component.
