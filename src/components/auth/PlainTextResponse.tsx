@@ -1,3 +1,5 @@
+import Text from "../primitives/Text";
+
 /**
  * A bare text/plain response as the browser shows it. Lightning answers
  * blocked routes (e.g. /users/register with signup off) this way, with no
@@ -5,6 +7,8 @@
  */
 export default function PlainTextResponse({ children }: { children: string }) {
   return (
-    <pre className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-sm text-strong">{children}</pre>
+    <Text as="pre" className="min-h-screen whitespace-pre-wrap break-words bg-surface p-2 text-strong">
+      {children}
+    </Text>
   );
 }

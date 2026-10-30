@@ -25,6 +25,10 @@ export interface AdminProjectsPageProps {
   onCancelDeletion: (id: string) => Promise<void>;
   /** Closes the deletion dialog. */
   onClose: () => void;
+  /** Where "New Project" goes. */
+  newProjectHref: string;
+  /** The projects list, where the form's Cancel goes. */
+  cancelHref: string;
 }
 
 /**
@@ -43,6 +47,8 @@ export default function AdminProjectsPage({
   onDelete,
   onCancelDeletion,
   onClose,
+  newProjectHref,
+  cancelHref,
 }: AdminProjectsPageProps) {
   const cancel = useAction(onCancelDeletion, { onError: "toast" });
   const title = form ? (form.project ? "Edit Project" : "New Project") : "Projects";
@@ -51,7 +57,7 @@ export default function AdminProjectsPage({
     <PageContent
       header={
         <Header title={title}>
-          <Button to="/settings/projects/new" icon="hero-plus">
+          <Button to={newProjectHref} icon="hero-plus">
             New Project
           </Button>
         </Header>
@@ -68,7 +74,11 @@ export default function AdminProjectsPage({
           />
         )}
         {form ? (
-          <AdminProjectForm key={form.project?.id ?? "new"} project={form.project ?? undefined} users={form.users} onSave={onSave} />
+          <AdminProjectForm
+            key={form.project?.id ?? "new"} project={form.project ?? undefined} users={form.users}
+            onSave={onSave}
+            cancelHref={cancelHref}
+          />
         ) : (
           <AdminProjectsTable projects={projects} onCancelDeletion={(project) => void cancel.run(project.id)} />
         )}

@@ -16,8 +16,6 @@ export interface SidebarProps {
   user: MenuUser;
   /** Superusers get the Admin menu in place of the support links. */
   canAccessAdmin: boolean;
-  /** Whether the instance exposes the live dashboard ("Sys Info"). */
-  sysInfo?: boolean;
   /** Address the "Support" link mails. */
   adminEmail: string;
   /** Release label under the logo. */
@@ -106,12 +104,12 @@ function AdminItems() {
 }
 
 /** Support links for regular users; superusers get the Admin menu instead. */
-function FooterItems({ canAccessAdmin, sysInfo, adminEmail }: { canAccessAdmin: boolean; sysInfo: boolean; adminEmail: string }) {
+function FooterItems({ canAccessAdmin, adminEmail }: { canAccessAdmin: boolean; adminEmail: string }) {
   if (canAccessAdmin) {
     return (
       <>
         <NavItem to="/settings/projects" icon="hero-cog-6-tooth" label="Admin Menu" />
-        {sysInfo && <NavItem to="/dashboard" icon="hero-exclamation-triangle" label="Sys Info" />}
+        <NavItem to="/dashboard" icon="hero-exclamation-triangle" label="Sys Info" />
       </>
     );
   }
@@ -124,16 +122,25 @@ function FooterItems({ canAccessAdmin, sysInfo, adminEmail }: { canAccessAdmin: 
         target="_self"
         icon="hero-lifebuoy-mini"
         label="Support"
-        title={adminEmail}
+        tooltip={adminEmail}
       />
     </>
   );
 }
 
 /** The OpenFn logo and release version at the foot of the side menu. */
-export function SidebarLogo({ releaseLabel, collapsed = false }: { releaseLabel: string; collapsed?: boolean }) {
+export function SidebarLogo({
+  releaseLabel,
+  collapsed = false,
+  className,
+}: {
+  releaseLabel: string;
+  collapsed?: boolean;
+  /** Placement only. */
+  className?: string;
+}) {
   return (
-    <div className="primary-light mt-3 border-t border-white/10 pt-5 text-center">
+    <div className={cn("primary-light border-t border-white/10 pt-5 text-center", className)}>
       {collapsed ? <OpenFnLogoCollapsed className="mx-auto h-6" /> : <OpenFnLogo className="mx-auto h-6" />}
       {/* eslint-disable-next-line no-restricted-syntax -- below text-xs, the smallest step on the scale */}
       <code className="block py-1 text-[8px] opacity-50">{releaseLabel}</code>
@@ -153,7 +160,6 @@ export default function Sidebar({
   project,
   user,
   canAccessAdmin,
-  sysInfo = true,
   adminEmail,
   releaseLabel,
   collapsed,
@@ -194,7 +200,7 @@ export default function Sidebar({
               <>
                 {menu === "project" && project ? <ProjectItems project={project} user={user} /> : <ProfileItems />}
                 <div className="grow" />
-                <FooterItems canAccessAdmin={canAccessAdmin} sysInfo={sysInfo} adminEmail={adminEmail} />
+                <FooterItems canAccessAdmin={canAccessAdmin} adminEmail={adminEmail} />
               </>
             )}
           </div>
@@ -211,7 +217,7 @@ export default function Sidebar({
               </Tooltip>
             </div>
           )}
-          <SidebarLogo releaseLabel={releaseLabel} collapsed={collapsed} />
+          <SidebarLogo releaseLabel={releaseLabel} collapsed={collapsed} className="mt-3" />
           {/* eslint-disable-next-line no-restricted-syntax -- sidebar chrome, styled by the themes through .sidebar-toggle-btn */}
           <button
             type="button"

@@ -87,7 +87,7 @@ export default function UserDeletionModal({
       )}
       {email !== undefined && (
         <p>
-          To confirm, type <strong className="font-medium text-strong">{email}</strong> below.
+          To confirm, type <strong className="font-medium wrap-break-word text-strong">{email}</strong> below.
         </p>
       )}
     </ConfirmModal>

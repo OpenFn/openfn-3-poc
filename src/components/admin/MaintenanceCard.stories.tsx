@@ -13,4 +13,4 @@ export default meta;
 type Story = StoryObj<typeof MaintenanceCard>;
 
 export const Default: Story = {};
-export const Running: Story = { args: { running: true } };
+export const Pending: Story = { args: { pending: true } };

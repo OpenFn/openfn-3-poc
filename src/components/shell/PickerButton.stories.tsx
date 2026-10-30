@@ -6,5 +6,9 @@ export default meta;
 type Story = StoryObj<typeof PickerButton>;
 
 export const Project: Story = {};
-export const Sandbox: Story = { args: { label: "openhie-project/fhir-mapping-v2", isSandbox: true, color: "#f59e0b" } };
-export const DeepSandbox: Story = { args: { label: "openhie-project/fhir/mapping-v2", isSandbox: true, color: "#10b981" } };
+export const Sandbox: Story = { args: { label: "openhie-project/fhir-mapping-v2", isSandbox: true, sandboxColor: "#f59e0b" } };
+export const DeepSandbox: Story = { args: { label: "openhie-project/fhir/mapping-v2", isSandbox: true, sandboxColor: "#10b981" } };
+/** A long project name. */
+export const LongProject: Story = {
+  args: { label: "openhie-national-health-information-exchange-fhir-mapping-and-terminology-services" },
+};

@@ -33,7 +33,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof AdminUsersPage>> 
   render(
     <RouterProvider value={router}>
       <ToastProvider>
-        <AdminUsersPage users={rows} deleteUser={null} {...handlers} {...props} />
+        <AdminUsersPage users={rows} deleteUser={null} newUserHref="/settings/users/new" {...handlers} {...props} />
       </ToastProvider>
     </RouterProvider>
   );

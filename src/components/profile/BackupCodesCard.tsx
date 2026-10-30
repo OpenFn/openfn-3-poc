@@ -5,6 +5,7 @@ import InfoTooltip from "../primitives/InfoTooltip";
 import SectionHeader from "../primitives/SectionHeader";
 import type { BackupCode } from "../../types/tokens";
 import { useCopy } from "../../utils/useCopy";
+import Text from "../primitives/Text";
 
 /**
  * The recovery codes card (backup_codes_live/index.html.heex): the codes
@@ -13,13 +14,13 @@ import { useCopy } from "../../utils/useCopy";
 export default function BackupCodesCard({
   codes,
   onRegenerate,
-  regenerating = false,
+  pending = false,
   onPrint,
 }: {
   codes: BackupCode[];
   onRegenerate?: () => void;
   /** Shows the regenerate button pending. */
-  regenerating?: boolean;
+  pending?: boolean;
   /** Opens the printable copy. */
   onPrint?: () => void;
 }) {
@@ -40,10 +41,10 @@ export default function BackupCodesCard({
         {codes.map((c) => (
           <div key={c.code} className="text-center tracking-widest">
             {c.usedAt ? (
-              <span className="text-sm text-faint">
+              <Text className="text-faint">
                 <span className="line-through">{c.code}</span>
                 <InfoTooltip title={`Code used on ${c.usedAt.slice(0, 19).replace("T", " ")}`} />
-              </span>
+              </Text>
             ) : (
               c.code
             )}
@@ -68,7 +69,7 @@ export default function BackupCodesCard({
           title="Generate new backup codes"
           subtitle="When you generate new backup codes, you must copy or print the new codes. Your old codes won't work anymore."
           action={
-            <Button variant="secondary" size="lg" onClick={onRegenerate} pending={regenerating}>
+            <Button variant="secondary" size="lg" onClick={onRegenerate} pending={pending}>
               Generate new backup codes
             </Button>
           }

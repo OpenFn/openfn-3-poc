@@ -1,5 +1,6 @@
 import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../primitives/Menu";
 import UserAvatar from "../primitives/UserAvatar";
+import Text from "../primitives/Text";
 
 /** What the account menu shows of the signed-in user. */
 export interface MenuUser {
@@ -52,17 +53,17 @@ export default function UserMenu({ user }: { user: MenuUser }) {
         </MenuHeader>
         {user.experimentalFeatures && (
           <div className="bg-amber-50 px-4 py-3">
-            <p className="flex items-center gap-1.5 text-sm font-medium text-strong">
+            <Text as="p" variant="label-md" className="flex items-center gap-1.5 text-strong">
               <span className="hero-wrench-screwdriver-mini h-4 w-4 text-amber-600" />
               Experimental features on
-            </p>
-            <p className="mt-0.5 text-xs text-muted">
+            </Text>
+            <Text as="p" variant="body-sm" className="mt-0.5 text-muted">
               You're using features that are still being built. Things may work differently for you than for your
               teammates.
-            </p>
-            <p className="mt-1.5 text-xs text-amber-700">
+            </Text>
+            <Text as="p" variant="body-sm" className="mt-1.5 text-amber-700">
               <MenuLink to="/profile">Turn off in your profile</MenuLink>
-            </p>
+            </Text>
           </div>
         )}
         <MenuDivider />

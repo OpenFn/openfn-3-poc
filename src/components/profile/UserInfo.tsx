@@ -5,7 +5,7 @@ import type { ProfileDetail } from "../../types/profile";
 /** Left column of /profile (profile_live/components.ex `user_info`). */
 export default function UserInfo({ user }: { user: ProfileDetail }) {
   return (
-    <div className="space-y-1 text-sm leading-6 text-muted">
+    <div className="min-w-0 space-y-1 text-sm leading-6 wrap-break-word text-muted">
       <Heading as="h2">
         {user.firstName} {user.lastName}
       </Heading>

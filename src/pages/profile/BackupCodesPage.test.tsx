@@ -13,7 +13,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof BackupCodesPage>>
   const onPrint = vi.fn();
   render(
     <ToastProvider>
-      <BackupCodesPage codes={codes} mfaEnabled onRegenerate={onRegenerate} onPrint={onPrint} {...props} />
+      <BackupCodesPage codes={codes} mfaEnabled onRegenerate={onRegenerate} onPrint={onPrint} profileHref="/profile" {...props} />
     </ToastProvider>
   );
   return { onRegenerate, onPrint };

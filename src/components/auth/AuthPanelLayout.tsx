@@ -3,6 +3,7 @@ import { cn } from "../../utils/cn";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
+import Text from "../primitives/Text";
 
 /**
  * The full-screen gray layout used by the two-factor, confirm-access and
@@ -69,5 +70,9 @@ export function HavingProblems({ children }: { children: ReactNode }) {
 
 /** Helper text under a panel's submit button. */
 export function AuthPanelHint({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-muted">{children}</p>;
+  return (
+    <Text as="p" className="text-muted">
+      {children}
+    </Text>
+  );
 }

@@ -3,15 +3,9 @@ import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   label: string;
-  /** Hero icon class, e.g. `hero-folder`. */
-  icon?: string;
-  /** Event dispatched on `document.body`; the matching Picker listens for it. */
-  openEvent?: string;
   isSandbox?: boolean;
-  /** Accent icon in sandbox mode. */
-  accentIcon?: string;
   /** Sandbox accent background. */
-  color?: string | null;
+  sandboxColor?: string | null;
 }
 
 /**
@@ -19,14 +13,7 @@ interface Props {
  * assets/js/picker/PickerButton.tsx). Sandboxes render in their own colour
  * with a beaker, and a deep path is shortened to its last two parts.
  */
-export default function PickerButton({
-  label,
-  icon = "hero-folder",
-  openEvent = "open-project-picker",
-  isSandbox = false,
-  accentIcon = "hero-beaker",
-  color,
-}: Props) {
+export default function PickerButton({ label, isSandbox = false, sandboxColor }: Props) {
   const parts = label.split("/");
   const truncated = isSandbox && parts.length > 2;
   const visible = truncated ? parts.slice(-2) : parts;
@@ -37,7 +24,8 @@ export default function PickerButton({
       type="button"
       onClick={(e) => {
         e.preventDefault();
-        document.body.dispatchEvent(new CustomEvent(openEvent));
+        // The project Picker listens for this event on document.body.
+        document.body.dispatchEvent(new CustomEvent("open-project-picker"));
       }}
       className={cn(
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
@@ -45,9 +33,9 @@ export default function PickerButton({
           ? "border-transparent text-inverse hover:opacity-90"
           : "border-strong bg-surface text-body hover:border-emphasis hover:bg-hover"
       )}
-      style={isSandbox ? { backgroundColor: color ?? "var(--color-primary-600)" } : undefined}
+      style={isSandbox ? { backgroundColor: sandboxColor ?? "var(--color-primary-600)" } : undefined}
     >
-      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} text-white/80` : `${icon} text-muted`)} />
+      <span className={cn("h-4 w-4", isSandbox ? "hero-beaker text-white/80" : "hero-folder text-muted")} />
       <span>
         {isSandbox && parts.length > 1 ? (
           <>

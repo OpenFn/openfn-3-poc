@@ -15,7 +15,7 @@ interface Props {
   /** Saves the form. Rejects with field errors, which land on their fields, or a message, shown above the buttons. */
   onSave: (values: UserFormValues) => Promise<void>;
   /** Where Cancel goes. */
-  cancelTo?: string;
+  cancelHref: string;
 }
 
 /**
@@ -25,7 +25,7 @@ interface Props {
  * fields. Save is always enabled: pressing it shows what's missing on each
  * field, and the host checks everything again on save.
  */
-export default function UserForm({ user, onSave, cancelTo = "/settings/users" }: Props) {
+export default function UserForm({ user, onSave, cancelHref }: Props) {
   const isEdit = !!user;
   const form = useForm<UserFormValues>({
     initial: {
@@ -95,7 +95,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
           <Button id="save-user" type="submit" pending={form.pending}>
             Save
           </Button>
-          <Button variant="secondary" to={cancelTo}>
+          <Button variant="secondary" to={cancelHref}>
             Cancel
           </Button>
         </div>

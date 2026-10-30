@@ -35,6 +35,8 @@ export default function AdminProjectsPageReplica() {
   return (
     <AdminProjectsPage
       projects={rows}
+      newProjectHref="/settings/projects/new"
+      cancelHref="/settings/projects"
       form={
         isNew
           ? { project: null, users: formUsers }

@@ -10,7 +10,7 @@ const root: AdminUserRow = { ...amara, id: "u2", firstName: "Root", email: "root
 
 function renderPage(props: Partial<React.ComponentProps<typeof AdminUserEditPage>> = {}) {
   const onSave = vi.fn().mockResolvedValue(undefined);
-  render(<AdminUserEditPage user={null} onSave={onSave} {...props} />);
+  render(<AdminUserEditPage user={null} onSave={onSave} cancelHref="/settings/users" {...props} />);
   return { onSave };
 }
 

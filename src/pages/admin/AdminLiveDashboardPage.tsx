@@ -7,5 +7,5 @@ import { liveDashboard } from "../../mock-data/admin";
  * Third party: a static, labelled approximation of its home page.
  */
 export default function AdminLiveDashboardPage() {
-  return <LiveDashboardHome data={liveDashboard} />;
+  return <LiveDashboardHome data={liveDashboard} backHref="/settings/projects" />;
 }

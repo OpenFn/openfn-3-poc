@@ -10,6 +10,7 @@ import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";
 import type { ChangeEmailValues } from "../../types/profile";
+import Text from "../../components/primitives/Text";
 
 /** What the host answers a resend with. */
 export type ResendResult = { status: "sent" } | { status: "throttled"; message: string } | { status: "failed" };
@@ -63,15 +64,17 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
 
   return (
     <AuthPanelLayout title="Confirm your email address" align="top">
-      <AuthPanel className="text-sm text-muted">
-        <p>
-          Your account is blocked pending email confirmation. We sent a confirmation link to{" "}
-          <span className="font-medium">{email}</span> when you signed up — open it to keep using OpenFn.
-        </p>
-        <p>
-          If that link has expired, request a new one. If the address above is wrong, correct it below and we will
-          send the link there instead.
-        </p>
+      <AuthPanel className="wrap-break-word">
+        <Text as="div" className="space-y-4 text-muted">
+          <p>
+            Your account is blocked pending email confirmation. We sent a confirmation link to{" "}
+            <span className="font-medium">{email}</span> when you signed up — open it to keep using OpenFn.
+          </p>
+          <p>
+            If that link has expired, request a new one. If the address above is wrong, correct it below and we will
+            send the link there instead.
+          </p>
+        </Text>
         {resent?.status === "sent" && (
           <Alert tone="info" id="confirmation-email-sent">
             We have sent a new confirmation link to {email}.
@@ -129,9 +132,9 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
         </form>
       </AuthPanel>
 
-      <TextLink className="text-sm" to={logoutTo}>
-        Log out
-      </TextLink>
+      <Text as="p">
+        <TextLink to={logoutTo}>Log out</TextLink>
+      </Text>
     </AuthPanelLayout>
   );
 }

@@ -9,6 +9,8 @@ export interface AdminUserEditPageProps {
   user: AdminUserRow | null;
   /** Saves the form. Resolves when the host has it (it then returns to the list); rejects with field errors or a message. */
   onSave: (values: UserFormValues) => Promise<void>;
+  /** The users list, where Cancel goes. */
+  cancelHref: string;
 }
 
 /**
@@ -17,11 +19,11 @@ export interface AdminUserEditPageProps {
  * it can run unchanged in Lightning; the replica's data and routing live in
  * AdminUserEditPage.replica.tsx.
  */
-export default function AdminUserEditPage({ user, onSave }: AdminUserEditPageProps) {
+export default function AdminUserEditPage({ user, onSave, cancelHref }: AdminUserEditPageProps) {
   return (
     <PageContent header={<Header title={user ? "Edit User" : "New User"} />}>
       <Centered>
-        <UserForm key={user?.id ?? "new"} user={user ?? undefined} onSave={onSave} />
+        <UserForm key={user?.id ?? "new"} user={user ?? undefined} onSave={onSave} cancelHref={cancelHref} />
       </Centered>
     </PageContent>
   );

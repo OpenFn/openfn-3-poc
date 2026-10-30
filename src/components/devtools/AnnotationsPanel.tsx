@@ -6,6 +6,7 @@ import IconButton from "../primitives/IconButton";
 import TextLink from "../primitives/TextLink";
 import AnnotationCard from "./AnnotationCard";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 export const ANNOTATIONS_PANEL_WIDTH = 440;
 
@@ -30,9 +31,9 @@ export default function AnnotationsPanel() {
             Annotations
           </Heading>
           <Tooltip content={ANNOTATIONS_BRANCH}>
-            <p className="truncate text-xs text-muted">
+            <Text as="p" variant="body-sm" className="truncate text-muted">
               {pinnedId ? "Pinned" : "Following the mouse"} · copy of {ANNOTATIONS_BRANCH}
-            </p>
+            </Text>
           </Tooltip>
         </div>
         <div className="flex items-center gap-1">
@@ -47,11 +48,11 @@ export default function AnnotationsPanel() {
       </div>
 
       {pinnedId === null && currentId !== pageId && pageId && (
-        <p className="flex-none border-b border-subtle bg-subtle px-5 py-2 text-xs">
+        <Text as="p" variant="body-sm" className="flex-none border-b border-subtle bg-subtle px-5 py-2">
           <TextLink onClick={() => pin(pageId)}>
             Page: <code>{pageId}</code>
           </TextLink>
-        </p>
+        </Text>
       )}
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -64,7 +65,9 @@ export default function AnnotationsPanel() {
             onOpenId={pin}
           />
         ) : (
-          <p className="text-sm text-muted">This page isn't in the inventory, and nothing under the mouse is annotated.</p>
+          <Text as="p" className="text-muted">
+            This page isn't in the inventory, and nothing under the mouse is annotated.
+          </Text>
         )}
       </div>
     </aside>
