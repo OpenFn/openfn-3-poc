@@ -59,47 +59,47 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
   };
 
   return (
-    <div data-ui="file-drop-zone" className={cn("flex flex-col", className)}>
-      <label
-        data-dragging={dragging || undefined}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-        className={cn(
-          "flex flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-strong p-3 text-center text-sm/6 text-muted transition-colors",
-          "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus",
-          dragging
-            ? "border-primary-500 bg-primary-50"
-            : invalid
-              ? "border-danger-400 bg-danger-50"
-              : "hover:border-emphasis"
-        )}
-      >
-        <span className={cn("size-8", invalid ? "hero-exclamation-circle text-danger-600" : "hero-cloud-arrow-up text-faint")} />
-        <input
-          type="file"
-          accept={accept}
-          aria-label={label}
-          aria-describedby={hint || invalid ? hintId : undefined}
-          className="sr-only"
-          onChange={(e) => {
-            take(e.target.files);
-            e.target.value = "";
-          }}
-        />
-        <span className="font-medium text-strong">{label}</span>
-        {invalid ? (
-          <span id={hintId} role="alert" className="text-xs/5 text-danger-600">
-            {error}
+    <label
+      data-ui="file-drop-zone"
+      data-dragging={dragging || undefined}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      className={cn(
+        "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-strong p-3 text-center text-sm/6 text-muted transition-colors",
+        "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus",
+        dragging
+          ? "border-primary-500 bg-primary-50"
+          : invalid
+            ? "border-danger-400 bg-danger-50"
+            : "hover:border-emphasis",
+        className
+      )}
+    >
+      <span className={cn("size-8", invalid ? "hero-exclamation-circle text-danger-600" : "hero-cloud-arrow-up text-faint")} />
+      <input
+        type="file"
+        accept={accept}
+        aria-label={label}
+        aria-describedby={hint || invalid ? hintId : undefined}
+        className="sr-only"
+        onChange={(e) => {
+          take(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <span className="font-medium text-strong">{label}</span>
+      {invalid ? (
+        <span id={hintId} role="alert" className="text-xs/5 text-danger-600">
+          {error}
+        </span>
+      ) : (
+        hint && (
+          <span id={hintId} className="text-xs/5">
+            {hint}
           </span>
-        ) : (
-          hint && (
-            <span id={hintId} className="text-xs/5">
-              {hint}
-            </span>
-          )
-        )}
-      </label>
-    </div>
+        )
+      )}
+    </label>
   );
 }

@@ -16,7 +16,7 @@ import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
 import SearchInput from "../SearchInput";
 import { matchesQuery } from "../../utils/search";
-import { formatLocalDate, formatShortLocalDateTime, shortUuid, uuidOf } from "../../utils/format";
+import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
 import Tooltip from "../Tooltip";
 
 type Tab = "empty" | "custom" | "existing";
@@ -97,7 +97,7 @@ export default function ManualRunPanel({
               label="Upload a file or drag and drop"
               hint="JSON, up to 8MB"
               invalidMessage="Invalid file format. Please only upload: JSON"
-              onFile={(file) => void file.text().then(setBody)}
+              onFile={(file) => void file.text().then((text) => setBody(prettyJson(text)))}
               className="mt-2"
             />
             <div className="flex items-center gap-2 py-2 text-sm text-muted *:h-px *:flex-1 *:bg-emphasis" aria-hidden="true">

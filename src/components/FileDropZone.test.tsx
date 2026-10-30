@@ -27,6 +27,28 @@ describe("FileDropZone", () => {
     fireEvent.drop(zone, { dataTransfer: { files: [new File(["{}"], "input.json")] } });
     expect(onFile).toHaveBeenCalledTimes(2);
     expect(screen.getByText("File must be .yml or .yaml format")).toBeTruthy();
+
+    fireEvent.drop(zone, { dataTransfer: { files: [dropped] } });
+    expect(screen.queryByText("File must be .yml or .yaml format")).toBeNull();
+  });
+
+  it("clears the picker after each pick, so the same file can be picked again", () => {
+    render(<FileDropZone accept=".json" label="Upload a file" invalidMessage="Wrong type" onFile={() => {}} />);
+    const input = screen.getByLabelText<HTMLInputElement>("Upload a file");
+    fireEvent.change(input, { target: { files: [new File(["{}"], "a.json")] } });
+    expect(input.value).toBe("");
+  });
+
+  it("stays highlighted while a file moves over the text inside it, and clears when it leaves", () => {
+    render(<FileDropZone accept=".json" label="Upload a file" invalidMessage="Wrong type" onFile={() => {}} />);
+    const zone = screen.getByLabelText("Upload a file").closest("label")!;
+    fireEvent.dragOver(zone);
+    // jsdom has no DragEvent, so fireEvent.dragLeave drops relatedTarget; a MouseEvent keeps it.
+    const leaveTo = (target: Element) => fireEvent(zone, new MouseEvent("dragleave", { bubbles: true, relatedTarget: target }));
+    leaveTo(screen.getByText("Upload a file"));
+    expect(zone.getAttribute("data-dragging")).toBe("true");
+    leaveTo(document.body);
+    expect(zone.getAttribute("data-dragging")).toBeNull();
   });
 
   it("turns away a file over 8MB, and several files dropped at once", () => {
