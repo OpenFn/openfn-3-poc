@@ -15,6 +15,9 @@ export type RunState =
 /** A work order's state is its latest run's state, plus "pending"/"rejected". */
 export type WorkOrderState = RunState | "pending" | "rejected";
 
+/** Any state a state pill shows: a run or work order state, or History's "running". */
+export type RunDisplayState = WorkOrderState | "running";
+
 /** How a step ended; null while it runs. */
 export type StepExitReason = "success" | "fail" | "crash" | "cancel" | "kill" | "exception" | "lost";
 

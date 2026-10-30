@@ -1,9 +1,10 @@
 /**
  * Pure helpers over history records: log filtering, channel request events,
- * failure counts, work order selection and the workflows-index metric cards. No fixture access.
+ * failure counts, run state labels, work order selection and the workflows-index metric cards. No fixture access.
  */
 import type { ChannelEvent } from "../types/channels";
-import type { LogLine, WorkOrderRow } from "../types/history";
+import type { LogLine, RunDisplayState, WorkOrderRow } from "../types/history";
+import { capitalize } from "./format";
 import type { ProjectMetrics } from "../types/workflows";
 import { FAILURE_STATES, type WorkOrderStateCounts } from "../types/workflow-health";
 
@@ -81,3 +82,21 @@ export const allTicked = (rows: WorkOrderRow[], ids: string[]) => {
   const selectable = rows.filter((w) => !w.dataclipWiped);
   return selectable.length > 0 && selectable.every((w) => ids.includes(w.id));
 };
+
+/** `display_text_from_state`. */
+export function stateLabel(state: RunDisplayState): string {
+  switch (state) {
+    case "rejected":
+      return "Rejected";
+    case "pending":
+    case "available":
+      return "Enqueued";
+    case "running":
+    case "started":
+      return "Running";
+    case "claimed":
+      return "Starting";
+    default:
+      return capitalize(state);
+  }
+}

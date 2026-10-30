@@ -1,11 +1,9 @@
 import type { WorkOrderDisplayState } from "../../types/workflows";
 import { cn } from "../../utils/cn";
 import DateTime from "../primitives/DateTime";
-import { capitalize } from "../../utils/format";
+import { stateLabel } from "../../utils/history";
 import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "../../theme/runStateColours";
 import Text from "../primitives/Text";
-
-const LABEL: Partial<Record<WorkOrderDisplayState, string>> = { pending: "Enqueued" };
 
 /**
  * The "Latest Work Order" cell (DashboardComponents.state_card /
@@ -30,7 +28,7 @@ export default function WorkOrderStatus({
     );
   }
   const active = state === "pending" || state === "running";
-  const text = LABEL[state] ?? capitalize(state);
+  const text = stateLabel(state);
   return (
     <div>
       <div className="flex items-center gap-x-2">
