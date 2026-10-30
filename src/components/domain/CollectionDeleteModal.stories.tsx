@@ -3,7 +3,7 @@ import CollectionDeleteModal from "./CollectionDeleteModal";
 import { collections } from "../../mock-data/project-settings";
 
 const meta: Meta<typeof CollectionDeleteModal> = {
-  title: "Project settings/CollectionDeleteModal",
+  title: "Domain/CollectionDeleteModal",
   component: CollectionDeleteModal,
   args: { collection: collections[0]!, onCancel: () => {}, onDelete: () => {} },
 };

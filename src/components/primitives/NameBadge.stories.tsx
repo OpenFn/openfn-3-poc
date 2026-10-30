@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import NameBadge from "./NameBadge";
 
 const meta: Meta<typeof NameBadge> = {
-  title: "Shared/NameBadge",
+  title: "Primitives/NameBadge",
   component: NameBadge,
   args: { name: "my-project", children: "Your project will be named" },
   decorators: [(Story) => <small className="block text-xs text-muted"><Story /></small>],

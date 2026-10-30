@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Centered, PageContent } from "./PageContent";
 import Header from "./Header";
 
-const meta: Meta = { title: "Shell/PageContent" };
+const meta: Meta = { title: "Primitives/PageContent" };
 export default meta;
 
 export const Default: StoryObj = {

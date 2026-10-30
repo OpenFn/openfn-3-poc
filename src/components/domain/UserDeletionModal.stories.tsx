@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import UserDeletionModal from "./UserDeletionModal";
 
 const meta: Meta<typeof UserDeletionModal> = {
-  title: "Admin/UserDeletionModal",
+  title: "Domain/UserDeletionModal",
   component: UserDeletionModal,
   args: { open: true, onClose: () => {} },
 };

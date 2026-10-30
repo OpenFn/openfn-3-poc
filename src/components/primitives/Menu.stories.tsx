@@ -5,7 +5,7 @@ import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink, MenuSection } from "
 import { withRouter } from "../../stories/decorators";
 
 const meta: Meta<typeof Menu> = {
-  title: "Shared/Menu",
+  title: "Primitives/Menu",
   component: Menu,
   decorators: [withRouter, (Story) => <div className="flex justify-center p-8 pb-64"><Story /></div>],
   args: {

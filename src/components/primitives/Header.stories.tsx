@@ -6,7 +6,7 @@ import { projectLabel } from "../shell/projectPickerItems";
 import { projects } from "../../mock-data/projects";
 import { withRouter } from "../../stories/decorators";
 
-const meta: Meta<typeof Header> = { title: "Shell/Header", component: Header, decorators: [withRouter] };
+const meta: Meta<typeof Header> = { title: "Primitives/Header", component: Header, decorators: [withRouter] };
 export default meta;
 type Story = StoryObj<typeof Header>;
 

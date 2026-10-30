@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Text, { type TextVariant } from "./Text";
 
-const meta: Meta<typeof Text> = { title: "Shared/Text", component: Text, args: { children: "Run started 3 minutes ago" } };
+const meta: Meta<typeof Text> = { title: "Primitives/Text", component: Text, args: { children: "Run started 3 minutes ago" } };
 export default meta;
 type Story = StoryObj<typeof Text>;
 

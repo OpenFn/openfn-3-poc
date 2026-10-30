@@ -4,7 +4,7 @@ import Pagination from "./Pagination";
 import { users } from "../../mock-data/users";
 import { fullName } from "../../utils/format";
 
-const meta: Meta = { title: "Shared/Table" };
+const meta: Meta = { title: "Primitives/Table" };
 export default meta;
 type Story = StoryObj;
 

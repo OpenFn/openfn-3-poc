@@ -3,7 +3,7 @@ import { useState } from "react";
 import SearchInput from "./SearchInput";
 
 const meta: Meta<typeof SearchInput> = {
-  title: "Shared/SearchInput",
+  title: "Primitives/SearchInput",
   component: SearchInput,
   args: { value: "", onChange: () => {}, className: "w-96" },
   render: function Render(args) {

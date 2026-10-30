@@ -3,7 +3,7 @@ import Button from "./Button";
 import Tooltip from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
-  title: "Shared/Tooltip",
+  title: "Primitives/Tooltip",
   component: Tooltip,
   args: { content: "Save changes", children: <Button>Save</Button> },
   decorators: [(Story) => <div className="p-12"><Story /></div>],

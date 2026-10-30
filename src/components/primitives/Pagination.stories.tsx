@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Pagination from "./Pagination";
 
 const meta: Meta<typeof Pagination> = {
-  title: "Shared/Pagination",
+  title: "Primitives/Pagination",
   component: Pagination,
   args: { page: { number: 1, size: 10, totalEntries: 1 } },
 };

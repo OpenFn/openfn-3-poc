@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import CloseButton from "./CloseButton";
 
 const meta: Meta<typeof CloseButton> = {
-  title: "Shared/CloseButton",
+  title: "Primitives/CloseButton",
   component: CloseButton,
 };
 export default meta;

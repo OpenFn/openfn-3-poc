@@ -3,7 +3,7 @@ import ProjectDeletionModal from "./ProjectDeletionModal";
 import { projects } from "../../mock-data/projects";
 
 const meta: Meta<typeof ProjectDeletionModal> = {
-  title: "Project settings/ProjectDeletionModal",
+  title: "Domain/ProjectDeletionModal",
   component: ProjectDeletionModal,
   args: { project: projects[0]!, gracePeriodDays: 7, onCancel: () => {}, onDelete: () => {} },
 };

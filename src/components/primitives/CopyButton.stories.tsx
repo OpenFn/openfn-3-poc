@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import CopyButton from "./CopyButton";
 
 const meta: Meta<typeof CopyButton> = {
-  title: "Shared/CopyButton",
+  title: "Primitives/CopyButton",
   component: CopyButton,
   args: { value: "https://app.openfn.org/i/8f3c2a91" },
 };

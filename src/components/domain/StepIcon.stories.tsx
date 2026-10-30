@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import StepIcon from "./StepIcon";
 
-const meta = { title: "History/StepIcon", component: StepIcon } satisfies Meta<typeof StepIcon>;
+const meta = { title: "Domain/StepIcon", component: StepIcon } satisfies Meta<typeof StepIcon>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

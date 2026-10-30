@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TextPingLoader from "./TextPingLoader";
 
-const meta = { title: "History/TextPingLoader", component: TextPingLoader } satisfies Meta<typeof TextPingLoader>;
+const meta = { title: "Primitives/TextPingLoader", component: TextPingLoader } satisfies Meta<typeof TextPingLoader>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

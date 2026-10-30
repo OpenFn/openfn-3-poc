@@ -3,7 +3,7 @@ import Button from "./Button";
 import { Toast, ToastProvider, useToast } from "./Toast";
 
 const meta: Meta<typeof Toast> = {
-  title: "Shared/Toast",
+  title: "Primitives/Toast",
   component: Toast,
   args: { tone: "info", children: "Token created successfully", onClose: () => {} },
 };

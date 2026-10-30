@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import DataclipTypePill from "./DataclipTypePill";
 
-const meta = { title: "History/DataclipTypePill", component: DataclipTypePill } satisfies Meta<typeof DataclipTypePill>;
+const meta = { title: "Domain/DataclipTypePill", component: DataclipTypePill } satisfies Meta<typeof DataclipTypePill>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

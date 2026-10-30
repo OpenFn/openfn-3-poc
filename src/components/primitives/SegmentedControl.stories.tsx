@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import SegmentedControl, { type SegmentedOption } from "./SegmentedControl";
 
-const meta: Meta<typeof SegmentedControl> = { title: "Shared/SegmentedControl", component: SegmentedControl };
+const meta: Meta<typeof SegmentedControl> = { title: "Primitives/SegmentedControl", component: SegmentedControl };
 export default meta;
 type Story = StoryObj<typeof SegmentedControl>;
 

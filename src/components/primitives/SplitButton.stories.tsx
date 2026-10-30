@@ -3,7 +3,7 @@ import { MenuItem } from "./Menu";
 import SplitButton from "./SplitButton";
 
 const meta: Meta<typeof SplitButton> = {
-  title: "Shared/SplitButton",
+  title: "Primitives/SplitButton",
   component: SplitButton,
   decorators: [(Story) => <div className="h-40 p-4 flex justify-end"><Story /></div>],
   args: {

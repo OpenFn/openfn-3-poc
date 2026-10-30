@@ -3,7 +3,7 @@ import { withCanvas } from "../../stories/decorators";
 import CodeViewer from "./CodeViewer";
 
 const meta = {
-  title: "Shared/CodeViewer",
+  title: "Primitives/CodeViewer",
   component: CodeViewer,
   decorators: [withCanvas("h-96")],
 } satisfies Meta<typeof CodeViewer>;

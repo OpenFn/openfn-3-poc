@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Toggle from "./Toggle";
 
-const meta: Meta<typeof Toggle> = { title: "Shared/Toggle", component: Toggle, args: { checked: true } };
+const meta: Meta<typeof Toggle> = { title: "Primitives/Toggle", component: Toggle, args: { checked: true } };
 export default meta;
 type Story = StoryObj<typeof Toggle>;
 

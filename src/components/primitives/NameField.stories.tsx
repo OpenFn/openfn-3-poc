@@ -3,7 +3,7 @@ import { useState } from "react";
 import NameField from "./NameField";
 
 const meta: Meta<typeof NameField> = {
-  title: "Shared/NameField",
+  title: "Primitives/NameField",
   component: NameField,
   args: { id: "project_raw_name", value: "My Project!!", badgeLabel: "Your project will be named", required: true, onChange: () => {} },
 };

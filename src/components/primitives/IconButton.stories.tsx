@@ -4,7 +4,7 @@ import IconButton from "./IconButton";
 import { withRouter } from "../../stories/decorators";
 
 const meta: Meta<typeof IconButton> = {
-  title: "Shared/IconButton",
+  title: "Primitives/IconButton",
   component: IconButton,
   args: { icon: "hero-x-mark", label: "Close" },
   decorators: [withRouter],

@@ -4,7 +4,7 @@ import Button from "./Button";
 import { TextInput } from "./Inputs";
 
 const meta: Meta<typeof Modal> = {
-  title: "Shared/Modal",
+  title: "Primitives/Modal",
   component: Modal,
   args: {
     open: true,

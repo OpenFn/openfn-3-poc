@@ -5,7 +5,7 @@ import IconButton from "./IconButton";
 import { withRouter } from "../../stories/decorators";
 import { projectSettingsTabs } from "../project-settings/tabs";
 
-const meta: Meta<typeof Tabs> = { title: "Shared/Tabs", component: Tabs, decorators: [withRouter] };
+const meta: Meta<typeof Tabs> = { title: "Primitives/Tabs", component: Tabs, decorators: [withRouter] };
 export default meta;
 type Story = StoryObj<typeof Tabs>;
 

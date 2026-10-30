@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Pill from "./Pill";
 import { withWhitePanel } from "../../stories/decorators";
 
-const meta: Meta<typeof Pill> = { title: "Shared/Pill", component: Pill, args: { children: "main" }, decorators: [withWhitePanel("w-auto")] };
+const meta: Meta<typeof Pill> = { title: "Primitives/Pill", component: Pill, args: { children: "main" }, decorators: [withWhitePanel("w-auto")] };
 export default meta;
 type Story = StoryObj<typeof Pill>;
 

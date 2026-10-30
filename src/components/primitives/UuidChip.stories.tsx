@@ -4,7 +4,7 @@ import { uuidOf } from "../../utils/format";
 import UuidChip from "./UuidChip";
 
 const meta = {
-  title: "Shared/UuidChip",
+  title: "Primitives/UuidChip",
   component: UuidChip,
   decorators: [withRouter],
 } satisfies Meta<typeof UuidChip>;

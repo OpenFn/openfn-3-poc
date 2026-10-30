@@ -4,7 +4,7 @@ import { Checkbox } from "./Inputs";
 import Popover from "./Popover";
 
 const meta: Meta<typeof Popover> = {
-  title: "Shared/Popover",
+  title: "Primitives/Popover",
   component: Popover,
   decorators: [(Story) => <div className="p-8 pb-64"><Story /></div>],
   args: {

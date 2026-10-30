@@ -5,7 +5,7 @@ import { projectLabel } from "../shell/projectPickerItems";
 import { projects } from "../../mock-data/projects";
 import { withRouter } from "../../stories/decorators";
 
-const meta: Meta = { title: "Shell/Breadcrumbs", decorators: [withRouter] };
+const meta: Meta = { title: "Primitives/Breadcrumbs", decorators: [withRouter] };
 export default meta;
 type Story = StoryObj;
 

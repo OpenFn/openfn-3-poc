@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Checkbox, Field, PasswordInput, Radio, Select, TextArea, TextInput } from "./Inputs";
 import { controlClasses } from "./controlClasses";
 
-const meta: Meta = { title: "Shared/Inputs" };
+const meta: Meta = { title: "Primitives/Inputs" };
 export default meta;
 type Story = StoryObj;
 

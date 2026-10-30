@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import DeleteSandboxModal from "./DeleteSandboxModal";
 
 const meta: Meta<typeof DeleteSandboxModal> = {
-  title: "Projects/Sandboxes/DeleteSandboxModal",
+  title: "Domain/DeleteSandboxModal",
   component: DeleteSandboxModal,
   args: { sandboxName: "fhir-mapping-v2", rootName: "openhie-project", gracePeriodDays: 7, onClose: () => {}, onConfirm: async () => {} },
 };

@@ -10,6 +10,10 @@ paths:
 Every component and every page has a `.stories.tsx` next to it.
 
 - **New component** → a story with a default and each variant worth seeing.
+- **The story's group is its folder**: `title: "Primitives/Button"`,
+  `"Domain/StatePill"`, `"Project settings/SecurityPanel"`, and `"Pages/…"`
+  for a page. Storybook lists the tiers first. A test checks the group
+  (`src/source-layout.test.ts`).
 - **Changed props** → update the story args.
 - **Deleted component** → delete its story.
 - **Router-dependent components** → `withRouter` / `withRouterAt` from

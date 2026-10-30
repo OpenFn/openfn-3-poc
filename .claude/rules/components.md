@@ -92,8 +92,8 @@ Deleting or removing anything: a record, a member, access.
   it deletes a whole project or account.
 - **A row's delete button opens the dialog**; the dialog does the deleting.
 
-Stories: `Shared/ConfirmModal` (Danger, TypeToConfirm),
-`Credentials/Modals` (DeleteCredential), `Admin/UserDeletionModal` (Default).
+Stories: `Primitives/ConfirmModal` (Danger, TypeToConfirm),
+`Credentials/Modals` (DeleteCredential), `Domain/UserDeletionModal` (Default).
 
 ### Can't do it yet
 
@@ -112,7 +112,7 @@ Two shapes, chosen by why the action is blocked.
   `CredentialDeletionModal`). With no Lightning wording to copy, the button
   says "Cancel". There's no confirm button, not even a disabled one.
 
-Stories: `Shared/Button` (Disabled), `Admin/UserDeletionModal` (Blocked),
+Stories: `Primitives/Button` (Disabled), `Domain/UserDeletionModal` (Blocked),
 `Credentials/Modals` (CredentialMarkedForDeletion),
 `Project settings/SecurityPanel` (NoPermission).
 
@@ -127,7 +127,7 @@ Stories: `Shared/Button` (Disabled), `Admin/UserDeletionModal` (Blocked),
   at the bottom of its card.
 
 Stories: `Profile/ExperimentalFeaturesCard`, `Project settings/SecurityPanel`,
-`Profile/ProfileForms` (BasicInfo), `Shared/Card` (WithHeader).
+`Profile/ProfileForms` (BasicInfo), `Primitives/Card` (WithHeader).
 
 ### List
 
@@ -142,7 +142,7 @@ Stories: `Profile/ExperimentalFeaturesCard`, `Project settings/SecurityPanel`,
   loaded; a long list is sorted and searched by the server (STANDARDS
   pattern 3).
 
-Stories: `Shared/TableTitle` (WithActions), `Shared/Table` (Default),
+Stories: `Primitives/TableTitle` (WithActions), `Primitives/Table` (Default),
 `Projects/WorkflowsHeader`.
 
 ### Empty list
@@ -154,4 +154,4 @@ Stories: `Shared/TableTitle` (WithActions), `Shared/Table` (Default),
   Credential"). When the user can't create, it's `disabled`, not left out.
 - **`variant="plain"`** (just the text) inside a card or a smaller list.
 
-Stories: `Shared/Table` (EmptyWithAction, Empty, EmptyPlain).
+Stories: `Primitives/Table` (EmptyWithAction, Empty, EmptyPlain).

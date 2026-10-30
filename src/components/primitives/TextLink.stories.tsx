@@ -3,7 +3,7 @@ import TextLink from "./TextLink";
 import { withRouter } from "../../stories/decorators";
 
 const meta: Meta<typeof TextLink> = {
-  title: "Shared/TextLink",
+  title: "Primitives/TextLink",
   component: TextLink,
   decorators: [withRouter],
   args: { to: "/profile", children: "your account" },

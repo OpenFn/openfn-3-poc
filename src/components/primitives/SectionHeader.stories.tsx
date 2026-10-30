@@ -3,7 +3,7 @@ import SectionHeader from "./SectionHeader";
 import Button from "./Button";
 
 const meta: Meta<typeof SectionHeader> = {
-  title: "Shared/SectionHeader",
+  title: "Primitives/SectionHeader",
   component: SectionHeader,
   args: {
     title: "Project collaborators",

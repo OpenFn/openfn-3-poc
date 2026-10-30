@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Alert from "./Alert";
 
 const meta: Meta<typeof Alert> = {
-  title: "Shared/Alert",
+  title: "Primitives/Alert",
   component: Alert,
   args: {
     tone: "warning",

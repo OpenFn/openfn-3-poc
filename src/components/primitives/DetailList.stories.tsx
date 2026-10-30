@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { DetailItem, DetailList } from "./DetailList";
 import Pill from "./Pill";
 
-const meta: Meta = { title: "Shared/DetailList" };
+const meta: Meta = { title: "Primitives/DetailList" };
 export default meta;
 type Story = StoryObj;
 

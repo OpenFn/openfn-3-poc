@@ -4,7 +4,7 @@ import FormModal from "./FormModal";
 import { TextArea, TextInput } from "./Inputs";
 
 const meta: Meta<typeof FormModal> = {
-  title: "Shared/FormModal",
+  title: "Primitives/FormModal",
   component: FormModal,
   args: {
     open: true,

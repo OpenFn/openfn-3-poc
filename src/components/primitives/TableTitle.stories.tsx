@@ -4,7 +4,7 @@ import SearchInput from "./SearchInput";
 import TableTitle from "./TableTitle";
 
 const meta: Meta<typeof TableTitle> = {
-  title: "Shared/TableTitle",
+  title: "Primitives/TableTitle",
   component: TableTitle,
   args: { title: "Projects", count: 2 },
 };

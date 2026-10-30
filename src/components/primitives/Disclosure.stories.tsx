@@ -3,7 +3,7 @@ import Disclosure from "./Disclosure";
 import Pill from "./Pill";
 
 const meta: Meta<typeof Disclosure> = {
-  title: "Shared/Disclosure",
+  title: "Primitives/Disclosure",
   component: Disclosure,
   args: {
     title: "Request",

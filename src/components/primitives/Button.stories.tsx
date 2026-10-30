@@ -3,7 +3,7 @@ import Button from "./Button";
 import { withRouter, withWhitePanel } from "../../stories/decorators";
 
 const meta: Meta<typeof Button> = {
-  title: "Shared/Button",
+  title: "Primitives/Button",
   component: Button,
   decorators: [withRouter],
   args: { children: "Save" },

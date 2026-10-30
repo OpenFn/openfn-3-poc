@@ -3,7 +3,7 @@ import Card from "./Card";
 import Button from "./Button";
 
 const meta: Meta<typeof Card> = {
-  title: "Shared/Card",
+  title: "Primitives/Card",
   component: Card,
   args: { children: "The webhook URL is shown once the trigger is saved." },
 };

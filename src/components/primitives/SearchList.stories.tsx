@@ -8,7 +8,7 @@ import type { Project } from "../../mock-data/models/projects";
 import { matchesQuery } from "../../utils/search";
 
 const meta: Meta<typeof SearchList> = {
-  title: "Shared/SearchList",
+  title: "Primitives/SearchList",
   component: SearchList,
   decorators: [
     (Story) => (

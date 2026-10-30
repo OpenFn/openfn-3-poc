@@ -6,7 +6,7 @@ import type { LogLine } from "../../types/history";
 import LogViewer from "./LogViewer";
 
 const meta = {
-  title: "History/LogViewer",
+  title: "Domain/LogViewer",
   component: LogViewer,
   decorators: [(Story) => <div className="flex h-full">{Story()}</div>, withCanvas("h-96")],
 } satisfies Meta<typeof LogViewer>;
