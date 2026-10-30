@@ -110,6 +110,12 @@ describe("Button", () => {
     expect(themeCss).toContain('[data-ui="button"]:where(:not([data-variant="plain"])) {');
   });
 
+  it("drops the themes' hover and press on a pending button and one disabled with a reason", () => {
+    const themeCss = readFileSync("src/theme/theme.css", "utf8");
+    // Those buttons are aria-disabled, not :disabled, so every disabled rule has to match both.
+    expect(themeCss.replaceAll(':is(:disabled, [aria-disabled="true"])', "")).not.toContain(":disabled");
+  });
+
   it("shows plain text buttons on white in its stories, where they pass 4.5:1", () => {
     const { Plain, AllLooks } = composeStories(stories);
     for (const Story of [Plain, AllLooks]) {

@@ -197,13 +197,13 @@ html[data-theme="light"] {
     &[data-variant="primary"] {
       box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--shadow-sm);
     }
-    &[data-variant="primary"]:not([data-tone]):hover:not(:disabled) { background-color: var(--ui-brand-hover); }
+    &[data-variant="primary"]:not([data-tone]):hover:not(:is(:disabled, [aria-disabled="true"])) { background-color: var(--ui-brand-hover); }
     /* Tailwind's ring is a box-shadow too, so the hairline is drawn here. */
     &[data-variant="secondary"] {
       box-shadow: 0 0 0 1px var(--color-gray-300), var(--shadow-sm);
-      &:hover:not(:disabled) { background-color: var(--ui-surface); }
+      &:hover:not(:is(:disabled, [aria-disabled="true"])) { background-color: var(--ui-surface); }
     }
-    &:disabled { box-shadow: none; }
+    &:is(:disabled, [aria-disabled="true"]) { box-shadow: none; }
   }
 
   /* Links: blurple, underlined only on hover. */
@@ -584,10 +584,10 @@ html[data-theme="gds"] {
       --_hover: var(--ui-button-danger-hover);
       --_edge: var(--ui-button-danger-edge);
     }
-    &:hover:not(:disabled) { background-color: var(--_hover); }
-    &:active:not(:disabled) { top: 2px; }
+    &:hover:not(:is(:disabled, [aria-disabled="true"])) { background-color: var(--_hover); }
+    &:active:not(:is(:disabled, [aria-disabled="true"])) { top: 2px; }
     /* GOV.UK disabled button: same colours at half strength, no edge. */
-    &:disabled {
+    &:is(:disabled, [aria-disabled="true"]) {
       opacity: 0.5;
       box-shadow: none;
     }
