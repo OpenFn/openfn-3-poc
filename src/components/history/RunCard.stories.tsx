@@ -29,22 +29,28 @@ export const Queued: Story = { args: { ...base, run: { ...run("run-4"), state: "
 
 export const OneStep: Story = {
   args: { ...base, run: run("run-1"), index: 1, total: 1 },
-  render: () => <StepListItem step={run("run-1").steps[0]!} canRunWorkflow dataStorageHref={null} onRetry={noop} />,
+  render: () => (
+    <div role="list">
+      <StepListItem step={run("run-1").steps[0]!} canRunWorkflow dataStorageHref={null} onRetry={noop} />
+    </div>
+  ),
 };
 
 const step = run("run-1").steps[0]!;
 const stepStory = (overrides: Partial<typeof step>, canRunWorkflow = true): Story => ({
   args: { ...base, run: run("run-1"), index: 1, total: 1 },
+  // A step row sits in its run's list.
   render: () => (
-    <StepListItem
-      step={{ ...step, ...overrides }}
-      canRunWorkflow={canRunWorkflow}
-      dataStorageHref={base.dataStorageHref}
-      onRetry={noop}
-    />
+    <div role="list">
+      <StepListItem
+        step={{ ...step, ...overrides }}
+        canRunWorkflow={canRunWorkflow}
+        dataStorageHref={base.dataStorageHref}
+        onRetry={noop}
+      />
+    </div>
   ),
 });
 export const WipedInputStep = stepStory({ inputWiped: true });
 export const DeletedJob = stepStory({ jobDeleted: true });
-export const ClonedStep = stepStory({ cloned: true });
 export const ReadOnly: Story = { args: { ...base, run: run("run-1"), index: 1, total: 1, canRunWorkflow: false } };

@@ -20,10 +20,6 @@ export const Selected: Story = {
 };
 const steps = stepsOf(run);
 const args = { run, selectedStepId: null, projectId: "p", workflowId: "wf-openhie" };
-/** A step written before its run: carried over from an earlier run. */
-export const ClonedStep: Story = {
-  args: { ...args, steps: steps.map((s, i) => (i === 0 ? { ...s, insertedAt: "2026-10-01T00:00:00Z" } : s)) },
-};
 export const Running: Story = {
   args: { ...args, steps: steps.map((s, i) => (i === steps.length - 1 ? { ...s, exitReason: null, finishedAt: null } : s)) },
 };

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { userEvent, within } from "storybook/test";
 import MfaCard from "./MfaCard";
 import { fakeMfaSetup } from "../../mock-data/profile";
 import { withRouter } from "../../stories/decorators";
@@ -55,9 +56,7 @@ export const Saving: Story = { args: { onConfirm: () => new Promise(() => {}) },
 export const SecretShown: Story = {
   play: async (ctx) => {
     await flip(ctx);
-    [...ctx.canvasElement.querySelectorAll("a, button")]
-      .find((el) => el.textContent?.trim() === "this secret key")
-      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await userEvent.click(within(ctx.canvasElement).getByText("this secret key"));
   },
 };
 

@@ -20,7 +20,7 @@ export default function Header({ title, breadcrumbs, children, loggedOut = false
   return (
     <div className="flex-none bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">
-        {breadcrumbs ?? (
+        {breadcrumbs ?? (title && (
           <h1
             className={cn(
               "text-strong flex items-center",
@@ -29,7 +29,7 @@ export default function Header({ title, breadcrumbs, children, loggedOut = false
           >
             {title}
           </h1>
-        )}
+        ))}
         <div className="grow" />
         {children}
       </div>

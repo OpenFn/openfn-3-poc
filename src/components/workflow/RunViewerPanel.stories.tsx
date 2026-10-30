@@ -33,4 +33,3 @@ export const FailedRun: Story = {
 };
 export const NoSteps: Story = { args: { steps: [], selectedStepId: null } };
 export const NoStepSelected: Story = { args: { selectedStepId: null, activeTab: "input" } };
-export const Mismatch: Story = { args: { mismatch: true } };

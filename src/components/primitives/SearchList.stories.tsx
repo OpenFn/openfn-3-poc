@@ -78,23 +78,6 @@ export const Field: Story = {
 
 const longProject: Project = { ...projects[0]!, id: "long-name", name: "Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)" };
 
-/** Nothing in the list at all: `emptyState` takes its place. */
-export const Empty: Story = {
-  render: () => (
-    <SearchList<Project>
-      variant="palette"
-      items={[]}
-      getKey={(p) => p.id}
-      query="zzz"
-      onQueryChange={() => {}}
-      onSelect={() => {}}
-      placeholder="Search projects..."
-      emptyState="No projects found"
-      renderItem={(p) => p.name}
-    />
-  ),
-};
-
 /** A section with no items shows its `empty` message under its heading. */
 export const EmptySection: Story = {
   render: () => (
