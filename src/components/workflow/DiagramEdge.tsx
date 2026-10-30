@@ -1,3 +1,4 @@
+import { edgeConditionOptions } from "../../constants";
 import type { EdgeConditionType, Position } from "../../types/workflow-graph";
 import {
   EDGE_COLOR,
@@ -5,7 +6,6 @@ import {
   EDGE_COLOR_SELECTED,
   bezierPath,
   conditionGlyph,
-  conditionName,
   edgeColor,
   edgeEndpoints,
 } from "./diagramGeometry";
@@ -22,7 +22,8 @@ interface Props {
   neighbour?: boolean;
   /** While viewing a run: the path wasn't taken. */
   didntRun?: boolean;
-  onClick?: () => void;
+  /** Picks it. Without one it isn't a button (the read-only preview). */
+  onClick?: (() => void) | undefined;
 }
 
 /**
@@ -50,6 +51,8 @@ export default function DiagramEdge({
   const markerId = `arrow-${id}`;
   const label =
     conditionLabel && conditionLabel.length > 22 ? conditionLabel.slice(0, 22) + "..." : conditionLabel;
+
+  const conditionName = edgeConditionOptions.find(([, value]) => value === conditionType)?.[0];
 
   const handle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,9 +116,9 @@ export default function DiagramEdge({
           alignItems: "center",
           opacity: enabled ? 1 : 0.9,
         }}
-        role="button"
-        tabIndex={0}
-        aria-label={`${conditionName(conditionType)} path${conditionLabel ? `: ${conditionLabel}` : ""}`}
+        role={onClick && "button"}
+        tabIndex={onClick && 0}
+        aria-label={`${conditionName} path${conditionLabel ? `: ${conditionLabel}` : ""}`}
         className="cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         onClick={handle}
         onKeyDown={(e) => {

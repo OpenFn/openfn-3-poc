@@ -102,20 +102,6 @@ export function conditionGlyph(type: EdgeConditionType): string {
   }
 }
 
-/** The condition's name in the path inspector, for the badge's accessible name. */
-export function conditionName(type: EdgeConditionType): string {
-  switch (type) {
-    case "on_job_success":
-      return "On Success";
-    case "on_job_failure":
-      return "On Failure";
-    case "always":
-      return "Always";
-    default:
-      return "On Match";
-  }
-}
-
 /** styles.ts edgeLabelStyles' primaryColor. */
 export function edgeColor({
   selected,

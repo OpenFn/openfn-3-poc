@@ -16,13 +16,18 @@ describe("DiagramNode", () => {
     expect(reveal.classList).toContain("focus-within:opacity-100");
   });
 
-  it.each(["Enter", " "])("takes focus and is picked with %j, as with a click", (key) => {
+  it.each(["Enter", " "])("takes focus, is named for its step, and is picked with %j, as with a click", (key) => {
     const onClick = vi.fn();
-    render(<DiagramNode id="j1" shape="rect" label="Fetch" icon={null} onClick={onClick} />);
+    render(<DiagramNode id="j1" shape="rect" label="Fetch" sublabel="http" icon={null} runState="running" onClick={onClick} />);
     const node = screen.getByRole("button", { name: "Fetch" });
     node.focus();
     expect(document.activeElement).toBe(node);
     fireEvent.keyDown(node, { key });
     expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it("isn't a button when nothing picks it, as in the read-only preview", () => {
+    render(<DiagramNode id="j1" shape="rect" label="Fetch" icon={null} />);
+    expect(screen.queryByRole("button", { name: "Fetch" })).toBeNull();
   });
 });

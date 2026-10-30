@@ -65,6 +65,8 @@ export default function WorkflowDiagram({
   const [manualLayout, setManualLayout] = useState(false);
   const fitted = useRef(false);
   const drag = useRef<{ x: number; y: number; vx: number; vy: number; moved: boolean } | null>(null);
+  // A preview's nodes and paths do nothing, so they aren't buttons.
+  const pick = (picked: Selection) => (preview ? undefined : () => onSelect(picked));
 
   const fit = useCallback(
     (width = size.width, height = size.height) => {
@@ -191,7 +193,7 @@ export default function WorkflowDiagram({
               selected={selectedId === edge.id}
               neighbour={selectedId !== null && (sourceId === selectedId || edge.targetJobId === selectedId)}
               didntRun={isRun && !didRun}
-              onClick={() => onSelect({ kind: "edge", id: edge.id })}
+              onClick={pick({ kind: "edge", id: edge.id })}
             />
           );
         })}
@@ -213,7 +215,7 @@ export default function WorkflowDiagram({
                 didRun={!isRun || started}
                 startedBy={started ? run?.startedBy : undefined}
                 runMeta={started && run?.startedAt ? formatLocalDateTime(run.startedAt) : undefined}
-                onClick={() => onSelect({ kind: "trigger", id: t.id })}
+                onClick={pick({ kind: "trigger", id: t.id })}
               />
             </div>
           );
@@ -237,7 +239,7 @@ export default function WorkflowDiagram({
                 didRun={!isRun || !!step}
                 startedBy={started ? run?.startedBy : undefined}
                 onAddPath={onAddPath && !isRun ? () => onAddPath(j.id) : undefined}
-                onClick={() => onSelect({ kind: "job", id: j.id })}
+                onClick={pick({ kind: "job", id: j.id })}
               />
             </div>
           );

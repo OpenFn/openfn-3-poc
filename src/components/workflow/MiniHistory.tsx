@@ -195,7 +195,7 @@ export default function MiniHistory({
       data-annotation="workflow-editor-versions-and-promote"
       onPointerDown={(e) => e.stopPropagation()}
     >
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- debt: Lightning's keyboard path is ⌘ H, which the replica doesn't bind yet */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- a bigger mouse target for the chevron button inside it, as in Lightning */}
         <div
           className={cn(
             "flex cursor-pointer items-center justify-between gap-3 border-subtle bg-subtle px-3 py-2 text-faint hover:bg-sunken",
@@ -212,7 +212,15 @@ export default function MiniHistory({
             </Tooltip>
             <FullHistoryLink id="view-history" to={historyHref} />
           </div>
-          <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />
+          <IconButton
+            icon={collapsed ? "hero-chevron-right" : "hero-chevron-left"}
+            label={collapsed ? "Show history" : "Hide history"}
+            size="xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+          />
         </div>
         {collapsed && selectedRun && (
           <div className="border-t border-subtle px-3 py-2">

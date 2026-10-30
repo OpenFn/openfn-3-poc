@@ -1,15 +1,15 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { hover, openTooltips } from "../../test/tooltip";
 import MiniHistory from "./MiniHistory";
 
-const renderCard = () =>
+const renderCard = (onToggle = () => {}) =>
   render(
     <MiniHistory
       projectId="p1"
       workflowId="w1"
       collapsed
-      onToggle={() => {}}
+      onToggle={onToggle}
       history={[]}
       selectedRunId={null}
       onSelectRun={() => {}}
@@ -30,5 +30,12 @@ describe("MiniHistory", () => {
     expect(heading.parentElement!.tagName).toBe("DIV"); // A heading inside a span is invalid HTML.
     await hover(heading);
     expect(openTooltips()).toEqual(["⌘ H"]);
+  });
+
+  it("toggles through a chevron button the keyboard can reach, once, not again through the row", () => {
+    const onToggle = vi.fn();
+    renderCard(onToggle);
+    fireEvent.click(screen.getByRole("button", { name: "Show history" }));
+    expect(onToggle).toHaveBeenCalledOnce();
   });
 });

@@ -33,7 +33,8 @@ interface Props {
   startedBy?: string | undefined;
   /** Shows the "+" path button under the node on hover (jobs only). */
   onAddPath?: (() => void) | undefined;
-  onClick?: () => void;
+  /** Picks it. Without one it isn't a button (the read-only preview). */
+  onClick?: (() => void) | undefined;
 }
 
 /**
@@ -71,8 +72,9 @@ export default function DiagramNode({
     >
       {/* Focusable and picked with Enter or Space, as React Flow's nodes are in Lightning. */}
       <div
-        role="button"
-        tabIndex={0}
+        role={onClick && "button"}
+        tabIndex={onClick && 0}
+        aria-label={label}
         className="flex cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         onClick={(e) => {
           e.stopPropagation();
