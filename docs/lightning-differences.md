@@ -66,8 +66,9 @@ goes back to Lightning's way.
   ends the breadcrumb with "Run" and a light short id (or a mono one for a
   channel request); the replica's breadcrumb ends with "Run" and the title
   row reads "Run 5e9a1c2b". How a short id looks is still open (G155). A
-  run's snapshot chip ("latest") sits at the right of the title row, where
-  other pages keep their actions; Lightning puts it after the id.
+  run's snapshot chip ("latest") sits beside the workflow's name in the
+  run's details, since it names that workflow's version; Lightning puts it
+  after the id in the breadcrumb.
 - **A workflow's Health page names the workflow in the header**, with the
   range picker beside it; Lightning puts both at the top of the page body.
 - **A `>` follows the project picker in the breadcrumb**, the workflow
