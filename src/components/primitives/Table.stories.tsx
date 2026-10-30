@@ -55,3 +55,8 @@ export const EmptyWithTitle: Story = {
 export const EmptyWithAction: Story = {
   render: () => <EmptyState message="No collections yet." buttonText="Create a new collection" onClick={() => {}} />,
 };
+
+/** The user can't create one: the box stays, the button is disabled. */
+export const EmptyWithActionDisabled: Story = {
+  render: () => <EmptyState message="No collections yet." buttonText="Create a new collection" onClick={() => {}} disabled />,
+};

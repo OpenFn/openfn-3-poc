@@ -22,3 +22,9 @@ export const Section: Story = {
 export const Inline: Story = {
   args: { variant: "inline", title: "Advanced", note: "optional", defaultOpen: false },
 };
+export const LongTitle: Story = {
+  args: {
+    title: "POST https://commcare.example.org/a/kenya-moh/api/v0.5/referrals/overdue?since=2026-10-01",
+    titleRight: <Pill tone="danger">401</Pill>,
+  },
+};

@@ -18,3 +18,15 @@ export const WithBreadcrumbs: Story = {
   args: { breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="History" /> },
 };
 export const LoggedOut: Story = { args: { title: "Log in", loggedOut: true } };
+export const LongTitle: Story = { args: { title: "Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)", children: <Button>Create new workflow</Button> } };
+export const LongBreadcrumbs: Story = {
+  args: {
+    breadcrumbs: (
+      <ProjectBreadcrumbs
+        project={projects[0]!}
+        label="Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)"
+        current="Fetch overdue referrals and upsert them as DHIS2 tracker events"
+      />
+    ),
+  },
+};

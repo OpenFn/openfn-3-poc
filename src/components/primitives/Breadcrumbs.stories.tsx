@@ -32,3 +32,12 @@ export const Project: Story = {
 export const Sandbox: Story = {
   render: () => <ProjectBreadcrumbs project={projects[2]!} label={projectLabel(projects[2]!, projects)} current="Workflows" />,
 };
+
+export const LongNames: Story = {
+  render: () => (
+    <Breadcrumbs>
+      <Breadcrumb to="/projects">Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)</Breadcrumb>
+      <Breadcrumb>Fetch overdue referrals and upsert them as DHIS2 tracker events</Breadcrumb>
+    </Breadcrumbs>
+  ),
+};

@@ -25,3 +25,4 @@ export const WithActions: Story = {
     ),
   },
 };
+export const LongTitle: Story = { args: { title: "Workflows in Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)", count: 12 } };

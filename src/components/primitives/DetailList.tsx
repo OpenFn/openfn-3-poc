@@ -46,14 +46,11 @@ export function DetailItem({
   label,
   mono = false,
   className,
-  valueClassName,
   children,
 }: {
   label: ReactNode;
   mono?: boolean;
   className?: string;
-  /** Extra classes for the value, e.g. `break-all`. */
-  valueClassName?: string;
   children?: ReactNode;
 }) {
   const layout = useContext(LayoutContext);
@@ -61,14 +58,14 @@ export function DetailItem({
     return (
       <div className={className}>
         <Heading size="xs" as="dt">{label}</Heading>
-        <Value mono={mono} className={cn("mt-1 wrap-break-words text-strong", valueClassName)}>{children}</Value>
+        <Value mono={mono} className="mt-1 wrap-break-word text-strong">{children}</Value>
       </div>
     );
   }
   return (
     <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
-      <dt className="font-medium text-muted">{label}</dt>
-      <Value mono={mono} className={cn("text-right text-strong", valueClassName)}>{children}</Value>
+      <dt className="shrink-0 font-medium text-muted">{label}</dt>
+      <Value mono={mono} className="min-w-0 wrap-break-word text-right text-strong">{children}</Value>
     </div>
   );
 }

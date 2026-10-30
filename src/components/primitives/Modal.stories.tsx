@@ -34,3 +34,9 @@ export const Bare: Story = {
     children: <div className="h-64 rounded-xl bg-subtle p-6 text-sm text-muted">A modal that lays out its own content.</div>,
   },
 };
+export const LongTitle: Story = {
+  args: {
+    title: "Delete Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)",
+    description: "This removes its workflows, credentials and history for every collaborator.",
+  },
+};

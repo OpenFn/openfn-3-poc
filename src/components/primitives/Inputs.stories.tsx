@@ -90,3 +90,19 @@ export const GrowInRow: Story = {
     </div>
   ),
 };
+export const AreaWithError: Story = {
+  render: () => <TextArea id="desc" label="Description" rows={3} defaultValue="x" errors={["should be at most 240 character(s)"]} />,
+};
+export const AreaDisabled: Story = {
+  render: () => <TextArea id="desc" label="Description" rows={3} value="Syncs facilities from DHIS2." disabled readOnly />,
+};
+export const PasswordDisabled: Story = { render: () => <PasswordInput id="password" label="Password" disabled /> };
+export const CheckDisabled: Story = { render: () => <Checkbox label="Require MFA" disabled /> };
+export const RadiosDisabled: Story = {
+  render: () => (
+    <div className="space-y-2">
+      <Radio name="auth-disabled" label="Basic" defaultChecked disabled />
+      <Radio name="auth-disabled" label="API key" disabled />
+    </div>
+  ),
+};

@@ -16,3 +16,9 @@ type Story = StoryObj<typeof SectionHeader>;
 
 export const Default: Story = {};
 export const NoPermission: Story = { args: { permissionsSection: "collaborators" } };
+export const LongTitle: Story = {
+  args: {
+    title: "Collaborators on Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox)",
+    subtitle: "View and manage who can edit workflows, credentials and history in this project and its sandboxes",
+  },
+};
