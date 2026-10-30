@@ -30,8 +30,8 @@ interface Props {
 /**
  * The Setup tab (`#project`, settings.html.heex:67-313): Project Identity
  * form, Concurrency Override, Export, and the danger zone. As in Lightning,
- * Identity's Save is enabled whenever the user can edit; Concurrency's waits
- * for a change.
+ * Identity's Save is enabled whenever the user can edit. Concurrency is a
+ * switch that saves at once.
  */
 export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSaveConcurrency }: Props) {
   const { canEditProject, canDeleteProject } = setup;

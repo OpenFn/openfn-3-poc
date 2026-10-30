@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Heading from "../primitives/Heading";
@@ -36,7 +36,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
   const [setup, setSetup] = useState<MfaSetupResult | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
-  // After a confirmed setup the switch stays on until the host's props say MFA is on.
+  // After a confirmed setup the card shows MFA as on until the host's props say so.
   const [confirmed, setConfirmed] = useState(false);
   const [lastEnabled, setLastEnabled] = useState(mfa.enabled);
   if (lastEnabled !== mfa.enabled) {
@@ -58,6 +58,14 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
     },
     { onError: "toast" }
   );
+  // Opening or closing setup removes the button that had focus: move focus to
+  // the code field when it opens, and back to the card's button when it closes.
+  const wasSetup = useRef(false);
+  useEffect(() => {
+    if (setup !== null && !wasSetup.current) document.getElementById("mfa-code")?.focus();
+    if (setup === null && wasSetup.current) document.getElementById("mfa-action")?.focus();
+    wasSetup.current = setup !== null;
+  }, [setup]);
   const enabled = mfa.enabled || confirmed;
   const show = enabled || setup !== null;
   const action = enabled ? (
@@ -128,6 +136,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 })}
               >
                 <TextInput
+                  id="mfa-code"
                   label="Verify the code from the app"
                   autoComplete="one-time-code"
                   placeholder="XXXXXX"

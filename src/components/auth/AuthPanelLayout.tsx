@@ -46,7 +46,6 @@ export function AuthPanel({ size = "lg", className, children }: { size?: "sm" | 
   );
 }
 
-/** The bold centred heading inside a form panel ("Authentication Code", "Password"). */
 /** The "Having problems?" panel with alternative sign-in options. */
 export function HavingProblems({ children }: { children: ReactNode }) {
   return (

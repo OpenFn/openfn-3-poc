@@ -75,6 +75,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
       : touched && owners === 0
         ? "Every project must have exactly one owner. Please specify one below."
         : null);
+  // Both show: a new owner mistake mustn't hide why the last Save failed.
   const otherError = save.error && !fieldErrors["owner"] && !fieldErrors["rawName"] ? errorMessage(save.error) : null;
 
   const th = (key: SortKey, label: string, center = true) => (
@@ -88,7 +89,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
       <Form
         id="project-form"
         pending={save.pending}
-        error={ownerError ?? otherError}
+        error={[ownerError, otherError].filter(Boolean).join(" ") || null}
         actions={
           <>
             <Button variant="secondary" to={cancelTo}>

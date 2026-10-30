@@ -1,5 +1,6 @@
 import { useId, useState, type DragEvent } from "react";
 import { cn } from "../../utils/cn";
+import { useFieldControl } from "./fieldControl";
 
 /** Lightning's YAML import limit, applied to every upload here. */
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -21,13 +22,16 @@ interface Props {
 
 /**
  * A dashed area that takes one file, by click, keyboard (the file input
- * inside it is focusable) or drag and drop.
+ * inside it is focusable) or drag and drop. Inside a `Field`, the field's
+ * errors mark it invalid and are read with it.
  */
 export default function FileDropZone({ accept, onFile, label, hint, invalidMessage, disabled = false, className }: Props) {
   const hintId = useId();
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
-  const invalid = error !== "" && !disabled;
+  const field = useFieldControl();
+  const invalid = (error !== "" || field["aria-invalid"] === true) && !disabled;
+  const describedBy = [hint || error ? hintId : undefined, field["aria-describedby"]].filter(Boolean).join(" ") || undefined;
   const extensions = accept.split(",").map((ext) => ext.trim().toLowerCase());
 
   const take = (files: FileList | null) => {
@@ -86,7 +90,8 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
         accept={accept}
         disabled={disabled}
         aria-label={label}
-        aria-describedby={hint || invalid ? hintId : undefined}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         className="sr-only"
         onChange={(e) => {
           take(e.target.files);
@@ -94,7 +99,7 @@ export default function FileDropZone({ accept, onFile, label, hint, invalidMessa
         }}
       />
       <span className={cn("font-medium", disabled ? "text-muted" : "text-strong")}>{label}</span>
-      {invalid ? (
+      {error !== "" && !disabled ? (
         <span id={hintId} role="alert" className="text-xs/5 text-invalid">
           {error}
         </span>

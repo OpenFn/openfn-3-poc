@@ -10,7 +10,7 @@ import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
-import { blank, isValidEmail } from "../../utils/validate";
+import { blank, emailErrors } from "../../utils/validate";
 import type { ChangeEmailValues } from "../../types/profile";
 
 /** What the host answers a resend with. */
@@ -49,7 +49,7 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
   const form = useForm<ChangeEmailValues>({
     initial: { email: "", currentPassword: "" },
     validate: ({ email: next, currentPassword }) => ({
-      email: !isValidEmail(next) ? ["must have the @ sign and no spaces"] : next === email ? ["must be different from the current one"] : [],
+      email: emailErrors(next).length > 0 ? emailErrors(next) : next === email ? ["must be different from the current one"] : [],
       currentPassword: blank(currentPassword),
     }),
   });
