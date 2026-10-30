@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { LogLine } from "../../types/history";
 import { logsAtLevel } from "../../utils/history";
 import { cn } from "../../utils/cn";
+import { prettyJson } from "../../utils/format";
 import CodeViewer, { type LineRange } from "../primitives/CodeViewer";
 import Menu, { MenuItem } from "../primitives/Menu";
 import Text from "../primitives/Text";
@@ -9,18 +10,6 @@ import TextPingLoader from "../primitives/TextPingLoader";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 const levels: LogLevel[] = ["debug", "info", "warn", "error"];
-
-function prettify(message: string) {
-  const m = message.trim();
-  if ((m.startsWith("{") && m.endsWith("}")) || (m.startsWith("[") && m.endsWith("]"))) {
-    try {
-      return JSON.stringify(JSON.parse(m), null, 2);
-    } catch {
-      return message;
-    }
-  }
-  return message;
-}
 
 /** The log level dropdown in the viewer's header (viewers.ex `log_level_filter`). */
 export function LogLevelFilter({ selected, onChange }: { selected: LogLevel; onChange: (l: LogLevel) => void }) {
@@ -90,7 +79,7 @@ export default function LogViewer({
     const highlighted: LineRange[] = [];
     let lineCount = 0;
     for (const log of logsAtLevel(logs, level)) {
-      const entry = `${log.source} ${prettify(log.message)}`;
+      const entry = `${log.source} ${prettyJson(log.message)}`;
       const start = lineCount + 1;
       lineCount += entry.split("\n").length;
       entries.push(entry);

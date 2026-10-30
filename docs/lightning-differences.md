@@ -55,6 +55,25 @@ goes back to Lightning's way.
   grey with white text (`state_pill`); the replica keeps every status pill
   pale, so a list never mixes pale and solid.
 
+## File uploads
+
+- **One drop zone for both uploads.** Lightning styles the manual run upload
+  (`manual-run-panel/FileUploader.tsx`) and the YAML import
+  (`yaml-import/YAMLFileDropzone.tsx`) differently: a link-coloured "Upload a
+  file" in one, a grey icon tile and primary "YML"/"YAML" in the other. The
+  replica uses one look for both.
+- **An error shows inside the zone and stays.** Lightning's manual run error
+  is a red box that vanishes after 3.5 seconds, and its YAML error is red text
+  under a grey zone. The replica tints the zone red, puts the message in place
+  of the hint, and keeps it until a valid file comes in, so nobody misses it.
+- **File types are checked by extension.** Lightning's manual run checks the
+  type the browser reports, which some systems leave empty; the replica checks
+  the extension in both, as Lightning's YAML import does.
+- **The 8MB limit applies to both.** Lightning only enforces it on YAML import;
+  the manual run hint promises it but never checks.
+- **"Only 1 file can be uploaded".** Lightning's manual run says "Only 1 files
+  can be uploaded".
+
 ## Type
 
 - **The waiting messages in the log and dataclip viewers stay 12px.**

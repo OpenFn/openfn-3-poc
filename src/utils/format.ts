@@ -277,3 +277,14 @@ export function linkedUsageSummary(method: { triggers: unknown[]; channels: unkn
     .map(([count, noun]) => (count === 1 ? `1 ${noun}` : `${count} ${noun}s`))
     .join(", ");
 }
+
+/** Indents `text` if it's a JSON object or array, as Lightning does for log lines and uploaded JSON; anything else comes back as it was. */
+export function prettyJson(text: string): string {
+  const t = text.trim();
+  if (!((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]")))) return text;
+  try {
+    return JSON.stringify(JSON.parse(t), null, 2);
+  } catch {
+    return text;
+  }
+}
