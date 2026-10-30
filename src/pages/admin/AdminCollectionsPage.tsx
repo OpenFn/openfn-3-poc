@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "../../components/primitives/Button";
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import AdminCollectionModal from "../../components/admin/AdminCollectionModal";
@@ -34,7 +35,18 @@ export default function AdminCollectionsPage({ collections, projectOptions, onCr
   const close = () => setDialog(null);
 
   return (
-    <PageContent header={<Header title="Collections" />}>
+    <PageContent
+      header={
+        // With no collections, Lightning shows only the empty state's "Create a new one.".
+        <Header title="Collections" count={collections.length || undefined}>
+          {collections.length > 0 && (
+            <Button id="open-create-collection-modal-button" onClick={() => setDialog({ kind: "create" })}>
+              Create collection
+            </Button>
+          )}
+        </Header>
+      }
+    >
       <Centered>
         <AdminCollectionsTable
           collections={collections}

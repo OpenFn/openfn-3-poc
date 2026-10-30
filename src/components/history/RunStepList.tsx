@@ -33,6 +33,7 @@ export default function RunStepList<S extends Omit<RunStep, "insertedAt" | "snap
   const { hash } = useLocation();
   const inspect = inspectPath ?? ((step: S) => inspectStepPath(projectId, workflowId, run, step));
   return (
+    // eslint-disable-next-line jsx-a11y/no-redundant-roles -- Safari drops list semantics when list-style is none; the role puts them back
     <ul role="list" className="-mb-8 flex-1">
       {steps.map((step) => {
         const selected = step.id === selectedStepId;

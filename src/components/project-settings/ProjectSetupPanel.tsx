@@ -41,6 +41,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
   return (
     <>
       <SectionHeader
+        size="lg"
         title={sandbox ? "Sandbox setup" : "Project setup"}
         subtitle={
           sandbox

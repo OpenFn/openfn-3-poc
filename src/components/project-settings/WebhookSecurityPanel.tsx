@@ -43,7 +43,7 @@ export default function WebhookSecurityPanel({ webhookSecurity: { authMethods, c
   if (parent) {
     return (
       <>
-        <SectionHeader title={title} subtitle={subtitle} />
+        <SectionHeader size="lg" title={title} subtitle={subtitle} />
         <Card
           id="webhook-security-sandbox-notice"
           title="Webhook authentication is managed in the parent project"
@@ -60,6 +60,7 @@ export default function WebhookSecurityPanel({ webhookSecurity: { authMethods, c
   return (
     <>
       <SectionHeader
+        size="lg"
         title={title}
         subtitle={subtitle}
         permissionsSection={canWrite ? undefined : "webhook auth methods."}

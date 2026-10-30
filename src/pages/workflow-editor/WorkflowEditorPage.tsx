@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { Navigate, useParams } from "react-router-dom";
 import Pill from "../../components/primitives/Pill";
@@ -112,12 +112,36 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
     [update]
   );
 
+  // A step picked from the keyboard puts focus on its inspector's first field; a click leaves focus where it is.
+  const inspectorRef = useRef<HTMLDivElement>(null);
+  const focusInspector = useRef(false);
+  const focusFirstField = () => {
+    const field = inspectorRef.current?.querySelector<HTMLElement>(
+      '[data-inspector-body] :is(input:not([type="hidden"]), select, textarea, button, a[href], [tabindex="0"]):not(:disabled)'
+    );
+    field?.focus();
+    return !!field;
+  };
+  const pick = (sel: Selection, how?: { keyboard: boolean }) => {
+    if (how?.keyboard && sel?.id === selection?.id) {
+      focusFirstField();
+      return;
+    }
+    focusInspector.current = !!how?.keyboard;
+    select(sel);
+  };
+  // The URL, and with it the inspector, can update a render after the pick.
+  useEffect(() => {
+    if (focusInspector.current && focusFirstField()) focusInspector.current = false;
+  });
+
   // Escape closes the open panel or the inspector (Lightning's keyboard provider).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // Menus and dialogs handle their own Escape.
       if (e.key !== "Escape" || e.defaultPrevented || document.querySelector('[role="dialog"]')) return;
-      if ((e.target as HTMLElement).closest("input, textarea, select")) return;
+      const target = e.target as HTMLElement;
+      if (target.closest("input, textarea, select") && !target.closest("[data-inspector-body]")) return;
       if (panel === "code") update({ panel: "settings" });
       else if (panel) update({ panel: null, runMode: null });
       else if (selection) select(null);
@@ -319,7 +343,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
               <WorkflowDiagram
                 graph={graph}
                 selection={selection}
-                onSelect={select}
+                onSelect={pick}
                 onAddPath={(jobId) => {
                   const id = editor.addJobAfter(jobId);
                   select({ kind: "job", id });
@@ -345,7 +369,7 @@ function WorkflowEditor({ project, initial, isNew }: { project: Project; initial
               </WorkflowDiagram>
 
               {inspector && (
-                <div className="absolute top-0 right-0 z-45" id="inspector">
+                <div ref={inspectorRef} className="absolute top-0 right-0 z-45" id="inspector">
                   {inspector}
                 </div>
               )}

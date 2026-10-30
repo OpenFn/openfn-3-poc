@@ -1,7 +1,6 @@
 import type { AdminCollectionRow } from "../../types/admin";
 import { formatBytes } from "../../utils/format";
 import Button from "../primitives/Button";
-import TableTitle from "../primitives/TableTitle";
 import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
 import { useTableSort, type SortValue } from "../../utils/useTableSort";
 
@@ -19,9 +18,8 @@ interface Props {
 
 /**
  * The instance-wide collections table (collection_live/components.ex
- * `collections_table`): a "Collections (n)" title with "Create collection",
- * then name / project / used storage with Edit and Delete per row, sorted in
- * the browser. With no collections it's the dashed "Create a new one." box.
+ * `collections_table`): name / project / used storage with Edit and Delete
+ * per row, sorted in the browser. With no collections it's the dashed "Create a new one." box.
  * Ids are Lightning's.
  */
 export default function AdminCollectionsTable({ collections, onCreate, onEdit, onDelete }: Props) {
@@ -40,51 +38,44 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
   }
 
   return (
-    <>
-      <TableTitle title="Collections" count={collections.length} className="mt-5">
-        <Button id="open-create-collection-modal-button" onClick={onCreate}>
-          Create collection
-        </Button>
-      </TableTitle>
-      <Table
-        id="collections-table"
-        header={
-          <Tr>
-            <Th {...thProps("name")}>Name</Th>
-            <Th>Project</Th>
-            <Th {...thProps("byte_size_sum")}>Used storage</Th>
-            <Th actions />
-          </Tr>
-        }
-      >
-        {rows.map((collection) => (
-          <Tr key={collection.id} id={`collections-table-row-${collection.id}`}>
-            <Td className="max-w-60 wrap-break-word text-strong">{collection.name}</Td>
-            <Td className="max-w-100 wrap-break-word">{collection.projectName}</Td>
-            <Td className="max-w-100 wrap-break-word">{formatBytes(collection.byteSizeSum)}</Td>
-            <Td actions>
-              <Button
-                id={`edit-collection-${collection.id}-button`}
-                aria-label={`Edit ${collection.name}`}
-                variant="secondary"
-                size="xs"
-                onClick={() => onEdit(collection)}
-              >
-                Edit
-              </Button>
-              <Button
-                id={`delete-collection-${collection.id}-button`}
-                aria-label={`Delete ${collection.name}`}
-                variant="secondary"
-                size="xs"
-                onClick={() => onDelete(collection)}
-              >
-                Delete
-              </Button>
-            </Td>
-          </Tr>
-        ))}
-      </Table>
-    </>
+    <Table
+      id="collections-table"
+      header={
+        <Tr>
+          <Th {...thProps("name")}>Name</Th>
+          <Th>Project</Th>
+          <Th {...thProps("byte_size_sum")}>Used storage</Th>
+          <Th actions />
+        </Tr>
+      }
+    >
+      {rows.map((collection) => (
+        <Tr key={collection.id} id={`collections-table-row-${collection.id}`}>
+          <Td className="max-w-60 wrap-break-word text-strong">{collection.name}</Td>
+          <Td className="max-w-100 wrap-break-word">{collection.projectName}</Td>
+          <Td className="max-w-100 wrap-break-word">{formatBytes(collection.byteSizeSum)}</Td>
+          <Td actions>
+            <Button
+              id={`edit-collection-${collection.id}-button`}
+              aria-label={`Edit ${collection.name}`}
+              variant="secondary"
+              size="xs"
+              onClick={() => onEdit(collection)}
+            >
+              Edit
+            </Button>
+            <Button
+              id={`delete-collection-${collection.id}-button`}
+              aria-label={`Delete ${collection.name}`}
+              variant="secondary"
+              size="xs"
+              onClick={() => onDelete(collection)}
+            >
+              Delete
+            </Button>
+          </Td>
+        </Tr>
+      ))}
+    </Table>
   );
 }

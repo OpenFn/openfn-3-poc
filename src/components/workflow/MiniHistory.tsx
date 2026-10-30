@@ -90,6 +90,7 @@ export default function MiniHistory({
           };
           return (
             <div key={workOrder.id}>
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- a bigger mouse target for the Expand button inside it, as in Lightning */}
               <div
                 className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-hover"
                 data-testid={`work-order-${workOrder.id}`}
@@ -121,6 +122,7 @@ export default function MiniHistory({
                 runs.map((run) => {
                   const runSelected = run.id === selectedRunId;
                   return (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- debt: choosing a run that isn't selected is mouse-only, as in Lightning; the keyboard can only open the run's page
                     <div
                       key={run.id}
                       className={cn(
@@ -198,6 +200,7 @@ export default function MiniHistory({
       data-annotation="workflow-editor-versions-and-promote"
       onPointerDown={(e) => e.stopPropagation()}
     >
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- a bigger mouse target for the chevron button inside it, as in Lightning */}
         <div
           className={cn(
             "flex cursor-pointer items-center justify-between gap-3 border-subtle bg-subtle px-3 py-2 text-faint hover:bg-sunken",
@@ -214,7 +217,15 @@ export default function MiniHistory({
             </Tooltip>
             <FullHistoryLink id="view-history" to={historyHref} />
           </div>
-          <span className={cn("h-4 w-4", collapsed ? "hero-chevron-right" : "hero-chevron-left")} />
+          <IconButton
+            icon={collapsed ? "hero-chevron-right" : "hero-chevron-left"}
+            label={collapsed ? "Show history" : "Hide history"}
+            size="xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+          />
         </div>
         {collapsed && selectedRun && (
           <div className="border-t border-subtle px-3 py-2">

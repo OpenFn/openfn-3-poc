@@ -8,6 +8,7 @@ export default function HistoryExportsPanel({ exports, sandbox }: { exports: His
   return (
     <>
       <SectionHeader
+        size="lg"
         title="History exports"
         subtitle="View export status and download work order history for this project."
       />

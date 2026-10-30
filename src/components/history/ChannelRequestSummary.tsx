@@ -15,7 +15,7 @@ import CopyButton from "../primitives/CopyButton";
 function Group({ title, className, children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <section className={className}>
-      <Heading size="xs" as="h4" className="mb-3 border-b border-subtle pb-1.5">
+      <Heading size="xs" as="h2" className="mb-3 border-b border-subtle pb-1.5">
         {title}
       </Heading>
       {children}

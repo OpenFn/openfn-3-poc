@@ -9,7 +9,6 @@ import type {
   WorkOrderStateCounts,
 } from "../../../types/workflow-health";
 import { FailureBreakdownDonut, OutcomesDonut } from "./HealthDonuts";
-import RangePicker from "./RangePicker";
 import StepFailureBars from "./StepFailureBars";
 import TriageTable from "./TriageTable";
 import Alert from "../../primitives/Alert";
@@ -31,8 +30,8 @@ const workOrders = (counts: WorkOrderStateCounts) => {
 };
 
 /**
- * The workflow health page body (assets/js/health/WorkflowHealth.tsx): the
- * workflow name with a range picker, Work orders / Runs tabs over the
+ * The workflow health page body (assets/js/health/WorkflowHealth.tsx), under
+ * the page header's workflow name and range picker: Work orders / Runs tabs over the
  * Outcomes, Failure breakdown and Steps with failures cards (or Runs over
  * time), and the triage table. Each endpoint's reply comes in on its own, so
  * one panel can be loading or failed while the others show numbers.
@@ -40,28 +39,21 @@ const workOrders = (counts: WorkOrderStateCounts) => {
 export default function WorkflowHealth({
   projectId,
   workflowId,
-  workflowName,
   days,
-  onDaysChange,
   outcomes,
   failures,
   runs,
-  historyRetentionPeriod = null,
 }: {
   projectId: string;
   workflowId: string;
-  workflowName: string;
-  /** The selected range. */
+  /** The selected range (the page header's RangePicker sets it). */
   days: HealthRange["days"];
-  onDaysChange: (days: HealthRange["days"]) => void;
   /** The `outcomes` reply: both donuts. */
   outcomes: HealthQuery<Outcomes>;
   /** The `failures` reply: Steps with failures and the triage table. */
   failures: HealthQuery<ErrorSignatures>;
   /** The `runs` reply: Runs over time. */
   runs: HealthQuery<RunVolume>;
-  /** Days of history the project keeps; longer ranges are disabled. */
-  historyRetentionPeriod?: number | null;
 }) {
   const [tab, setTab] = useState<Tab>("Work orders");
   const empty = (noun = "finished work orders") => `No ${noun} in the last ${windowLabel(days)}`;
@@ -69,15 +61,6 @@ export default function WorkflowHealth({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-        <Heading as="h1" size="xl" className="order-2 min-w-0 break-words md:order-1">
-          {workflowName}
-        </Heading>
-        <div className="order-1 shrink-0 md:order-2">
-          <RangePicker days={days} onChange={onDaysChange} retentionDays={historyRetentionPeriod} />
-        </div>
-      </div>
-
       <Tabs<Tab>
         tabs={[
           { id: "Work orders", label: "Work orders" },

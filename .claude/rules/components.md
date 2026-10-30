@@ -130,10 +130,27 @@ Stories: `Primitives/Button` (Disabled), `Domain/UserDeletionModal` (Blocked),
 Stories: `Profile/ExperimentalFeaturesCard`, `Project settings/SecurityPanel`,
 `Profile/ProfileForms` (BasicInfo), `Primitives/Card` (WithHeader).
 
+### Page frame
+
+- **`Header` names every page once.** A top-level page passes `title` (and
+  `count`), and its main button as children: they sit in the bar. A page
+  inside a project also passes `breadcrumbs` (`ProjectBreadcrumbs` with the
+  page as `current`): the bar holds the breadcrumb, and the title, count and
+  children take the row under it.
+- **The children are the page's main action**, with a list's
+  `SearchInput` before it. History's tabs go there too; its search stays in
+  the body.
+- **Don't repeat the title in the body.** A settings tab opens with
+  `SectionHeader size="lg"`.
+
+Stories: `Primitives/Header` (Title, WithAction, WithBreadcrumbs,
+WithBreadcrumbsAndTitle).
+
 ### List
 
-- **`TableTitle`** with the title and `count` ("Workflows (3)"). Its children
-  sit on the right: the `SearchInput` first, then the create `Button`.
+- **The title, count, search and create `Button` are the page's `Header`**
+  (see "Page frame"). A page with several tables heads each with
+  `SectionHeader`.
 - **`Table`** with `Tr`, `Th` and `Td` below it.
 - **Row actions** go in `<Td actions>` as `Button size="xs"
   variant="secondary"`, labelled with Lightning's verb ("Edit", "Delete").
@@ -143,8 +160,7 @@ Stories: `Profile/ExperimentalFeaturesCard`, `Project settings/SecurityPanel`,
   loaded; a long list is sorted and searched by the server (STANDARDS
   pattern 3).
 
-Stories: `Primitives/TableTitle` (WithActions), `Primitives/Table` (Default),
-`Projects/WorkflowsHeader`.
+Stories: `Primitives/Header` (WithBreadcrumbsAndTitle), `Primitives/Table` (Default).
 
 ### Empty list
 

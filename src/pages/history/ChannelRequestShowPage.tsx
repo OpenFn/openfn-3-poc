@@ -67,14 +67,10 @@ export default function ChannelRequestShowPage({
             ["History", `/projects/${project.id}/history`],
             ["Channels", `/projects/${project.id}/history/channels`],
           ]}
-          current={
-            <>
-              Channel Request
-              <span className="pl-1 font-light font-mono">{shortUuid(request.id)}</span>
-            </>
-          }
+          current="Channel Request"
         />
       }
+      title={`Channel Request ${shortUuid(request.id)}`}
     />
   );
 

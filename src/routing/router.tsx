@@ -57,7 +57,7 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & 
  * fall through to the browser. A link to the current URL replaces the history
  * entry, as React Router's Link does, so Back doesn't stall.
  */
-export function Link({ to, onClick, ...rest }: LinkProps) {
+export function Link({ to, onClick, children, ...rest }: LinkProps) {
   const { navigate, useHref, useLocation } = useRouter();
   const href = useHref(to);
   const { pathname, search, hash } = useLocation();
@@ -75,6 +75,8 @@ export function Link({ to, onClick, ...rest }: LinkProps) {
         e.preventDefault();
         navigate(to, { replace });
       }}
-    />
+    >
+      {children}
+    </a>
   );
 }

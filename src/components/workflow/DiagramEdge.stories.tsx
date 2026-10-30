@@ -20,8 +20,3 @@ export const JsExpressionWithLabel: Story = {
   args: { conditionType: "js_expression", conditionLabel: "Has overdue referrals", target: { x: -185, y: 260 } },
 };
 export const Selected: Story = { args: { selected: true } };
-export const Neighbour: Story = { args: { neighbour: true } };
-export const DidntRun: Story = { args: { didRun: false } };
-export const LongLabel: Story = {
-  args: { conditionType: "js_expression", conditionLabel: "Only when the referral is overdue and the facility has capacity" },
-};

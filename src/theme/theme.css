@@ -18,7 +18,7 @@
  * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
  * (button, link, field, form-group, label, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
- * page-body, sidebar)
+ * page-title-row, page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.
  * A toned button is still `data-variant="primary"`: a rule meant for the
  * plain primary button needs `:not([data-tone])`.
@@ -42,8 +42,6 @@
      read by components/workflow/diagramGeometry.ts). */
   --ui-diagram-selected: #4f46e5;
   --ui-diagram-selected-disabled: #bdbaf3;
-  --ui-diagram-neighbour: #807cce;
-  --ui-diagram-neighbour-faded: #d0d0ea;
 }
 
 body {
@@ -138,8 +136,6 @@ html[data-theme="light"] {
   /* Workflow canvas: blurple selection. */
   --ui-diagram-selected: #635bff;
   --ui-diagram-selected-disabled: #d6d3ff;
-  --ui-diagram-neighbour: #8f88ff;
-  --ui-diagram-neighbour-faded: #ebeaff;
 
   /* Slightly softer corners than Lightning's. */
   --radius-xs: 0.1875rem;
@@ -176,7 +172,8 @@ html[data-theme="light"] .sudo-variant {
 html[data-theme="light"] {
   /* ---- Page frame -------------------------------------------- */
 
-  [data-ui="page-body"] { background-color: #ffffff; }
+  [data-ui="page-body"],
+  [data-ui="page-title-row"] { background-color: #ffffff; }
   [data-ui="page-header"] {
     border-bottom-color: var(--ui-border);
     box-shadow: none;
@@ -486,11 +483,9 @@ html[data-theme="gds"] {
   --ui-button-secondary-bg: #f3f3f3;  --ui-button-secondary-hover: #cecece;  --ui-button-secondary-edge: #858686;
   --ui-button-danger-bg: #ca3535;     --ui-button-danger-hover: #982828;     --ui-button-danger-edge: #651b1b;
 
-  /* Workflow canvas: GOV.UK blue for the selection and its neighbours. */
+  /* Workflow canvas: GOV.UK blue for the selection. */
   --ui-diagram-selected: #1d70b8;
   --ui-diagram-selected-disabled: #8eb8dc;
-  --ui-diagram-neighbour: #5694ca;
-  --ui-diagram-neighbour-faded: #d2e2f1;
 
   /* Radius: GOV.UK components are square */
   --radius-xs: 0px;
@@ -535,7 +530,8 @@ html[data-theme="gds"] {
 
   /* A plain white page. GOV.UK separates content with space and
      rules, not by setting white panels on a grey ground. */
-  [data-ui="page-body"] { background-color: #ffffff; }
+  [data-ui="page-body"],
+  [data-ui="page-title-row"] { background-color: #ffffff; }
 
   /* The bar above each page plays the part of GOV.UK's Service
      navigation: a light blue band ruled off underneath. */

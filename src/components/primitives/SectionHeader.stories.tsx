@@ -22,3 +22,4 @@ export const LongTitle: Story = {
     subtitle: "View and manage who can edit workflows, credentials and history in this project and its sandboxes",
   },
 };
+export const Large: Story = { args: { size: "lg", title: "Data storage", subtitle: "View or modify data storage settings for this project.", action: undefined } };

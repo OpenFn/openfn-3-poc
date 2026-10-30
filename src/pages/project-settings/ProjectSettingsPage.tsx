@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Header from "../../components/primitives/Header";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import SectionHeader from "../../components/primitives/SectionHeader";
+import SectionHeader, { NestedSections } from "../../components/primitives/SectionHeader";
 import CredentialIndex from "../../components/credentials/CredentialIndex";
 import NewCredentialMenuButton, { projectCredentialMenuOptions } from "../../components/credentials/NewCredentialMenuButton";
 import CollaborationPanel from "../../components/project-settings/CollaborationPanel";
@@ -116,6 +116,7 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
     credentials: (
       <>
         <SectionHeader
+          size="lg"
           title="Project credentials"
           subtitle="Manage OAuth 2.0 Clients and Credentials accessible to this project."
           permissionsSection={credentials.canCreateProjectCredential ? undefined : "available credentials."}
@@ -190,7 +191,7 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
   };
 
   return (
-    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Project settings" />} />}>
+    <PageContent header={<Header breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Project settings" />} title="Project settings" />}>
       <Centered>
         {/* Keyed by project so panel state resets when the project picker switches projects. */}
         <div key={project.id} id="project-settings-container" className="flex h-full gap-8">
@@ -203,7 +204,7 @@ export default function ProjectSettingsPage(props: ProjectSettingsPageProps) {
                 role="tabpanel"
                 className={cn("space-y-4", t.id !== active && "hidden")}
               >
-                {panels[t.id]}
+                <NestedSections>{panels[t.id]}</NestedSections>
               </div>
             ))}
           </div>

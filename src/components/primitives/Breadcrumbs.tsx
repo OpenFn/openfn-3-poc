@@ -8,9 +8,10 @@ import { Link } from "../../routing/router";
 export function Breadcrumbs({ children }: { children: ReactNode }) {
   return (
     <nav className="flex" aria-label="Breadcrumbs">
+      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Safari drops list semantics when list-style is none; the role puts them back */}
       <ol
         role="list"
-        className="flex items-center space-x-2 [&>li.breadcrumb-item_.breadcrumb-separator]:hidden [&>li.breadcrumb-item+li.breadcrumb-item_.breadcrumb-separator]:flex"
+        className="flex items-center space-x-2 [&>li.breadcrumb-item_.breadcrumb-separator]:hidden [&>li+li.breadcrumb-item_.breadcrumb-separator]:flex"
       >
         {children}
       </ol>
@@ -37,5 +38,5 @@ export function Breadcrumb({ to, children }: { to?: string; children: ReactNode 
 
 /** Wraps a picker button as the first crumb (`breadcrumb_project_picker`). */
 export function BreadcrumbPicker({ children }: { children: ReactNode }) {
-  return <li className="mr-3">{children}</li>;
+  return <li className="mr-2">{children}</li>;
 }

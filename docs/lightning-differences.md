@@ -46,6 +46,39 @@ goes back to Lightning's way.
   it looks the same on white and grey surfaces. Some Lightning icon buttons
   add a grey square on hover, others don't.
 
+## Page header
+
+- **A page inside a project names itself under the bar.** Lightning's bar
+  holds the breadcrumb and, on some pages, the main button, and the page name
+  is only the last crumb (`LayoutComponents.header`). The replica keeps the
+  bar with the breadcrumb, and adds a row under it with the page title, its
+  count and the main button or search: "Workflows (3)" with "Create new
+  workflow". Lightning put those in the body's `table_title` on Workflows,
+  Sandboxes and Channels, so every page now names itself in one place.
+- **Top-level pages keep their title in the bar, and their main button moves
+  up beside it.** Lightning puts "Create project" and "Create collection"
+  under a second "Projects (3)" / "Collections (3)" title in the body
+  (`dashboard_live/user_projects_section.ex:74`, `collection_live/index.ex:99`);
+  the replica shows the count in the bar title and drops the repeat.
+- **History's Work Orders / Channel Logs tabs sit beside its title.**
+  Lightning puts them in the bar (`run_live/index.html.heex:22`).
+- **A detail page's short id is in its title, as plain text.** Lightning
+  ends the breadcrumb with "Run" and a light short id (or a mono one for a
+  channel request); the replica's breadcrumb ends with "Run" and the title
+  row reads "Run 5e9a1c2b". How a short id looks is still open (G155). A
+  run's snapshot chip ("latest") sits beside the workflow's name in the
+  run's details, since it names that workflow's version; Lightning puts it
+  after the id in the breadcrumb.
+- **A workflow's Health page names the workflow in the header**, with the
+  range picker beside it; Lightning puts both at the top of the page body.
+- **A `>` follows the project picker in the breadcrumb**, the workflow
+  editor's included, and a project page's breadcrumb ends with the page's
+  name ("Workflows"). Lightning shows no `>` after the picker, and the
+  Workflows page shows the picker alone.
+- **"Create new workflow" is a link**, since it opens a page; disabled, it's a
+  disabled button with the reason, as in Lightning, where it's always a
+  button.
+
 ## Tags
 
 - **A timed-out channel request is a warning (yellow).** Lightning draws the
@@ -120,3 +153,16 @@ goes back to Lightning's way.
   names the log level button "Log level: info", the adaptor button "Change
   adaptor: http" and the proxy URL "Copy proxy URL: <url>", and an adaptor
   option by its own text, so voice control users can say what they see.
+
+## Keyboard
+
+- **Picking a step or path with the keyboard moves focus into its
+  inspector.** In Lightning, Enter selects a React Flow node and focus stays
+  on it, so the inspector is only reached by tabbing past the rest of the
+  diagram. The replica puts focus on the inspector's first field, and when
+  the inspector closes, focus goes back to the step. A click leaves focus
+  where it is, as in Lightning.
+- **Escape closes the inspector from inside one of its fields.** Lightning's
+  keyboard provider ignores Escape in inputs, so a keyboard user in the
+  inspector would have no way back to the diagram. Elsewhere in the editor,
+  Escape in an input still does nothing.

@@ -50,7 +50,9 @@ export default function InspectorLayout({
           </div>
           <CloseButton label="Close panel" onClick={onClose} />
         </div>
-        <div className={cn("flex-1 overflow-y-auto", !bare && "space-y-6 p-6")}>{children}</div>
+        <div className={cn("flex-1 overflow-y-auto", !bare && "space-y-6 p-6")} data-inspector-body>
+          {children}
+        </div>
         {footer && (
           <div className="border-t border-subtle px-6 py-4" data-testid="inspector-footer">
             {footer}
