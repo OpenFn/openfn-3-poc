@@ -135,6 +135,92 @@ export default function WorkflowDiagram({
   const triggerIds = new Set(graph.triggers.map((t) => t.id));
   const isRun = !!run;
 
+  const renderEdge = (edge: (typeof graph.edges)[number]) => {
+    const sourceId = edge.sourceTriggerId ?? edge.sourceJobId!;
+    const source = graph.positions[sourceId];
+    const target = graph.positions[edge.targetJobId];
+    if (!source || !target) return null;
+    const fromTrigger = triggerIds.has(sourceId);
+    const trigger = fromTrigger ? graph.triggers.find((t) => t.id === sourceId) : undefined;
+    const didRun =
+      !!run && (!!run.steps[sourceId] || sourceId === run.startNodeId) && !!run.steps[edge.targetJobId];
+    return (
+      <DiagramEdge
+        key={edge.id}
+        id={edge.id}
+        source={source}
+        target={target}
+        conditionType={edge.conditionType}
+        conditionLabel={edge.conditionLabel}
+        enabled={trigger ? trigger.enabled : edge.enabled}
+        selected={selectedId === edge.id}
+        neighbour={selectedId !== null && (sourceId === selectedId || edge.targetJobId === selectedId)}
+        didntRun={isRun && !didRun}
+        onClick={pick({ kind: "edge", id: edge.id })}
+      />
+    );
+  };
+
+  const renderTrigger = (t: (typeof graph.triggers)[number]) => {
+    const p = graph.positions[t.id];
+    if (!p) return null;
+    const started = run?.startNodeId === t.id;
+    return (
+      <div key={t.id} className="absolute" style={{ left: p.x, top: p.y, zIndex: selectedId === t.id ? 5 : 4 }}>
+        <DiagramNode
+          id={t.id}
+          shape="circle"
+          label={t.type === "cron" ? "Cron trigger" : "Webhook trigger"}
+          sublabel={t.type === "cron" ? (t.cronDescription ?? "Not configured") : "On each request received"}
+          icon={<span className={cn("block h-full w-full", t.type === "cron" ? "hero-clock" : "hero-globe-alt")} />}
+          secondaryIcon={t.hasAuthMethod ? <span className="hero-lock-closed block h-full w-full" /> : undefined}
+          selected={selectedId === t.id}
+          disabled={!t.enabled}
+          didRun={!isRun || started}
+          startedBy={started ? run?.startedBy : undefined}
+          runMeta={started && run?.startedAt ? formatLocalDateTime(run.startedAt) : undefined}
+          onClick={pick({ kind: "trigger", id: t.id })}
+        />
+      </div>
+    );
+  };
+
+  const renderJob = (j: (typeof graph.jobs)[number]) => {
+    const p = graph.positions[j.id];
+    if (!p) return null;
+    const step = run?.steps[j.id];
+    const started = run?.startNodeId === j.id;
+    return (
+      <div key={j.id} className="absolute" style={{ left: p.x, top: p.y, zIndex: selectedId === j.id ? 5 : 4 }}>
+        <DiagramNode
+          id={j.id}
+          shape="rect"
+          label={j.name}
+          sublabel={adaptorShortName(j.adaptor)}
+          icon={<JobIcon adaptor={j.adaptor} />}
+          selected={selectedId === j.id}
+          runState={step?.state ?? null}
+          runMeta={step?.duration}
+          didRun={!isRun || !!step}
+          startedBy={started ? run?.startedBy : undefined}
+          onAddPath={onAddPath && !isRun ? () => onAddPath(j.id) : undefined}
+          onClick={pick({ kind: "job", id: j.id })}
+        />
+      </div>
+    );
+  };
+
+  // Tab follows the canvas: top to bottom, then left to right, each node followed by the paths leaving it.
+  const at = (id: string) => graph.positions[id] ?? { x: 0, y: 0 };
+  const flow = [
+    ...graph.triggers.map((trigger) => ({ id: trigger.id, trigger, job: undefined })),
+    ...graph.jobs.map((job) => ({ id: job.id, trigger: undefined, job })),
+  ].sort((p, q) => at(p.id).y - at(q.id).y || at(p.id).x - at(q.id).x);
+  const pathsFrom = (id: string) =>
+    graph.edges
+      .filter((e) => (e.sourceTriggerId ?? e.sourceJobId) === id)
+      .sort((d, e) => at(d.targetJobId).x - at(e.targetJobId).x);
+
   const gap = 20 * viewport.zoom;
   const dot = Math.max(0.5, viewport.zoom / 2);
 
@@ -172,78 +258,10 @@ export default function WorkflowDiagram({
         className="absolute left-0 top-0 origin-top-left"
         style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})` }}
       >
-        {graph.edges.map((edge) => {
-          const sourceId = edge.sourceTriggerId ?? edge.sourceJobId!;
-          const source = graph.positions[sourceId];
-          const target = graph.positions[edge.targetJobId];
-          if (!source || !target) return null;
-          const fromTrigger = triggerIds.has(sourceId);
-          const trigger = fromTrigger ? graph.triggers.find((t) => t.id === sourceId) : undefined;
-          const didRun =
-            !!run && (!!run.steps[sourceId] || sourceId === run.startNodeId) && !!run.steps[edge.targetJobId];
-          return (
-            <DiagramEdge
-              key={edge.id}
-              id={edge.id}
-              source={source}
-              target={target}
-              conditionType={edge.conditionType}
-              conditionLabel={edge.conditionLabel}
-              enabled={trigger ? trigger.enabled : edge.enabled}
-              selected={selectedId === edge.id}
-              neighbour={selectedId !== null && (sourceId === selectedId || edge.targetJobId === selectedId)}
-              didntRun={isRun && !didRun}
-              onClick={pick({ kind: "edge", id: edge.id })}
-            />
-          );
-        })}
-        {graph.triggers.map((t) => {
-          const p = graph.positions[t.id];
-          if (!p) return null;
-          const started = run?.startNodeId === t.id;
-          return (
-            <div key={t.id} className="absolute" style={{ left: p.x, top: p.y, zIndex: selectedId === t.id ? 5 : 4 }}>
-              <DiagramNode
-                id={t.id}
-                shape="circle"
-                label={t.type === "cron" ? "Cron trigger" : "Webhook trigger"}
-                sublabel={t.type === "cron" ? (t.cronDescription ?? "Not configured") : "On each request received"}
-                icon={<span className={cn("block h-full w-full", t.type === "cron" ? "hero-clock" : "hero-globe-alt")} />}
-                secondaryIcon={t.hasAuthMethod ? <span className="hero-lock-closed block h-full w-full" /> : undefined}
-                selected={selectedId === t.id}
-                disabled={!t.enabled}
-                didRun={!isRun || started}
-                startedBy={started ? run?.startedBy : undefined}
-                runMeta={started && run?.startedAt ? formatLocalDateTime(run.startedAt) : undefined}
-                onClick={pick({ kind: "trigger", id: t.id })}
-              />
-            </div>
-          );
-        })}
-        {graph.jobs.map((j) => {
-          const p = graph.positions[j.id];
-          if (!p) return null;
-          const step = run?.steps[j.id];
-          const started = run?.startNodeId === j.id;
-          return (
-            <div key={j.id} className="absolute" style={{ left: p.x, top: p.y, zIndex: selectedId === j.id ? 5 : 4 }}>
-              <DiagramNode
-                id={j.id}
-                shape="rect"
-                label={j.name}
-                sublabel={adaptorShortName(j.adaptor)}
-                icon={<JobIcon adaptor={j.adaptor} />}
-                selected={selectedId === j.id}
-                runState={step?.state ?? null}
-                runMeta={step?.duration}
-                didRun={!isRun || !!step}
-                startedBy={started ? run?.startedBy : undefined}
-                onAddPath={onAddPath && !isRun ? () => onAddPath(j.id) : undefined}
-                onClick={pick({ kind: "job", id: j.id })}
-              />
-            </div>
-          );
-        })}
+        {flow.flatMap((node) => [
+          node.trigger ? renderTrigger(node.trigger) : renderJob(node.job!),
+          ...pathsFrom(node.id).map(renderEdge),
+        ])}
       </div>
 
       {nodeCount > 0 && !preview && (
