@@ -92,3 +92,14 @@ export const Empty: Story = { args: { credentials: [], oauthClients: [] } };
 export const EmptyProject: Story = {
   args: { ...projectArgs, project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
 };
+
+/** A credential's stored values are still loading: its Actions button spins and the other rows wait. */
+export const RowPending: Story = {
+  args: { onLoadCredentialSecrets: () => new Promise(() => {}) },
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector("#credentials-table tbody tr")!;
+    [...row.querySelectorAll("button")].find((b) => b.textContent?.includes("Actions"))?.click();
+    await new Promise((r) => setTimeout(r));
+    [...canvasElement.ownerDocument.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((m) => m.textContent === "Edit")?.click();
+  },
+};

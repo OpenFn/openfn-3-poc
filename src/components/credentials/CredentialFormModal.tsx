@@ -9,6 +9,7 @@ import IconButton from "../primitives/IconButton";
 import InfoTooltip from "../primitives/InfoTooltip";
 import { Checkbox, PasswordInput, Radio, TextArea, TextInput } from "../primitives/Inputs";
 import Tabs from "../primitives/Tabs";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import ProjectsPicker from "./ProjectsPicker";
 import { adaptorIconUrl } from "../../utils/adaptors";
@@ -399,9 +400,9 @@ export default function CredentialFormModal({
               checked={selected === o.key}
               onChange={() => pickType(o.key)}
               label={
-                <span className="inline-flex items-center font-medium">
+                <span className="inline-flex items-center gap-1 font-medium">
                   {o.name}
-                  {o.logo && <img src={o.logo} alt="" className="ml-1 h-3 w-3" />}
+                  {o.logo && <img src={o.logo} alt="" className="h-3 w-3" />}
                 </span>
               }
             />
@@ -558,21 +559,23 @@ export default function CredentialFormModal({
           </Button>
         )}
         {/* Lightning's data-confirm on the delete button. */}
-        <ConfirmModal
-          open={confirmingEnvDelete}
-          onClose={() => setConfirmingEnvDelete(false)}
-          onConfirm={() => {
-            setEnvs(envs.filter((e) => e.key !== env.key));
-            setTab(0);
-            setNameDraft(null);
-            setConfirmingEnvDelete(false);
-          }}
-          title="Delete environment"
-          confirmLabel="Delete"
-          tone="danger"
-        >
-          <p>Are you sure you want to delete the {env.name} environment?</p>
-        </ConfirmModal>
+        {confirmingEnvDelete && (
+          <ConfirmModal
+            open
+            onClose={() => setConfirmingEnvDelete(false)}
+            onConfirm={() => {
+              setEnvs(envs.filter((e) => e.key !== env.key));
+              setTab(0);
+              setNameDraft(null);
+              setConfirmingEnvDelete(false);
+            }}
+            title="Delete environment"
+            confirmLabel="Delete"
+            tone="danger"
+          >
+            <p>Are you sure you want to delete the {env.name} environment?</p>
+          </ConfirmModal>
+        )}
       </Card>
 
       <Card as="section" title="Projects access" description="Select projects that can use this credential">
@@ -688,9 +691,9 @@ function OauthFields({
   if (env.pending) {
     // Lightning has no way out of this; a closed popup would otherwise leave the tab waiting for good.
     status = (
-      <p className="text-sm text-muted">
+      <Text as="p" className="text-muted">
         Authenticating with {client.name}... <TextLink onClick={onSignIn}>Start again</TextLink>
-      </p>
+      </Text>
     );
   } else if (env.answer?.error) {
     status = (
@@ -706,8 +709,10 @@ function OauthFields({
     status = (
       <>
         <Alert tone="warning" header="Reauthentication Required">
-          <p>You've changed the permissions for this credential.</p>
-          <p className="mt-2 text-sm">Please reauthenticate with {client.name} to apply these changes.</p>
+          <div className="space-y-2">
+            <p>You've changed the permissions for this credential.</p>
+            <p>Please reauthenticate with {client.name} to apply these changes.</p>
+          </div>
         </Alert>
         {signInButton("Reauthenticate")}
       </>
@@ -719,7 +724,7 @@ function OauthFields({
           <Alert tone="success">
             <p className="font-semibold">{userInfo.name ?? "Unknown User"}</p>
             <p>{userInfo.email ?? "No email provided"}</p>
-            <p className="text-xs">Successfully authenticated with {client.name}</p>
+            <Text as="p" variant="body-sm">Successfully authenticated with {client.name}</Text>
           </Alert>
         ) : (
           <Alert tone="info">
@@ -727,10 +732,10 @@ function OauthFields({
             user info to verify. This app may not provide a user info endpoint, or your admin may not have configured it.
           </Alert>
         )}
-        <p className="text-sm text-muted">
+        <Text as="p" className="text-muted">
           If your credential isn't working as expected, you can{" "}
           <TextLink onClick={onSignIn}>reauthenticate with {client.name}</TextLink>
-        </p>
+        </Text>
       </>
     );
   } else if (env.stored?.status === "unavailable") {
@@ -738,8 +743,10 @@ function OauthFields({
     status = (
       <>
         <Alert tone="warning" header={`${client.name} is Having Issues`}>
-          <p>{client.name} is experiencing technical difficulties.</p>
-          <p className="mt-2 text-sm">This is temporary - please try again in a few minutes.</p>
+          <div className="space-y-2">
+            <p>{client.name} is experiencing technical difficulties.</p>
+            <p>This is temporary - please try again in a few minutes.</p>
+          </div>
         </Alert>
         {signInButton("Try Again Later")}
       </>
@@ -767,12 +774,12 @@ function OauthFields({
             <InfoTooltip title="Select permissions associated to your OAuth2 Token" />
           </Heading>
           {client.scopesDocUrl && (
-            <p className="text-xs text-strong">
+            <Text as="p" variant="body-sm" className="text-strong">
               Learn more about {client.name} permissions{" "}
               <TextLink to={client.scopesDocUrl} external>
                 here
               </TextLink>
-            </p>
+            </Text>
           )}
           <div className="flex flex-wrap gap-x-6 gap-y-1">
             {scopes.map((s) => {

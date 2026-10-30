@@ -36,7 +36,7 @@ export default function HistoryExportsTable({ exports }: { exports: HistoryExpor
           <Td>
             <DateTime value={f.insertedAt} />
           </Td>
-          <Td>{f.fileName ?? <em>Pending</em>}</Td>
+          <Td className="wrap-break-word max-w-60">{f.fileName ?? <em>Pending</em>}</Td>
           <Td>{f.requestedBy}</Td>
           <Td>{formatStatus(f.status)}</Td>
           <Td actions>

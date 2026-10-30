@@ -1,6 +1,7 @@
 import Button from "../primitives/Button";
 import { Select } from "../primitives/Inputs";
 import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import Text from "../primitives/Text";
 import { useToast } from "../primitives/Toast";
 import { digestOptions } from "../../constants";
 import type { CollaboratorRow, Digest } from "../../types/project-settings";
@@ -69,8 +70,12 @@ export default function CollaboratorsTable({ collaborators, canReceiveFailureAle
             <div>
               {c.firstName} {c.lastName}
             </div>
-            <div className="text-xs">{c.email}</div>
-            {c.isCurrentUser && <em className="text-xs text-faint">Well hello, you!</em>}
+            <Text as="div" variant="body-sm">{c.email}</Text>
+            {c.isCurrentUser && (
+              <Text variant="body-sm" className="text-faint">
+                <em>Well hello, you!</em>
+              </Text>
+            )}
           </Td>
           <Td>{capitalize(c.role)}</Td>
           <Td>

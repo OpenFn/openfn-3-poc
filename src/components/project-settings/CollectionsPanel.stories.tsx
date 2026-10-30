@@ -27,3 +27,4 @@ type Story = StoryObj<typeof CollectionsPanel>;
 export const WithCollections: Story = {};
 export const Empty: Story = { args: { collections: { collections: [], canManage: true } } };
 export const Sandbox: Story = { args: { sandbox: true } };
+export const ReadOnly: Story = { args: { collections: { ...collections, canManage: false } } };

@@ -5,6 +5,7 @@ import CopyButton from "../primitives/CopyButton";
 import { Field, TextInput } from "../primitives/Inputs";
 import FormModal from "../primitives/FormModal";
 import Modal from "../primitives/Modal";
+import Text from "../primitives/Text";
 import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "../../types/project-settings";
 import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";
@@ -48,14 +49,14 @@ function TypeOption({ selected, icon, children, onSelect }: { selected: boolean;
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-subtle bg-surface p-2 text-sm shadow-xs",
+        "flex cursor-pointer items-center gap-x-2.5 rounded-lg border border-subtle bg-surface p-2 shadow-xs",
         selected && "outline-2 outline-offset-2 outline-focus"
       )}
     >
       {/* eslint-disable-next-line no-restricted-syntax -- visually hidden radio; the card around it is the control */}
       <input type="radio" name="auth_type" className="sr-only" checked={selected} onChange={onSelect} />
       <span className={cn(icon, "h-10 w-10")} />
-      {children}
+      <Text>{children}</Text>
     </label>
   );
 }
@@ -125,16 +126,16 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
       >
         <form
           id="reauthentication-form"
-          className="space-y-4 text-sm"
+          className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             void reveal.run();
           }}
         >
-          <p>
+          <Text as="p">
             You're required to reauthenticate yourself before viewing the webhook{" "}
             {authType === "basic" ? "Password" : "API Key"}
-          </p>
+          </Text>
           {reveal.error && <Alert tone="danger">{errorMessage(reveal.error)}</Alert>}
           <TextInput
             id="user_password"
@@ -144,11 +145,11 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
             value={reauthValues.password}
             onChange={(e) => setReauthValues({ ...reauthValues, password: e.target.value })}
           />
-          <div className="flex items-center gap-2 text-muted">
+          <Text as="div" className="flex items-center gap-2 text-muted">
             <hr className="flex-1 border-strong" />
             OR
             <hr className="flex-1 border-strong" />
-          </div>
+          </Text>
           <TextInput
             id="user_code"
             label="2FA Code"

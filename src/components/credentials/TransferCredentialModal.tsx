@@ -1,5 +1,6 @@
 import FormModal from "../primitives/FormModal";
 import { TextInput } from "../primitives/Inputs";
+import Text from "../primitives/Text";
 import type { CredentialRow } from "../../types/credentials";
 import { useForm } from "../../utils/useForm";
 import { isValidEmail } from "../../utils/validate";
@@ -47,10 +48,10 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
       submitId={revoke ? `${modalId}-revoke-button` : `${modalId}-submit-button`}
     >
       {revoke ? (
-        <p className="text-sm text-muted">
+        <Text as="p" className="text-muted">
           Revoking this transfer will cancel the pending request. This will keep the credential under your ownership.
           You will need to initiate a new transfer request to transfer it in the future.
-        </p>
+        </Text>
       ) : (
         <TextInput id="receiver_email" aria-label="Receiver email" placeholder="email@example.com" required {...form.fieldProps("receiverEmail")} />
       )}
