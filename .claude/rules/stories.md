@@ -29,4 +29,9 @@ Every component and every page has a `.stories.tsx` next to it.
 - Stories are linted for colour classes like the rest of `src/`, but hex is
   allowed there because it is data (sandbox colours, chart values).
 
+- **A story you add or change passes axe** (`npm run test:stories`, or the
+  Accessibility tab in Storybook). Some older stories still fail; don't add
+  to them. Fix a violation in the component, not the story, unless the story
+  itself is wrong (a missing prop, an empty header the real table fills).
+
 `npm run build-storybook` checks that stories compile. CI runs it on every PR.
