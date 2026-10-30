@@ -222,6 +222,13 @@ export default defineConfig([
   // Accessibility. Stories stay in: they are the components' specs.
   { files: ['src/**/*.tsx'], ...jsxA11y.flatConfigs.recommended },
   {
+    // Deprecated React, DOM and library APIs (FormEvent, navigator.platform) fail lint.
+    // It needs the types, so it reads the tsconfig; that roughly doubles lint's time.
+    files: ['src/**/*.{ts,tsx}'],
+    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname } },
+    rules: { '@typescript-eslint/no-deprecated': 'error' },
+  },
+  {
     // Stories set fixed canvas sizes, so they're left out.
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['**/*.stories.tsx'],

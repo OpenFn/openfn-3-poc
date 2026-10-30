@@ -25,7 +25,7 @@ export default function AuthConfirmAccountPage() {
       right={flags.allowSignup && <TextLink variant="plain" to="/users/register">Register</TextLink>}
     />
   );
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     navigate("/projects");
   };

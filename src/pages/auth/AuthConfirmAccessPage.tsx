@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import AuthPanelLayout, {
   AuthPanel,
   AuthPanelHint,
@@ -39,7 +39,7 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
     setValue("");
     confirm.reset();
   };
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     void confirm.run(option === "password" ? { password: value } : { code: value });
   };

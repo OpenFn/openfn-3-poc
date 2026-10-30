@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthPanelLayout, {
@@ -26,7 +26,7 @@ export default function AuthTwoFactorPage() {
   const method: TwoFactorMethod = q.get("authentication_type") === "backup_code" ? "backup_code" : "totp";
   const other: TwoFactorMethod = method === "totp" ? "backup_code" : "totp";
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     navigate("/projects");
   };

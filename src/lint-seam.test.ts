@@ -8,7 +8,14 @@ const sources = import.meta.glob<string>("./**/*.{ts,tsx}", {
   eager: true,
 });
 
-const eslint = new ESLint();
+// The probes are made-up files outside the TypeScript project, so the type-aware rule is off for them.
+const eslint = new ESLint({
+  overrideConfig: {
+    files: ["src/**/*.{ts,tsx}"],
+    languageOptions: { parserOptions: { projectService: false } },
+    rules: { "@typescript-eslint/no-deprecated": "off" },
+  },
+});
 
 async function seamMessages(filePath: string, code: string) {
   const [result] = await eslint.lintText(code, { filePath });

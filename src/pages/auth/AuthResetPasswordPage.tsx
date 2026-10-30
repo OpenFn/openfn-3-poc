@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
@@ -45,7 +45,7 @@ export default function AuthResetPasswordPage() {
     );
   }
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     if (data.get("password") !== data.get("password_confirmation")) {

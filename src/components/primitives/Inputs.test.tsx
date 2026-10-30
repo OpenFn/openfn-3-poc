@@ -71,7 +71,7 @@ describe("Select", () => {
   });
 
   it("doesn't submit its form on Enter, before or after a mouse pick", async () => {
-    const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
+    const onSubmit = vi.fn((e: React.SubmitEvent) => e.preventDefault());
     render(
       <form onSubmit={onSubmit}>
         <Controlled initial="viewer" />

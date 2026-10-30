@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
@@ -23,7 +23,7 @@ export default function AuthRegisterPage() {
 
   if (!flags.allowSignup) return <PlainTextResponse>{signupDisabledMessage}</PlainTextResponse>;
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     navigate("/projects");
   };
