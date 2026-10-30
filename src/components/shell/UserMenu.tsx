@@ -1,5 +1,7 @@
 import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../primitives/Menu";
 import UserAvatar from "../primitives/UserAvatar";
+import Heading from "../primitives/Heading";
+import Text from "../primitives/Text";
 
 /** What the account menu shows of the signed-in user. */
 export interface MenuUser {
@@ -33,6 +35,7 @@ export default function UserMenu({ user }: { user: MenuUser }) {
           <button
             type="button"
             data-ui="account-trigger"
+            // eslint-disable-next-line no-restricted-syntax -- a control that owns its type: the account button
             className="user-menu-trigger flex h-10 w-full items-center rounded-lg bg-white/10 text-sm font-medium text-inverse transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
             <div className="user-menu-content flex w-full min-w-0 items-center">
@@ -52,17 +55,17 @@ export default function UserMenu({ user }: { user: MenuUser }) {
         </MenuHeader>
         {user.experimentalFeatures && (
           <div className="bg-amber-50 px-4 py-3">
-            <p className="flex items-center gap-1.5 text-sm font-medium text-strong">
+            <Heading size="sm" as="p" className="flex items-center gap-1.5">
               <span className="hero-wrench-screwdriver-mini h-4 w-4 text-amber-600" />
               Experimental features on
-            </p>
-            <p className="mt-0.5 text-xs text-muted">
+            </Heading>
+            <Text as="p" variant="body-sm" className="mt-0.5 text-muted">
               You're using features that are still being built. Things may work differently for you than for your
               teammates.
-            </p>
-            <p className="mt-1.5 text-xs text-amber-700">
+            </Text>
+            <Text as="p" variant="body-sm" className="mt-1.5 text-amber-700">
               <MenuLink to="/profile">Turn off in your profile</MenuLink>
-            </p>
+            </Text>
           </div>
         )}
         <MenuDivider />

@@ -1,29 +1,10 @@
-import type { RunState, WorkOrderState } from "../../types/history";
+import type { RunDisplayState } from "../../types/history";
 import type { ChannelRequestState } from "../../types/channels";
 import Pill from "../primitives/Pill";
 import type { Tone } from "../primitives/tone";
 import { STATE_PILL } from "../../theme/runStateColours";
 import { capitalize } from "../../utils/format";
-
-type State = WorkOrderState | RunState | "running";
-
-/** `display_text_from_state`. */
-function stateLabel(state: State): string {
-  switch (state) {
-    case "rejected":
-      return "Rejected";
-    case "pending":
-    case "available":
-      return "Enqueued";
-    case "running":
-    case "started":
-      return "Running";
-    case "claimed":
-      return "Starting";
-    default:
-      return capitalize(state);
-  }
-}
+import { stateLabel } from "../../utils/history";
 
 /**
  * A work order or run state pill (run_live/components.ex `state_pill`).
@@ -31,7 +12,7 @@ function stateLabel(state: State): string {
  * src/theme/runStateColours.ts. `labelMode="raw"` shows the state itself,
  * capitalised, as the canvas's MiniHistory does ("Pending" rather than "Enqueued").
  */
-export default function StatePill({ state, labelMode = "display" }: { state: State; labelMode?: "display" | "raw" }) {
+export default function StatePill({ state, labelMode = "display" }: { state: RunDisplayState; labelMode?: "display" | "raw" }) {
   return <Pill className={STATE_PILL[state]}>{labelMode === "raw" ? capitalize(state) : stateLabel(state)}</Pill>;
 }
 

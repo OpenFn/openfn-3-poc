@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { diagramParameters } from "../../stories/decorators";
 import DiagramEdge from "./DiagramEdge";
 
 const meta: Meta<typeof DiagramEdge> = {
   title: "Workflow/DiagramEdge",
   component: DiagramEdge,
+  parameters: diagramParameters,
   decorators: [(Story) => <div className="relative h-96 bg-page"><div className="absolute left-40 top-4"><Story /></div></div>],
   args: { id: "e1", source: { x: 0, y: 0 }, target: { x: 0, y: 260 }, conditionType: "on_job_success" },
 };

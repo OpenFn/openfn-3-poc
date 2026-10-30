@@ -3,6 +3,7 @@ import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
 import Modal from "../primitives/Modal";
 import SearchList from "../primitives/SearchList";
+import Text from "../primitives/Text";
 import { filterPickerItems } from "./projectPickerItems";
 
 /**
@@ -122,7 +123,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
   // the panel sits high on the page, like a command palette.
   return (
     // eslint-disable-next-line no-restricted-syntax -- sized to the viewport
-    <Modal open={isOpen} onClose={closePicker} bare className="mt-[15vh] self-start overflow-hidden">
+    <Modal open={isOpen} onClose={closePicker} bare label={placeholder} className="mt-[15vh] self-start overflow-hidden">
       <SearchList<Row>
         variant="palette"
         listId="picker-options"
@@ -139,10 +140,10 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
         onSelect={go}
         placeholder={placeholder}
         inputAddon={
-          <kbd className="hidden items-center gap-1 rounded px-2 py-1 text-xs text-faint ring-1 ring-strong sm:inline-flex">
+          <Text as="kbd" variant="code-sm" className="hidden items-center gap-1 rounded px-2 py-1 text-faint ring-1 ring-strong sm:inline-flex">
             <span>{isMac ? "⌘" : "Ctrl"}</span>
             <span>P</span>
-          </kbd>
+          </Text>
         }
         renderItem={(row, { active, selected }) =>
           isViewAll(row) ? (

@@ -5,6 +5,7 @@ import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
 import Tooltip from "../primitives/Tooltip";
+import Text from "../primitives/Text";
 
 /** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
 export type SidebarMenu = "project" | "profile" | "admin";
@@ -136,7 +137,7 @@ export function SidebarLogo({ releaseLabel, collapsed = false }: { releaseLabel:
     <div className="primary-light mt-3 border-t border-white/10 pt-5 text-center">
       {collapsed ? <OpenFnLogoCollapsed className="mx-auto h-6" /> : <OpenFnLogo className="mx-auto h-6" />}
       {/* eslint-disable-next-line no-restricted-syntax -- below text-xs, the smallest step on the scale */}
-      <code className="block py-1 text-[8px] opacity-50">{releaseLabel}</code>
+      <code className="block py-1 text-[8px]">{releaseLabel}</code>
     </div>
   );
 }
@@ -204,10 +205,10 @@ export default function Sidebar({
                 content="You're using features that are still being built. Things may work differently for you than for your teammates."
                 side="right"
               >
-                <div className="menu-item mx-3 flex h-8 items-center rounded-lg text-sm font-medium text-amber-300">
+                <Text as="div" variant="label-md" className="menu-item mx-3 flex h-8 items-center rounded-lg text-amber-300">
                   <span className="hero-wrench-screwdriver h-5 w-5" />
                   <span className="menu-item-text truncate">Experimental</span>
-                </div>
+                </Text>
               </Tooltip>
             </div>
           )}

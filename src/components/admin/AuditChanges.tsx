@@ -1,6 +1,7 @@
 import type { AuditEvent, AuditValue } from "../../types/admin";
 import Card from "../primitives/Card";
 import { Td } from "../primitives/Table";
+import Text from "../primitives/Text";
 
 /** Values print as Lightning's HEEx prints them: `true` as "true", nil as "". */
 const show = (value: AuditValue) => (value === null ? "" : String(value));
@@ -22,39 +23,43 @@ export default function AuditChanges({ audit }: { audit: AuditEvent }) {
 
   if (changes.length === 0 && bodies.length === 0) {
     return (
-      <Td colSpan={4} className="p-6! font-mono text-xs break-all">
-        No changes
+      <Td colSpan={4} className="p-6! break-all">
+        <Text as="div" variant="code-sm">
+          No changes
+        </Text>
       </Td>
     );
   }
 
   return (
-    <Td colSpan={4} className="p-4! font-mono text-xs break-all">
-      {changes.length > 0 && (
-        <Card muted padding="sm" as="ul" className="mb-3 space-y-2">
-          {changes.map(({ key, old, next }) => (
-            <li key={key}>
-              <span className="font-semibold">{key}</span>&nbsp;{" "}
-              {old !== null && (
-                <>
-                  <span className="text-muted line-through">{show(old)}</span>{" "}
-                  <span className="hero-arrow-right mx-2 h-4 w-4 text-faint" />{" "}
-                </>
-              )}
-              <span className="text-strong">{show(next)}</span>
-            </li>
-          ))}
-        </Card>
-      )}
-      {bodies.length > 0 && (
-        <Card muted padding="sm" as="ul" className="space-y-2">
-          {bodies.map(([env, body]) => (
-            <li key={env}>
-              <span className="font-semibold">body:{env}</span>&nbsp; <span className="text-body">{body}</span>
-            </li>
-          ))}
-        </Card>
-      )}
+    <Td colSpan={4} className="p-4! break-all">
+      <Text as="div" variant="code-sm">
+        {changes.length > 0 && (
+          <Card muted padding="sm" as="ul" className="mb-3 space-y-2">
+            {changes.map(({ key, old, next }) => (
+              <li key={key}>
+                <span className="font-semibold">{key}</span>&nbsp;{" "}
+                {old !== null && (
+                  <>
+                    <span className="text-muted line-through">{show(old)}</span>{" "}
+                    <span className="hero-arrow-right mx-2 h-4 w-4 text-faint" />{" "}
+                  </>
+                )}
+                <span className="text-strong">{show(next)}</span>
+              </li>
+            ))}
+          </Card>
+        )}
+        {bodies.length > 0 && (
+          <Card muted padding="sm" as="ul" className="space-y-2">
+            {bodies.map(([env, body]) => (
+              <li key={env}>
+                <span className="font-semibold">body:{env}</span>&nbsp; <span className="text-body">{body}</span>
+              </li>
+            ))}
+          </Card>
+        )}
+      </Text>
     </Td>
   );
 }

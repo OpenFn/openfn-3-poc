@@ -1,4 +1,5 @@
 import { cn } from "../../utils/cn";
+import { prefersDarkText } from "../../utils/colour";
 import Tooltip from "../primitives/Tooltip";
 
 interface Props {
@@ -30,6 +31,9 @@ export default function PickerButton({
   const parts = label.split("/");
   const truncated = isSandbox && parts.length > 2;
   const visible = truncated ? parts.slice(-2) : parts;
+  // Lightning always writes white on the sandbox colour; a light colour gets dark text instead, for contrast.
+  const onLight = isSandbox && !!color && prefersDarkText(color);
+  const accent = onLight ? "text-strong" : "text-white/80";
 
   const button = (
     // eslint-disable-next-line no-restricted-syntax -- debt: a secondary Button that takes the sandbox colour at runtime
@@ -40,14 +44,15 @@ export default function PickerButton({
         document.body.dispatchEvent(new CustomEvent(openEvent));
       }}
       className={cn(
+        // eslint-disable-next-line no-restricted-syntax -- a control that owns its type: the picker button
         "flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors",
         isSandbox
-          ? "border-transparent text-inverse hover:opacity-90"
+          ? cn("border-transparent hover:opacity-90", onLight ? "text-strong" : "text-inverse")
           : "border-strong bg-surface text-body hover:border-emphasis hover:bg-hover"
       )}
       style={isSandbox ? { backgroundColor: color ?? "var(--color-primary-600)" } : undefined}
     >
-      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} text-white/80` : `${icon} text-muted`)} />
+      <span className={cn("h-4 w-4", isSandbox ? `${accentIcon} ${accent}` : `${icon} text-muted`)} />
       <span>
         {isSandbox && parts.length > 1 ? (
           <>
@@ -63,7 +68,7 @@ export default function PickerButton({
           label
         )}
       </span>
-      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? "text-white/80" : "text-faint")} />
+      <span className={cn("hero-chevron-down h-4 w-4 shrink-0", isSandbox ? accent : "text-faint")} />
     </button>
   );
   return <Tooltip content={truncated ? parts.join(" > ") : undefined}>{button}</Tooltip>;

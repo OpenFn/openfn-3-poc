@@ -3,6 +3,7 @@ import type { ErrorSignature } from "../../../types/workflow-health";
 import { cn } from "../../../utils/cn";
 import { EMPTY, FAILED, UNATTRIBUTED, adaptorLabel } from "./palette";
 import Tooltip from "../../primitives/Tooltip";
+import Text from "../../primitives/Text";
 
 const NO_STEP = "no-step";
 
@@ -30,7 +31,7 @@ export default function StepFailureBars({
   emptyMessage: string;
 }) {
   const rows = groupByStep(signatures);
-  if (rows.length === 0) return <p className={EMPTY}>{emptyMessage}</p>;
+  if (rows.length === 0) return <Text as="p" className={EMPTY}>{emptyMessage}</Text>;
   const max = Math.max(...rows.map((r) => r.count));
 
   return (
@@ -38,15 +39,15 @@ export default function StepFailureBars({
       <ul className="relative -mr-6 flex max-h-64 flex-col gap-6 overflow-y-auto pr-4 lg:absolute lg:inset-0 lg:max-h-none">
         {rows.map(({ key, label, adaptor, count }) => (
           <li key={key} className="flex flex-col gap-2">
-            <div className="flex items-baseline justify-between gap-4 text-sm">
+            <Text as="div" className="flex items-baseline justify-between gap-4">
               <div className="flex min-w-0 flex-col gap-1">
                 <Tooltip content={label}>
                   <span className={cn("truncate", key === NO_STEP ? "italic text-muted" : "text-strong")}>{label}</span>
                 </Tooltip>
-                {adaptor && <span className="truncate font-mono text-xs text-muted">{adaptorLabel(adaptor)}</span>}
+                {adaptor && <Text variant="code-sm" className="truncate text-muted">{adaptorLabel(adaptor)}</Text>}
               </div>
               <span className="shrink-0 font-medium tabular-nums text-strong">{formatNumber(count)}</span>
-            </div>
+            </Text>
             <div aria-hidden="true" className="h-1.5 rounded-full bg-emphasis">
               <div
                 className="h-1.5 rounded-full"

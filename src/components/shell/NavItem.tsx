@@ -22,6 +22,7 @@ interface Props {
  */
 export default function NavItem({ to, href, target = "_blank", icon, label, active = false, title }: Props) {
   const className = cn(
+    // eslint-disable-next-line no-restricted-syntax -- a control that owns its type: the sidebar link, as Lightning's menu_item
     "menu-item mx-3 mb-1 flex h-10 items-center rounded-lg text-sm font-medium transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
     active ? "menu-item-active" : "menu-item-inactive"
@@ -36,11 +37,11 @@ export default function NavItem({ to, href, target = "_blank", icon, label, acti
   );
 
   return href ? (
-    <a href={href} target={target} rel="noreferrer" className={className} data-ui="nav-link">
+    <a href={href} target={target} rel="noreferrer" className={className} aria-label={label} data-ui="nav-link">
       {content}
     </a>
   ) : (
-    <Link to={to ?? "#"} className={className} aria-current={active ? "page" : undefined} data-ui="nav-link">
+    <Link to={to ?? "#"} className={className} aria-current={active ? "page" : undefined} aria-label={label} data-ui="nav-link">
       {content}
     </Link>
   );

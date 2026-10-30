@@ -30,7 +30,7 @@ interface Props {
 }
 
 /**
- * An inline text link with Lightning's `link` utility (primary-400, underline
+ * An inline text link with Lightning's `link` utility (`text-link`, underline
  * on hover), red with `tone="danger"`, or unstyled with `variant="plain"`.
  * Carries `data-ui="link"`, `data-variant` and `data-tone` for themes.
  */

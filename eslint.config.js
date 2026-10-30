@@ -106,8 +106,7 @@ const rawControl = {
 }
 
 // Type size comes from Text or Heading (src/components/primitives/Text.tsx). Weight,
-// italic and mono stay classes: they emphasise text inside its size. Only the
-// history area and domain/ are held to it so far.
+// italic and mono stay classes: they emphasise text inside its size.
 const typeRules = banned(
   '\\b(?:text-(?:xs|sm|base|lg|[2-9]?xl)(?![\\w-])|leading-|tracking-)',
   'Type size: use Text (body, label or code, at md or sm) or Heading, not text-sm, leading-* or tracking-*. See src/components/primitives/Text.tsx.'
@@ -231,11 +230,6 @@ export default defineConfig([
   {
     files: ['src/pages/**/*.tsx', 'src/components/*/**/*.tsx'],
     ignores: ['src/components/primitives/**', '**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': consumerRules(colourRules()) },
-  },
-  {
-    files: ['src/components/history/**/*.tsx', 'src/components/domain/**/*.tsx'],
-    ignores: ['**/*.stories.tsx', '**/*.test.tsx'],
     rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules] },
   },
   // Raw palette colours, confined to the files that are about colour.
@@ -253,7 +247,7 @@ export default defineConfig([
     files: ['src/components/history/ChannelTiming.tsx'],
     rules: { 'no-restricted-syntax': [...consumerRules([]), ...typeRules] },
   },
-  { files: ['src/components/admin/LiveDashboardHome.tsx'], rules: { 'no-restricted-syntax': consumerRules([]) } },
+  { files: ['src/components/admin/LiveDashboardHome.tsx'], rules: { 'no-restricted-syntax': [...consumerRules([]), ...typeRules] } },
   // Tests and fixtures hold data (sandbox colours) and query chart classes:
   { files: ['src/**/*.test.{ts,tsx}', 'src/mock-data/**/*.{ts,tsx}'], rules: { 'no-restricted-syntax': srcRules([]) } },
   {
@@ -267,7 +261,7 @@ export default defineConfig([
   // The amber notices (support user, experimental):
   {
     files: ['src/components/shell/UserMenu.tsx', 'src/components/shell/Sidebar.tsx'],
-    rules: { 'no-restricted-syntax': consumerRules(colourRules({ amber: true })) },
+    rules: { 'no-restricted-syntax': [...consumerRules(colourRules({ amber: true })), ...typeRules] },
   },
   {
     // The router adapter is the one place that reads the browser URL.

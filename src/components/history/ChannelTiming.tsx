@@ -33,11 +33,11 @@ function computeTiming(event: ChannelEvent | undefined): TimingData | null {
     const segments: Segment[] = [];
     if (queue > 0) segments.push({ label: "Queue", us: queue, color: "bg-amber-300", textColor: "text-amber-900" });
     if (reused)
-      segments.push({ label: "Connect", us: 0, color: "bg-orange-400", textColor: "text-orange-900", badge: "(reused)" });
+      segments.push({ label: "Connect", us: 0, color: "bg-orange-300", textColor: "text-orange-900", badge: "(reused)" });
     else if (connect > 0)
-      segments.push({ label: "Connect", us: connect, color: "bg-orange-400", textColor: "text-orange-900" });
+      segments.push({ label: "Connect", us: connect, color: "bg-orange-300", textColor: "text-orange-900" });
     segments.push(
-      { label: "Send", us: event.requestSendUs, color: "bg-blue-400", textColor: "text-blue-900" },
+      { label: "Send", us: event.requestSendUs, color: "bg-blue-300", textColor: "text-blue-900" },
       { label: "Processing", us: wait, color: "bg-gray-300", textColor: "text-gray-700" },
       { label: "Recv", us: event.responseDurationUs, color: "bg-green-400", textColor: "text-green-900" }
     );
@@ -46,7 +46,7 @@ function computeTiming(event: ChannelEvent | undefined): TimingData | null {
   if (ttfbUs != null) {
     return {
       segments: [
-        { label: "TTFB", us: ttfbUs, color: "bg-blue-400", textColor: "text-blue-900" },
+        { label: "TTFB", us: ttfbUs, color: "bg-blue-300", textColor: "text-blue-900" },
         { label: "Download", us: Math.max(latencyUs - ttfbUs, 0), color: "bg-green-400", textColor: "text-green-900" },
       ],
       totalUs: latencyUs,
@@ -55,7 +55,7 @@ function computeTiming(event: ChannelEvent | undefined): TimingData | null {
     };
   }
   return {
-    segments: [{ label: "Total", us: latencyUs, color: "bg-blue-400", textColor: "text-blue-900" }],
+    segments: [{ label: "Total", us: latencyUs, color: "bg-blue-300", textColor: "text-blue-900" }],
     totalUs: latencyUs,
     ttfbUs: null,
     tier: "minimal",

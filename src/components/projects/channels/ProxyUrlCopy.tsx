@@ -1,5 +1,6 @@
 import Tooltip from "../../primitives/Tooltip";
 import { cn } from "../../../utils/cn";
+import Text from "../../primitives/Text";
 
 /**
  * A channel's proxy URL that copies itself on click (ChannelLive.Helpers
@@ -16,7 +17,7 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
       <div
         role="button"
         tabIndex={0}
-        aria-label="Copy proxy URL"
+        aria-label={`Copy proxy URL: ${url}`}
         // Enter and Space copy too; the Tooltip's click handler does the work.
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -27,12 +28,12 @@ export default function ProxyUrlCopy({ url, icon = false, className }: { url: st
         className={cn("group flex min-w-0 cursor-pointer items-center gap-1.5 text-muted hover:text-body", className)}
       >
         {icon && <span className="hero-arrow-right-end-on-rectangle h-4 w-4 shrink-0 text-faint" />}
-        <span className="flex min-w-0 font-mono text-xs">
+        <Text variant="code-sm" className="flex min-w-0">
           <span className="shrink-0">{scheme}</span>
           <span className="truncate" style={{ direction: "rtl", textAlign: "left" }}>
             {rest}
           </span>
-        </span>
+        </Text>
         <span className="hero-clipboard-document h-4 w-4 shrink-0 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
     </Tooltip>

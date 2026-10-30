@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
+import Text from "../primitives/Text";
 import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
 
 /**
@@ -49,6 +50,7 @@ export function AuthPanel({ size = "lg", className, children }: { size?: "sm" | 
 /** The bold centred heading inside a form panel ("Authentication Code", "Password"). */
 export function AuthPanelTitle({ children }: { children: ReactNode }) {
   return (
+    // eslint-disable-next-line no-restricted-syntax -- debt: 24px bold heading has no Heading size (xl is 30px)
     <Heading as="h2" size="xl" className="text-center text-2xl">
       {children}
     </Heading>
@@ -69,5 +71,9 @@ export function HavingProblems({ children }: { children: ReactNode }) {
 
 /** Helper text under a panel's submit button. */
 export function AuthPanelHint({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-muted">{children}</p>;
+  return (
+    <Text as="p" className="text-muted">
+      {children}
+    </Text>
+  );
 }

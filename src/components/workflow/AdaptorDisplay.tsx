@@ -5,6 +5,7 @@ import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Pill from "../primitives/Pill";
 import AdaptorIcon from "./AdaptorIcon";
+import Text from "../primitives/Text";
 
 /** The help text on the Adaptor field label. */
 export const ADAPTOR_HELP =
@@ -29,29 +30,29 @@ export default function AdaptorDisplay({ adaptor, credentialName = null, onEdit,
   const hasCredential = !!credentialName;
   const canEdit = hasCredential || !needsCredential;
   return (
-    <Card padding="sm" className="flex items-center justify-between gap-2 text-sm">
-      <div className="flex min-w-0 flex-1 items-center gap-2">
+    <Card padding="sm" className="flex items-center justify-between gap-2">
+      <Text as="div" className="flex min-w-0 flex-1 items-center gap-2">
         {onChangeAdaptor && !isReadOnly ? (
-          <Button variant="secondary" size="xs" onClick={onChangeAdaptor} aria-label="Change adaptor" className="min-w-0">
+          <Button variant="secondary" size="xs" onClick={onChangeAdaptor} aria-label={`Change adaptor: ${adaptorDisplayName(adaptor)}`} className="min-w-0">
             <AdaptorIcon name={adaptor} size="sm" />
             <span className="truncate">{adaptorDisplayName(adaptor)}</span>
           </Button>
         ) : (
-          <div className="flex items-center gap-2 opacity-50">
+          <div className="flex items-center gap-2">
             <AdaptorIcon name={adaptor} size="sm" />
             <span className="truncate font-medium text-muted">{adaptorDisplayName(adaptor)}</span>
           </div>
         )}
-        <span className={cn("text-xs whitespace-nowrap", isReadOnly ? "text-faint" : "text-muted")}>
+        <Text variant="body-sm" className={cn("whitespace-nowrap", isReadOnly ? "text-faint" : "text-muted")}>
           {version === "latest" ? "latest" : `v${version}`}
-        </span>
+        </Text>
         {hasCredential && (
           <Pill tone="success" title={credentialName} aria-label={`Credential connected: ${credentialName}`} className="max-w-40">
             <span className="hero-key h-3 w-3 shrink-0" />
             <span className="truncate">{credentialName}</span>
           </Pill>
         )}
-      </div>
+      </Text>
       {onEdit && !isReadOnly && (
         <Button
           variant={canEdit ? "secondary" : "primary"}

@@ -12,6 +12,11 @@ describe("Modal", () => {
     expect(document.getElementById(describedBy)?.textContent).toBe("This cannot be undone");
   });
 
+  it("names a dialog that shows no title by its label", () => {
+    render(<Modal open bare title="Hidden" label="Search projects" onClose={() => {}}>Picker</Modal>);
+    screen.getByRole("dialog", { name: "Search projects" });
+  });
+
   it("closes on the first Escape, with no tooltip on its X to take it", () => {
     const onClose = vi.fn();
     render(<Modal open onClose={onClose} title="Delete project">Sure?</Modal>);

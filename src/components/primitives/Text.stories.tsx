@@ -11,8 +11,11 @@ export const LabelMd: Story = { args: { variant: "label-md", children: "Destinat
 export const LabelSm: Story = { args: { variant: "label-sm", children: "Destination URL" } };
 export const CodeMd: Story = { args: { variant: "code-md", children: "/fhir/Patient?identifier=58213" } };
 export const CodeSm: Story = { args: { variant: "code-sm", children: "SHA256: 9f86d081884c7d65" } };
+export const StatLg: Story = { args: { variant: "stat-lg", children: "1,284" } };
+export const StatMd: Story = { args: { variant: "stat-md", children: "1,284" } };
+export const StatSm: Story = { args: { variant: "stat-sm", children: "1,284" } };
 
-const all: TextVariant[] = ["body-md", "body-sm", "label-md", "label-sm", "code-md", "code-sm"];
+const all: TextVariant[] = ["body-md", "body-sm", "label-md", "label-sm", "code-md", "code-sm", "stat-lg", "stat-md", "stat-sm"];
 
 /** The whole scale, one row per style. */
 export const Scale: Story = {

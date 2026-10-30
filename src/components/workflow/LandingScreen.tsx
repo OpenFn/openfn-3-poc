@@ -7,6 +7,7 @@ import { Label } from "../primitives/Inputs";
 import Pill from "../primitives/Pill";
 import TextLink from "../primitives/TextLink";
 import AIDisclaimerFooter from "./AIDisclaimerFooter";
+import Text from "../primitives/Text";
 
 interface Props {
   aiAssistantEnabled?: boolean;
@@ -18,14 +19,16 @@ interface Props {
 
 function OptionCard({ icon, title, description, onClick, testId }: { icon: string; title: string; description: string; onClick: () => void; testId: string }) {
   return (
-    <Card as="button" data-testid={testId} onClick={onClick} padding="lg" className="h-full text-sm text-muted">
+    <Card as="button" data-testid={testId} onClick={onClick} padding="lg" className="h-full text-muted">
       <div className="mb-3 w-fit rounded-lg bg-sunken p-2">
         <span className={cn("block h-5 w-5 text-body", icon)} />
       </div>
       <Heading size="sm" as="p">
         {title}
       </Heading>
-      <p className="mt-1">{description}</p>
+      <Text as="p" className="mt-1">
+        {description}
+      </Text>
     </Card>
   );
 }
@@ -73,6 +76,7 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
                 }}
                 placeholder="e.g. Sync new KoboToolbox submissions into Postgres"
                 rows={4}
+                // eslint-disable-next-line no-restricted-syntax -- a control: the prompt box sets its own type
                 className="block w-full resize-none border-none bg-transparent p-3 text-sm text-strong placeholder:text-faint focus:ring-0 focus:outline-none"
               />
               <div className="flex items-center justify-between px-3 py-2">
@@ -100,10 +104,10 @@ export default function LandingScreen({ aiAssistantEnabled = true, onBuildWithAI
             onClick={onBrowseTemplates}
           />
         </div>
-        <p className="text-center text-sm text-muted">
+        <Text as="p" className="text-center text-muted">
           or{" "}
           <TextLink onClick={onImportYAML}>import a YAML file manually</TextLink>
-        </p>
+        </Text>
       </div>
     </div>
   );

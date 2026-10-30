@@ -166,6 +166,7 @@ export default function DiagramNode({
         <div className="flex flex-col mt-8 absolute left-[116px] top-0 pointer-events-none min-w-[275px]">
           {/* eslint-disable-next-line no-restricted-syntax -- diagram geometry: the label is placed against the node */}
           <p className="line-clamp-2 text-base max-w-[220px] text-ellipsis overflow-hidden">{label}</p>
+          {/* eslint-disable-next-line no-restricted-syntax -- diagram geometry sets its own type */}
           {sublabel && <p className="line-clamp-2 text-sm text-muted">{sublabel}</p>}
         </div>
       </div>

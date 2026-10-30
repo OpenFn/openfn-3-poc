@@ -10,9 +10,17 @@ export function setUpMonaco(monaco: Monaco) {
   monaco.editor.defineTheme("default", {
     base: "vs-dark",
     inherit: true,
-    rules: [{ token: "logSource", foreground: "#868686", fontStyle: "italic" }],
+    rules: [
+      { token: "logSource", foreground: "#CBD5E1", fontStyle: "italic" },
+      // vs-dark's string orange and type teal (YAML keys) are too dark on this
+      // background, and on the highlighted line, for AA contrast.
+      { token: "string", foreground: "#F0C4A8" },
+      { token: "string.value.json", foreground: "#F0C4A8" },
+      { token: "type", foreground: "#5EEAD4" },
+    ],
     colors: {
       "editor.foreground": "#E2E8F0",
+      "editorLineNumber.foreground": "#CBD5E1",
       "editor.background": "#334155",
       "editor.lineHighlightBackground": "#475569",
       "editor.selectionBackground": "#4f5b66",

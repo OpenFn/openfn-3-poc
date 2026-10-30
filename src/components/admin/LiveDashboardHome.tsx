@@ -16,6 +16,7 @@ function Stat({ label, value, hasInfo = false, className }: { label: string; val
   return (
     <Card className={className}>
       {label} {hasInfo && info}
+      {/* eslint-disable-next-line no-restricted-syntax -- copies Phoenix LiveDashboard's type */}
       <div className="mt-1 text-2xl font-semibold">{value}</div>
     </Card>
   );
@@ -57,6 +58,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
     { label: "Dashboard", value: data.versions.dashboard, className: "from-blue-500 to-blue-600" },
   ];
   return (
+    // eslint-disable-next-line no-restricted-syntax -- copies Phoenix LiveDashboard's type
     <div className="min-h-screen bg-page text-sm text-body">
       <Alert tone="warning" className="rounded-none">
         <div className="flex justify-between gap-2">
@@ -69,6 +71,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
       </Alert>
       <div className="h-28 bg-primary-900 text-inverse">
         <div className="mx-auto flex max-w-6xl justify-between pt-3">
+          {/* eslint-disable-next-line no-restricted-syntax -- copies Phoenix LiveDashboard's type */}
           <h1 className="mt-8 text-3xl">Phoenix LiveDashboard</h1>
           <div className="flex flex-col items-end gap-2">
             {[
@@ -85,7 +88,7 @@ export default function LiveDashboardHome({ data }: { data: Data }) {
       <div className="mx-auto -mt-6 max-w-6xl">
         <Card className="flex flex-wrap gap-x-6 gap-y-1">
           {data.tabs.map((tab, i) => (
-            <span key={tab} className={cn(i > 0 && "text-blue-500")}>
+            <span key={tab} className={cn(i > 0 && "text-link")}>
               {tab}
             </span>
           ))}

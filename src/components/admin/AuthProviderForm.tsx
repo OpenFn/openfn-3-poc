@@ -6,6 +6,7 @@ import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import { Checkbox, PasswordInput, TextInput } from "../primitives/Inputs";
+import Text from "../primitives/Text";
 import TextLink from "../primitives/TextLink";
 import { cn } from "../../utils/cn";
 import { RequestError, errorMessage } from "../../utils/errors";
@@ -196,7 +197,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
               {valid && <TestButton state={testState} pending={test.pending} onTest={() => void test.run()} />}
             </div>
           </div>
-          <div className="flex flex-col gap-4 text-sm text-body">
+          <Text as="div" className="flex flex-col gap-4 text-body">
             <p>
               Allows users with existing accounts to login with an external OpenID Connect account that matches their
               email address.
@@ -232,7 +233,7 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
                 </Button>
               </div>
             )}
-          </div>
+          </Text>
         </div>
       </form>
     </div>

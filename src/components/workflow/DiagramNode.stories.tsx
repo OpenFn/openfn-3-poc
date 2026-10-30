@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { adaptorIconUrl } from "../../utils/adaptors";
+import { diagramParameters } from "../../stories/decorators";
 import DiagramNode from "./DiagramNode";
 
 const meta: Meta<typeof DiagramNode> = {
   title: "Workflow/DiagramNode",
   component: DiagramNode,
-  decorators: [(Story) => <div className="p-10 h-64 bg-page relative"><Story /></div>],
+  parameters: diagramParameters,
+  // The label is placed against the node's box, as the diagram positions it; the padding sits outside that box.
+  decorators: [(Story) => <div className="flex h-64 items-center bg-page px-10"><div className="relative"><Story /></div></div>],
   args: {
     id: "job-transform",
     shape: "rect",
