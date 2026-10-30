@@ -4,6 +4,7 @@ import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
+import Tooltip from "../primitives/Tooltip";
 
 interface Props {
   title: string;
@@ -44,9 +45,14 @@ export default function InspectorLayout({
         <div className="flex items-center justify-between gap-3 border-b border-subtle px-6 py-4">
           <div className="flex min-w-0 items-center gap-2">
             {onBack && <IconButton icon="hero-arrow-left" label="Back" size="xs" onClick={onBack} />}
-            <Heading as="h2" className="min-w-0 wrap-break-word">
-              {title}
-            </Heading>
+            <Tooltip content={title}>
+              {/* Heading takes no ref, so this span is the trigger. */}
+              <span className="min-w-0">
+                <Heading as="h2" className="truncate">
+                  {title}
+                </Heading>
+              </span>
+            </Tooltip>
           </div>
           <CloseButton label="Close panel" onClick={onClose} />
         </div>

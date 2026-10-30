@@ -28,3 +28,7 @@ export const WithFooter: Story = {
   },
 };
 export const BackButtonFixedHeight: Story = { args: { title: "Run from Transform data", onBack: () => {}, fixedHeight: true, bare: true } };
+
+const longTitle = "Run from Fetch overdue referrals and upsert them as DHIS2 tracker events";
+export const LongTitle: Story = { args: { title: longTitle, onBack: () => {} } };
+
