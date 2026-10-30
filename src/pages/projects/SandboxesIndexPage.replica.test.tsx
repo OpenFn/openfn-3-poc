@@ -134,7 +134,7 @@ describe("SandboxesIndexPageReplica", () => {
     await waitFor(() => expect(screen.getByTestId("where").textContent).toBe(`/projects/${FHIR}/sandboxes`));
     const mine = screen.getByText("mine").closest("[id^=sandbox-card-]")!.id.replace("sandbox-card-", "");
     for (const kind of ["branch-rewire", "edit", "delete"]) {
-      expect((document.querySelector(`#${kind}-sandbox-${mine} button`) as HTMLButtonElement).disabled).toBe(false);
+      expect(isDisabled((document.querySelector(`#${kind}-sandbox-${mine} button`) as HTMLButtonElement))).toBe(false);
       expect(isDisabled(document.querySelector(`#${kind}-sandbox-${FHIR} button`))).toBe(true);
     }
   }, 10_000);

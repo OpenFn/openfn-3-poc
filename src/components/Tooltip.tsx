@@ -29,8 +29,9 @@ let closeShown: (() => void) | undefined;
  * renders no tooltip. With `copy`, clicking the child copies that text and the
  * tooltip says "Copied!" for 1.5 seconds, then hides, like Lightning's Tooltip
  * and Copy hooks. With `disabled`, the child is a disabled control: a wrapper
- * takes its hover and swallows its presses, and the child stays focusable
- * (`aria-disabled` in place of `disabled`) so the keyboard can reach the reason. With `interactive`, the pointer can move onto the
+ * takes its hover and swallows its presses, and a `<button>` stays focusable
+ * (`aria-disabled` in place of `disabled`) so the keyboard can reach the
+ * reason; any other control stays natively disabled. With `interactive`, the pointer can move onto the
  * tooltip, so a link in it can be clicked.
  */
 export default function Tooltip({
@@ -119,9 +120,10 @@ export default function Tooltip({
   const referenceProps = getReferenceProps({ ...base, ref, onClick });
   if (repeatsName) delete referenceProps["aria-describedby"];
   const disabledProps = {
-    // A natively disabled control can't take focus to open the tooltip, so a plain element (a
-    // <button>) is `aria-disabled` instead. A component child keeps its own `disabled`.
-    ...(typeof child.type === "string" && { disabled: false, "aria-disabled": true }),
+    // A natively disabled control can't take focus to open the tooltip, so a plain <button> is
+    // `aria-disabled` instead; the wrapper swallows its presses. Only a button: the wrapper can't stop
+    // typing in a field. A component child keeps its own `disabled`.
+    ...(child.type === "button" && { disabled: false, "aria-disabled": true }),
     // The tooltip's aria-describedby lands on the wrapper, so the reason goes on the control for screen readers.
     ...(typeof content === "string" && !repeatsName && { "aria-description": content }),
   };

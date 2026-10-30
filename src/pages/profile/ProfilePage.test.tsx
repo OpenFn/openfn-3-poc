@@ -89,7 +89,7 @@ describe("ProfilePage", () => {
       const save = () => basic.getByRole("button", { name: "Save" }) as HTMLButtonElement;
       expect(save().disabled).toBe(true);
       type(basic.getByLabelText(/First name/), " ");
-      expect(save().disabled).toBe(false);
+      expect(isDisabled(save())).toBe(false);
       fireEvent.submit(document.getElementById("basic-info-form")!);
       expect(basic.getByText("can't be blank")).toBeTruthy();
       expect(onSaveBasicInfo).not.toHaveBeenCalled();
@@ -334,7 +334,7 @@ describe("ProfilePage", () => {
       expect(mfaSwitch().getAttribute("aria-checked")).toBe("true");
       started({ secret: "JBSWY3DPEHPK3PXP", qrCodeSrc: "data:image/svg+xml,qr" });
       type(await screen.findByLabelText(/Verify the code from the app/), "123456");
-      expect((mfaSwitch() as HTMLButtonElement).disabled).toBe(false);
+      expect(isDisabled((mfaSwitch() as HTMLButtonElement))).toBe(false);
       fireEvent.submit(document.getElementById("set_totp_form")!);
       const cancel = form("set_totp_form").getByRole("button", { name: "Cancel" }) as HTMLButtonElement;
       await waitFor(() => expect(cancel.disabled).toBe(true));

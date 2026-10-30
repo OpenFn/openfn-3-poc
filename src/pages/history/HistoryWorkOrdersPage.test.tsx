@@ -422,7 +422,7 @@ describe("HistoryWorkOrdersPage", () => {
     renderPage({ rows: [wo] });
     await tick("c1");
     await userEvent.click(screen.getByRole("button", { name: "Retry from" }));
-    expect(((await screen.findByLabelText("Job j1")) as HTMLInputElement).disabled).toBe(false);
+    expect(isDisabled(((await screen.findByLabelText("Job j1")) as HTMLInputElement))).toBe(false);
     expect((screen.getByLabelText("Job j2") as HTMLInputElement).disabled).toBe(true);
   });
 

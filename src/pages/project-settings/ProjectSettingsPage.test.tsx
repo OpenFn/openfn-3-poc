@@ -275,7 +275,7 @@ describe("ProjectSettingsPage", () => {
     const button = (id: string) => document.getElementById(`preview-collection-${id}-button`) as HTMLButtonElement;
     fireEvent.click(button("c1"));
     expect(button("c1").getAttribute("aria-busy")).toBe("true");
-    expect(button("c2").disabled).toBe(false);
+    expect(isDisabled(button("c2"))).toBe(false);
   });
 
   it("opens the preview of the row asked for last, and ignores the one still loading before it", async () => {
@@ -581,7 +581,7 @@ describe("ProjectSettingsPage", () => {
       expect(off("Create collection")).toBe(true);
       expect((document.getElementById("edit-collection-c1-button") as HTMLButtonElement).disabled).toBe(true);
       expect((document.getElementById("delete-collection-c1-button") as HTMLButtonElement).disabled).toBe(true);
-      expect((document.getElementById("preview-collection-c1-button") as HTMLButtonElement).disabled).toBe(false);
+      expect(isDisabled((document.getElementById("preview-collection-c1-button") as HTMLButtonElement))).toBe(false);
     });
 
     it("can't add, view or delete webhook auth methods", () => {

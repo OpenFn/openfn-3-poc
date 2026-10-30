@@ -13,6 +13,12 @@ goes back to Lightning's way.
 
 ## Buttons
 
+- **Pending buttons, and disabled buttons that say why, keep keyboard focus.**
+  They're `aria-disabled` and ignore presses, so focus isn't lost when a
+  button goes pending and Tab reaches the tooltip's reason. Lightning
+  disables them natively (`new_inputs.ex:268-280`, `phx-disable-with`), which
+  drops focus and hides the reason from the keyboard. A disabled button with
+  no reason is natively disabled in both.
 - **One focus ring colour.** Lightning's danger and success buttons draw a
   red or green focus outline (`new_inputs.ex:244,249`); the replica uses the
   focus colour on every button, so focus always looks the same.

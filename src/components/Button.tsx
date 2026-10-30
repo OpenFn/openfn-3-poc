@@ -123,12 +123,15 @@ export default function Button({
     "aria-busy": pending || undefined,
   };
   // A natively disabled button drops the focus it holds, so a pending one stays focusable and
-  // swallows the press instead; preventDefault also stops a submit button sending its form again.
+  // swallows the press instead: preventDefault stops a submit button sending its form again, and
+  // stopPropagation keeps the click from a parent's handler, as a disabled button's would be.
   const pendingProps = {
-    "aria-disabled": pending || undefined,
+    "aria-disabled": pending || rest["aria-disabled"] || undefined,
     onClick: (e: MouseEvent<HTMLButtonElement>) => {
-      if (pending) e.preventDefault();
-      else onClick?.(e);
+      if (pending) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else onClick?.(e);
     },
   };
   const iconEl = pending ? (

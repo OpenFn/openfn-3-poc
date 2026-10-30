@@ -172,7 +172,7 @@ describe("SandboxesIndexPage", () => {
       fireEvent.submit(document.getElementById("confirm-delete-sandbox-form")!);
       expect(onDeleteSandbox).not.toHaveBeenCalled();
       fireEvent.change(screen.getByLabelText(/Sandbox name/), { target: { value: "fhir-mapping" } });
-      expect(submit.disabled).toBe(false);
+      expect(isDisabled(submit)).toBe(false);
     });
 
     it("sends the typed name and closes once the host has scheduled it", async () => {
@@ -418,7 +418,7 @@ describe("SandboxesIndexPage", () => {
       await pickOption(select, "other-sandbox");
       expect(isDisabled(submit())).toBe(true);
       await pickOption(select, "openhie-project");
-      await waitFor(() => expect(submit().disabled).toBe(false));
+      await waitFor(() => expect(isDisabled(submit())).toBe(false));
       resolveSlow(preview({ targetId: "s3", workflows: [wf("w9", "Stale one", { isChanged: true })] }));
       await new Promise((r) => setTimeout(r, 0));
       expect(screen.queryByText("Stale one")).toBeNull();
@@ -436,11 +436,11 @@ describe("SandboxesIndexPage", () => {
       const select = target();
       await pickOption(select, "other-sandbox");
       await pickOption(select, "openhie-project");
-      await waitFor(() => expect(submit().disabled).toBe(false));
+      await waitFor(() => expect(isDisabled(submit())).toBe(false));
       rejectSlow(new RequestError("Target project not found"));
       await new Promise((r) => setTimeout(r, 0));
       expect(document.getElementById("merge-preview-error")).toBeNull();
-      expect(submit().disabled).toBe(false);
+      expect(isDisabled(submit())).toBe(false);
     });
 
     it("keeps collection ticks when the answer is for the same target as the last one", async () => {
@@ -454,7 +454,7 @@ describe("SandboxesIndexPage", () => {
       const select = target();
       await pickOption(select, "other-sandbox");
       await pickOption(select, "openhie-project");
-      await waitFor(() => expect(submit().disabled).toBe(false));
+      await waitFor(() => expect(isDisabled(submit())).toBe(false));
       expect(tick("cache-a").checked).toBe(false);
       expect(tick("cache-b").checked).toBe(true);
     });
@@ -467,7 +467,7 @@ describe("SandboxesIndexPage", () => {
       expect(submit().getAttribute("aria-description")).toBe("No project to merge into");
       await pickOption(select, "openhie-project");
       expect(onPreviewMerge).toHaveBeenLastCalledWith("s1", "p1");
-      await waitFor(() => expect(submit().disabled).toBe(false));
+      await waitFor(() => expect(isDisabled(submit())).toBe(false));
       expect(select.textContent).toBe("openhie-project");
       expect(screen.getByRole("dialog").textContent).toContain("counterparts in openhie-project.");
     });
@@ -521,7 +521,7 @@ describe("SandboxesIndexPage", () => {
       await pickOption(target(), "other-sandbox");
       expect(await screen.findByText("Target project not found")).toBeTruthy();
       expect(target().textContent).toBe("openhie-project");
-      expect(submit().disabled).toBe(false);
+      expect(isDisabled(submit())).toBe(false);
     });
 
     it("disables Merge when there's no project to merge into", async () => {
@@ -559,7 +559,7 @@ describe("SandboxesIndexPage", () => {
     it("lets Create be pressed with a blank name, and says it can't be blank on the field", async () => {
       const { onCreateSandbox } = renderPage({ form: newForm });
       const submit = within(screen.getByRole("dialog")).getByRole("button", { name: "Create sandbox" }) as HTMLButtonElement;
-      expect(submit.disabled).toBe(false);
+      expect(isDisabled(submit)).toBe(false);
       fireEvent.submit(document.getElementById("sandbox-form")!);
       await waitFor(() => expect(nameField()).toContain("can't be blank"));
       expect(onCreateSandbox).not.toHaveBeenCalled();

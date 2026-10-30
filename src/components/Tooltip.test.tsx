@@ -89,6 +89,17 @@ describe("Tooltip", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it("leaves a disabled field natively disabled, so it can't be typed in", () => {
+    render(
+      <Tooltip content="Read only" disabled>
+        <input aria-label="Name" disabled />
+      </Tooltip>
+    );
+    const input = screen.getByRole<HTMLInputElement>("textbox", { name: "Name" });
+    expect(input.disabled).toBe(true);
+    expect(input.getAttribute("aria-disabled")).toBeNull();
+  });
+
   it("keeps the same button when the control is enabled and disabled again", () => {
     const { rerender } = render(<Tooltip content="Type the name first" disabled><button disabled>Delete</button></Tooltip>);
     const button = screen.getByRole("button");

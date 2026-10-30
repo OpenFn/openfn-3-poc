@@ -20,23 +20,34 @@ describe("Button", () => {
 
   it("blocks a second click while its request runs, and keeps the focus it had", () => {
     const onClick = vi.fn();
+    const onParentClick = vi.fn();
     const onSubmit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
     const form = (pending: boolean) => (
-      <form onSubmit={onSubmit}>
-        <Button type="submit" pending={pending} onClick={onClick}>Save</Button>
-      </form>
+      <div onClick={onParentClick}>
+        <form onSubmit={onSubmit}>
+          <Button type="submit" pending={pending} onClick={onClick}>Save</Button>
+        </form>
+      </div>
     );
     const { rerender } = render(form(false));
     const button = screen.getByRole<HTMLButtonElement>("button", { name: /Save/ });
     act(() => button.focus());
     rerender(form(true));
     expect(document.activeElement).toBe(button);
+    // jsdom keeps focus on a natively disabled button, so check it isn't one.
+    expect(button.disabled).toBe(false);
     expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.getAttribute("aria-busy")).toBe("true");
     expect(screen.getByLabelText("Working")).toBeTruthy();
     fireEvent.click(button);
     expect(onClick).not.toHaveBeenCalled();
     expect(onSubmit).not.toHaveBeenCalled();
+    expect(onParentClick).not.toHaveBeenCalled();
+  });
+
+  it("keeps a caller's aria-disabled when it isn't pending", () => {
+    render(<Button aria-disabled>Save</Button>);
+    expect(screen.getByRole("button", { name: "Save" }).getAttribute("aria-disabled")).toBe("true");
   });
 
   it("hands its ref the link it renders", () => {

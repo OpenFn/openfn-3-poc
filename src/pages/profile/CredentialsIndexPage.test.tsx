@@ -7,6 +7,7 @@ import type { CredentialRow, OauthClientRow } from "../../types/credentials";
 import { RequestError } from "../../utils/errors";
 import { pickOption } from "../../test/select";
 import CredentialsIndexPage, { type CredentialsIndexPageProps } from "./CredentialsIndexPage";
+import { isDisabled } from "../../test/disabled";
 
 const dhis2: CredentialRow = {
   id: "cred1",
@@ -275,7 +276,7 @@ describe("CredentialsIndexPage", () => {
     await addNew("OAuth Client");
     expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
     answer({ environments: [{ name: "main", body: "{}", oauth: null }] });
-    await waitFor(() => expect(actions("credentials-cred2").disabled).toBe(false));
+    await waitFor(() => expect(isDisabled(actions("credentials-cred2"))).toBe(false));
     expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
   });
 
@@ -289,7 +290,7 @@ describe("CredentialsIndexPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     answer({ environments: [{ name: "main", body: "{}", oauth: null }] });
     const actions = within(row("credentials-cred2")).getByRole("button", { name: /Actions/ }) as HTMLButtonElement;
-    await waitFor(() => expect(actions.disabled).toBe(false));
+    await waitFor(() => expect(isDisabled(actions)).toBe(false));
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
@@ -371,7 +372,7 @@ describe("CredentialsIndexPage", () => {
     expect(actions("credentials-cred1").getAttribute("aria-busy")).toBe("true");
     expect(actions("credentials-cred2").disabled).toBe(true);
     answer();
-    await waitFor(() => expect(actions("credentials-cred2").disabled).toBe(false));
+    await waitFor(() => expect(isDisabled(actions("credentials-cred2"))).toBe(false));
     await choose("credentials-cred2", "Cancel deletion");
     expect(onCancelCredentialDeletion).toHaveBeenLastCalledWith("cred2");
   });

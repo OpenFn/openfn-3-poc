@@ -245,12 +245,12 @@ describe("CredentialFormModal", () => {
       const { onSave } = renderModal({ credential: sheets, secrets: stored("ready", ["OpenID", "Drive"]) });
       const saveButton = () => screen.getByRole("button", { name: "Save Credential" }) as HTMLButtonElement;
       expect(screen.queryByText("Reauthentication Required")).toBeNull();
-      expect(saveButton().disabled).toBe(false);
+      expect(isDisabled(saveButton())).toBe(false);
       fireEvent.click(screen.getByLabelText("spreadsheets"));
       expect(isDisabled(saveButton())).toBe(true);
       save();
       fireEvent.click(screen.getByLabelText("spreadsheets"));
-      expect(saveButton().disabled).toBe(false);
+      expect(isDisabled(saveButton())).toBe(false);
       expect(onSave).not.toHaveBeenCalled();
     });
 
