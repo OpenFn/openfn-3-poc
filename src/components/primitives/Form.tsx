@@ -1,8 +1,9 @@
-import { useEffect, useRef, type FormHTMLAttributes, type ReactNode, type SubmitEvent } from "react";
+import { useRef, type FormHTMLAttributes, type ReactNode, type SubmitEvent } from "react";
 import { flushSync } from "react-dom";
 import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";
 import Alert from "./Alert";
+import { useFocusFirstError } from "./focusFirstError";
 import { FormPendingContext } from "./formStatus";
 
 interface Props extends Omit<FormHTMLAttributes<HTMLFormElement>, "onSubmit" | "children"> {
@@ -18,14 +19,6 @@ interface Props extends Omit<FormHTMLAttributes<HTMLFormElement>, "onSubmit" | "
   children: ReactNode;
 }
 
-const focusFirstError = (form: HTMLFormElement | null) => form?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-
-/** Focus is still where Save left it: on the form's buttons, or nowhere. Then moving it takes nothing from the user. */
-const focusUnmoved = (form: HTMLFormElement | null) => {
-  const active = document.activeElement;
-  return active === document.body || Boolean(form?.querySelector('[data-ui="form-actions"]')?.contains(active));
-};
-
 /**
  * One thing you save: the fields stacked with one gap, the form's own error,
  * then its buttons on the right with the main action last. A page passes the
@@ -38,14 +31,7 @@ const focusUnmoved = (form: HTMLFormElement | null) => {
  */
 export default function Form({ onSubmit, error, pending = false, actions, className, children, ...rest }: Props) {
   const ref = useRef<HTMLFormElement>(null);
-  const wasPending = useRef(false);
-
-  // The server's errors arrive when saving ends, after the event is over, so an
-  // effect watches for that; by the time it runs they're on screen.
-  useEffect(() => {
-    if (wasPending.current && !pending && focusUnmoved(ref.current)) focusFirstError(ref.current);
-    wasPending.current = pending;
-  }, [pending]);
+  const focus = useFocusFirstError(ref, pending);
 
   return (
     <form
@@ -56,7 +42,7 @@ export default function Form({ onSubmit, error, pending = false, actions, classN
         // Our own checks: flushSync puts their errors on screen before we look for them.
         // A Save that started saving (the form is busy) passed them, so an old server error mustn't take focus.
         flushSync(() => onSubmit(e));
-        if (ref.current?.getAttribute("aria-busy") !== "true") focusFirstError(ref.current);
+        focus.submitted();
       }}
       aria-busy={pending || undefined}
       className={cn("space-y-6", className)}

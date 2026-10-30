@@ -1,9 +1,11 @@
-import type { ComponentProps, ReactNode } from "react";
+import { useRef, type ComponentProps, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { cn } from "../../utils/cn";
 import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import Alert from "./Alert";
 import Button from "./Button";
+import { useFocusFirstError } from "./focusFirstError";
 import Modal from "./Modal";
 
 interface Props extends Omit<ComponentProps<typeof Modal>, "footer" | "bare"> {
@@ -35,8 +37,9 @@ interface Props extends Omit<ComponentProps<typeof Modal>, "footer" | "bare"> {
  * and a secondary Cancel. Enter submits; nothing happens while
  * `submitDisabled`. While `onSubmit` is pending the submit button spins,
  * Cancel and the backdrop are inert, and a failure shows as an Alert above
- * the form (STANDARDS.md patterns 1 and 2). Use Modal's `footer` directly
- * for anything else.
+ * the form (STANDARDS.md patterns 1 and 2). As in `Form`, only the fields'
+ * own errors show (no browser bubbles), and a refused Save moves focus to the
+ * first field with an error. Use Modal's `footer` directly for anything else.
  */
 export default function FormModal({
   formId,
@@ -55,6 +58,8 @@ export default function FormModal({
   ...modal
 }: Props) {
   const submit = useAction(onSubmit);
+  const form = useRef<HTMLFormElement>(null);
+  const focus = useFocusFirstError(form, submit.pending);
   const close = () => {
     if (submit.pending) return;
     submit.reset();
@@ -91,14 +96,18 @@ export default function FormModal({
         </Alert>
       )}
       <form
+        ref={form}
         id={formId}
+        noValidate
         className={cn(formClassName)}
         aria-busy={submit.pending || undefined}
         onSubmit={(e) => {
           e.preventDefault();
           // The modal is portalled, but React still bubbles submit to a form around it (a ConfirmModal inside a FormModal).
           e.stopPropagation();
-          if (!submitDisabled) void submit.run();
+          if (submitDisabled) return;
+          flushSync(() => void submit.run());
+          focus.submitted();
         }}
       >
         {children}
