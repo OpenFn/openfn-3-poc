@@ -7,7 +7,6 @@ import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import Form from "../primitives/Form";
 import { Checkbox, PasswordInput, Select, TextInput } from "../primitives/Inputs";
-import Toggle from "../primitives/Toggle";
 
 interface Props {
   /** The account being edited; omit for /settings/users/new. */
@@ -77,7 +76,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
           errors={form.errors.role}
           onChange={(e) => set("role", e.target.value as UserRole)}
         />
-        <Toggle id="user_support_user" name="support_user" checked={values.supportUser} onChange={(v) => set("supportUser", v)} label="Support User" />
+        <Checkbox id="user_support_user" name="support_user" checked={values.supportUser} onChange={(e) => set("supportUser", e.target.checked)} label="Support User" />
         {values.supportUser && (
           <Alert id="heads-up-description" tone="warning" header="Heads Up!">
             <p>This user will be able to access ALL projects that have support access enabled</p>

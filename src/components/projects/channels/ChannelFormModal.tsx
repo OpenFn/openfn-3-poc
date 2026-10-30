@@ -1,7 +1,6 @@
 import type { ChannelForm, ChannelFormValues } from "../../../types/channels";
 import FormModal from "../../primitives/FormModal";
 import { Checkbox, Field, Select, TextInput } from "../../primitives/Inputs";
-import Toggle from "../../primitives/Toggle";
 import TextLink from "../../primitives/TextLink";
 import { useForm } from "../../../utils/useForm";
 import { blank } from "../../../utils/validate";
@@ -59,7 +58,7 @@ export default function ChannelFormModal({
         </Field>
       )}
       <TextInput id="channel_name" label="Name" {...f.fieldProps("name")} />
-      <Toggle checked={f.values.enabled} onChange={(v) => f.set("enabled", v)} label="Enabled" />
+      <Checkbox checked={f.values.enabled} onChange={(e) => f.set("enabled", e.target.checked)} label="Enabled" />
       <TextInput
         id="channel_destination_url"
         label="Destination URL"

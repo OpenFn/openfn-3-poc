@@ -274,6 +274,7 @@ export function projectSettingsPropsFor(
       description: project.description,
       env: projectSettingsFor(project.id).env,
       concurrency: project.concurrency,
+      concurrencyLimitMessage: null,
       exportHref: `/download/yaml?id=${project.id}`,
       deleteHref: `${settingsHref}/delete`,
       gracePeriodDays: purgeDeletedAfterDays,

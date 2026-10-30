@@ -5,7 +5,7 @@ import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Modal from "../primitives/Modal";
-import { Radio } from "../primitives/Inputs";
+import { Field, Radio } from "../primitives/Inputs";
 import Text from "../primitives/Text";
 
 const plural = (n: number) => (n === 1 ? "" : "s");
@@ -220,20 +220,21 @@ export function RerunFromJobModal({
         Find all runs that include this step and rerun from there. (Note that if you'd like to reprocess all of the
         selected work orders from the start, use the "Rerun" button, not this "Rerun from" button.)
       </p>
-      <fieldset id="select-job-for-rerun-form" className="space-y-2 pt-1">
-        <legend className="sr-only">Workflow Job</legend>
-        {jobs.map((j) => (
-          <Radio
-            key={j.id}
-            id={`job_${j.id}`}
-            name="job"
-            label={j.name}
-            checked={selected === j.id}
-            disabled={j.retriableCount === 0}
-            onChange={() => setSelected(j.id)}
-          />
-        ))}
-      </fieldset>
+      <Field group aria-label="Workflow Job">
+        <div id="select-job-for-rerun-form" className="space-y-2 pt-1">
+          {jobs.map((j) => (
+            <Radio
+              key={j.id}
+              id={`job_${j.id}`}
+              name="job"
+              label={j.name}
+              checked={selected === j.id}
+              disabled={j.retriableCount === 0}
+              onChange={() => setSelected(j.id)}
+            />
+          ))}
+        </div>
+      </Field>
     </BulkModal>
   );
 }

@@ -7,3 +7,10 @@ export function isValidEmail(s: string): boolean {
 export function blank(value: string): string[] {
   return value.trim() ? [] : ["can't be blank"];
 }
+
+/** A required email: blank, or not shaped like one (Lightning's User changeset wording). */
+export function emailErrors(value: string): string[] {
+  const empty = blank(value);
+  if (empty.length > 0) return empty;
+  return isValidEmail(value.trim()) ? [] : ["must have the @ sign and no spaces"];
+}

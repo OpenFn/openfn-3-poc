@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AuthPanelLayout, { AuthPanel } from "../../components/auth/AuthPanelLayout";
 import Alert from "../../components/primitives/Alert";
+import Form from "../../components/primitives/Form";
 import TextLink from "../../components/primitives/TextLink";
 import Text from "../../components/primitives/Text";
 import Button from "../../components/primitives/Button";
@@ -60,7 +61,6 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
     setChanged(result);
     if (result.status === "requested") form.reset();
   };
-  const valid = isValidEmail(form.values.email) && form.values.email !== email && form.values.currentPassword !== "";
 
   return (
     <AuthPanelLayout title="Confirm your email address" align="top">
@@ -103,11 +103,9 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
       </AuthPanel>
 
       <AuthPanel>
-        <form
+        <Form
           id="email-form"
-          onSubmit={form.submit(changeEmail)}
-          className="space-y-4"
-          aria-busy={form.pending || undefined}
+          {...form.formProps(changeEmail)}
         >
           <Heading as="h2">Change email address</Heading>
           {changed?.status === "throttled" && (
@@ -116,7 +114,6 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
               entered; you can try another in a few minutes.
             </Alert>
           )}
-          {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
           <TextInput id="user_email" name="email" type="email" label="New email address" required {...form.fieldProps("email")} />
           <PasswordInput
             id="user_current_password"
@@ -126,10 +123,10 @@ export default function AuthConfirmationRequiredPage({ email, onResend, onChange
             autoComplete="current-password"
             {...form.fieldProps("currentPassword")}
           />
-          <Button type="submit" disabled={!valid} pending={form.pending}>
+          <Button type="submit">
             Update email
           </Button>
-        </form>
+        </Form>
       </AuthPanel>
 
       <Text>

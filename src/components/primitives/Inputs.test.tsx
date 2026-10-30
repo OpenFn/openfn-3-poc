@@ -266,6 +266,31 @@ describe("Field", () => {
     expect(screen.getByRole("textbox", { name: "Adaptor" })).toBeTruthy();
   });
 
+  it("makes a label with no control id plain text, not a label pointing at nothing", () => {
+    render(
+      <Field label="Adaptor">
+        <button type="button">Change</button>
+      </Field>
+    );
+    expect(document.querySelector("label")).toBeNull();
+    expect(screen.getByText("Adaptor").tagName).toBe("SPAN");
+  });
+
+  it("gives a control inside a labelled Field that Field's id, so the label points at it without repeating the id", () => {
+    render(
+      <Field id="secret" label="Password">
+        <TextInput />
+      </Field>
+    );
+    expect(screen.getByRole("textbox", { name: "Password" }).id).toBe("secret");
+  });
+
+  it("reads a checkbox's hint as its description, not part of its name", () => {
+    render(<Checkbox label="Allow console.log() usage" hint="Control what's printed in run logs" />);
+    const box = screen.getByRole("checkbox", { name: "Allow console.log() usage" });
+    expect(description(box)).toBe("Control what's printed in run logs");
+  });
+
   it("leaves a control without errors unmarked", () => {
     render(<TextInput label="Name" hint="Lowercase only." />);
     expect(screen.getByRole("textbox", { name: "Name" }).hasAttribute("aria-invalid")).toBe(false);
@@ -329,7 +354,9 @@ describe("Field", () => {
         <Checkbox label="Make client global" />
       </Field>
     );
-    expect(screen.getByRole("checkbox", { name: "Make client global" }).getAttribute("aria-invalid")).toBe("true");
+    const box = screen.getByRole("checkbox", { name: "Make client global" });
+    expect(box.getAttribute("aria-invalid")).toBe("true");
+    expect(description(box)).toBe("must be accepted");
   });
 });
 

@@ -75,6 +75,7 @@ const data = (): Omit<ProjectSettingsPageProps, `on${string}`> => ({
     description: "HIE",
     env: "main",
     concurrency: null,
+    concurrencyLimitMessage: null,
     exportHref: "/download/yaml?id=p1",
     deleteHref: "/projects/p1/settings/delete",
     gracePeriodDays: 7,
@@ -195,6 +196,41 @@ const panel = (id: string) => document.getElementById(`${id}-panel`)!;
 const dialog = () => screen.getByRole("dialog");
 
 describe("ProjectSettingsPage", () => {
+  describe("Concurrency Override", () => {
+    const serialSwitch = () => screen.getByRole("switch", { name: /Disable parallel execution/ });
+
+    it("asks before turning parallel execution off, and saves only once confirmed", async () => {
+      const { onSaveConcurrency } = renderPage();
+      fireEvent.click(serialSwitch());
+      expect(within(dialog()).getByText(/may significantly reduce the overall throughput/)).toBeTruthy();
+      expect(onSaveConcurrency).not.toHaveBeenCalled();
+      fireEvent.click(within(dialog()).getByRole("button", { name: "Disable parallel execution" }));
+      await waitFor(() => expect(onSaveConcurrency).toHaveBeenCalledWith(1));
+      expect(serialSwitch().getAttribute("aria-checked")).toBe("true");
+    });
+
+    it("leaves it as it was when the confirm is cancelled", () => {
+      const { onSaveConcurrency } = renderPage();
+      fireEvent.click(serialSwitch());
+      fireEvent.click(within(dialog()).getByRole("button", { name: "Cancel" }));
+      expect(onSaveConcurrency).not.toHaveBeenCalled();
+      expect(serialSwitch().getAttribute("aria-checked")).toBe("false");
+    });
+
+    it("can't be changed when the plan doesn't allow it, and says why", () => {
+      renderPage({ setup: { ...data().setup, concurrencyLimitMessage: "Not allowed on Free plans" } });
+      expect((serialSwitch() as HTMLButtonElement).disabled).toBe(true);
+      expect(screen.getByText("Not allowed on Free plans")).toBeTruthy();
+    });
+
+    it("turns parallel execution back on at once", async () => {
+      const { onSaveConcurrency } = renderPage({ setup: { ...data().setup, concurrency: 1 } });
+      fireEvent.click(serialSwitch());
+      await waitFor(() => expect(onSaveConcurrency).toHaveBeenCalledWith(null));
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+  });
+
   it("shows the tab the URL hash names, and Setup for any other hash", () => {
     renderPage({}, "#collaboration");
     expect(panel("collaboration").className).not.toContain("hidden");
@@ -609,7 +645,7 @@ describe("ProjectSettingsPage", () => {
     it("can't change data storage", () => {
       renderPage({ dataStorage: { ...data().dataStorage, canEdit: false } }, "#data-storage");
       expect((document.getElementById("project_history_retention_period") as HTMLButtonElement).disabled).toBe(true);
-      expect((document.getElementById("retain_all") as HTMLInputElement).disabled).toBe(true);
+      expect(document.getElementById("retain_all")?.matches(":disabled")).toBe(true);
       expect((document.getElementById("input-output-retention-period-submit-btn") as HTMLButtonElement).disabled).toBe(true);
     });
 

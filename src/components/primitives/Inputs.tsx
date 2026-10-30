@@ -42,7 +42,9 @@ interface FieldProps {
 /** The control's id, or a generated one, so its label is always linked to it. */
 function useFieldId(id?: string) {
   const generated = useId();
-  return id ?? generated;
+  // Inside a Field that names an id (`<Field id="x" label="…"><TextInput /></Field>`), use that one, so its label points here.
+  const outer = useContext(FieldContext).id;
+  return id ?? outer ?? generated;
 }
 
 /**
@@ -83,14 +85,15 @@ export function Field({
   const outer = useContext(FieldContext);
   // A control's own Field with no label, hint or errors (TextInput inside a labelled Field) keeps the outer Field's wiring.
   const passThrough = !group && !label && !hint && !invalid;
-  const LabelTag = group ? "span" : "label";
+  // A label points at its control by id; without one (a group, or a Field around a card) it's plain text.
+  const LabelTag = group || !id ? "span" : "label";
   // A hint sits close under its label, so the two read as one; the control comes after a wider gap.
   const gap = hint ? "mb-1" : "mb-2";
   // The info button sits beside the <label>, not in it, so its text stays out of the control's name.
   const labelRow = label && (
     <div data-ui="label-row" className={cn("flex items-center justify-between gap-2", gap)}>
       <span className="flex items-center">
-        <LabelTag id={labelId} htmlFor={group ? undefined : id} data-ui="label" className="text-sm/6 font-medium text-strong group-disabled/field:text-faint">
+        <LabelTag id={labelId} htmlFor={LabelTag === "label" ? id : undefined} data-ui="label" className="text-sm/6 font-medium text-strong group-disabled/field:text-faint">
           {label}
           {required && <span data-ui="required" className="text-danger-500"> *</span>}
         </LabelTag>
@@ -396,15 +399,34 @@ export function Radio({ label, hint, className, ...rest }: ChoiceProps) {
 }
 
 /** A checkbox or radio. In a Field with errors (a group, or one checkbox) it takes the error look. */
-function Choice({ label, hint, className, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
-  const { invalid } = useContext(FieldContext);
+function Choice({ label, hint, className, id: givenId, ...rest }: ChoiceProps & { type: "checkbox" | "radio" }) {
+  // In a one-checkbox Field it's tied to the Field's error; in a group the fieldset carries it.
+  const { invalid, describedBy } = useContext(FieldContext);
+  const generated = useId();
+  const id = givenId ?? generated;
+  const hintId = `${id}-hint`;
+  // The hint sits outside the <label>, so it's read as the control's description, not part of its name.
+  const described = [...(hint ? [hintId] : []), ...(describedBy ? [describedBy] : [])].join(" ") || undefined;
   return (
-    <label className={cn("flex gap-2 text-sm leading-6 text-body has-disabled:cursor-not-allowed has-disabled:text-muted", hint ? "items-start" : "items-center")}>
-      <input data-ui="choice" aria-invalid={invalid || undefined} className={cn(choiceClasses, hint && "mt-1", className)} {...rest} />
-      <span>
-        {label}
-        {hint && <Text variant="body-sm" className="block text-muted">{hint}</Text>}
-      </span>
-    </label>
+    <div className={cn("flex gap-2 text-sm leading-6 text-body has-disabled:text-muted", hint ? "items-start" : "items-center")}>
+      <input
+        id={id}
+        data-ui="choice"
+        aria-invalid={invalid || undefined}
+        aria-describedby={described}
+        className={cn(choiceClasses, hint && "mt-1", className)}
+        {...rest}
+      />
+      <div>
+        <label htmlFor={id} className={rest.disabled ? "cursor-not-allowed" : "cursor-pointer"}>
+          {label}
+        </label>
+        {hint && (
+          <Text id={hintId} variant="body-sm" className="block text-muted">
+            {hint}
+          </Text>
+        )}
+      </div>
+    </div>
   );
 }

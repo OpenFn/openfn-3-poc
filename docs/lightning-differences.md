@@ -126,8 +126,56 @@ goes back to Lightning's way.
 - **No browser validation bubbles.** Lightning's forms let the browser show
   "Please fill in this field" for a required field. The replica turns that
   off, so only the field's own error shows, in the same red as every other.
+  Our checks cover what the browser did: blank required fields, and an email
+  without an @ ("must have the @ sign and no spaces", Lightning's own words).
 - **After a refused Save, focus moves to the first field with an error.**
   Lightning leaves focus on the button.
+
+- **Data storage shows one card per setting.** Lightning puts its three
+  settings in one card, each with a heading, a paragraph and a divider
+  (`settings.html.heex:862-1053`). The replica gives each its own card with
+  a title and description, like every other settings tab, and one Save below
+  them. The plan's limit note is the History dropdown's hint. When the
+  Input/Output retention period doesn't apply, its dropdown is disabled;
+  Lightning also fades that section's title and description.
+
+- **A setting that waits for Save is a checkbox, not a switch.** Lightning
+  uses switches for the admin user's Support User and a channel's Enabled,
+  though neither applies until you press Save. The replica keeps switches for
+  things that take effect at once (enabling from a table, requiring MFA,
+  support access, experimental features), and for on/off settings in the
+  workflow editor (PRINCIPLES.md).
+- **Profile MFA has "Set up MFA" and "Disable MFA" buttons.** Lightning's
+  switch looks instant but starts a set-up form or asks to confirm, so the
+  replica shows the action it is.
+
+- **Disable parallel execution saves as you switch it, after a confirm.**
+  Lightning puts the switch in a form with its own Save and shows the "Heads
+  Up!" warning once switched. The replica asks first, with the same words,
+  and saves on confirm; switching it back off saves at once.
+  Lightning lets the hosted plan swap in its own control here; the replica
+  keeps the switch and shows the plan's reason ("Not allowed on Free plans")
+  under it, disabled.
+
+- **The login password is required.** Lightning marks only the email as
+  required on the login form. The replica marks both, and says "can't be
+  blank" for an empty password.
+
+- **Save stays pressable in the collaborator and YAML import modals.**
+  Lightning disables Save until every row has an email and a role, and
+  disables Create until the YAML looks right. The replica keeps them
+  pressable and says what's missing when pressed ("can't be blank", "Enter
+  YAML content to create workflow"), and shows a row's email error only
+  then, not while typing.
+- **A disabled Run says why on hover.** When the manual run's JSON doesn't
+  parse, "Run From Here" shows "Fix the JSON input to run".
+
+- **Two-factor and confirm access are ordinary fields.** Lightning gives the
+  panel a large heading ("Password", "Authentication Code") and puts the help
+  text under the Verify or Confirm button. The replica uses a field label,
+  then the help text as its hint, then the box, as on every other form.
+- **Profile's first Save says why it's disabled.** Until something changes,
+  hovering or focusing it shows "No changes to save".
 
 ## File uploads
 

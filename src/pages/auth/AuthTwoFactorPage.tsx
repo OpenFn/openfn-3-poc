@@ -1,13 +1,13 @@
-import type { SubmitEvent } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthPanelLayout, {
   AuthPanel,
-  AuthPanelHint,
-  AuthPanelTitle,
   HavingProblems,
 } from "../../components/auth/AuthPanelLayout";
 import Alert from "../../components/primitives/Alert";
+import Form from "../../components/primitives/Form";
+import { useForm } from "../../utils/useForm";
+import { blank } from "../../utils/validate";
 import TextLink from "../../components/primitives/TextLink";
 import Button from "../../components/primitives/Button";
 import { TextInput } from "../../components/primitives/Inputs";
@@ -26,35 +26,32 @@ export default function AuthTwoFactorPage() {
   const method: TwoFactorMethod = q.get("authentication_type") === "backup_code" ? "backup_code" : "totp";
   const other: TwoFactorMethod = method === "totp" ? "backup_code" : "totp";
 
-  const onSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-    navigate("/projects");
-  };
+  const form = useForm({ initial: { code: "" }, validate: ({ code }) => ({ code: blank(code) }) });
 
   return (
     <AuthPanelLayout title="Two-factor authentication">
       <AuthPanel>
-        <AuthPanelTitle>{method === "backup_code" ? "Backup Code" : "Authentication Code"}</AuthPanelTitle>
         {q.has("error") && <Alert tone="danger">{authMessages.invalidTwoFactorCode}</Alert>}
-        <form onSubmit={onSubmit} className="space-y-4">
+        <Form {...form.formProps(() => navigate("/projects"))}>
           <TextInput
             id="user_code"
-            aria-label={method === "backup_code" ? "Backup code" : "Authentication code"}
+            label={method === "backup_code" ? "Backup Code" : "Authentication Code"}
+            hint={
+              method === "totp"
+                ? "Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
+                : "Use one of your backup codes. Kindly note that a backup code can only be used once"
+            }
             name="code"
             required
             autoComplete="one-time-code"
             inputMode="numeric"
             placeholder="XXXXXX"
+            {...form.fieldProps("code")}
           />
-          <Button type="submit" size="lg" className="w-full">
+          <Button type="submit" className="w-full">
             Verify
           </Button>
-          <AuthPanelHint>
-            {method === "totp"
-              ? "Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
-              : "Use one of your backup codes. Kindly note that a backup code can only be used once"}
-          </AuthPanelHint>
-        </form>
+        </Form>
       </AuthPanel>
       <HavingProblems>
         <li>

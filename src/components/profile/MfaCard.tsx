@@ -6,7 +6,6 @@ import { TextInput } from "../primitives/Inputs";
 import Modal from "../primitives/Modal";
 import SectionHeader from "../primitives/SectionHeader";
 import TextLink from "../primitives/TextLink";
-import Toggle from "../primitives/Toggle";
 import Card from "../primitives/Card";
 import Form from "../primitives/Form";
 import type { MfaSettings, MfaSetupResult } from "../../types/profile";
@@ -25,10 +24,12 @@ interface Props {
 }
 
 /**
- * The MFA card on /profile (profile_live/mfa_component.html.heex). The switch
- * doesn't save on its own: off → on asks the host for a secret and shows the
- * setup form; on → off asks to confirm "Disable MFA". With MFA on it links to
- * the recovery codes. The secret lives here only while the setup form is open.
+ * The MFA card on /profile (profile_live/mfa_component.html.heex). Lightning
+ * uses a switch, but neither way takes effect at once, so the card has buttons
+ * (PRINCIPLES.md, Switch or checkbox): "Set up MFA" asks the host for a secret
+ * and shows the setup form, whose Cancel closes it; "Disable MFA" asks to
+ * confirm. With MFA on it links to the recovery codes. The secret lives here
+ * only while the setup form is open.
  */
 export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Props) {
   const id = "mfa_section";
@@ -59,12 +60,16 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
   );
   const enabled = mfa.enabled || confirmed;
   const show = enabled || setup !== null;
+  const action = enabled ? (
+    <Button id="mfa-action" variant="secondary" disabled={form.pending} onClick={() => setConfirmDisable(true)}>
+      Disable MFA
+    </Button>
+  ) : setup ? undefined : (
+    <Button id="mfa-action" pending={start.pending} onClick={() => void start.run()}>
+      Set up MFA
+    </Button>
+  );
 
-  const toggle = () => {
-    if (enabled) setConfirmDisable(true);
-    else if (setup) setSetup(null);
-    else void start.run();
-  };
 
   return (
     <Card
@@ -76,8 +81,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
           This adds an additional layer of security to your account by requiring more than just a password to sign in.
         </span>
       }
-      // The switch shows the choice at once while setup starts, and goes back if it fails.
-      action={<Toggle id="toggle-mfa-switch" checked={show || start.pending} onChange={toggle} disabled={start.pending || form.pending} labelledBy={`${id}-label`} />}
+      action={action}
     >
       {show && (
         <Text as="div" className="space-y-5 border-t border-strong pt-5">

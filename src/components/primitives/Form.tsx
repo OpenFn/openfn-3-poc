@@ -12,8 +12,11 @@ interface Props extends Omit<FormHTMLAttributes<HTMLFormElement>, "onSubmit" | "
   error?: unknown;
   /** While saving: marks the form busy, and a submit button inside shows it's working. */
   pending?: boolean | undefined;
-  /** The buttons that end the form, main action last: `<><Button variant="secondary">Cancel</Button><Button type="submit">Save</Button></>`. */
-  actions: ReactNode;
+  /**
+   * The buttons that end the form, main action last: `<><Button variant="secondary">Cancel</Button><Button type="submit">Save</Button></>`.
+   * Leave it out when the container places its own button, as the sign-in cards do (full width).
+   */
+  actions?: ReactNode;
   /** Only for placement, e.g. `w-1/2`. */
   className?: string | undefined;
   children: ReactNode;
@@ -39,6 +42,7 @@ export default function Form({ onSubmit, error, pending = false, actions, classN
       ref={ref}
       noValidate
       onSubmit={(e) => {
+        e.preventDefault();
         // Our own checks: flushSync puts their errors on screen before we look for them.
         // A Save that started saving (the form is busy) passed them, so an old server error mustn't take focus.
         flushSync(() => onSubmit(e));
@@ -50,9 +54,11 @@ export default function Form({ onSubmit, error, pending = false, actions, classN
       <FormPendingContext.Provider value={pending}>
         {children}
         {error != null && error !== false && <Alert tone="danger">{errorMessage(error)}</Alert>}
-        <div data-ui="form-actions" className="flex justify-end gap-2">
-          {actions}
-        </div>
+        {actions && (
+          <div data-ui="form-actions" className="flex justify-end gap-2">
+            {actions}
+          </div>
+        )}
       </FormPendingContext.Provider>
     </form>
   );

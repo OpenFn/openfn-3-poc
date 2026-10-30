@@ -16,7 +16,7 @@
  * A token swap can't reach everything (button shape, field borders,
  * focus states), so each theme may add a component layer. That layer
  * keys off the `data-ui` / `data-variant` / `data-tone` hooks the primitives emit
- * (button, link, field, form-group, label, hint, error-message, choice,
+ * (button, link, field, form-group, label, label-row, hint, error-message, choice,
  * toggle, alert, tag, card, table, tabs, pagination, page-header,
  * page-title-row, page-body, sidebar)
  * plus the `--ui-*` variables, and is scoped to its own `data-theme`.

@@ -11,7 +11,7 @@ interface BaseProps {
   label?: string;
   /** Gray text after the label, e.g. "(currently optional for this project)". */
   note?: ReactNode;
-  description?: string;
+  description?: string | undefined;
   disabled?: boolean;
   id?: string;
   /** Hover text, e.g. why the switch is disabled. */
@@ -34,6 +34,9 @@ type Props = BaseProps & ({ label: string } | { labelledBy: string } | { tooltip
 export default function Toggle({ checked, onChange, label, note, description, disabled = false, id, tooltip, labelledBy, name }: Props) {
   const labelId = useId();
   const field = useFieldControl();
+  // The description (e.g. why the plan doesn't allow it) is read with the switch.
+  const descriptionId = `${labelId}-description`;
+  const describedBy = [...(description ? [descriptionId] : []), ...(field["aria-describedby"] ? [field["aria-describedby"]] : [])].join(" ") || undefined;
   const button = (
     <button
       id={id}
@@ -45,7 +48,7 @@ export default function Toggle({ checked, onChange, label, note, description, di
       aria-label={label || labelledBy ? undefined : tooltip}
       disabled={disabled}
       aria-invalid={field["aria-invalid"]}
-      aria-describedby={field["aria-describedby"]}
+      aria-describedby={describedBy}
       data-ui="toggle"
       onClick={() => onChange?.(!checked)}
       className={cn(
@@ -81,7 +84,11 @@ export default function Toggle({ checked, onChange, label, note, description, di
           </Text>
         )}
       </div>
-      {description && <Text as="p" className="text-muted">{description}</Text>}
+      {description && (
+        <Text as="p" id={descriptionId} className="text-muted">
+          {description}
+        </Text>
+      )}
     </div>
   );
 }

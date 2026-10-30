@@ -24,7 +24,7 @@ export interface FormOptions<V> {
  * and clear when their field changes. Don't disable submit because the form
  * is invalid: submitting is how the user sees why.
  *
- * A page form submits with `onSubmit={form.submit(save)}`: it runs through
+ * A page form submits with `<Form {...form.formProps(save)}>`: it runs through
  * `useAction` (`pending`, `error`, double-submit guard), puts a
  * `RequestError`'s field errors on the fields, and on success makes the
  * submitted values the saved ones, so the form is clean again. A FormModal
@@ -118,8 +118,6 @@ export function useForm<V extends object>({ initial, validate, clearOnSave = fal
         set(field, (typeof e === "string" ? e : e.target.value) as V[K]),
       onBlur: () => setTouched((t) => ({ ...t, [field]: true })),
     }),
-    /** A form `onSubmit` handler: shows every client error, and runs `save` if the form is valid. */
-    submit,
     /** Everything a `Form` takes from this form: `<Form {...form.formProps(save)} actions={…}>`. */
     formProps: (save: (values: V) => void | Promise<void>) => ({ onSubmit: submit(save), error: action.error, pending: action.pending }),
     /** A `FormModal` `onSubmit`: shows every client error, and runs `save` if the form is valid. Close the modal inside `save`. */

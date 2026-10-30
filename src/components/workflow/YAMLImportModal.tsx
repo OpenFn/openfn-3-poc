@@ -20,7 +20,9 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
   const [mode, setMode] = useState<"upload" | "paste">("upload");
   const [yaml, setYaml] = useState("");
   const looksValid = /^name:/m.test(yaml) && /^jobs:/m.test(yaml);
-  const error = yaml.trim() && !looksValid ? "Workflow YAML needs a top-level name and jobs." : null;
+  // Pressing Create says what's missing, rather than Create being disabled (PRINCIPLES.md, Forms).
+  const [submitted, setSubmitted] = useState(false);
+  const error = !looksValid && (yaml.trim() || submitted) ? (yaml.trim() ? "Workflow YAML needs a top-level name and jobs." : "Enter YAML content to create workflow") : null;
 
   return (
     <FormModal
@@ -30,10 +32,11 @@ export default function YAMLImportModal({ isOpen, onClose, onCreate }: Props) {
       title="Import a workflow"
       formId="yaml-import-form"
       formClassName=""
-      onSubmit={() => onCreate(yaml)}
+      onSubmit={() => {
+        setSubmitted(true);
+        if (looksValid) onCreate(yaml);
+      }}
       submitLabel="Create"
-      submitDisabled={!looksValid}
-      submitTooltip={!yaml.trim() ? "Enter YAML content to create workflow" : error ? "Fix validation errors to continue" : undefined}
     >
       <div className="mb-3 flex justify-end">
         <Button variant="secondary" size="sm" onClick={() => setMode(mode === "upload" ? "paste" : "upload")}>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Toggle from "../primitives/Toggle";
 import type { EdgeConditionType, EditorEdge } from "../../types/workflow-graph";
 import { edgeConditionOptions } from "../../constants";
 import Button from "../primitives/Button";
@@ -6,7 +7,6 @@ import ConfirmModal from "../primitives/ConfirmModal";
 import Disclosure from "../primitives/Disclosure";
 import { Select, TextArea, TextInput } from "../primitives/Inputs";
 import TextLink from "../primitives/TextLink";
-import Toggle from "../primitives/Toggle";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import Tooltip from "../primitives/Tooltip";
 import Text from "../primitives/Text";

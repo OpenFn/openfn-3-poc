@@ -76,7 +76,7 @@ describe("AdminUserEditPage", () => {
   it("warns how far support access reaches when it is turned on", () => {
     renderPage({ user: amara });
     expect(screen.queryByText("Heads Up!")).toBeNull();
-    fireEvent.click(screen.getByRole("switch", { name: "Support User" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Support User" }));
     expect(screen.getByText("This user will be able to access ALL projects that have support access enabled")).toBeTruthy();
   });
 

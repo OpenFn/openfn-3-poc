@@ -3,6 +3,7 @@ import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import CopyButton from "../primitives/CopyButton";
 import { Field, TextInput } from "../primitives/Inputs";
+import Form from "../primitives/Form";
 import FormModal from "../primitives/FormModal";
 import Modal from "../primitives/Modal";
 import RadioCards from "../primitives/RadioCards";
@@ -108,8 +109,11 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
           </>
         }
       >
-        <form
+        {/* The step's buttons sit in the modal footer (Back goes back a step), so the Form has none of its own. */}
+        <Form
           id="reauthentication-form"
+          pending={reveal.pending}
+          error={reveal.error}
           onSubmit={(e) => {
             e.preventDefault();
             void reveal.run();
@@ -120,7 +124,6 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
               You're required to reauthenticate yourself before viewing the webhook{" "}
               {authType === "basic" ? "Password" : "API Key"}
             </p>
-            {reveal.error && <Alert tone="danger">{errorMessage(reveal.error)}</Alert>}
             <TextInput
               id="user_password"
               type="password"
@@ -142,7 +145,7 @@ export default function WebhookAuthMethodFormModal({ authMethod, onCancel, onSav
               onChange={(e) => setReauthValues({ ...reauthValues, code: e.target.value })}
             />
           </Text>
-        </form>
+        </Form>
       </Modal>
     );
   }

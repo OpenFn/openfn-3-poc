@@ -1,10 +1,12 @@
-import type { SubmitEvent } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
 import AuthCard, { AuthFooterLinks } from "../../components/auth/AuthCard";
 import SsoLogin from "../../components/auth/SsoLogin";
 import Button from "../../components/primitives/Button";
+import Form from "../../components/primitives/Form";
+import { useForm } from "../../utils/useForm";
+import { blank, emailErrors } from "../../utils/validate";
 import { Checkbox, PasswordInput, TextInput } from "../../components/primitives/Inputs";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { authFlags } from "../../mock-data/auth";
@@ -23,18 +25,15 @@ export default function AuthLoginPage() {
   const flags = authFlags(search);
   const showError = new URLSearchParams(search).has("error");
 
-  const onSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-    navigate("/projects");
-  };
+  const form = useForm({ initial: { email: "", password: "" }, validate: ({ email, password }) => ({ email: emailErrors(email), password: blank(password) }) });
 
   return (
     <AuthLayout title="Log in">
       <div id="login">
-        <form onSubmit={onSubmit}>
+        <Form {...form.formProps(() => navigate("/projects"))}>
           <AuthCard error={showError ? authMessages.invalidLogin : undefined}>
-            <TextInput id="user_email" name="email" type="email" label="Email" required autoComplete="email" />
-            <PasswordInput id="user_password" name="password" label="Password" autoComplete="current-password" />
+            <TextInput id="user_email" name="email" type="email" label="Email" required autoComplete="email" {...form.fieldProps("email")} />
+            <PasswordInput id="user_password" name="password" label="Password" required autoComplete="current-password" {...form.fieldProps("password")} />
             <Checkbox id="user_remember_me" name="remember_me" label="Remember me" hint="Keep me logged in for 60 days" />
             <Button type="submit">Log in</Button>
             {flags.ssoProvider && <SsoLogin provider={flags.ssoProvider} />}
@@ -44,7 +43,7 @@ export default function AuthLoginPage() {
               right={<TextLink variant="plain" to="/users/reset_password">Forgot your password?</TextLink>}
             />
           </AuthCard>
-        </form>
+        </Form>
       </div>
     </AuthLayout>
   );

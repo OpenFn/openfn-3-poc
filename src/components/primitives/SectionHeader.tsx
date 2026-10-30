@@ -32,7 +32,7 @@ export function NestedSections({ children }: { children: ReactNode }) {
 export default function SectionHeader({ title, subtitle, size = "md", action, permissionsSection }: Props) {
   const nestedLevel = useContext(NestedLevel);
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex items-start justify-between gap-8">
       <div>
         <Heading size={size} as={size === "lg" ? "h2" : nestedLevel}>
           {title}

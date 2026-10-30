@@ -7,7 +7,15 @@ import { capitalize } from "../../utils/format";
 const roleOptions = collaboratorRoles.map((r) => [capitalize(r), r] as [string, string]);
 
 /** The "Select Role" dropdown on each row of the add and invite collaborator modals. */
-export default function RoleSelect({ value, onChange }: { value: ProjectRole | ""; onChange: (role: ProjectRole) => void }) {
+export default function RoleSelect({
+  value,
+  errors,
+  onChange,
+}: {
+  value: ProjectRole | "";
+  errors?: string[] | undefined;
+  onChange: (role: ProjectRole) => void;
+}) {
   return (
     <Select
       aria-label="Role"
@@ -15,6 +23,7 @@ export default function RoleSelect({ value, onChange }: { value: ProjectRole | "
       required
       options={roleOptions}
       value={value}
+      errors={errors}
       onChange={(e) => onChange(e.target.value as ProjectRole)}
     />
   );

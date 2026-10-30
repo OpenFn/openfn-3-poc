@@ -532,7 +532,7 @@ export default function CredentialFormModal({
               onChange={(e) => patchEnv(env.key, { body: e.target.value })}
             />
           ) : (
-            <fieldset className="space-y-6">
+            <div className="space-y-6">
               {fields.map((f) => (
                 <SchemaInput
                   key={`${env.key}-${f.key}`}
@@ -547,7 +547,7 @@ export default function CredentialFormModal({
                   }}
                 />
               ))}
-            </fieldset>
+            </div>
           )}
         </div>
         {envs.length > 1 && (

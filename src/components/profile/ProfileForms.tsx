@@ -51,7 +51,7 @@ export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onS
       title="Change basic information"
       {...form.formProps(onSave)}
       button={
-        <Button type="submit" disabled={!form.dirty}>
+        <Button type="submit" disabled={!form.dirty} tooltip={form.dirty ? undefined : "No changes to save"}>
           Save
         </Button>
       }

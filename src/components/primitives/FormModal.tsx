@@ -90,11 +90,6 @@ export default function FormModal({
       }
     >
       {before}
-      {submit.error && (
-        <Alert tone="danger" className="mb-4" id={`${formId}-error`}>
-          {errorMessage(submit.error)}
-        </Alert>
-      )}
       <form
         ref={form}
         id={formId}
@@ -112,6 +107,12 @@ export default function FormModal({
       >
         {children}
       </form>
+      {/* As in Form: the form's own error sits after its fields, just above the buttons. */}
+      {submit.error && (
+        <Alert tone="danger" className="mt-4" id={`${formId}-error`}>
+          {errorMessage(submit.error)}
+        </Alert>
+      )}
     </Modal>
   );
 }

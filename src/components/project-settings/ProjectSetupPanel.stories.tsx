@@ -26,6 +26,8 @@ export const Owner: Story = {};
 export const ReadOnly: Story = { args: { setup: { ...project.setup, canEditProject: false, canDeleteProject: false } } };
 export const Sandbox: Story = { args: { setup: { ...sandbox.setup, canEditProject: true, canDeleteProject: true }, parent: sandbox.parent } };
 /** A failed save: the form keeps its changes and shows the message above Save. */
+/** The hosted plan doesn't allow it: the switch is disabled and says why. */
+export const PlanLimited: Story = { args: { setup: { ...project.setup, concurrencyLimitMessage: "Not allowed on Free plans" } } };
 export const SaveFailed: Story = {
   args: { onSaveConcurrency: () => Promise.reject(new Error("The server could not complete that request.")) },
   play: async ({ canvasElement }) => {

@@ -6,6 +6,7 @@ import RoleSelect from "./RoleSelect";
 import type { CollaboratorValues, InviteValues } from "../../types/project-settings";
 import type { ProjectRole } from "../../types/projects";
 import { RequestError } from "../../utils/errors";
+import { blank } from "../../utils/validate";
 
 interface InviteDraft {
   firstName: string;
@@ -35,7 +36,10 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
     setRows(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
     if ("email" in patch) setErrors({ ...errors, [`${i}.email`]: [] });
   };
-  const valid = rows.every((r) => r.firstName && r.lastName && r.email && r.role);
+  // Errors show once Save is pressed, not while typing; Save stays pressable (PRINCIPLES.md, Forms).
+  const [submitted, setSubmitted] = useState(false);
+  const blankIn = (text: string) => (submitted ? blank(text) : []);
+  const valid = rows.every((r) => r.firstName.trim() && r.lastName.trim() && r.email.trim() && r.role);
 
   return (
     <FormModal
@@ -46,8 +50,9 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
       description="The following users don't have OpenFn accounts, you can invite them to join and grant access to this project"
       formId="invite_collaborators_modal_form"
       formClassName="space-y-5"
-      // Submit is only enabled once every row has a role.
       onSubmit={async () => {
+        setSubmitted(true);
+        if (!valid) return;
         try {
           await onInvite(rows as InviteValues[]);
         } catch (e) {
@@ -57,16 +62,16 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
         }
       }}
       submitLabel={<>Invite new user{rows.length > 1 ? "s" : ""}</>}
-      submitDisabled={!valid}
     >
       {rows.map((r, i) => (
-        <div key={i} className="flex items-center gap-4">
+        <div key={i} className="flex items-start gap-4">
           <TextInput
             fieldClassName="flex-1"
             aria-label="First Name"
             placeholder="First Name"
             required
             value={r.firstName}
+            errors={blankIn(r.firstName)}
             onChange={(e) => update(i, { firstName: e.target.value })}
           />
           <TextInput
@@ -75,6 +80,7 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
             placeholder="Last Name"
             required
             value={r.lastName}
+            errors={blankIn(r.lastName)}
             onChange={(e) => update(i, { lastName: e.target.value })}
           />
           <TextInput
@@ -83,14 +89,15 @@ export default function InviteCollaboratorsModal({ initial, onCancel, onInvite }
             aria-label="Email"
             required
             value={r.email}
-            errors={errors[`${i}.email`] ?? []}
+            errors={[...blankIn(r.email), ...(errors[`${i}.email`] ?? [])]}
             onChange={(e) => update(i, { email: e.target.value })}
           />
-          <RoleSelect value={r.role} onChange={(role) => update(i, { role })} />
+          <RoleSelect value={r.role} errors={submitted && !r.role ? ["can't be blank"] : []} onChange={(role) => update(i, { role })} />
           {rows.length > 1 && (
             <IconButton
               icon="hero-minus-circle"
               label="Remove row"
+              className="mt-2"
               onClick={() => {
                 setRows(rows.filter((_, j) => j !== i));
                 setErrors({});

@@ -5,6 +5,7 @@ import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import Modal from "../primitives/Modal";
+import RadioCards from "../primitives/RadioCards";
 import SearchInput from "../primitives/SearchInput";
 import Text from "../primitives/Text";
 import WorkflowDiagram from "./WorkflowDiagram";
@@ -45,24 +46,19 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
     <Modal open={isOpen} onClose={onClose} size="2xl" title="Templates">
       {/* eslint-disable-next-line no-restricted-syntax -- sized to the viewport */}
       <Text as="div" className="flex h-[70vh] max-h-160 gap-6">
-        <div className="w-76 shrink-0 overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-surface pb-2">
+        {/* Padding inside the scroller so focus outlines aren't clipped (sides here, top by the list's own pt-1, clear of the sticky search); the negative margin keeps the layout. */}
+        <div className="-m-1 w-78 shrink-0 overflow-y-auto p-1">
+          <div className="sticky top-0 z-10 bg-surface pb-1">
             <SearchInput value={query} onChange={setQuery} placeholder="Search templates" size="sm" />
           </div>
-          <div className="flex flex-col gap-2">
-            {visible.map((t) => (
-              <Card
-                key={t.id}
-                as="button"
-                onClick={() => setPreviewedId(t.id)}
-                aria-pressed={t.id === previewedId}
-                className={t.id === previewedId ? "border-emphasis" : "hover:bg-hover"}
-              >
-                <TemplateSummary template={t} lines="line-clamp-3" />
-              </Card>
-            ))}
-            {visible.length === 0 && <p className="py-2 text-muted">No saved templates match your search.</p>}
-          </div>
+          <RadioCards
+            aria-label="Templates"
+            className="pt-1"
+            value={previewedId}
+            onChange={setPreviewedId}
+            options={visible.map((t) => ({ value: t.id, label: <TemplateSummary template={t} lines="line-clamp-3" /> }))}
+          />
+          {visible.length === 0 && <p className="py-2 text-muted">No saved templates match your search.</p>}
         </div>
         <Card muted padding="none" className="flex min-w-0 flex-1 flex-col overflow-clip">
           <div className="min-h-0 flex-1">

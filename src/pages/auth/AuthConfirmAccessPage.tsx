@@ -1,17 +1,17 @@
-import { useState, type SubmitEvent } from "react";
+import { useState } from "react";
 import AuthPanelLayout, {
   AuthPanel,
-  AuthPanelHint,
-  AuthPanelTitle,
   HavingProblems,
 } from "../../components/auth/AuthPanelLayout";
 import Alert from "../../components/primitives/Alert";
+import Form from "../../components/primitives/Form";
+import { blank } from "../../utils/validate";
 import TextLink from "../../components/primitives/TextLink";
 import Button from "../../components/primitives/Button";
 import UserAvatar from "../../components/primitives/UserAvatar";
 import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
 import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
+import { useForm } from "../../utils/useForm";
 
 /** What the user confirms with: one or the other. */
 export type ConfirmAccessValues = { password: string } | { code: string };
@@ -31,17 +31,13 @@ export interface AuthConfirmAccessPageProps {
  */
 export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAccessPageProps) {
   const [option, setOption] = useState<"password" | "totp">("password");
-  const [value, setValue] = useState("");
-  const confirm = useAction(onConfirm);
+  // One box, for the password or the code: our own can't-be-blank, as on every form.
+  const form = useForm({ initial: { value: "" }, validate: ({ value }) => ({ value: blank(value) }) });
+  const { error, ...formProps } = form.formProps(({ value }) => onConfirm(option === "password" ? { password: value } : { code: value }));
 
   const switchTo = (next: "password" | "totp") => {
     setOption(next);
-    setValue("");
-    confirm.reset();
-  };
-  const onSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-    void confirm.run(option === "password" ? { password: value } : { code: value });
+    form.reset();
   };
 
   return (
@@ -55,41 +51,36 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
         </div>
       </AuthPanel>
       <AuthPanel>
-        <AuthPanelTitle>{option === "password" ? "Password" : "Authentication Code"}</AuthPanelTitle>
-        {confirm.error && <Alert tone="danger">{errorMessage(confirm.error)}</Alert>}
-        <form id="reauthentication-form" onSubmit={onSubmit} className="space-y-4" aria-busy={confirm.pending || undefined}>
+        {/* The failure sits at the top of the panel, as Lightning's flash does; the button is inside the form, not after it. */}
+        {error && <Alert tone="danger">{errorMessage(error)}</Alert>}
+        <Form id="reauthentication-form" {...formProps}>
           {option === "password" ? (
             <PasswordInput
               id="user_password"
               name="password"
-              aria-label="Password"
+              label="Password"
+              hint="Enter your password to confirm access"
               required
               autoComplete="current-password"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              {...form.fieldProps("value")}
             />
           ) : (
             <TextInput
               id="user_code"
               name="code"
-              aria-label="Authentication code"
+              label="Authentication Code"
+              hint="Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
               required
               autoComplete="one-time-code"
               inputMode="numeric"
               placeholder="XXXXXX"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              {...form.fieldProps("value")}
             />
           )}
-          <Button type="submit" className="w-full" pending={confirm.pending}>
+          <Button type="submit" className="w-full">
             {option === "password" ? "Confirm" : "Verify"}
           </Button>
-          <AuthPanelHint>
-            {option === "totp"
-              ? "Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
-              : "Enter your password to confirm access"}
-          </AuthPanelHint>
-        </form>
+        </Form>
       </AuthPanel>
       <HavingProblems>
         {option === "password" && user.mfaEnabled && (

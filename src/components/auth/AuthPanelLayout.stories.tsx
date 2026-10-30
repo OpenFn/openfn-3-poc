@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import AuthPanelLayout, { AuthPanel, AuthPanelHint, AuthPanelTitle, HavingProblems } from "./AuthPanelLayout";
+import AuthPanelLayout, { AuthPanel, HavingProblems } from "./AuthPanelLayout";
 import Button from "../primitives/Button";
 import { TextInput } from "../primitives/Inputs";
 import TextLink from "../primitives/TextLink";
@@ -17,10 +17,13 @@ type Story = StoryObj<typeof AuthPanelLayout>;
 const panels = (
   <>
     <AuthPanel>
-      <AuthPanelTitle>Authentication Code</AuthPanelTitle>
-      <TextInput id="code" aria-label="Authentication code" placeholder="XXXXXX" />
+      <TextInput
+        id="code"
+        label="Authentication Code"
+        hint="Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
+        placeholder="XXXXXX"
+      />
       <Button className="w-full">Verify</Button>
-      <AuthPanelHint>Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code.</AuthPanelHint>
     </AuthPanel>
     <HavingProblems>
       <li>
