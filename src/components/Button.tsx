@@ -23,25 +23,22 @@ const iconClasses: Record<ButtonSize, string> = { xs: "h-4 w-4", sm: "h-4 w-4", 
 // Lightning's button colours, keyed by the tone if there is one, else the variant. `plain` is
 // text on nothing: hover darkens the text only, so an icon sits on any surface, white or grey.
 // Text needs a white surface: on the grey page plain (4.39:1) and plain danger (4.33:1) fall
-// below 4.5:1. A pressed toggle (`aria-pressed`) gets a tint. Disabled has no hover: filled looks turn their
-// 300 shade with white text, secondary goes grey, and plain is faded to half strength, as
-// Lightning draws them (`new_inputs.ex` button, the editor's Run / Retry). Plain writes its
-// hover as `hover:` with `disabled:` undoing it, so a caller's own `hover:` colour replaces it;
-// a `not-disabled:hover:` class would outrank it.
+// below 4.5:1. A pressed toggle (`aria-pressed`) gets a tint. Disabled is the same colour at half
+// strength for every look, with no hover, not Lightning's 300 shades (its disabled green is a loud
+// mint with white text). Plain writes its hover as `hover:` with `disabled:` undoing it, so a
+// caller's own `hover:` colour replaces it; a `not-disabled:hover:` class would outrank it.
 const lookClasses = {
-  primary: "bg-primary-600 not-disabled:hover:bg-primary-500 disabled:bg-primary-300 text-inverse shadow-xs",
-  secondary:
-    "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs disabled:bg-subtle disabled:text-faint disabled:ring-subtle",
-  plain:
-    "text-muted hover:text-body disabled:text-muted disabled:opacity-50 aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
-  danger: "bg-danger-600 not-disabled:hover:bg-danger-500 disabled:bg-danger-300 text-inverse shadow-xs",
-  success: "bg-success-600 not-disabled:hover:bg-success-500 disabled:bg-success-300 text-inverse shadow-xs",
-  "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600 disabled:opacity-50",
+  primary: "bg-primary-600 not-disabled:hover:bg-primary-500 text-inverse shadow-xs",
+  secondary: "bg-surface not-disabled:hover:bg-hover text-strong ring-1 ring-strong ring-inset shadow-xs",
+  plain: "text-muted hover:text-body disabled:text-muted aria-pressed:bg-primary-50 aria-pressed:text-primary-600",
+  danger: "bg-danger-600 not-disabled:hover:bg-danger-500 text-inverse shadow-xs",
+  success: "bg-success-600 not-disabled:hover:bg-success-500 text-inverse shadow-xs",
+  "plain-danger": "text-danger-600 hover:text-danger-700 disabled:text-danger-600",
 };
 
 function buttonClasses(look: keyof typeof lookClasses, size: ButtonSize = "md", className?: string) {
   return cn(
-    "rounded-md text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed",
+    "rounded-md text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus inline-flex items-center justify-center gap-x-1.5 disabled:cursor-not-allowed disabled:opacity-50",
     sizeClasses[size],
     lookClasses[look],
     className
