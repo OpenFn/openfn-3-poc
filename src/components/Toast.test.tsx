@@ -72,6 +72,16 @@ describe("Toast", () => {
     expect(screen.queryByText("Saved")).toBeNull();
   });
 
+  it("hands focus back to where it came from when closed from the keyboard", () => {
+    const box = showToast();
+    const go = screen.getByRole("button", { name: "go" });
+    act(() => go.focus());
+    act(() => screen.getByRole("button", { name: "Close" }).focus());
+    fireEvent.keyDown(box, { key: "Escape" });
+    expect(screen.queryByText("Saved")).toBeNull();
+    expect(document.activeElement).toBe(go);
+  });
+
   it("keeps Escape from also reaching the page's own Escape handler", () => {
     // fireEvent returns false once a handler has called preventDefault
     expect(fireEvent.keyDown(showToast(), { key: "Escape" })).toBe(false);

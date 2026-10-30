@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CredentialRow, CredentialSecretsResult, OauthClientRow, OauthSignInResult } from "../../types/credentials";
 import { RequestError } from "../../utils/errors";
 import CredentialFormModal from "./CredentialFormModal";
+import { isDisabled } from "../../test/disabled";
 
 const credential: CredentialRow = {
   id: "cred-1",
@@ -244,12 +245,12 @@ describe("CredentialFormModal", () => {
       const { onSave } = renderModal({ credential: sheets, secrets: stored("ready", ["OpenID", "Drive"]) });
       const saveButton = () => screen.getByRole("button", { name: "Save Credential" }) as HTMLButtonElement;
       expect(screen.queryByText("Reauthentication Required")).toBeNull();
-      expect(saveButton().disabled).toBe(false);
+      expect(isDisabled(saveButton())).toBe(false);
       fireEvent.click(screen.getByLabelText("spreadsheets"));
-      expect(saveButton().disabled).toBe(true);
+      expect(isDisabled(saveButton())).toBe(true);
       save();
       fireEvent.click(screen.getByLabelText("spreadsheets"));
-      expect(saveButton().disabled).toBe(false);
+      expect(isDisabled(saveButton())).toBe(false);
       expect(onSave).not.toHaveBeenCalled();
     });
 

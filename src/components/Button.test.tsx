@@ -1,8 +1,9 @@
 /// <reference types="node" />
 import { readFileSync } from "node:fs";
 import { composeStories } from "@storybook/react-vite";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { createRef } from "react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { hover, openTooltips } from "../test/tooltip";
 import Button from "./Button";
 import * as stories from "./Button.stories";
@@ -17,12 +18,49 @@ describe("Button", () => {
     expect(openTooltips()).toEqual(["You can't do that"]);
   });
 
-  it("blocks a second click while its request runs", () => {
-    render(<Button pending>Save</Button>);
+  it("blocks a second click while its request runs, and keeps the focus it had", () => {
+    const onClick = vi.fn();
+    const onParentClick = vi.fn();
+    const onSubmit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
+    const form = (pending: boolean) => (
+      <div onClick={onParentClick}>
+        <form onSubmit={onSubmit}>
+          <Button type="submit" pending={pending} onClick={onClick}>Save</Button>
+        </form>
+      </div>
+    );
+    const { rerender } = render(form(false));
     const button = screen.getByRole<HTMLButtonElement>("button", { name: /Save/ });
-    expect(button.disabled).toBe(true);
+    act(() => button.focus());
+    rerender(form(true));
+    expect(document.activeElement).toBe(button);
+    // jsdom keeps focus on a natively disabled button, so check it isn't one.
+    expect(button.disabled).toBe(false);
+    expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.getAttribute("aria-busy")).toBe("true");
     expect(screen.getByLabelText("Working")).toBeTruthy();
+    fireEvent.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onParentClick).not.toHaveBeenCalled();
+  });
+
+  it("keeps a caller's aria-disabled when it isn't pending", () => {
+    render(<Button aria-disabled>Save</Button>);
+    expect(screen.getByRole("button", { name: "Save" }).getAttribute("aria-disabled")).toBe("true");
+  });
+
+  it("hands its ref the link it renders", () => {
+    const toRef = createRef<HTMLButtonElement | HTMLAnchorElement>();
+    const hrefRef = createRef<HTMLButtonElement | HTMLAnchorElement>();
+    render(
+      <>
+        <Button ref={toRef} to="/projects">Projects</Button>
+        <Button ref={hrefRef} href="https://docs.openfn.org">Docs</Button>
+      </>
+    );
+    expect(toRef.current).toBe(screen.getByRole("link", { name: "Projects" }));
+    expect(hrefRef.current).toBe(screen.getByRole("link", { name: "Docs" }));
   });
 
   it("can't be followed when a link is disabled", () => {

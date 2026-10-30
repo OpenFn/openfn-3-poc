@@ -13,6 +13,12 @@ goes back to Lightning's way.
 
 ## Buttons
 
+- **Pending buttons, and disabled buttons that say why, keep keyboard focus.**
+  They're `aria-disabled` and ignore presses, so focus isn't lost when a
+  button goes pending and Tab reaches the tooltip's reason. Lightning
+  disables them natively (`new_inputs.ex:268-280`, `phx-disable-with`), which
+  drops focus and hides the reason from the keyboard. A disabled button with
+  no reason is natively disabled in both.
 - **Disabled buttons are their enabled colour at half strength.** Lightning
   gives each look its own disabled colours (`new_inputs.ex:232-247`, e.g.
   success turns a mint `bg-green-300`). One rule for every look, and no mint green.

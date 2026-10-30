@@ -67,9 +67,37 @@ describe("Tooltip", () => {
     expect(ref.current).toBe(screen.getByRole("button"));
   });
 
-  it("gives a disabled control its reason as a description, since it can't take focus to open the tooltip", () => {
-    render(<Tooltip content="Contact an editor or admin to sync." disabled><button disabled>Sync</button></Tooltip>);
-    expect(screen.getByRole("button").getAttribute("aria-description")).toBe("Contact an editor or admin to sync.");
+  it("lets the keyboard reach a disabled control's reason, and ignores the control's press", () => {
+    focusVisible(true);
+    const onClick = vi.fn();
+    const onSubmit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <Tooltip content="Contact an editor or admin to sync." disabled>
+          <button type="submit" disabled onClick={onClick}>Sync</button>
+        </Tooltip>
+      </form>
+    );
+    const button = screen.getByRole("button", { name: "Sync" });
+    act(() => button.focus());
+    expect(document.activeElement).toBe(button);
+    expect(openTooltips()).toEqual(["Contact an editor or admin to sync."]);
+    expect(button.getAttribute("aria-disabled")).toBe("true");
+    expect(button.getAttribute("aria-description")).toBe("Contact an editor or admin to sync.");
+    fireEvent.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("leaves a disabled field natively disabled, so it can't be typed in", () => {
+    render(
+      <Tooltip content="Read only" disabled>
+        <input aria-label="Name" disabled />
+      </Tooltip>
+    );
+    const input = screen.getByRole<HTMLInputElement>("textbox", { name: "Name" });
+    expect(input.disabled).toBe(true);
+    expect(input.getAttribute("aria-disabled")).toBeNull();
   });
 
   it("keeps the same button when the control is enabled and disabled again", () => {

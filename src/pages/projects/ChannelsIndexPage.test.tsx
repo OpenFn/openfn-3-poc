@@ -6,6 +6,7 @@ import type { ChannelForm, ChannelRow } from "../../types/channels";
 import { RequestError } from "../../utils/errors";
 import { pickOption } from "../../test/select";
 import ChannelsIndexPage from "./ChannelsIndexPage";
+import { isDisabled } from "../../test/disabled";
 
 const rows: ChannelRow[] = [
   {
@@ -122,7 +123,7 @@ describe("ChannelsIndexPage", () => {
 
   it("is read-only for someone who cannot edit", () => {
     renderPage({ canCreateChannel: false, canEditChannel: false, canDeleteChannel: false });
-    expect((screen.getByRole("button", { name: "New Channel" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(screen.getByRole("button", { name: "New Channel" }))).toBe(true);
     expect(screen.queryAllByRole("switch")).toHaveLength(0);
     expect(rowOf("lab-results").textContent).toContain("Enabled");
     expect(rowOf("idle").textContent).toContain("Disabled");

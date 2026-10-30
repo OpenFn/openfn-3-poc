@@ -4,6 +4,7 @@ import { RouterProvider, type Router } from "../../routing/router";
 import { ToastProvider } from "../../components/Toast";
 import type { WorkflowRow } from "../../types/workflows";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
+import { isDisabled } from "../../test/disabled";
 
 const row = (id: string, name: string, extra: Partial<WorkflowRow> = {}): WorkflowRow => ({
   workflow: { id, name, updatedAt: "2026-10-01T10:00:00Z", enabled: true, triggerType: "webhook" },
@@ -136,7 +137,7 @@ describe("WorkflowsIndexPage", () => {
   it("hides Delete and disables Create without the permissions", () => {
     renderPage({ canCreateWorkflow: false, canDeleteWorkflow: false });
     expect(screen.queryByText("Delete")).toBeNull();
-    expect((screen.getByRole("button", { name: "Create new workflow" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(screen.getByRole("button", { name: "Create new workflow" }))).toBe(true);
   });
 
   it("links each column to the URL that re-sorts it: the current one flips, another starts ascending", () => {

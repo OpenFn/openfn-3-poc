@@ -8,6 +8,7 @@ import type { CollaboratorRow, WebhookAuthMethodRow } from "../../types/project-
 import { pickOption } from "../../test/select";
 import { RequestError } from "../../utils/errors";
 import ProjectSettingsPage, { type ProjectSettingsPageProps } from "./ProjectSettingsPage";
+import { isDisabled } from "../../test/disabled";
 
 const me: CollaboratorRow = {
   id: "pu-me",
@@ -274,7 +275,7 @@ describe("ProjectSettingsPage", () => {
     const button = (id: string) => document.getElementById(`preview-collection-${id}-button`) as HTMLButtonElement;
     fireEvent.click(button("c1"));
     expect(button("c1").getAttribute("aria-busy")).toBe("true");
-    expect(button("c2").disabled).toBe(false);
+    expect(isDisabled(button("c2"))).toBe(false);
   });
 
   it("opens the preview of the row asked for last, and ignores the one still loading before it", async () => {
@@ -399,7 +400,7 @@ describe("ProjectSettingsPage", () => {
 
   it("removes a collaborator after confirming, naming their credentials, and says why others can't be", async () => {
     const { onRemoveCollaborator } = renderPage({}, "#collaboration");
-    expect((document.getElementById("remove_project_user_pu-me_button") as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(document.getElementById("remove_project_user_pu-me_button"))).toBe(true);
     fireEvent.click(document.getElementById("remove_project_user_pu-esther_button")!);
     expect(dialog().textContent).toContain("their owned credential DHIS2 play will be removed from it");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Confirm" }));
@@ -477,7 +478,7 @@ describe("ProjectSettingsPage", () => {
   it("links a finished export, and holds back one still running", () => {
     renderPage({}, "#history-exports");
     expect(document.getElementById("download-export-file-f1-button")!.getAttribute("href")).toBe("/project_files/f1/download");
-    expect((document.getElementById("download-export-file-f2-button") as HTMLButtonElement).disabled).toBe(true);
+    expect(isDisabled(document.getElementById("download-export-file-f2-button"))).toBe(true);
   });
 
   it("shows the project's credentials with their owner, and its keychain credentials", () => {
@@ -539,7 +540,7 @@ describe("ProjectSettingsPage", () => {
   });
 
   describe("without permission", () => {
-    const off = (button: string) => (screen.getByRole("button", { name: button }) as HTMLButtonElement).disabled;
+    const off = (button: string) => isDisabled(screen.getByRole("button", { name: button }));
 
     it("can't create from the empty tables either", () => {
       renderPage(
@@ -580,7 +581,7 @@ describe("ProjectSettingsPage", () => {
       expect(off("Create collection")).toBe(true);
       expect((document.getElementById("edit-collection-c1-button") as HTMLButtonElement).disabled).toBe(true);
       expect((document.getElementById("delete-collection-c1-button") as HTMLButtonElement).disabled).toBe(true);
-      expect((document.getElementById("preview-collection-c1-button") as HTMLButtonElement).disabled).toBe(false);
+      expect(isDisabled((document.getElementById("preview-collection-c1-button") as HTMLButtonElement))).toBe(false);
     });
 
     it("can't add, view or delete webhook auth methods", () => {
@@ -594,14 +595,14 @@ describe("ProjectSettingsPage", () => {
     it("can't add collaborators, and says why", () => {
       renderPage({ collaboration: { ...data().collaboration, canAddProjectUser: false } }, "#collaboration");
       const add = screen.getByRole("button", { name: "Add Collaborator(s)" }) as HTMLButtonElement;
-      expect(add.disabled).toBe(true);
+      expect(isDisabled(add)).toBe(true);
       expect(add.getAttribute("aria-description")).toBe("You are not authorized to perform this action");
     });
 
     it("can't add collaborators past the plan's limit, and says so", () => {
       renderPage({ collaboration: { ...data().collaboration, addBlockedReason: "You have reached your collaborator limit." } }, "#collaboration");
       const add = screen.getByRole("button", { name: "Add Collaborator(s)" }) as HTMLButtonElement;
-      expect(add.disabled).toBe(true);
+      expect(isDisabled(add)).toBe(true);
       expect(add.getAttribute("aria-description")).toBe("You have reached your collaborator limit.");
     });
 
@@ -631,7 +632,7 @@ describe("ProjectSettingsPage", () => {
     it("can't switch MFA without edit rights, even when the plan allows it", () => {
       renderPage({ security: { requiresMfa: false, canEditProject: false, canRequireMfa: true } }, "#security");
       const mfa = document.getElementById("toggle-mfa-switch") as HTMLButtonElement;
-      expect(mfa.disabled).toBe(true);
+      expect(isDisabled(mfa)).toBe(true);
       expect(mfa.getAttribute("aria-description")).toBe("You do not have permission to perform this action");
     });
   });

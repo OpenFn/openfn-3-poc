@@ -6,6 +6,10 @@
 /* The named colours (text-muted, bg-surface, border-subtle…) and info. */
 @import "./theme/tokens.css";
 
+/* `disabled:` also styles a control that is disabled but keeps focus (`aria-disabled`): a
+   pending Button, or one whose tooltip says why it's disabled. */
+@custom-variant disabled (&:is(:disabled, [aria-disabled="true"]));
+
 /* Semantic palette names from Lightning (assets/css/app.css): primary is
    indigo, plus success / danger / warning (info is in theme/tokens.css).
    Neutrals are named in theme/tokens.css. */
