@@ -83,3 +83,13 @@ goes back to Lightning's way.
 - **A modal's title has a normal line height.** Lightning squeezes it to
   20px (`modal.ex:109`); the replica uses `Heading size="lg"` as it is, so
   the title lines up with the close button.
+
+## Colour
+
+- **Muted, faint and link text are a shade darker.** Lightning uses
+  gray-500 for muted text, gray-400 for faint and primary-400 for links;
+  the replica uses gray-600, gray-500 and primary-600, so text meets WCAG AA
+  contrast on white and on the grey page (`npm run test:stories` checks it).
+- **The release version under the sidebar logo is full strength.** Lightning
+  fades it to half (`opacity-50`), which falls below AA contrast on the
+  sidebar.
