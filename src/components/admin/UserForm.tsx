@@ -1,11 +1,11 @@
 import type { AdminUserRow, UserFormValues } from "../../types/admin";
 import type { UserRole } from "../../types/users";
 import { userRoleOptions } from "../../constants";
-import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
+import Form from "../primitives/Form";
 import { Checkbox, PasswordInput, Select, TextInput } from "../primitives/Inputs";
 import Toggle from "../primitives/Toggle";
 
@@ -49,7 +49,21 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
 
   return (
     <div id={`user-${user?.id ?? "new"}`}>
-      <form id="user-form" className="w-1/2 space-y-2" onSubmit={form.submit(onSave)} aria-busy={form.pending || undefined}>
+      <Form
+        id="user-form"
+        className="w-1/2"
+        {...form.formProps(onSave)}
+        actions={
+          <>
+            <Button variant="secondary" to={cancelTo}>
+              Cancel
+            </Button>
+            <Button id="save-user" type="submit">
+              Save
+            </Button>
+          </>
+        }
+      >
         <TextInput id="user_first_name" name="first_name" label="First Name" {...form.fieldProps("firstName")} />
         <TextInput id="user_last_name" name="last_name" label="Last Name" {...form.fieldProps("lastName")} />
         <TextInput id="user_email" name="email" label="Email" {...form.fieldProps("email")} />
@@ -84,22 +98,7 @@ export default function UserForm({ user, onSave, cancelTo = "/settings/users" }:
             />
           </>
         )}
-
-        {form.error && (
-          <Alert tone="danger" className="mt-4">
-            {errorMessage(form.error)}
-          </Alert>
-        )}
-
-        <div className="flex gap-1">
-          <Button id="save-user" type="submit" pending={form.pending}>
-            Save
-          </Button>
-          <Button variant="secondary" to={cancelTo}>
-            Cancel
-          </Button>
-        </div>
-      </form>
+      </Form>
     </div>
   );
 }

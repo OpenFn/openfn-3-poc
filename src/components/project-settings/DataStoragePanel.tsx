@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
+import Form from "../primitives/Form";
 import Heading from "../primitives/Heading";
 import { Radio, Select } from "../primitives/Inputs";
 import SectionHeader from "../primitives/SectionHeader";
@@ -11,7 +12,6 @@ import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import type { DataStorageSettings, DataStorageValues } from "../../types/project-settings";
 import type { RetentionPolicy } from "../../types/projects";
 import { cn } from "../../utils/cn";
-import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 
 interface Props {
@@ -79,10 +79,19 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
       />
       {sandbox && <SandboxSettingsBanner scope="local" />}
       <Card>
-        <form
+        <Form
           id="retention-settings-form"
-          className="space-y-6"
-          onSubmit={form.submit((v) =>
+          actions={
+            <>
+              <Button variant="secondary" disabled={!canEdit} onClick={() => form.reset()}>
+                Cancel
+              </Button>
+              <Button id="input-output-retention-period-submit-btn" type="submit" disabled={!canEdit}>
+                Save
+              </Button>
+            </>
+          }
+          {...form.formProps((v) =>
             onSave({
               historyRetentionPeriod: toPeriod(v.historyRetentionPeriod),
               dataclipRetentionPeriod: toPeriod(v.dataclipRetentionPeriod),
@@ -169,16 +178,7 @@ export default function DataStoragePanel({ dataStorage, sandbox, onSave }: Props
               {...form.fieldProps("dataclipRetentionPeriod")}
             />
           </Setting>
-          {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
-          <div className="flex gap-1">
-            <Button variant="secondary" disabled={!canEdit} onClick={() => form.reset()}>
-              Cancel
-            </Button>
-            <Button id="input-output-retention-period-submit-btn" type="submit" disabled={!canEdit} pending={form.pending}>
-              Save
-            </Button>
-          </div>
-        </form>
+        </Form>
       </Card>
     </>
   );

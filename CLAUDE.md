@@ -29,7 +29,8 @@ before building or reviewing a component.
 - `npm run build` — typecheck and build
 - `npm test` — run the unit tests (Vitest)
 - `npm run lint` — run ESLint. CI runs it, and warnings fail too. The
-  colour, arbitrary-value and raw-control rules below are lint errors. An
+  colour, arbitrary-value and raw-control rules below are lint errors, and so
+  is any deprecated API (`FormEvent`, `navigator.platform`). An
   exception is disabled on its line with a reason after ` -- `; a reason
   starting `debt:` is one to fix (`grep -rn "debt:" src`).
 - `npm run storybook` — start Storybook on port 6006
@@ -148,6 +149,7 @@ everywhere. Reach for these first:
 |---|---|
 | An action | `Button` (`size="xs" variant="secondary"` for table row actions) |
 | A form's values, dirty state and errors | `useForm` from `utils/useForm.ts` (never disable submit for invalid values) |
+| A form on a page: its fields, its error, its buttons (Save on the right) | `Form`, with `{...form.formProps(save)}` |
 | A request in flight | `useAction` from `utils/useAction.ts` (`useActions` for one per row); `Spinner` for anything loading |
 | A switch or select saved on every change | `useChosenValue` from `utils/useChosenValue.ts` |
 | An icon-only action | `IconButton` (always give it a `label`) |

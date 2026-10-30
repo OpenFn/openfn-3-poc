@@ -1,6 +1,7 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactElement, ReactNode, Ref } from "react";
+import { useContext, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type MouseEvent, type ReactElement, type ReactNode, type Ref } from "react";
 import { Link } from "../../routing/router";
 import { cn } from "../../utils/cn";
+import { FormPendingContext } from "./formStatus";
 import Spinner from "./Spinner";
 import Tooltip from "./Tooltip";
 import type { Tone } from "./tone";
@@ -61,7 +62,7 @@ interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * The action is in flight: the button shows a spinner before its label and
    * ignores presses, but keeps focus (`aria-disabled`, not `disabled`). Pass `useAction().pending` or let `FormModal` /
-   * `ConfirmModal` manage it.
+   * `ConfirmModal` manage it. A submit button inside a `Form` takes the form's `pending` when given none.
    */
   pending?: boolean;
   /** A hero icon class (e.g. `hero-plus`), sized to the button, or an icon element of your own. The spinner takes its place while `pending`. */
@@ -94,7 +95,7 @@ export default function Button({
   to,
   href,
   tooltip,
-  pending = false,
+  pending: pendingProp,
   disabled: disabledProp = false,
   className,
   type = "button",
@@ -109,6 +110,8 @@ export default function Button({
   onClick,
   ...rest
 }: Props) {
+  const formPending = useContext(FormPendingContext);
+  const pending = pendingProp ?? (type === "submit" && formPending);
   const disabled = disabledProp || pending;
   const classes = buttonClasses(variant === "plain" && tone ? "plain-danger" : (tone ?? variant), size, className);
   const shared = {

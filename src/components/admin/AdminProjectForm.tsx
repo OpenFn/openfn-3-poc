@@ -6,8 +6,8 @@ import { cn } from "../../utils/cn";
 import { RequestError, errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import SearchInput from "../primitives/SearchInput";
-import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
+import Form from "../primitives/Form";
 import Heading from "../primitives/Heading";
 import { Radio } from "../primitives/Inputs";
 import NameField from "../primitives/NameField";
@@ -85,9 +85,20 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
 
   return (
     <div id={`project-form-${project?.id ?? "new"}`}>
-      <form
+      <Form
         id="project-form"
-        aria-busy={save.pending || undefined}
+        pending={save.pending}
+        error={ownerError ?? otherError}
+        actions={
+          <>
+            <Button variant="secondary" to={cancelTo}>
+              Cancel
+            </Button>
+            <Button type="submit">
+              Save
+            </Button>
+          </>
+        }
         onSubmit={(e) => {
           e.preventDefault();
           setTouched(true);
@@ -111,8 +122,6 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
           Manage project users
         </Heading>
 
-        {ownerError && <Alert tone="danger">{ownerError}</Alert>}
-        {otherError && <Alert tone="danger">{otherError}</Alert>}
 
         <SearchInput value={sort.filter} onChange={sort.setFilter} placeholder="Filter users..." className="mb-4 max-w-sm" />
 
@@ -154,15 +163,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelTo = "/
             </Tr>
           ))}
         </Table>
-        <div className="mt-4 flex gap-1">
-          <Button variant="secondary" to={cancelTo}>
-            Cancel
-          </Button>
-          <Button type="submit" pending={save.pending}>
-            Save
-          </Button>
-        </div>
-      </form>
+      </Form>
     </div>
   );
 }

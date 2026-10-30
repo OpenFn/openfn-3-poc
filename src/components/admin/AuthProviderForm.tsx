@@ -3,6 +3,7 @@ import { authRedirectUri } from "../../utils/urls";
 import type { AuthProvider, AuthProviderValues } from "../../types/admin";
 import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
+import Form from "../primitives/Form";
 import Card from "../primitives/Card";
 import Heading from "../primitives/Heading";
 import { Checkbox, PasswordInput, TextInput } from "../primitives/Inputs";
@@ -118,124 +119,125 @@ export default function AuthProviderForm({ provider, onSave, onTest, onRemove, i
 
   return (
     <div id={`auth-provider-form-${provider.id ?? "new"}`}>
-      <form
-        id="auth-provider-form"
-        aria-busy={save.pending || undefined}
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSubmitted(true);
-          if (valid) void save.run();
-        }}
-      >
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <TextInput
-              id="auth_provider_name"
-              name="name"
-              label="Name"
-              hint="The name of the provider, used in the redirect URI."
-              value={values.name}
-              errors={[...required(values.name), ...nameError, ...(saveErrors["name"] ?? [])]}
-              onChange={(e) => set("name", e.target.value)}
-            />
-            <TextInput
-              id="auth_provider_discovery_url"
-              name="discovery_url"
-              label="Discovery URL"
-              hint={
-                <>
-                  The URL to the <code>.well-known</code> endpoint.
-                </>
-              }
-              value={values.discoveryUrl}
-              errors={[...required(values.discoveryUrl), ...urlError, ...(saveErrors["discoveryUrl"] ?? []), ...(testError ? [testError] : [])]}
-              onChange={(e) => set("discoveryUrl", e.target.value)}
-            />
-            <TextInput
-              id="auth_provider_client_id"
-              name="client_id"
-              label="Client ID"
-              value={values.clientId}
-              errors={[...required(values.clientId), ...(saveErrors["clientId"] ?? [])]}
-              onChange={(e) => set("clientId", e.target.value)}
-            />
-            <PasswordInput
-              id="client_secret"
-              name="client_secret"
-              label="Client Secret"
-              autoComplete="off"
-              placeholder={provider.hasClientSecret ? "Leave blank to keep the current secret" : undefined}
-              value={values.clientSecret}
-              errors={[...required(values.clientSecret, provider.hasClientSecret), ...(saveErrors["clientSecret"] ?? [])]}
-              onChange={(e) => set("clientSecret", e.target.value)}
-            />
-            <TextInput
-              id="auth_provider_redirect_host"
-              name="redirect_host"
-              label="Redirect Host"
-              value={values.redirectHost}
-              errors={[...required(values.redirectHost), ...(saveErrors["redirectHost"] ?? [])]}
-              onChange={(e) => set("redirectHost", e.target.value)}
-            />
-            <Checkbox
-              id="auth_provider_allow_unverified_email"
-              name="allow_unverified_email"
-              label="Trust unverified emails from this provider"
-              hint={
-                <>
-                  Only enable for a provider you trust that doesn't assert <code>email_verified</code>. Off by default.
-                </>
-              }
-              checked={values.allowUnverifiedEmail}
-              onChange={(e) => set("allowUnverifiedEmail", e.target.checked)}
-            />
-            {generalError && <Alert tone="danger">{generalError}</Alert>}
-            <div className="flex justify-between sm:border-t sm:border-subtle sm:pt-4">
-              <Button type="submit" pending={save.pending}>
+      {/* The fields are the form; the help and Remove sit beside it. */}
+      <div className="grid grid-cols-2 gap-6">
+        <Form
+          id="auth-provider-form"
+          error={generalError}
+          pending={save.pending}
+          actions={
+            <>
+              {valid && <TestButton state={testState} pending={test.pending} onTest={() => void test.run()} />}
+              <Button type="submit">
                 Save
               </Button>
-              {valid && <TestButton state={testState} pending={test.pending} onTest={() => void test.run()} />}
-            </div>
+            </>
+          }
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitted(true);
+            if (valid) void save.run();
+          }}
+        >
+          <TextInput
+            id="auth_provider_name"
+            name="name"
+            label="Name"
+            hint="The name of the provider, used in the redirect URI."
+            value={values.name}
+            errors={[...required(values.name), ...nameError, ...(saveErrors["name"] ?? [])]}
+            onChange={(e) => set("name", e.target.value)}
+          />
+          <TextInput
+            id="auth_provider_discovery_url"
+            name="discovery_url"
+            label="Discovery URL"
+            hint={
+              <>
+                The URL to the <code>.well-known</code> endpoint.
+              </>
+            }
+            value={values.discoveryUrl}
+            errors={[...required(values.discoveryUrl), ...urlError, ...(saveErrors["discoveryUrl"] ?? []), ...(testError ? [testError] : [])]}
+            onChange={(e) => set("discoveryUrl", e.target.value)}
+          />
+          <TextInput
+            id="auth_provider_client_id"
+            name="client_id"
+            label="Client ID"
+            value={values.clientId}
+            errors={[...required(values.clientId), ...(saveErrors["clientId"] ?? [])]}
+            onChange={(e) => set("clientId", e.target.value)}
+          />
+          <PasswordInput
+            id="client_secret"
+            name="client_secret"
+            label="Client Secret"
+            autoComplete="off"
+            placeholder={provider.hasClientSecret ? "Leave blank to keep the current secret" : undefined}
+            value={values.clientSecret}
+            errors={[...required(values.clientSecret, provider.hasClientSecret), ...(saveErrors["clientSecret"] ?? [])]}
+            onChange={(e) => set("clientSecret", e.target.value)}
+          />
+          <TextInput
+            id="auth_provider_redirect_host"
+            name="redirect_host"
+            label="Redirect Host"
+            value={values.redirectHost}
+            errors={[...required(values.redirectHost), ...(saveErrors["redirectHost"] ?? [])]}
+            onChange={(e) => set("redirectHost", e.target.value)}
+          />
+          <Checkbox
+            id="auth_provider_allow_unverified_email"
+            name="allow_unverified_email"
+            label="Trust unverified emails from this provider"
+            hint={
+              <>
+                Only enable for a provider you trust that doesn't assert <code>email_verified</code>. Off by default.
+              </>
+            }
+            checked={values.allowUnverifiedEmail}
+            onChange={(e) => set("allowUnverifiedEmail", e.target.checked)}
+          />
+        </Form>
+        <Text as="div" className="flex flex-col gap-4 text-body">
+          <p>
+            Allows users with existing accounts to login with an external OpenID Connect account that matches their
+            email address.
+          </p>
+          <p>
+            In order to make things easier we rely on the providers well-known file to determine all the different
+            endpoints for authentication and retrieving the user information. Documentation on Google's OpenID
+            Connect support and it's well-known file see{" "}
+            {docsLink("https://developers.google.com/identity/protocols/oauth2/openid-connect#discovery")}
+          </p>
+          <div className="space-y-2 sm:border-t sm:border-subtle sm:pt-4">
+            <Heading size="sm">Redirect URI</Heading>
+            <Card
+              muted
+              padding="sm"
+              id="redirect-uri-preview"
+              className={cn("font-mono", !valid && "cursor-not-allowed text-faint")}
+            >
+              {valid ? authRedirectUri(values) : <>{values.redirectHost}&hellip;</>}
+            </Card>
+            <p>
+              Ensure your provider has this redirect URI set. For more information see{" "}
+              {docsLink("https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi")}
+            </p>
           </div>
-          <Text as="div" className="flex flex-col gap-4 text-body">
-            <p>
-              Allows users with existing accounts to login with an external OpenID Connect account that matches their
-              email address.
-            </p>
-            <p>
-              In order to make things easier we rely on the providers well-known file to determine all the different
-              endpoints for authentication and retrieving the user information. Documentation on Google's OpenID
-              Connect support and it's well-known file see{" "}
-              {docsLink("https://developers.google.com/identity/protocols/oauth2/openid-connect#discovery")}
-            </p>
-            <div className="space-y-2 sm:border-t sm:border-subtle sm:pt-4">
-              <Heading size="sm">Redirect URI</Heading>
-              <Card
-                muted
-                padding="sm"
-                id="redirect-uri-preview"
-                className={cn("font-mono", !valid && "cursor-not-allowed text-faint")}
-              >
-                {valid ? authRedirectUri(values) : <>{values.redirectHost}&hellip;</>}
-              </Card>
-              <p>
-                Ensure your provider has this redirect URI set. For more information see{" "}
-                {docsLink("https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi")}
-              </p>
+          {provider.id !== null && (
+            <div className="mt-auto space-y-2">
+              <Heading size="sm">Remove</Heading>
+              <p>Deletes the Authentication Configuration, and disables external authentication for Lightning.</p>
+              {remove.error && <Alert tone="danger">{errorMessage(remove.error)}</Alert>}
+              <Button tone="danger" onClick={() => void remove.run()} pending={remove.pending} icon="hero-trash">
+                Remove
+              </Button>
             </div>
-            {provider.id !== null && (
-              <div className="mt-auto space-y-2">
-                <Heading size="sm">Remove</Heading>
-                <p>Deletes the Authentication Configuration, and disables external authentication for Lightning.</p>
-                {remove.error && <Alert tone="danger">{errorMessage(remove.error)}</Alert>}
-                <Button tone="danger" onClick={() => void remove.run()} pending={remove.pending} icon="hero-trash">
-                  Remove
-                </Button>
-              </div>
-            )}
-          </Text>
-        </div>
-      </form>
+          )}
+        </Text>
+      </div>
     </div>
   );
 }

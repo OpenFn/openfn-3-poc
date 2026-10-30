@@ -1,11 +1,10 @@
-import type { FormEvent, ReactNode } from "react";
-import Alert from "../primitives/Alert";
+import type { SubmitEvent, ReactNode } from "react";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
+import Form from "../primitives/Form";
 import { PasswordInput, Select, TextInput } from "../primitives/Inputs";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "../../types/profile";
 import { contactPreferenceHint, contactPreferenceOptions } from "../../constants";
-import { errorMessage } from "../../utils/errors";
 import { useForm } from "../../utils/useForm";
 import { blank, isValidEmail } from "../../utils/validate";
 
@@ -20,24 +19,24 @@ function FormCard({
   title,
   onSubmit,
   error,
+  pending,
   children,
   button,
 }: {
   id: string;
   title: string;
-  onSubmit: (e: FormEvent) => void;
+  onSubmit: (e: SubmitEvent) => void;
   error: Error | null;
+  pending: boolean;
   children: ReactNode;
   button: ReactNode;
 }) {
   return (
-    <form id={id} onSubmit={onSubmit} data-annotation="profile-account">
-      <Card padding="lg" title={title} className="space-y-6">
+    <Card padding="lg" title={title} annotation="profile-account">
+      <Form id={id} onSubmit={onSubmit} error={error} pending={pending} actions={button}>
         {children}
-        {error && <Alert tone="danger">{errorMessage(error)}</Alert>}
-        {button}
-      </Card>
-    </form>
+      </Form>
+    </Card>
   );
 }
 
@@ -50,10 +49,9 @@ export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onS
     <FormCard
       id="basic-info-form"
       title="Change basic information"
-      onSubmit={form.submit(onSave)}
-      error={form.error}
+      {...form.formProps(onSave)}
       button={
-        <Button type="submit" disabled={!form.dirty} pending={form.pending}>
+        <Button type="submit" disabled={!form.dirty}>
           Save
         </Button>
       }
@@ -84,10 +82,9 @@ export function ChangeEmailForm({ onSubmit }: { onSubmit: (values: ChangeEmailVa
     <FormCard
       id="email-form"
       title="Change email"
-      onSubmit={form.submit(onSubmit)}
-      error={form.error}
+      {...form.formProps(onSubmit)}
       button={
-        <Button type="submit" pending={form.pending}>
+        <Button type="submit">
           Update email
         </Button>
       }
@@ -112,10 +109,9 @@ export function ChangePasswordForm({ onSubmit }: { onSubmit: (values: ChangePass
     <FormCard
       id="password-form"
       title="Change password"
-      onSubmit={form.submit(onSubmit)}
-      error={form.error}
+      {...form.formProps(onSubmit)}
       button={
-        <Button type="submit" pending={form.pending}>
+        <Button type="submit">
           Update password
         </Button>
       }

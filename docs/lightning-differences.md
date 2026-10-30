@@ -117,6 +117,18 @@ goes back to Lightning's way.
   explanation in an info tooltip. The replica shows a shorter version under
   the label, so people see what "Critical" means before they choose.
 
+- **A form's buttons sit on the right, the main action last.** Lightning's
+  settings and admin forms put Save on the left, before Cancel (profile,
+  project setup, data storage, MFA, the admin user, project and auth
+  provider forms, first setup); its modals put it on the right. The replica
+  uses the modal's order everywhere: Cancel, then Save. The auth provider's
+  Test sits before Save.
+- **No browser validation bubbles.** Lightning's forms let the browser show
+  "Please fill in this field" for a required field. The replica turns that
+  off, so only the field's own error shows, in the same red as every other.
+- **After a refused Save, focus moves to the first field with an error.**
+  Lightning leaves focus on the button.
+
 ## File uploads
 
 - **One drop zone for both uploads.** Lightning styles the manual run upload

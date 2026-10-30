@@ -7,8 +7,8 @@ import TextLink from "../primitives/TextLink";
 import Toggle from "../primitives/Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
 import Card from "../primitives/Card";
+import Form from "../primitives/Form";
 import type { ParentProjectRef, ProjectIdentityValues, SetupSettings } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
 import { urlSafeName } from "../../utils/format";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
@@ -63,7 +63,15 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
           )
         }
       >
-        <form id="project-settings-form" className="space-y-4" onSubmit={identity.submit(onSaveIdentity)}>
+        <Form
+          id="project-settings-form"
+          {...identity.formProps(onSaveIdentity)}
+          actions={
+            <Button id="project-identity-submit-btn" type="submit" disabled={!canEditProject}>
+              Save
+            </Button>
+          }
+        >
           <NameField
             id="project-settings-form_raw_name"
             label="Project name"
@@ -87,16 +95,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
             maxLength={240}
             {...identity.fieldProps("description")}
           />
-          {identity.error && <Alert tone="danger">{errorMessage(identity.error)}</Alert>}
-          <Button
-            id="project-identity-submit-btn"
-            type="submit"
-            disabled={!canEditProject}
-            pending={identity.pending}
-          >
-            Save
-          </Button>
-        </form>
+        </Form>
       </Card>
 
       <Card
@@ -112,10 +111,18 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
           </>
         }
       >
-        <form
+        <Form
           id="project-concurrency-form"
-          className="space-y-4"
-          onSubmit={concurrency.submit(({ serial }) => onSaveConcurrency(serial ? 1 : null))}
+          {...concurrency.formProps(({ serial }) => onSaveConcurrency(serial ? 1 : null))}
+          actions={
+            <Button
+              id="project-concurrency-submit-btn"
+              type="submit"
+              disabled={!(concurrency.dirty && canEditProject)}
+            >
+              Save
+            </Button>
+          }
         >
           <Toggle
             id="project-concurrency-switch"
@@ -130,16 +137,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
               <p>Disabling parallel run execution may significantly reduce the overall throughput of your project.</p>
             </Alert>
           )}
-          {concurrency.error && <Alert tone="danger">{errorMessage(concurrency.error)}</Alert>}
-          <Button
-            id="project-concurrency-submit-btn"
-            type="submit"
-            disabled={!(concurrency.dirty && canEditProject)}
-            pending={concurrency.pending}
-          >
-            Save
-          </Button>
-        </form>
+        </Form>
       </Card>
 
       <Card

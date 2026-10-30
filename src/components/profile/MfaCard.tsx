@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Alert from "../primitives/Alert";
 import Button from "../primitives/Button";
 import ConfirmModal from "../primitives/ConfirmModal";
 import Heading from "../primitives/Heading";
@@ -9,8 +8,8 @@ import SectionHeader from "../primitives/SectionHeader";
 import TextLink from "../primitives/TextLink";
 import Toggle from "../primitives/Toggle";
 import Card from "../primitives/Card";
+import Form from "../primitives/Form";
 import type { MfaSettings, MfaSetupResult } from "../../types/profile";
-import { errorMessage } from "../../utils/errors";
 import { useAction } from "../../utils/useAction";
 import { useForm } from "../../utils/useForm";
 import { blank } from "../../utils/validate";
@@ -105,10 +104,20 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                 Unable to scan? You can use <TextLink onClick={() => setShowSecret(true)}>this secret key</TextLink> to
                 manually configure your authenticator app.
               </p>
-              <form
+              <Form
                 id="set_totp_form"
-                className="max-w-md space-y-4"
-                onSubmit={form.submit(async ({ code }) => {
+                className="max-w-md"
+                actions={
+                  <>
+                    <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">
+                      Save
+                    </Button>
+                  </>
+                }
+                {...form.formProps(async ({ code }) => {
                   await onConfirm(code);
                   setConfirmed(true);
                   setSetup(null);
@@ -120,16 +129,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                   placeholder="XXXXXX"
                   {...form.fieldProps("code")}
                 />
-                {form.error && <Alert tone="danger">{errorMessage(form.error)}</Alert>}
-                <div className="flex gap-1">
-                  <Button variant="secondary" disabled={form.pending} onClick={() => setSetup(null)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" pending={form.pending}>
-                    Save
-                  </Button>
-                </div>
-              </form>
+              </Form>
               <Modal open={showSecret} onClose={() => setShowSecret(false)} title="Your two-factor secret" size="sm">
                 <Text className="text-muted">
                   <code>{setup.secret}</code>
