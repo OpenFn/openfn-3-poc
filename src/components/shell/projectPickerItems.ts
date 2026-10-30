@@ -1,6 +1,5 @@
-import type { PickerItem } from "./Picker";
+import type { PickerItem } from "../primitives/Picker";
 import type { CurrentProject } from "../../types/projects";
-import { matchesQuery } from "../../utils/search";
 
 /** A project in the picker's tree. */
 type TreeProject = CurrentProject & { name: string };
@@ -61,27 +60,4 @@ export function projectLabel(project: TreeProject, all: TreeProject[]): string {
     p = all.find((x) => x.id === p!.parentId);
   }
   return names.join("/");
-}
-
-/**
- * The items whose `searchLabel` contains `term`, plus the ancestors that
- * lead to each match so the indentation still reads (Lightning's picker
- * filter). `items` must be in pre-order, as `buildProjectPickerItems` gives.
- */
-export function filterPickerItems(items: PickerItem[], term: string): PickerItem[] {
-  if (!term.trim()) return items;
-  const matches = items.map((i) => matchesQuery(term, i.searchLabel));
-  const include = [...matches];
-  items.forEach((item, i) => {
-    if (!matches[i]) return;
-    // The parent is the most recent item with a strictly smaller depth.
-    let depth = item.depth;
-    for (let j = i - 1; j >= 0 && depth > 0; j--) {
-      if (items[j]!.depth < depth) {
-        include[j] = true;
-        depth = items[j]!.depth;
-      }
-    }
-  });
-  return items.filter((_, i) => include[i]);
 }

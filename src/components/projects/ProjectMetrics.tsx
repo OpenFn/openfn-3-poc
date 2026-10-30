@@ -1,5 +1,5 @@
 import type { ProjectMetrics as Metrics } from "../../types/workflows";
-import MetricCard from "./MetricCard";
+import MetricCard from "../primitives/MetricCard";
 import TextLink from "../primitives/TextLink";
 
 /**

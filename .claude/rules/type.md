@@ -58,5 +58,5 @@ found 44 combinations of size, weight and spacing.
 ESLint (`typeRules` in `eslint.config.js`) bans `text-xs` to `text-9xl`,
 `leading-*` and `tracking-*` in `src/pages/` and every folder of
 `src/components/` but `primitives/`. A control that owns its type, like
-`FilterChip`, disables the rule on its line with the reason; a line still to
+`PickerButton`, disables the rule on its line with the reason; a line still to
 move says `debt:`.

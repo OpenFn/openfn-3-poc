@@ -163,14 +163,17 @@ everywhere. Reach for these first:
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
 | A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
+| A command palette that jumps to a page (Cmd/Ctrl+P) | `Picker` |
 | Show / hide a section | `Disclosure` |
 | Switching views | `Tabs` |
 | Picking one value from a few | `SegmentedControl` |
 | A set of radios or checkboxes under one label | `Field group` |
 | Picking one of a few options drawn as cards | `RadioCards` |
 | Searching or filtering a list | `SearchInput` |
+| A filter above a list, as a chip that opens its options | `FilterChip` with `FilterMenu`, `FilterCheckboxes`, `FilterDateRange` |
 | A status chip, badge or tag | `Pill` |
 | Any bordered panel, tile or card | `Card` |
+| A big number on a card | `MetricCard` |
 | A heading inside a page | `Heading` |
 | Any other text (copy, notes, labels, ids) | `Text`, with a `variant` from `.claude/rules/type.md` |
 | Labelled values | `DetailList` + `DetailItem` |
@@ -180,6 +183,7 @@ everywhere. Reach for these first:
 | An on/off switch | `Toggle` |
 | An inline link | `TextLink` |
 | Read-only code, a log or a dataclip | `CodeViewer` |
+| Rendered markdown | `Markdown` |
 | A file upload or drop area | `FileDropZone` |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
 | Sorting and filtering a table in the browser | `useTableSort` from `utils/useTableSort.ts` |

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
-import Modal from "../primitives/Modal";
-import SearchList from "../primitives/SearchList";
-import Text from "../primitives/Text";
-import { filterPickerItems } from "./projectPickerItems";
+import Modal from "./Modal";
+import SearchList from "./SearchList";
+import Text from "./Text";
+import { matchesQuery } from "../../utils/search";
 
 /**
  * Generic command-palette picker. Content-agnostic: the server ships a
@@ -63,6 +63,29 @@ interface PickerProps {
   openEvent: string;
   /** Start open (stories and screenshots). */
   defaultOpen?: boolean;
+}
+
+/**
+ * The items whose `searchLabel` contains `term`, plus the ancestors that
+ * lead to each match so the indentation still reads (Lightning's picker
+ * filter). `items` must be in pre-order, as a depth-first walk of a tree gives.
+ */
+function filterPickerItems(items: PickerItem[], term: string): PickerItem[] {
+  if (!term.trim()) return items;
+  const matches = items.map((i) => matchesQuery(term, i.searchLabel));
+  const include = [...matches];
+  items.forEach((item, i) => {
+    if (!matches[i]) return;
+    // The parent is the most recent item with a strictly smaller depth.
+    let depth = item.depth;
+    for (let j = i - 1; j >= 0 && depth > 0; j--) {
+      if (items[j]!.depth < depth) {
+        include[j] = true;
+        depth = items[j]!.depth;
+      }
+    }
+  });
+  return items.filter((_, i) => include[i]);
 }
 
 /** The "View all" row, always first. */

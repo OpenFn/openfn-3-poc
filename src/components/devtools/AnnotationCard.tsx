@@ -8,7 +8,7 @@ import Text from "../primitives/Text";
 import type { Tone } from "../primitives/tone";
 import { EmptyState } from "../primitives/Table";
 import TextLink from "../primitives/TextLink";
-import Markdown from "./Markdown";
+import Markdown from "../primitives/Markdown";
 
 interface Props {
   id: string;

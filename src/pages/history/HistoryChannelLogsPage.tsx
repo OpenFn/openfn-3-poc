@@ -3,7 +3,7 @@ import HistoryTabs from "../../components/history/HistoryTabs";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
 import ChannelRequestsTable from "../../components/history/ChannelRequestsTable";
-import FilterChip, { FilterMenu } from "../../components/history/FilterChip";
+import FilterChip, { FilterMenu } from "../../components/primitives/FilterChip";
 import { useUrlParams } from "../../utils/useUrlParams";
 import type { ChannelLogRow } from "../../types/channels";
 import type { PageInfo } from "../../types/lists";

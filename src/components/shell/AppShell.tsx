@@ -6,7 +6,7 @@ import { findProject, projects } from "../../mock-data/projects";
 // eslint-disable-next-line no-restricted-imports -- wiring: the shell reads the signed-in user, their permissions and instance info for the header and sidebar.
 import { useCurrentUser, useInstanceInfo, usePermissions } from "../../session/session";
 import Sidebar, { type SidebarMenu } from "./Sidebar";
-import Picker from "./Picker";
+import Picker from "../primitives/Picker";
 import { buildProjectPickerItems } from "./projectPickerItems";
 
 /**

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import MetricCard from "./MetricCard";
-import TextLink from "../primitives/TextLink";
+import TextLink from "./TextLink";
 
 const meta: Meta<typeof MetricCard> = {
-  title: "Projects/MetricCard",
+  title: "Primitives/MetricCard",
   component: MetricCard,
   decorators: [(Story) => <div className="w-72"><Story /></div>],
   args: { title: "Work Orders", value: 1314, suffix: "2 pending" },

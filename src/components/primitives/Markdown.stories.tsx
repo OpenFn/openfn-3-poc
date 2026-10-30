@@ -3,7 +3,7 @@ import Markdown from "./Markdown";
 import { withWhitePanel } from "../../stories/decorators";
 
 const meta: Meta<typeof Markdown> = {
-  title: "Devtools/Markdown",
+  title: "Primitives/Markdown",
   component: Markdown,
   args: {
     source:
