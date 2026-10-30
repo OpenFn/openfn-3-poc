@@ -22,4 +22,15 @@ describe("WorkflowDiagram", () => {
       "job-node-job-notify-failed",
     ]);
   });
+
+  it("leaves a selected step's paths grey, as Lightning does", () => {
+    render(
+      <WorkflowDiagram graph={findWorkflowGraph("wf-openhie")!} selection={{ kind: "job", id: "job-send" }} onSelect={() => {}} />
+    );
+    const colour = (id: string) => screen.getByTestId(`edge-label-${id}`).style.color;
+    // The trigger's path doesn't touch the selected step.
+    for (const id of ["edge-openhie-send", "edge-openhie-ok", "edge-openhie-failed"]) {
+      expect(colour(id)).toBe(colour("edge-openhie-root"));
+    }
+  });
 });

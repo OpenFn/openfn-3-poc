@@ -168,7 +168,6 @@ export default function WorkflowDiagram({
         conditionLabel={edge.conditionLabel}
         enabled={trigger ? trigger.enabled : edge.enabled}
         selected={selectedId === edge.id}
-        neighbour={selectedId !== null && (sourceId === selectedId || edge.targetJobId === selectedId)}
         didntRun={isRun && !didRun}
         onClick={pick({ kind: "edge", id: edge.id })}
       />

@@ -28,8 +28,6 @@ export const EDGE_COLOR_DIDNT_RUN = "#dfe0e3";
 // Lightning's hex values), so a theme can recolour the canvas. Use them in
 // `style`, not SVG presentation attributes.
 export const EDGE_COLOR_SELECTED = "var(--ui-diagram-selected)";
-export const EDGE_COLOR_NEIGHBOUR = "var(--ui-diagram-neighbour)";
-export const EDGE_COLOR_NEIGHBOUR_DIDNT_RUN = "var(--ui-diagram-neighbour-faded)";
 export const EDGE_COLOR_SELECTED_DISABLED = "var(--ui-diagram-selected-disabled)";
 // eslint-disable-next-line no-restricted-syntax -- Lightning's error colour (workflow-diagram/styles.ts), kept for parity
 export const ERROR_COLOR = "#ef4444";
@@ -102,20 +100,17 @@ export function conditionGlyph(type: EdgeConditionType): string {
   }
 }
 
-/** styles.ts edgeLabelStyles' primaryColor. */
+/** styles.ts edgeLabelStyles' primaryColor. Lightning's highlight of the selected node's paths is switched off (update-selection.ts), so there is none here. */
 export function edgeColor({
   selected,
-  neighbour,
   enabled,
   didntRun,
 }: {
   selected?: boolean;
-  neighbour?: boolean;
   enabled: boolean;
   didntRun?: boolean;
 }): string {
   if (enabled) {
-    if (neighbour) return didntRun ? EDGE_COLOR_NEIGHBOUR_DIDNT_RUN : EDGE_COLOR_NEIGHBOUR;
     if (selected) return EDGE_COLOR_SELECTED;
     if (didntRun) return EDGE_COLOR_DIDNT_RUN;
     return EDGE_COLOR;

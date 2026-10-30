@@ -2,7 +2,6 @@ import { edgeConditionOptions } from "../../constants";
 import type { EdgeConditionType, Position } from "../../types/workflow-graph";
 import {
   EDGE_COLOR,
-  EDGE_COLOR_NEIGHBOUR,
   EDGE_COLOR_SELECTED,
   bezierPath,
   conditionGlyph,
@@ -18,8 +17,6 @@ interface Props {
   conditionLabel?: string | null;
   enabled?: boolean;
   selected?: boolean;
-  /** Connected to the selected node. */
-  neighbour?: boolean;
   /** While viewing a run: the path wasn't taken. */
   didntRun?: boolean;
   /** Picks it; `keyboard` when picked with Enter or Space. Without one it isn't a button (the read-only preview). */
@@ -40,14 +37,13 @@ export default function DiagramEdge({
   conditionLabel,
   enabled = true,
   selected = false,
-  neighbour = false,
   didntRun = false,
   onClick,
 }: Props) {
   const { sx, sy, tx, ty } = edgeEndpoints(source, target);
   const path = bezierPath(sx, sy, tx, ty);
-  const color = edgeColor({ selected, neighbour, enabled, didntRun });
-  const stroke = selected ? EDGE_COLOR_SELECTED : neighbour ? EDGE_COLOR_NEIGHBOUR : EDGE_COLOR;
+  const color = edgeColor({ selected, enabled, didntRun });
+  const stroke = selected ? EDGE_COLOR_SELECTED : EDGE_COLOR;
   const markerId = `arrow-${id}`;
   const label =
     conditionLabel && conditionLabel.length > 22 ? conditionLabel.slice(0, 22) + "..." : conditionLabel;
