@@ -82,7 +82,7 @@ export default function VolumeBars({
   const totals = SERIES.map((s) => ({ ...s, value: rows.reduce((sum, r) => sum + r[s.key], 0) })).filter(
     ({ key, value }) => key !== "cancelled" || value > 0
   );
-  if (totals.every(({ value }) => value === 0)) return <p className={EMPTY}>{emptyMessage}</p>;
+  if (totals.every(({ value }) => value === 0)) return <Text as="p" className={EMPTY}>{emptyMessage}</Text>;
 
   const max = Math.max(...rows.map((r) => r.success + r.cancelled + r.failed));
   // A tenth of headroom, rounded up to four whole-number steps.
@@ -98,8 +98,7 @@ export default function VolumeBars({
   return (
     <>
       <div className={`${FRAME} flex`} aria-hidden="true">
-        {/* eslint-disable-next-line no-restricted-syntax -- chart axis labels */}
-        <div className="flex w-11 shrink-0 flex-col text-xs text-muted">
+        <Text as="div" variant="body-sm" className="flex w-11 shrink-0 flex-col text-muted">
           <div className="relative flex-1">
             {ticks.map((t, i) => (
               <span key={i} className="absolute right-2 translate-y-1/2" style={{ bottom: `${(t / ceiling) * 100}%` }}>
@@ -108,9 +107,9 @@ export default function VolumeBars({
             ))}
           </div>
           <div className="h-5" />
-        </div>
+        </Text>
         <div className="flex flex-1 flex-col">
-          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart; chart axis labels */}
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
           <div className="relative flex flex-1 items-end gap-[1%] border-b border-subtle" onMouseLeave={() => setHovered(null)}>
             {ticks.slice(1).map((t, i) => (
               <div key={i} className="pointer-events-none absolute inset-x-0 border-t border-subtle" style={{ bottom: `${(t / ceiling) * 100}%` }} />
@@ -158,14 +157,14 @@ export default function VolumeBars({
               </Text>
             )}
           </div>
-          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart; chart axis labels */}
-          <div className="flex h-5 gap-[1%] pt-1 text-xs text-muted">
+          {/* eslint-disable-next-line no-restricted-syntax -- chart geometry: bar gaps scale with the chart */}
+          <Text as="div" variant="body-sm" className="flex h-5 gap-[1%] pt-1 text-muted">
             {rows.map((r, i) => (
               <span key={r.at} className="flex-1 truncate text-center">
                 {(n - 1 - i) % every === 0 ? tickLabel(r.at, hours, timezone) : ""}
               </span>
             ))}
-          </div>
+          </Text>
         </div>
       </div>
       <p className="sr-only">{`Window totals: ${totals.map(({ label, value }) => `${label} ${formatNumber(value)}`).join(", ")}.`}</p>
