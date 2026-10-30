@@ -23,8 +23,7 @@ export default function MetricCard({
       <Heading as="h2" size="xs" className="truncate">
         {title}
       </Heading>
-      {/* eslint-disable-next-line no-restricted-syntax -- debt: 30px stat number has no Text style */}
-      <div className="mt-2 text-3xl font-bold">{value}</div>{" "}
+      <Text as="div" variant="stat-lg" className="mt-2">{value}</Text>{" "}
       {(suffix || link) && (
         <Text as="div" variant="body-sm" className="mt-1 flex items-baseline justify-between gap-2 text-muted">
           <div>{suffix}</div>

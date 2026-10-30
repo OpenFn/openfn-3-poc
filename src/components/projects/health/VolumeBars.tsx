@@ -168,14 +168,14 @@ export default function VolumeBars({
         </div>
       </div>
       <p className="sr-only">{`Window totals: ${totals.map(({ label, value }) => `${label} ${formatNumber(value)}`).join(", ")}.`}</p>
-      <ul aria-hidden="true" className={LEGEND}>
+      <Text as="ul" aria-hidden="true" className={LEGEND}>
         {totals.map(({ key, label, color }) => (
           <li key={key} className="flex items-center gap-2">
             <span className={DOT} style={{ backgroundColor: color }} />
             {label}
           </li>
         ))}
-      </ul>
+      </Text>
     </>
   );
 }

@@ -1,7 +1,8 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 
-// The type scale: a role (body, label, code) at a size (md 14px, sm 12px).
+// The type scale: a role (body, label, code) at a size (md 14px, sm 12px),
+// and the big number a card or chart is about (stat, at 30, 24 and 18px).
 // Headings are Heading; everything else is one of these.
 const variants = {
   "body-md": "text-sm",
@@ -10,6 +11,9 @@ const variants = {
   "label-sm": "text-xs font-medium",
   "code-md": "font-mono text-sm",
   "code-sm": "font-mono text-xs",
+  "stat-lg": "text-3xl font-bold",
+  "stat-md": "text-2xl font-semibold",
+  "stat-sm": "text-lg",
 };
 
 export type TextVariant = keyof typeof variants;
@@ -27,7 +31,7 @@ export default function Text({
   ...rest
 }: HTMLAttributes<HTMLElement> & {
   variant?: TextVariant;
-  as?: "span" | "p" | "div" | "dt" | "dd" | "pre";
+  as?: "span" | "p" | "div" | "dt" | "dd" | "pre" | "ul" | "kbd";
 }) {
   return <Tag {...rest} data-ui="text" data-variant={variant} className={cn(variants[variant], className)} />;
 }
