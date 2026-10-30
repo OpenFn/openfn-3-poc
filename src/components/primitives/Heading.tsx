@@ -7,9 +7,9 @@ const sizes: Record<HeadingSize, string> = {
   xl: "text-3xl font-bold text-strong",
   lg: "text-lg font-semibold text-strong",
   md: "text-base font-semibold text-strong",
-  sm: "text-sm font-semibold text-strong",
+  sm: "text-sm font-medium text-strong",
   // The eyebrow: the small uppercase label that names a section.
-  xs: "text-xs font-medium uppercase tracking-wide text-muted",
+  xs: "text-xs font-semibold uppercase tracking-wide text-muted",
 };
 
 /**
