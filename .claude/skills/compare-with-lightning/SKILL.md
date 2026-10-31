@@ -8,8 +8,8 @@ description: Compare the replica with Lightning side by side, screen by screen, 
 The goal is to find **behaviour and content** differences: wrong or missing
 labels, columns, buttons, empty states, menus, toasts, and actions that do
 something different. Visual differences are expected, because the replica
-harmonises Lightning's styling into one design system (see CLAUDE.md,
-"Matching Lightning"). Only chase a visual difference when it's a big layout
+harmonises Lightning's styling into one design system (see CLAUDE.md and
+`docs/building.md`). Only chase a visual difference when it's a big layout
 mistake, such as a panel in the wrong place or something missing.
 
 ## 1. Run everything with one command

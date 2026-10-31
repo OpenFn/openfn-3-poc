@@ -7,13 +7,13 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-// The design-system rules in CLAUDE.md, as lint. An exception is disabled on
+// The design-system rules in CLAUDE.md and docs/building.md, as lint. An exception is disabled on
 // its line with a reason, so the reason is reviewed with it:
 // `// eslint-disable-next-line no-restricted-syntax -- <why>`. A reason that
 // starts `debt:` is one we mean to fix: `grep -rn "debt:" src` lists them.
-const offScale = 'neutral scale is gray-*, brand is primary-*. See CLAUDE.md, Matching Lightning.'
+const offScale = 'neutral scale is gray-*, brand is primary-*. See src/theme/tokens.css.'
 const propNames =
-  'Prop name: say meaning with `tone`, loudness with `variant` and size with `size`, not theme, color, type, kind or appearance. `color` is only for Pill tags that mean nothing. See src/components/CLAUDE.md, Prop names.'
+  'Prop name: say meaning with `tone`, loudness with `variant` and size with `size`, not theme, color, type, kind or appearance. `color` is only for Pill tags that mean nothing. See docs/building.md, Prop names.'
 const lookWords = 'primary|secondary|plain|subtle|solid|muted|neutral|info|success|warning|danger|error'
 const designRules = [
   {
@@ -31,7 +31,7 @@ const designRules = [
     message:
       "Arbitrary Tailwind value: use Tailwind's scale. Real geometry (a diagram, a chart) is the exception; disable it with a reason.",
   },
-  // Prop names (src/components/CLAUDE.md): meaning is `tone`, loudness
+  // Prop names (docs/building.md): meaning is `tone`, loudness
   // `variant`, size `size`. Checked on our own components (capitalised JSX);
   // Monaco's `Editor` and `DiffEditor` take a real `theme`. Native `type` (submit, email) and
   // a content `type` (cron, credential) pass; only a look word is caught.
@@ -170,7 +170,7 @@ const areas = fs
   .readdirSync(new URL('./src/components', import.meta.url), { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && !['primitives', 'domain'].includes(entry.name))
   .map((entry) => entry.name)
-const tiers = 'See .claude/rules/components.md, Tiers.'
+const tiers = 'See docs/building.md, Where a new component goes.'
 const pageImports = {
   regex: '(^|/)pages(/|$)',
   message: `Nothing outside src/pages/ imports a page except App.tsx and src/index.ts. Move what you need into src/types/ or a component. ${tiers}`,

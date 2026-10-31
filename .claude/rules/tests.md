@@ -22,8 +22,10 @@ Each behaviour has one home. Find it before writing a test.
   `renderPage` from `src/test/renderPage.tsx` (STANDARDS.md pattern 11). The
   test feeds props and answers each `on*` with `host.resolve` or
   `host.reject`, so pending, success and failure are each a step you can
-  check. Older page tests that call `render` directly move to `renderPage`
-  when next touched; `AdminAuthProvidersPage.test.tsx` is the example.
+  check. List every `on*` the page needs in `actions`: one left out reaches
+  the page as `undefined`. `host.sendProps` is its own step, so a test can
+  check the page between Lightning's reply and its new props. Older page
+  tests that call `render` directly move to `renderPage` when next touched; `AdminAuthProvidersPage.test.tsx` is the example.
 - **What the replica's fake server decides** (an email that is already
   taken, a list it filters): `XPage.replica.test.tsx`. Only the rule the
   replica owns, not what the page already shows.
