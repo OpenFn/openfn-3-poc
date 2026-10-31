@@ -5,7 +5,7 @@ import TextLink from "../../primitives/TextLink";
 import { useForm } from "../../../utils/useForm";
 import { blank } from "../../../utils/validate";
 import ProxyUrlCopy from "./ProxyUrlCopy";
-import Text from "../../primitives/Text";
+import EmptyState from "../../primitives/EmptyState";
 
 /**
  * New / Edit Channel (ChannelLive.FormComponent): the proxy URL when editing,
@@ -79,7 +79,7 @@ export default function ChannelFormModal({
         hint={<HintWithLink href={`${settingsHref}#webhook_security`}>Credentials that you can use to access this channel</HintWithLink>}
       >
         {authMethodOptions.length === 0 ? (
-          <Text as="p" variant="body-sm" className="italic text-faint">No webhook auth methods available.</Text>
+          <EmptyState variant="plain" message="No webhook auth methods available." />
         ) : (
           <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             {authMethodOptions.map((wam) => (
