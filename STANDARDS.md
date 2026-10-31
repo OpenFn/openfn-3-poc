@@ -1,31 +1,17 @@
 # Application patterns
 
-CLAUDE.md says how a page is built from primitives. This file says how a page
-*behaves*: what every component does when a request is pending, fails, or
+[docs/building.md](./docs/building.md) says how a page is built from
+primitives. This file says how a page *behaves*: what every component does when a request is pending, fails, or
 changes the data it shows. These are the patterns that have to be in place
 before the replica becomes Lightning's frontend, because they decide the shape
 of every API call and every page wiring.
 
-Status of each pattern, as of this commit:
-
-| # | Pattern | Status | Where |
-|---|---------|--------|-------|
-| 1 | Async action | **Done** | `useAction`, `Button pending`, `FormModal`, `ConfirmModal`, `Spinner` |
-| 2 | Form with server errors | **Done** | `useForm` (`submit`, `modalSubmit`); render-time validation remains in 2 files (see below) |
-| 3 | Server-driven list | Todo | History first |
-| 4 | Data down, mutations up | **Done** | `CredentialIndex` was the last copy of a record list |
-| 5 | Resource loading states | Todo | needs `AsyncBoundary`, 404, error page |
-| 6 | Confirm then act | **Done** | `ConfirmModal`; `CredentialDeletionModal` rebuilt on it |
-| 7 | Feedback | Convention; mixed today | page toasts, component never does |
-| 8 | Live updates | Todo, after 3 | subscription hook |
-| 9 | Permission gating | Mostly done | one disabled-with-reason look |
-| 10 | Session and route guards | Todo | router-level guard |
-| 11 | Page and wrapper | 23 pages and the Sidebar | History work orders, the workflow editor, the remaining auth pages |
-| 12 | Server checks | Rule | each port adds its refusal tests |
+Pattern numbers are cited across the repo; they never change. Which
+patterns are done and which pages still need them is tracked in the project
+tracker, not here.
 
 Worked example: `src/pages/profile/TokensPage.tsx` and its
-`TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11). Its `newToken`
-prop predates D145 (§11) and is still to move into `onGenerate`'s reply.
+`TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
 
 ## 1. Async action
 
@@ -111,17 +97,6 @@ field errors: `useForm` (`src/utils/useForm.ts`).
   compare tooling and the annotations still line up. An input without an
   `id` gets a generated one, so every label is linked to its control.
 
-Converted: `CreateProjectModal`, `ProjectSetupPanel`, `DataStoragePanel`,
-`CollectionFormModal`, `WebhookAuthMethodFormModal`, `ProfileForms`, `MfaCard`,
-`SandboxFormModal`, the
-credential modals (`CredentialFormModal`, `OauthClientFormModal`,
-`KeychainCredentialFormModal`, `TransferCredentialModal`). Still computing
-`errors={cond ? ["can't be blank"] : []}` in render: `AuthResetPasswordPage`, and
-`CredentialFormModal` for the environment name being typed and an object
-field's JSON (both checked as typed, as Lightning does). Other
-page forms (`UserForm`, `AdminProjectForm`, `AuthProviderForm`,
-the auth pages) move to `useForm` when next touched.
-
 ## 3. Server-driven list
 
 Filtering, sorting and paging are the server's job. The browser holds the
@@ -147,10 +122,6 @@ query, not the rows.
 - A server-sorted header is `<Th sortHref>`, a plain link. `onSort` and
   `useTableSort` are only for small, fully loaded lists (project members,
   tabs).
-
-Build it on History first (`HistoryWorkOrdersPage`): nine filters move from
-`useState` into the URL, `matchesSearch` and friends move behind one
-`workOrdersQuery(params)` in mock-data, and the table shows loading.
 
 ## 4. Data down, mutations up
 
@@ -194,8 +165,7 @@ A modal (`ConfirmModal`, `FormModal`, anything on `Modal`) is mounted only
 while open and keyed by what it is about:
 `{deleting && <ConfirmModal key={deleting.id} open … />}`. Closing it throws
 its state away, so a typed confirmation or a failed attempt's error never
-shows up again on the next open. Modals still kept mounted with
-`open={flag}` are moved to this pattern when their page is next changed.
+shows up again on the next open.
 
 A dialog that can only explain why the action can't happen yet (a
 scheduled credential with audited runs, a user with activity) is a plain
@@ -228,7 +198,7 @@ result the page already holds. Build after pattern 3.
 ## 9. Permission gating
 
 `can*` booleans come from `usePermissions(project)` in the page's
-`.replica.tsx` and are passed down. Already in place. The remaining rule: a gated action is
+`.replica.tsx` and are passed down. A gated action is
 *disabled with a reason*, never hidden, unless Lightning hides it. The
 reason is `Button`'s `tooltip` or `SectionHeader`'s `permissionsSection`.
 No inline role checks in components.
@@ -266,7 +236,7 @@ is rewritten.
   so new props arrive the same way they do in the replica.
 - **Shapes are Lightning's**, not the convenient ones: a token arrives
   `masked`.
-- **Secrets come back only in an action's reply, never in props** (D145):
+- **Secrets come back only in an action's reply, never in props**:
   `onGenerateApiKey` answers with the key, `onLoadCredentialSecrets` with a
   credential's stored values. What the host can keep (an OAuth token, the
   generated API key) it keeps, and the page sends nothing of it back.
@@ -295,15 +265,8 @@ is rewritten.
   server rule: one of each the page handles (a field error, a message, a
   refusal after a race). A refusal the page handles the same way as one
   already shown is out of scope; Lightning enforces the rest on the server.
-- **The page gets a story** with plain props: `withRouter`,
-  `withCanvas("h-screen")` and `layout: "fullscreen"` (`PageContent` fills
-  its parent, so without a height its body is clipped).
-- **A new page's tests use `renderPage`** (`src/test/renderPage.tsx`): each
-  `on*` in its `actions` list waits until the test calls `host.resolve` or
-  `host.reject` (list every one the page needs; one left out reaches the page
-  as `undefined`), and `host.sendProps` is its own step, so a test can check
-  the page between Lightning's reply and its new props. Old tests move when
-  next touched; `AdminAuthProvidersPage.test.tsx` is the example.
+- **Every page gets a story and a `renderPage` test**; see
+  `.claude/rules/stories.md` and `.claude/rules/tests.md`.
 
 ## 12. Server checks
 
@@ -326,4 +289,3 @@ decides who may do what, whatever the page sent or shows.
    (pending, failed, loading).
 3. Apply it to one page end to end, through `simulateRequest`.
 4. Run `node scripts/design-system-metrics.mjs`; nothing should go up.
-5. Update the status table above.

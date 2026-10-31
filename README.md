@@ -28,5 +28,5 @@ npm run lint
 The app uses hash routing, so a page's address looks like
 `/#/projects/<project-id>/history`.
 
-See [CLAUDE.md](./CLAUDE.md) for how the code is organised and the rules for
-adding pages and components.
+See [CLAUDE.md](./CLAUDE.md) for how the code is organised and where the rules
+for adding pages and components are.
