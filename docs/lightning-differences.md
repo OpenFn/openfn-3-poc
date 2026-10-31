@@ -210,9 +210,9 @@ goes back to Lightning's way.
   is loading or failed. History's loading and error messages sit under the
   table's header, not in a row of the body.
 - **No header-only table when a list is empty.** Lightning's API tokens page
-  shows the table's header with the empty state beside a button under it
-  (`tokens_live/index.html.heex`); the replica shows only the empty state,
-  as every other list does.
+  shows the table's header, then the empty state with a second Generate New
+  Token button (`tokens_live/index.html.heex`); the replica shows only the
+  empty state, as every other list does, and the button stays in the header.
 - **14px text.** Lightning's dashed `empty_state` is 12px (`text-xs`); its
   other empty states are 14px. The replica uses 14px in every one.
 - **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)

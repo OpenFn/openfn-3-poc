@@ -35,12 +35,14 @@ export function Table({
         {state === "ready" && <tbody className={cn("bg-surface", divide && "divide-y divide-subtle")}>{children}</tbody>}
       </table>
       {state !== "ready" && (
-        <EmptyState
-          variant="plain"
-          loading={state === "loading"}
-          message={state === "loading" ? loadingMessage : errorMessage}
-          className={cn("bg-surface", divide && "border-t border-subtle")}
-        />
+        <div role={state === "error" ? "alert" : undefined}>
+          <EmptyState
+            variant="plain"
+            loading={state === "loading"}
+            message={state === "loading" ? loadingMessage : errorMessage}
+            className={cn("bg-surface", divide && "border-t border-subtle")}
+          />
+        </div>
       )}
       {footer && <div className={cn(divide && "border-t border-subtle")}>{footer}</div>}
     </div>

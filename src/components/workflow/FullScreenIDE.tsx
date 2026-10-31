@@ -130,8 +130,13 @@ export default function FullScreenIDE({
               <EmptyState
                 variant="plain"
                 fill
-                title="The job you're trying to view didn't exist in this version of the workflow."
-                message="You can change versions or select another job."
+                className="mx-auto max-w-md"
+                message={
+                  <>
+                    <p>The job you're trying to view didn't exist in this version of the workflow.</p>
+                    <p className="mt-2">You can change versions or select another job.</p>
+                  </>
+                }
               />
             )}
           </div>

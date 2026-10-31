@@ -49,7 +49,7 @@ describe("Table state", () => {
     expect(screen.queryByText("A row")).toBeNull();
   });
 
-  it("shows the error message instead of the rows", () => {
+  it("announces the error message instead of the rows", () => {
     render(
       <Table header={header} state="error" errorMessage="There was an error loading the work orders">
         <tr>
@@ -57,7 +57,7 @@ describe("Table state", () => {
         </tr>
       </Table>
     );
-    expect(screen.getByText("There was an error loading the work orders")).toBeTruthy();
+    expect(screen.getByRole("alert").textContent).toBe("There was an error loading the work orders");
     expect(screen.queryByRole("status")).toBeNull();
     expect(screen.queryByText("A row")).toBeNull();
   });

@@ -46,7 +46,6 @@ const marked = new Marked({
     },
     code({ text, lang }) {
       if (lang === "gherkin")
-         
         return `<div class="not-prose my-4 rounded-md border border-subtle bg-subtle p-3 text-xs leading-relaxed whitespace-pre-wrap">${gherkin(text)}</div>`;
       return `<pre><code>${escape(text)}</code></pre>`;
     },
@@ -64,10 +63,8 @@ export default function Markdown({ source, className }: { source: string; classN
   return (
     <div
       className={cn(
-         
         "prose prose-sm max-w-none prose-headings:font-semibold prose-h2:text-base prose-h2:mt-6 prose-h3:text-sm",
         "prose-code:before:content-none prose-code:after:content-none prose-code:bg-sunken prose-code:rounded prose-code:px-1 prose-code:font-normal",
-         
         "prose-pre:bg-code prose-pre:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:text-xs prose-a:text-primary-600",
         className
       )}

@@ -33,7 +33,6 @@ export default function FilterChip({
 }) {
   const clearable = active && onClear;
   const label = (
-     
     <button type="button" className={cn("py-1.5 pl-3", clearable ? "pr-0" : "pr-3")}>
       {children}
     </button>
@@ -47,7 +46,6 @@ export default function FilterChip({
       data-ui="tag"
       data-variant={active ? "active" : "default"}
       className={cn(
-         
         "inline-flex items-center gap-x-1 rounded-full border text-sm font-medium transition-colors",
         active ? "border-primary-200 bg-primary-50 text-primary-700" : "border-subtle bg-sunken text-body hover:bg-emphasis",
         clearable && "pr-1.5"

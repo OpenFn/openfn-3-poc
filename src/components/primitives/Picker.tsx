@@ -34,19 +34,8 @@ export interface PickerItem {
    * when navigating — it's only meaningful on same-section switches.
    */
   sameSection?: boolean;
-  /**
-   * Optional hero icon class for the row (e.g. `hero-credit-card`).
-   * When absent, falls back to the project-style default:
-   * `hero-folder` for root projects and `hero-beaker` for sandboxes.
-   */
-  icon?: string;
-  /**
-   * Whether the underlying project is structurally a sandbox (has a
-   * real `parent_id` in the database). Drives the default icon
-   * independently of the row's display depth, so a sandbox surfaced as
-   * a user's access root still renders with the sandbox icon.
-   */
-  isSandbox?: boolean;
+  /** Hero icon class for the row (e.g. `hero-folder`). */
+  icon: string;
 }
 
 interface PickerProps {
@@ -188,7 +177,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
                   />
                 </>
               )}
-              <span className={cn(row.icon ?? (row.isSandbox ? "hero-beaker" : "hero-folder"), "mr-2 h-5 w-5", iconClasses(active))} />
+              <span className={cn(row.icon, "mr-2 h-5 w-5", iconClasses(active))} />
               <span className={cn("grow truncate", selected && "font-semibold")}>{row.label}</span>
               {selected && (
                 <span className={cn("hero-check ml-3 h-5 w-5 shrink-0 group-hover:text-inverse", active ? "text-inverse" : "text-primary-600")} />

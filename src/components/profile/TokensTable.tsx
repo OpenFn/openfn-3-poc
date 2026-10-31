@@ -1,6 +1,5 @@
 import { Table, Td, Th, Tr } from "../primitives/Table";
 import EmptyState from "../primitives/EmptyState";
-import Button from "../primitives/Button";
 import DateTime from "../primitives/DateTime";
 import IconButton from "../primitives/IconButton";
 import type { ApiToken } from "../../types/tokens";
@@ -10,15 +9,9 @@ import type { ApiToken } from "../../types/tokens";
  * token, created and last-used dates, and a trash link to the delete modal.
  * With no tokens, the fingerprint empty state takes the table's place.
  */
-export default function TokensTable({ tokens, onGenerate }: { tokens: ApiToken[]; onGenerate?: () => void }) {
+export default function TokensTable({ tokens }: { tokens: ApiToken[] }) {
   if (tokens.length === 0) {
-    return (
-      <EmptyState icon="hero-finger-print" title="No Personal Access Tokens" message="Get started by creating a new access token.">
-        <Button id="generate_new_token" onClick={onGenerate} icon="hero-plus">
-          Generate New Token
-        </Button>
-      </EmptyState>
-    );
+    return <EmptyState icon="hero-finger-print" title="No Personal Access Tokens" message="Get started by creating a new access token." />;
   }
   return (
     <Table
