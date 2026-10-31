@@ -41,22 +41,35 @@ data, comments) and loads when you touch one.
   INVENTORY.md id.
 - `src/pages/<area>/`: one file per Lightning view, named for its inventory
   id (`history-work-orders` → `HistoryWorkOrdersPage.tsx`), with a
-  `.replica.tsx` wrapper beside it.
+  `.replica.tsx` wrapper beside it once split into page and wrapper
+  (STANDARDS.md pattern 11; pages not yet split carry a `debt:` import).
 - `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
   area.
 - `src/types/`: the hand-written shapes pages take. `src/constants.ts`:
-  Lightning's fixed option lists and copy. `src/utils/`: formatters
-  (`format.ts`) and shared hooks.
+  Lightning's fixed option lists and copy.
+- `src/utils/`: every formatter in `format.ts` (add new ones there, not in
+  an area folder); `search.ts` (`matchesQuery`), `validate.ts`
+  (`isValidEmail`), `useUrlParams`, `useCopy`, and pure domain helpers
+  (`adaptors.ts`, `history.ts`, `urls.ts`, `workflowGraph.ts`). Look here
+  before writing a helper.
 - `src/permissions.ts`: every `can*` flag, mirroring Lightning's policies.
   `src/session/`: the signed-in user.
 - `src/mock-data/`: the fake database. `src/theme/`: themes and colour
   tokens.
+- `annotations/`: the audit copy. The annotations panel (settings button)
+  shows the nearest `data-annotation="<id>"`, else the page's view id from
+  `src/annotations/viewIds.ts`, so a new page needs an entry there. To
+  update, replace the folder from the Lightning branch and update
+  `SOURCE.md`.
 
 ## Rules that matter everywhere
 
 - **Copy Lightning's behaviour and words, not its code.** Headings, labels,
   button text, empty states, columns and what each action does come from
   Lightning (paths in INVENTORY.md). The markup comes from our primitives.
+  Where two Lightning screens style the same thing differently, pick one
+  treatment in the primitive and list it in `docs/lightning-differences.md`,
+  so a comparison run doesn't undo it.
 - **Pages take props.** Data, the user and `can*` flags arrive from the
   `.replica.tsx` wrapper. Lint stops pages, components and utils importing
   `src/mock-data/`, `src/session/` or the router.
@@ -71,8 +84,11 @@ data, comments) and loads when you touch one.
 ## The data seam
 
 Only `*.replica.*` wrappers, `*Replica.ts` helpers and `main.tsx` may import
-`src/mock-data/`, `src/session/` or the router. Any other file that does
-says why on the import: `-- wiring: …` for one that stays (the app shell),
+`src/mock-data/`, `src/session/` or the router. There, the user comes from
+`useCurrentUser()` (never a fixture import) and permissions from
+`usePermissions(project)` / `permissionsFor`, passed down as `can*`
+booleans; no inline role checks. Lint can't see inside replicas, so this
+one is on you. Any other file that imports them says why on the import: `-- wiring: …` for one that stays (the app shell),
 `-- debt: …` for a page not yet split. List them with
 `grep -rnE "no-restricted-imports -- (wiring|debt):" src`.
 `src/pages/profile/TokensPage.tsx` and `TokensPage.replica.tsx` are the

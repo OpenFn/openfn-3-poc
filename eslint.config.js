@@ -7,7 +7,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-// The design-system rules in CLAUDE.md, as lint. An exception is disabled on
+// The design-system rules in CLAUDE.md and docs/building.md, as lint. An exception is disabled on
 // its line with a reason, so the reason is reviewed with it:
 // `// eslint-disable-next-line no-restricted-syntax -- <why>`. A reason that
 // starts `debt:` is one we mean to fix: `grep -rn "debt:" src` lists them.

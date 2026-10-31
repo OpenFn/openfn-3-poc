@@ -26,14 +26,13 @@ its stories; read the component before using it.
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
 | A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
-| A command palette (Cmd/Ctrl+P) | `Picker` |
 | Show / hide a section | `Disclosure` |
 | Switching views | `Tabs` |
 | Picking one value from a few | `SegmentedControl`; `RadioCards` when the options are cards |
 | A set of radios or checkboxes under one label | `Field group` |
-| Searching or filtering a list | `SearchInput`; `FilterChip` with `FilterMenu`, `FilterCheckboxes`, `FilterDateRange` for filter chips |
+| Searching or filtering a list | `SearchInput` |
 | A status chip, badge or tag | `Pill` |
-| Any bordered panel, tile or card | `Card`; `MetricCard` for a big number |
+| Any bordered panel, tile or card | `Card` |
 | A heading / any other text | `Heading` / `Text` (see Type) |
 | Labelled values | `DetailList` + `DetailItem` |
 | A timestamp | `DateTime` |
@@ -41,7 +40,7 @@ its stories; read the component before using it.
 | A short work order, run or dataclip id | `UuidChip` |
 | An on/off switch | `Toggle` |
 | An inline link | `TextLink` |
-| Read-only code, a log or a dataclip / markdown | `CodeViewer` / `Markdown` |
+| Read-only code, a log or a dataclip | `CodeViewer` |
 | A file upload or drop area | `FileDropZone` |
 | Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it) |
 | Sorting and filtering a small table in the browser | `useTableSort` |
@@ -182,7 +181,7 @@ Lightning's wording wins wherever Lightning has the screen.
   `disabled` when the user can't create. `variant="plain"` inside a card.
 
 Examples: `Primitives/Header` (WithBreadcrumbsAndTitle), `Primitives/Table`,
-`Primitives/EmptyState`.
+`Primitives/Table` (EmptyWithAction, Empty, EmptyPlain).
 
 ### Destructive action
 

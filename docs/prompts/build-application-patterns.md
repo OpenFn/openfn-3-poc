@@ -5,7 +5,8 @@ Paste this into a fresh Claude Code session on `brandonjackson/openfn-ia-demo`.
 ---
 
 Read `CLAUDE.md`, `docs/building.md` and `STANDARDS.md` in full before doing anything.
-`STANDARDS.md` lists ten application patterns and their status. Pattern 1
+`STANDARDS.md` lists the application patterns (which are done is in the
+project tracker). Pattern 1
 (async action) is done and `src/pages/profile/TokensPage.tsx` is its worked
 example; study `useAction`, `Button`'s `pending`, `FormModal` and
 `ConfirmModal` so you build the rest in the same style.
