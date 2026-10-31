@@ -42,7 +42,7 @@ Then look for things the refactor made dead:
 - components, helpers, types or constants no longer imported anywhere
   (`grep -rn "from .*<Name>"`), and their stories and tests;
 - props, variants or options no caller passes any more ("no options nobody
-  uses", `src/components/CLAUDE.md`);
+  uses", `docs/building.md`);
 - exports in `src/index.ts` for things that moved or went;
 - `eslint-disable` lines whose reason was the old way, especially
   `-- debt:` ones this change pays off (`grep -rn "debt:" src`).
@@ -54,9 +54,9 @@ the old way, or should name the new one, is a loose end:
 
 | Place | Look for |
 |---|---|
-| `CLAUDE.md` primitives table | a row for the new primitive; rows that still point at the old way |
-| `src/components/CLAUDE.md` | build rules (theme hooks, prop names) the change touches |
-| `.claude/rules/*.md` | `components.md` patterns, `stories.md`, `tests.md`, `type.md`, `pages.md` |
+| `docs/building.md` | the primitives table (a row for the new piece, none still pointing at the old way), where a component goes, prop names, type, and the patterns with their example stories |
+| `CLAUDE.md` | the rules that apply everywhere and the map of where things are |
+| `.claude/rules/*.md` | `pages.md`, `tests.md`, `stories.md`, `mock-data.md`, `comments.md` |
 | `STANDARDS.md`, `PRINCIPLES.md` | a pattern or principle whose example is the old code |
 | `docs/lightning-differences.md` | a deliberate difference the change adds, removes or alters |
 | `.claude/skills/` | skill steps that name a moved file or command |

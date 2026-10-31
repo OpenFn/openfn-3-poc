@@ -1,9 +1,9 @@
 # Where the replica differs from Lightning on purpose
 
-The replica copies what Lightning does and says (CLAUDE.md, Matching
-Lightning). When it looks or behaves differently on purpose, the difference is
-listed here, so a comparison run doesn't "fix" it back. Each entry says what
-Lightning does, where, and why the replica differs.
+The replica copies what Lightning does and says (CLAUDE.md). When it looks or
+behaves differently on purpose, the difference is listed here, so a
+comparison run doesn't "fix" it back. Each entry says what Lightning does,
+where, and why the replica differs.
 
 Wording and behaviour stay Lightning's. Most entries are where Lightning styles
 the same thing two ways and the replica picks one.
