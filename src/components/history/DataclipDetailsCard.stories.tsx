@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import type { DataclipDetail } from "../../types/history";
 import DataclipDetailsCard, { DataclipBodyCard } from "./DataclipDetailsCard";
 import JsonViewer from "./JsonViewer";
-import { EmptyState } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
 
 const dataclip: DataclipDetail = {
   id: "7f3a91c2-4d8e-4b1a-9c6f-2e5d8a1b3c4d",

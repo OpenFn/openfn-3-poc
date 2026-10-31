@@ -1,4 +1,5 @@
-import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import { useTableSort, type SortValue } from "../../utils/useTableSort";
 import Button from "../primitives/Button";
 import IconButton from "../primitives/IconButton";

@@ -7,6 +7,7 @@ import Heading from "../primitives/Heading";
 import Modal from "../primitives/Modal";
 import RadioCards from "../primitives/RadioCards";
 import SearchInput from "../primitives/SearchInput";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 import WorkflowDiagram from "./WorkflowDiagram";
 import { matchesQuery } from "../../utils/search";
@@ -58,14 +59,14 @@ export default function TemplateBrowserModal({ isOpen, onClose, projectId, templ
             onChange={setPreviewedId}
             options={visible.map((t) => ({ value: t.id, label: <TemplateSummary template={t} lines="line-clamp-3" /> }))}
           />
-          {visible.length === 0 && <p className="py-2 text-muted">No saved templates match your search.</p>}
+          {visible.length === 0 && <EmptyState variant="plain" message="No saved templates match your search." />}
         </div>
         <Card muted padding="none" className="flex min-w-0 flex-1 flex-col overflow-clip">
           <div className="min-h-0 flex-1">
             {previewed ? (
               <WorkflowDiagram key={previewed.id} graph={templateGraph(previewed, projectId)} selection={null} onSelect={() => {}} preview />
             ) : (
-              <p className="flex h-full items-center justify-center text-muted">Select a template to preview it.</p>
+              <EmptyState variant="plain" fill message="Select a template to preview it." />
             )}
           </div>
           {previewed && (

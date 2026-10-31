@@ -170,5 +170,9 @@ Stories: `Primitives/Header` (WithBreadcrumbsAndTitle), `Primitives/Table` (Defa
   `buttonText` and `onClick` make the dashed box a button ("Create a new
   Credential"). When the user can't create, it's `disabled`, not left out.
 - **`variant="plain"`** (just the text) inside a card or a smaller list.
+- **A panel or viewer with nothing to show** (no step selected, no logs,
+  no data) is an `EmptyState` too: `variant="plain"`, with `fill` to centre
+  it in the panel. A list still loading or failed is `Table`'s `state`, not
+  an empty state of its own.
 
-Stories: `Primitives/Table` (EmptyWithAction, Empty, EmptyPlain).
+Stories: `Primitives/EmptyState` (WithAction, Default, Plain).

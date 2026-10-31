@@ -185,7 +185,8 @@ everywhere. Reach for these first:
 | Read-only code, a log or a dataclip | `CodeViewer` |
 | Rendered markdown | `Markdown` |
 | A file upload or drop area | `FileDropZone` |
-| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
+| Tabular data | `Table` with `Tr`, `Th`, `Td`; `state` for a list that is loading or failed (a clickable `Tr` ignores clicks on links and buttons inside it, so no `stopPropagation`) |
+| Nothing to show yet, or still loading: an empty list, panel or viewer | `EmptyState` (`fill` to centre in its box, `loading` to pulse) |
 | Sorting and filtering a table in the browser | `useTableSort` from `utils/useTableSort.ts` |
 | A status message | `Alert` |
 | Page frame: the page title, "Projects (3)", its main button | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |

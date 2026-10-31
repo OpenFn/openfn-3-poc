@@ -4,6 +4,7 @@ import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
 import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { resolvedAdaptorVersion } from "../../mock-data/adaptors";
+import EmptyState from "../primitives/EmptyState";
 import Button from "../primitives/Button";
 import IconButton from "../primitives/IconButton";
 import Card from "../primitives/Card";
@@ -92,12 +93,7 @@ export default function ConfigureAdaptorModal({
               <Text as="p">This adaptor does not require credentials.</Text>
             </Card>
           ) : shown.length === 0 ? (
-            <Card padding="lg" className="text-center">
-              <p className="mb-3 text-muted">No credentials found in this project</p>
-              <Text variant="label-md">
-                <TextLink>Create a new credential</TextLink>
-              </Text>
-            </Card>
+            <EmptyState message="No credentials found in this project" buttonText="Create a new credential" />
           ) : (
             <Card padding="none" className="max-h-48 divide-y divide-subtle overflow-y-auto">
               {shown.map((c) => {

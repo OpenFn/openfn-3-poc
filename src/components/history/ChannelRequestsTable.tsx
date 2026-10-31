@@ -1,5 +1,6 @@
 import Pagination from "../primitives/Pagination";
-import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import type { ChannelLogRow } from "../../types/channels";
 import type { PageInfo } from "../../types/lists";
 import DateTime from "../primitives/DateTime";

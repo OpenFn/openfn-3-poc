@@ -1,7 +1,7 @@
 import type { DataclipBody } from "../../types/history";
 import CodeViewer from "../primitives/CodeViewer";
 import CopyButton from "../primitives/CopyButton";
-import { EmptyState } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
 
 /**
  * A dataclip body in the dark code viewer (react/components/CodeViewer.tsx,
@@ -12,9 +12,7 @@ import { EmptyState } from "../primitives/Table";
 export default function JsonViewer({ body, ariaLabel = "Dataclip" }: { body: DataclipBody | undefined; ariaLabel?: string }) {
   if (body && "error" in body) {
     return (
-      <div className="flex h-full items-center">
-        <EmptyState variant="plain" icon="hero-exclamation-triangle" title={body.error} />
-      </div>
+      <EmptyState variant="plain" fill icon="hero-exclamation-triangle" title={body.error} />
     );
   }
   const content = body?.text ?? "";

@@ -18,6 +18,7 @@ import SearchInput from "../primitives/SearchInput";
 import { matchesQuery } from "../../utils/search";
 import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
 import Tooltip from "../primitives/Tooltip";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 
 type Tab = "empty" | "custom" | "existing";
@@ -151,7 +152,7 @@ export default function ManualRunPanel({
                 </Card>
               ))
             ) : (
-              <p className="text-center">No dataclips match the filter.</p>
+              <EmptyState variant="plain" message="No dataclips match the filter." />
             )}
             {visible.length > 0 && <p className="text-center text-muted">Search results are limited to the 10 most recent matches for this step.</p>}
           </div>
@@ -182,7 +183,7 @@ export default function ManualRunPanel({
     </div>
   );
 
-  const edgeMessage = <p className="flex h-full items-center justify-center text-muted">Select a Step or Trigger to start a Run from</p>;
+  const edgeMessage = <EmptyState variant="plain" fill message="Select a Step or Trigger to start a Run from" />;
 
   const run = () => onRun(selected ? { kind: "existing", dataclipId: selected.id } : { kind: tab, body });
 

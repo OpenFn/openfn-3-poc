@@ -5,6 +5,7 @@ import { cn } from "../../utils/cn";
 import { prettyJson } from "../../utils/format";
 import CodeViewer, { type LineRange } from "../primitives/CodeViewer";
 import Menu, { MenuItem } from "../primitives/Menu";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 import TextPingLoader from "../primitives/TextPingLoader";
 
@@ -101,9 +102,7 @@ export default function LogViewer({
   }
 
   if (finished && logs.length === 0) {
-    return (
-      <div className="m-2 p-12 text-center">No logs were received for this run.</div>
-    );
+    return <EmptyState variant="plain" message="No logs were received for this run." />;
   }
 
   return (

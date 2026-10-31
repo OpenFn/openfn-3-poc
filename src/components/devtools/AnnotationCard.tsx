@@ -6,7 +6,7 @@ import IconButton from "../primitives/IconButton";
 import Pill from "../primitives/Pill";
 import Text from "../primitives/Text";
 import type { Tone } from "../primitives/tone";
-import { EmptyState } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
 import TextLink from "../primitives/TextLink";
 import Markdown from "../primitives/Markdown";
 

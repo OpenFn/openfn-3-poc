@@ -1,6 +1,7 @@
 import { useRouter } from "../../routing/router";
 import type { ProjectOverview } from "../../types/workflows";
-import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import DateTime from "../primitives/DateTime";
 import Button from "../primitives/Button";
 import TextLink from "../primitives/TextLink";

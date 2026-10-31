@@ -138,7 +138,7 @@ describe("SandboxesIndexPage", () => {
     expect(isDisabled(create)).toBe(true);
     expect(create.getAttribute("aria-description")).toBe("Maximum sandbox nesting depth reached (2 levels deep)");
     expect(screen.getByText("No sandboxes found")).toBeTruthy();
-    expect(screen.getByText("Maximum sandbox nesting depth reached (2 levels deep)", { selector: "p" })).toBeTruthy();
+    expect(screen.getByText("Maximum sandbox nesting depth reached (2 levels deep)", { selector: "[data-ui=empty-state] *" })).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Create your first sandbox" })).toBeNull();
   });
 
