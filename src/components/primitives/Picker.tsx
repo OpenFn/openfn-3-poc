@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "../../routing/router";
 import { cn } from "../../utils/cn";
-import Modal from "../primitives/Modal";
-import SearchList from "../primitives/SearchList";
-import Text from "../primitives/Text";
-import { filterPickerItems } from "./projectPickerItems";
+import Modal from "./Modal";
+import SearchList from "./SearchList";
+import Text from "./Text";
+import { matchesQuery } from "../../utils/search";
 
 /**
  * Generic command-palette picker. Content-agnostic: the server ships a
@@ -34,19 +34,8 @@ export interface PickerItem {
    * when navigating — it's only meaningful on same-section switches.
    */
   sameSection?: boolean;
-  /**
-   * Optional hero icon class for the row (e.g. `hero-credit-card`).
-   * When absent, falls back to the project-style default:
-   * `hero-folder` for root projects and `hero-beaker` for sandboxes.
-   */
-  icon?: string;
-  /**
-   * Whether the underlying project is structurally a sandbox (has a
-   * real `parent_id` in the database). Drives the default icon
-   * independently of the row's display depth, so a sandbox surfaced as
-   * a user's access root still renders with the sandbox icon.
-   */
-  isSandbox?: boolean;
+  /** Hero icon class for the row (e.g. `hero-folder`). */
+  icon: string;
 }
 
 interface PickerProps {
@@ -63,6 +52,29 @@ interface PickerProps {
   openEvent: string;
   /** Start open (stories and screenshots). */
   defaultOpen?: boolean;
+}
+
+/**
+ * The items whose `searchLabel` contains `term`, plus the ancestors that
+ * lead to each match so the indentation still reads (Lightning's picker
+ * filter). `items` must be in pre-order, as a depth-first walk of a tree gives.
+ */
+function filterPickerItems(items: PickerItem[], term: string): PickerItem[] {
+  if (!term.trim()) return items;
+  const matches = items.map((i) => matchesQuery(term, i.searchLabel));
+  const include = [...matches];
+  items.forEach((item, i) => {
+    if (!matches[i]) return;
+    // The parent is the most recent item with a strictly smaller depth.
+    let depth = item.depth;
+    for (let j = i - 1; j >= 0 && depth > 0; j--) {
+      if (items[j]!.depth < depth) {
+        include[j] = true;
+        depth = items[j]!.depth;
+      }
+    }
+  });
+  return items.filter((_, i) => include[i]);
 }
 
 /** The "View all" row, always first. */
@@ -165,7 +177,7 @@ export default function Picker({ items: allItems, currentId, placeholder, emptyM
                   />
                 </>
               )}
-              <span className={cn(row.icon ?? (row.isSandbox ? "hero-beaker" : "hero-folder"), "mr-2 h-5 w-5", iconClasses(active))} />
+              <span className={cn(row.icon, "mr-2 h-5 w-5", iconClasses(active))} />
               <span className={cn("grow truncate", selected && "font-semibold")}>{row.label}</span>
               {selected && (
                 <span className={cn("hero-check ml-3 h-5 w-5 shrink-0 group-hover:text-inverse", active ? "text-inverse" : "text-primary-600")} />

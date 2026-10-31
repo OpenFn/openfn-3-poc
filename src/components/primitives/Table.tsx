@@ -1,7 +1,7 @@
 import type { MouseEvent, ReactNode, TdHTMLAttributes } from "react";
 import { Link } from "../../routing/router";
 import { cn } from "../../utils/cn";
-import Text from "./Text";
+import EmptyState from "./EmptyState";
 
 /**
  * Lightning's table components (components/table.ex): a ringed, rounded
@@ -13,6 +13,9 @@ export function Table({
   footer,
   divide = true,
   id,
+  state = "ready",
+  loadingMessage = "Loading ...",
+  errorMessage = "There was an error loading the data",
 }: {
   header: ReactNode;
   children: ReactNode;
@@ -20,13 +23,27 @@ export function Table({
   footer?: ReactNode;
   divide?: boolean;
   id?: string;
+  /** While a server-driven list loads or after it fails, the body is a message instead of `children` (STANDARDS pattern 3). */
+  state?: "loading" | "error" | "ready";
+  loadingMessage?: string;
+  errorMessage?: string;
 }) {
   return (
     <div id={id} data-ui="table" className="shadow ring-1 ring-black/5 sm:rounded-lg bg-subtle">
       <table className={cn("min-w-full", divide && "divide-y divide-subtle")}>
         <thead>{header}</thead>
-        <tbody className={cn("bg-surface", divide && "divide-y divide-subtle")}>{children}</tbody>
+        {state === "ready" && <tbody className={cn("bg-surface", divide && "divide-y divide-subtle")}>{children}</tbody>}
       </table>
+      {state !== "ready" && (
+        <div role={state === "error" ? "alert" : undefined}>
+          <EmptyState
+            variant="plain"
+            loading={state === "loading"}
+            message={state === "loading" ? loadingMessage : errorMessage}
+            className={cn("bg-surface", divide && "border-t border-subtle")}
+          />
+        </div>
+      )}
       {footer && <div className={cn(divide && "border-t border-subtle")}>{footer}</div>}
     </div>
   );
@@ -151,80 +168,5 @@ export function Td({
     <td className={cn("text-sm text-muted first:rounded-bl-lg last:rounded-br-lg", align && alignClasses[align], className)} {...rest}>
       {actions ? <div className="flex items-center justify-end gap-2">{children}</div> : children}
     </td>
-  );
-}
-
-/**
- * "Nothing here yet" (table.ex `empty_state`): a dashed box, or with
- * `variant="plain"` just the centred text, for inside a card or list. With
- * `buttonText` the dashed box is a button that starts the create flow.
- * `children` go below the message (e.g. an error code).
- */
-export function EmptyState({
-  id,
-  variant = "dashed",
-  icon = variant === "dashed" ? "hero-plus-circle" : undefined,
-  title,
-  message,
-  buttonText,
-  onClick,
-  disabled,
-  className,
-  children,
-}: {
-  /** The box's id (the button's, when it is one), for hosts that address it. */
-  id?: string | undefined;
-  variant?: "dashed" | "plain";
-  icon?: string;
-  title?: ReactNode;
-  message?: ReactNode;
-  buttonText?: string;
-  onClick?: (() => void) | undefined;
-  disabled?: boolean;
-  className?: string;
-  children?: ReactNode;
-}) {
-  const plain = variant === "plain";
-  const body = (
-    <>
-      {icon && <span className={cn(icon, "mx-auto block text-faint", plain ? "mb-2 h-8 w-8" : "h-12 w-12")} />}
-      {buttonText && <span className="mt-2 block text-xs font-semibold text-muted">{buttonText}</span>}
-      {title && (
-        <Text variant={plain ? "label-md" : "label-sm"} className={cn("block text-strong", !plain && "mt-2")}>
-          {title}
-        </Text>
-      )}
-      {message && (
-        <Text as="div" variant={plain ? "body-md" : "body-sm"} className={cn("text-muted", plain ? "mt-1" : "mt-2")}>
-          {message}
-        </Text>
-      )}
-      {children && <div className="mt-2">{children}</div>}
-    </>
-  );
-  const classes = cn(
-    "relative block w-full text-center",
-    plain ? "px-4 py-8" : "rounded-lg border-2 border-dashed border-strong p-4",
-    className
-  );
-  if (buttonText && !plain) {
-    return (
-      <button
-        id={id}
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        data-ui="empty-state"
-        data-variant={variant}
-        className={cn(classes, "hover:border-emphasis disabled:hover:border-strong focus:outline-none")}
-      >
-        {body}
-      </button>
-    );
-  }
-  return (
-    <div id={id} data-ui="empty-state" data-variant={variant} className={classes}>
-      {body}
-    </div>
   );
 }

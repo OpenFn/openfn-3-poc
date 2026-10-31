@@ -26,13 +26,16 @@ its stories; read the component before using it.
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
 | A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
+| A command palette that jumps to a page (Cmd/Ctrl+P) | `Picker` |
 | Show / hide a section | `Disclosure` |
 | Switching views | `Tabs` |
 | Picking one value from a few | `SegmentedControl`; `RadioCards` when the options are cards |
 | A set of radios or checkboxes under one label | `Field group` |
 | Searching or filtering a list | `SearchInput` |
+| A filter above a list, as a chip that opens its options | `FilterChip` with `FilterMenu`, `FilterCheckboxes`, `FilterDateRange` |
 | A status chip, badge or tag | `Pill` |
 | Any bordered panel, tile or card | `Card` |
+| A big number on a card | `MetricCard` |
 | A heading / any other text | `Heading` / `Text` (see Type) |
 | Labelled values | `DetailList` + `DetailItem` |
 | A timestamp | `DateTime` |
@@ -41,8 +44,10 @@ its stories; read the component before using it.
 | An on/off switch | `Toggle` |
 | An inline link | `TextLink` |
 | Read-only code, a log or a dataclip | `CodeViewer` |
+| Rendered markdown | `Markdown` |
 | A file upload or drop area | `FileDropZone` |
-| Tabular data | `Table` with `Tr`, `Th`, `Td`, `EmptyState` (a clickable `Tr` ignores clicks on links and buttons inside it) |
+| Tabular data | `Table` with `Tr`, `Th`, `Td`; `state` for a list that is loading or failed (a clickable `Tr` ignores clicks on links and buttons inside it) |
+| Nothing to show yet: an empty list, panel or viewer | `EmptyState` (`fill` to centre in its box, `loading` to pulse) |
 | Sorting and filtering a small table in the browser | `useTableSort` |
 | A status message | `Alert` |
 | The page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
@@ -179,9 +184,12 @@ Lightning's wording wins wherever Lightning has the screen.
 - An empty list is `EmptyState` with Lightning's message. If the list has a
   create action, the empty state is that action (`buttonText`, `onClick`),
   `disabled` when the user can't create. `variant="plain"` inside a card.
+- A panel or viewer with nothing to show (no step selected, no logs) is a
+  plain `EmptyState` with `fill`. A list still loading or failed is
+  `Table`'s `state`, not an empty state of its own.
 
-Examples: `Primitives/Header` (WithBreadcrumbsAndTitle), `Primitives/Table`,
-`Primitives/Table` (EmptyWithAction, Empty, EmptyPlain).
+Examples: `Primitives/Header` (WithBreadcrumbsAndTitle), `Primitives/Table`
+(Default, Loading, LoadError), `Primitives/EmptyState` (WithAction, Default, Plain, Fill).
 
 ### Destructive action
 

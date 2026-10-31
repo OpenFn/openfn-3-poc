@@ -2,6 +2,7 @@ import type { RunStep, StepDataclip } from "../../types/history";
 import JsonViewer from "./JsonViewer";
 import TextPingLoader from "../primitives/TextPingLoader";
 import WipedDataViewer from "./WipedDataViewer";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 
 /**
@@ -43,7 +44,7 @@ export default function StepDataclipViewer({
   }
   if (!dataclip) {
     return runFinished ? (
-      <div className="m-2 p-12 text-center">No {inputOrOutput} state could be saved for this run.</div>
+      <EmptyState variant="plain" message={`No ${inputOrOutput} state could be saved for this run.`} />
     ) : (
       <Text as="div" variant="code-sm" className="rounded-md bg-code p-12 text-center text-code">
         <TextPingLoader>Nothing yet</TextPingLoader>

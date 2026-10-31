@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
 import { adaptorFunctions, resolvedAdaptorVersion } from "../../mock-data/adaptors";
 import { adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
+import EmptyState from "../primitives/EmptyState";
 import Disclosure from "../primitives/Disclosure";
 import Heading from "../primitives/Heading";
 import TextLink from "../primitives/TextLink";
@@ -78,9 +79,6 @@ export default function AdaptorDocs({ adaptor }: { adaptor: string }) {
 /** The Metadata tab (metadata-explorer/Empty.tsx): no adaptor in the demo has magic functions. */
 export function AdaptorMetadata({ adaptor }: { adaptor: string }) {
   return (
-    <div className="flex flex-col gap-2 p-2">
-      <p>{`No metadata found for ${resolveAdaptor(adaptor).package}`}</p>
-      <p>This adaptor does not support magic functions yet.</p>
-    </div>
+    <EmptyState variant="plain" title={`No metadata found for ${resolveAdaptor(adaptor).package}`} message="This adaptor does not support magic functions yet." />
   );
 }

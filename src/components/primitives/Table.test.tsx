@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "../../routing/router";
-import { Th } from "./Table";
+import { Table, Th } from "./Table";
 
 describe("Th", () => {
   it("links a server-sorted header through the router", () => {
@@ -27,5 +27,38 @@ describe("Th", () => {
     expect(link.getAttribute("href")).toBe("#/projects/p1/w?sort=name&dir=asc");
     fireEvent.click(link);
     expect(router.navigate).toHaveBeenCalledWith("/projects/p1/w?sort=name&dir=asc", { replace: false });
+  });
+});
+
+describe("Table state", () => {
+  const header = (
+    <tr>
+      <th>Name</th>
+    </tr>
+  );
+
+  it("shows the loading message as a status instead of the rows", () => {
+    render(
+      <Table header={header} state="loading" loadingMessage="Loading work orders ...">
+        <tr>
+          <td>A row</td>
+        </tr>
+      </Table>
+    );
+    expect(screen.getByRole("status").textContent).toBe("Loading work orders ...");
+    expect(screen.queryByText("A row")).toBeNull();
+  });
+
+  it("announces the error message instead of the rows", () => {
+    render(
+      <Table header={header} state="error" errorMessage="There was an error loading the work orders">
+        <tr>
+          <td>A row</td>
+        </tr>
+      </Table>
+    );
+    expect(screen.getByRole("alert").textContent).toBe("There was an error loading the work orders");
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.queryByText("A row")).toBeNull();
   });
 });

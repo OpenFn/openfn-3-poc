@@ -1,4 +1,4 @@
-import MetricCard from "../MetricCard";
+import MetricCard from "../../primitives/MetricCard";
 import TextLink from "../../primitives/TextLink";
 
 /** The two stat cards above the channels table: Total Channels and Total Requests, with "View all" to the channel logs. */

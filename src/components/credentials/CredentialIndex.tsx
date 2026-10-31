@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import ConfirmModal from "../primitives/ConfirmModal";
 import ButtonMenu from "../primitives/ButtonMenu";
 import { MenuItem } from "../primitives/Menu";
-import { EmptyState } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
 import CredentialFormModal from "./CredentialFormModal";
 import OauthClientFormModal from "./OauthClientFormModal";

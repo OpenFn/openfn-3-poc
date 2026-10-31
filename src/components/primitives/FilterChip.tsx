@@ -1,10 +1,10 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
-import IconButton from "../primitives/IconButton";
-import { Checkbox, TextInput } from "../primitives/Inputs";
-import Menu, { MenuItem } from "../primitives/Menu";
-import Popover from "../primitives/Popover";
-import Text from "../primitives/Text";
+import IconButton from "./IconButton";
+import { Checkbox, TextInput } from "./Inputs";
+import Menu, { MenuItem } from "./Menu";
+import Popover from "./Popover";
+import Text from "./Text";
 
 /**
  * A filter chip that shows a filter's state and opens its dropdown
@@ -33,7 +33,6 @@ export default function FilterChip({
 }) {
   const clearable = active && onClear;
   const label = (
-    // eslint-disable-next-line no-restricted-syntax -- the chip's label is its own trigger surface, styled by the chip
     <button type="button" className={cn("py-1.5 pl-3", clearable ? "pr-0" : "pr-3")}>
       {children}
     </button>
@@ -47,7 +46,6 @@ export default function FilterChip({
       data-ui="tag"
       data-variant={active ? "active" : "default"}
       className={cn(
-        // eslint-disable-next-line no-restricted-syntax -- a control, like Button: it owns its type
         "inline-flex items-center gap-x-1 rounded-full border text-sm font-medium transition-colors",
         active ? "border-primary-200 bg-primary-50 text-primary-700" : "border-subtle bg-sunken text-body hover:bg-emphasis",
         clearable && "pr-1.5"

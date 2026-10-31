@@ -200,6 +200,24 @@ goes back to Lightning's way.
 - **"Only 1 file can be uploaded".** Lightning's manual run says "Only 1 files
   can be uploaded".
 
+## Empty states
+
+- **One look for "nothing here" and "loading".** Lightning builds them a
+  dozen ways: the table's dashed `empty_state` (`table.ex:313`), History's
+  `async_filler` row, centred muted text in the run viewer and manual run
+  panel, its own blocks in MiniHistory and the sandboxes list. The replica
+  uses `EmptyState` for all of them, and `Table`'s `state` for a list that
+  is loading or failed. History's loading and error messages sit under the
+  table's header, not in a row of the body.
+- **No header-only table when a list is empty.** Lightning's API tokens page
+  shows the table's header, then the empty state with a second Generate New
+  Token button (`tokens_live/index.html.heex`); the replica shows only the
+  empty state, as every other list does, and the button stays in the header.
+- **14px text.** Lightning's dashed `empty_state` is 12px (`text-xs`); its
+  other empty states are 14px. The replica uses 14px in every one.
+- **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)
+  and its other empty states use 32px; the replica uses 24px in every one.
+
 ## Type
 
 - **The waiting messages in the log and dataclip viewers stay 12px.**

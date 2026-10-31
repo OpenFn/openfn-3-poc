@@ -3,7 +3,7 @@ import { useState } from "react";
 import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "./FilterChip";
 import { historyStatuses } from "../../constants";
 
-const meta = { title: "History/FilterChip", component: FilterChip } satisfies Meta<typeof FilterChip>;
+const meta = { title: "Primitives/FilterChip", component: FilterChip } satisfies Meta<typeof FilterChip>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

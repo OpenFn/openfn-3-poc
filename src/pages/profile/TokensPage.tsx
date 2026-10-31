@@ -47,7 +47,7 @@ export default function TokensPage({ tokens, newToken, tokenId, onGenerate, onDe
           <TokenDeletionModal onClose={onClose} onDelete={() => onDelete(tokenId)} />
         )}
         {newToken && <NewTokenBanner token={newToken} />}
-        <TokensTable tokens={tokens} onGenerate={() => generate.run()} />
+        <TokensTable tokens={tokens} />
       </Centered>
     </PageContent>
   );

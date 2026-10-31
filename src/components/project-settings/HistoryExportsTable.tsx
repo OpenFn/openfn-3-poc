@@ -1,4 +1,5 @@
-import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import Button from "../primitives/Button";
 import type { ExportStatus, HistoryExportRow } from "../../types/project-settings";
 import { capitalize } from "../../utils/format";

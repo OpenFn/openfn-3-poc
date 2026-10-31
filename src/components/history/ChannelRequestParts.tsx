@@ -6,7 +6,7 @@ import Pill, { type PillColor } from "../primitives/Pill";
 import type { Tone } from "../primitives/tone";
 import { formatBinaryBytes as formatBytes } from "../../utils/format";
 import CopyButton from "../primitives/CopyButton";
-import { EmptyState } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 
 /*

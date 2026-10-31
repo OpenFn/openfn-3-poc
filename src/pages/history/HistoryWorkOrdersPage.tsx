@@ -4,7 +4,7 @@ import HistoryTabs from "../../components/history/HistoryTabs";
 import { Centered, PageContent } from "../../components/primitives/PageContent";
 import Text from "../../components/primitives/Text";
 import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/history/FilterChip";
+import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/primitives/FilterChip";
 import HistorySearchBar from "../../components/history/HistorySearchBar";
 import {
   BulkCancelModal,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { AIMessage, AISession } from "../../types/ai-assistant";
 import { assetUrl } from "../../utils/assets";
 import { cn } from "../../utils/cn";
+import EmptyState from "../primitives/EmptyState";
 import Button from "../primitives/Button";
 import Card from "../primitives/Card";
 import CopyButton from "../primitives/CopyButton";
@@ -138,13 +139,13 @@ export default function AIAssistantPanel({ sessions, onClose }: Props) {
             )}
           </Text>
         ) : sessions.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
-            <div className="rounded-full bg-sunken p-5">
-              <span className="hero-chat-bubble-left-right block h-10 w-10 text-faint" />
-            </div>
-            <Heading size="lg">No conversations yet</Heading>
-            <Text as="p" className="max-w-70 text-muted">Start chatting below to create your first conversation</Text>
-          </div>
+          <EmptyState
+            variant="plain"
+            fill
+            icon="hero-chat-bubble-left-right"
+            title="No conversations yet"
+            message="Start chatting below to create your first conversation"
+          />
         ) : (
           <div className="flex h-full flex-col">
             <div className="flex items-center gap-2 px-6 pt-3 pb-2">

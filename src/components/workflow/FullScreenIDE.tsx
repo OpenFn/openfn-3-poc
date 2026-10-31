@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import type { EditorJob } from "../../types/workflow-graph";
 import { cn } from "../../utils/cn";
+import EmptyState from "../primitives/EmptyState";
 import Button from "../primitives/Button";
 import CloseButton from "../primitives/CloseButton";
 import IconButton from "../primitives/IconButton";
@@ -14,7 +15,6 @@ import RunBadge from "./RunBadge";
 import RunRetryButton from "./RunRetryButton";
 import type { RunViewerTab } from "./RunViewerPanel";
 import Tooltip from "../primitives/Tooltip";
-import Text from "../primitives/Text";
 
 export type IDEPanelState = "run-viewer" | "history" | "create-run" | undefined;
 
@@ -127,10 +127,17 @@ export default function FullScreenIDE({
             {job ? (
               <CodeEditor key={job.id} value={job.body} onChange={onBodyChange} options={{ minimap: { enabled: true } }} />
             ) : (
-              <Text as="div" className="mx-auto max-w-md p-8 text-center text-muted">
-                <p>The job you're trying to view didn't exist in this version of the workflow.</p>
-                <p className="mt-2 text-muted">You can change versions or select another job.</p>
-              </Text>
+              <EmptyState
+                variant="plain"
+                fill
+                className="mx-auto max-w-md"
+                message={
+                  <>
+                    <p>The job you're trying to view didn't exist in this version of the workflow.</p>
+                    <p className="mt-2">You can change versions or select another job.</p>
+                  </>
+                }
+              />
             )}
           </div>
           {!docsCollapsed && (

@@ -1,6 +1,7 @@
 import Button from "../primitives/Button";
 import { Select } from "../primitives/Inputs";
-import { EmptyState, Table, Td, Th, Tr } from "../primitives/Table";
+import EmptyState from "../primitives/EmptyState";
+import { Table, Td, Th, Tr } from "../primitives/Table";
 import Text from "../primitives/Text";
 import { useToast } from "../primitives/Toast";
 import { digestOptions } from "../../constants";

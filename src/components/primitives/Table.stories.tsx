@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { EmptyState, Table, Td, Th, Tr } from "./Table";
+import { Table, Td, Th, Tr } from "./Table";
 import Pagination from "./Pagination";
 import { users } from "../../mock-data/users";
 import { fullName } from "../../utils/format";
@@ -33,30 +33,28 @@ export const Default: Story = {
   ),
 };
 
-export const Empty: Story = {
-  render: () => <EmptyState message="No sandboxes found" />,
-};
+const header = (
+  <Tr>
+    <Th>Name</Th>
+    <Th>Email</Th>
+    <Th>Role</Th>
+  </Tr>
+);
 
-export const EmptyPlain: Story = {
-  render: () => <EmptyState variant="plain" message="No channels found." />,
-};
-
-export const EmptyWithTitle: Story = {
+/** A server-driven list while its search runs. */
+export const Loading: Story = {
   render: () => (
-    <EmptyState
-      variant="plain"
-      icon="hero-eye-slash"
-      title="No Data Available"
-      message="This dataclip's data has been wiped in accordance with the project's data retention policy."
-    />
+    <Table header={header} state="loading" loadingMessage="Loading work orders ...">
+      {null}
+    </Table>
   ),
 };
 
-export const EmptyWithAction: Story = {
-  render: () => <EmptyState message="No collections yet." buttonText="Create a new collection" onClick={() => {}} />,
-};
-
-/** The user can't create one: the box stays, the button is disabled. */
-export const EmptyWithActionDisabled: Story = {
-  render: () => <EmptyState message="No collections yet." buttonText="Create a new collection" onClick={() => {}} disabled />,
+/** A server-driven list whose search failed. */
+export const LoadError: Story = {
+  render: () => (
+    <Table header={header} state="error" errorMessage="There was an error loading the work orders">
+      {null}
+    </Table>
+  ),
 };

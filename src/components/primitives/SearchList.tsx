@@ -1,5 +1,5 @@
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
-import { EmptyState } from "./Table";
+import EmptyState from "./EmptyState";
 import { useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import Heading from "./Heading";

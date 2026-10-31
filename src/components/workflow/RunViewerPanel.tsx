@@ -12,6 +12,7 @@ import LogViewer from "../domain/LogViewer";
 import { DetailItem, DetailList } from "../primitives/DetailList";
 import Heading from "../primitives/Heading";
 import InfoTooltip from "../primitives/InfoTooltip";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 
 export type RunViewerTab = "log" | "input" | "output";
@@ -40,7 +41,7 @@ export default function RunViewerPanel({ projectId, run, startedBy, steps, logs,
   const step = steps.find((s) => s.id === selectedStepId) ?? null;
   const clip = (id: string | null | undefined) => dataclips.find((d) => d.id === id);
 
-  const empty = (text: string) => <p className="flex h-full items-center justify-center p-12 text-center text-muted">{text}</p>;
+  const empty = (text: string) => <EmptyState variant="plain" fill message={text} />;
   const dataView = (id: string | null | undefined, emptyFinished: string) => {
     if (!step) return empty(`Select a step to view ${activeTab} data`);
     const d = clip(id);
@@ -78,7 +79,7 @@ export default function RunViewerPanel({ projectId, run, startedBy, steps, logs,
             <InfoTooltip title="This run may not have executed all steps in the workflow. Only the steps that were executed in this specific run are shown here." />
           </Heading>
           {steps.length === 0 ? (
-            <p className="py-4 text-center text-muted">No steps yet</p>
+            <EmptyState variant="plain" message="No steps yet" />
           ) : (
             <ul aria-label="Execution steps" className="space-y-2">
               {steps.map((s) => {

@@ -2,27 +2,15 @@ import Button from "../primitives/Button";
 import IconButton from "../primitives/IconButton";
 import { Checkbox } from "../primitives/Inputs";
 import Pagination from "../primitives/Pagination";
-import { Table, Td, Th, Tr } from "../primitives/Table";
+import { Table, Th, Tr } from "../primitives/Table";
 import type { WorkOrderRow } from "../../types/history";
 import type { PageInfo, SortState } from "../../types/lists";
 import { activeStates } from "../../constants";
-import { cn } from "../../utils/cn";
 import WorkOrderTableRow from "./WorkOrderTableRow";
 import { allTicked } from "../../utils/history";
 
 /** The columns History sorts by (`filters[sort_by]`). */
 export type WorkOrderSortKey = "inserted_at" | "last_activity";
-
-/** The row Lightning puts in the body while the search runs or after it fails (`async_filler`). */
-function Filler({ message, pulse = false }: { message: string; pulse?: boolean }) {
-  return (
-    <Tr>
-      <Td colSpan={9}>
-        <div className={cn("py-3 text-center text-muted", pulse && "animate-pulse")}>{message}</div>
-      </Td>
-    </Tr>
-  );
-}
 
 /**
  * History's work orders table (run_live/index.html.heex `work-orders-table`):
@@ -99,6 +87,9 @@ export default function WorkOrdersTable({
   return (
     <Table
       id="work-orders-table"
+      state={state}
+      loadingMessage="Loading work orders ..."
+      errorMessage="There was an error loading the work orders"
       header={
         <Tr>
           <Th className="!pr-1">
@@ -167,10 +158,7 @@ export default function WorkOrdersTable({
         />
       }
     >
-      {state === "loading" && <Filler message="Loading work orders ..." pulse />}
-      {state === "error" && <Filler message="There was an error loading the work orders" />}
-      {state === "ready" &&
-        rows.map((wo) => (
+      {rows.map((wo) => (
           <WorkOrderTableRow
             key={wo.id}
             workOrder={wo}

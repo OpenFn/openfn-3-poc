@@ -10,6 +10,7 @@ import StatePill from "../domain/StatePill";
 import RunBadge from "./RunBadge";
 import { formatDuration, formatRelative, uuidOf } from "../../utils/format";
 import Tooltip from "../primitives/Tooltip";
+import EmptyState from "../primitives/EmptyState";
 import Text from "../primitives/Text";
 
 const Dot = () => <span className="text-strong">&bull;</span>;
@@ -70,15 +71,7 @@ export default function MiniHistory({
 
   const list =
     history.length === 0 ? (
-      <div className="flex flex-col items-center p-8 text-center text-muted">
-        <span className="hero-rectangle-stack mb-2 h-8 w-8 opacity-50" />
-        <Text as="p" variant="label-md">
-          No related history
-        </Text>
-        <Text as="p" variant="body-sm" className="mt-1 text-faint">
-          Why not run it a few times to see some history?
-        </Text>
-      </div>
+      <EmptyState variant="plain" icon="hero-rectangle-stack" title="No related history" message="Why not run it a few times to see some history?" />
     ) : (
       <Text as="div" variant="body-sm" className="divide-y divide-subtle">
         {history.map(({ workOrder, runs }) => {
