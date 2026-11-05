@@ -11,7 +11,7 @@ import type { ApiToken } from "@/types/tokens";
  */
 export default function TokensTable({ tokens }: { tokens: ApiToken[] }) {
   if (tokens.length === 0) {
-    return <EmptyState icon="hero-finger-print" title="No Personal Access Tokens" message="Get started by creating a new access token." />;
+    return <EmptyState icon="hero-finger-print" title="No personal access tokens" message="Get started by creating a new access token." />;
   }
   return (
     <Table

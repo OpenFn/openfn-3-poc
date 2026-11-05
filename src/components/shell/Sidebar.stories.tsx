@@ -24,7 +24,7 @@ export const ProjectMenu: Story = {
   args: { menu: "project", project: projects[0]! },
   decorators: [withRouterAt(`/projects/${projects[0]!.id}/history`)],
 };
-export const ProfileMenu: Story = { args: { menu: "profile" }, decorators: [withRouterAt("/profile")] };
+export const HomeMenu: Story = { args: { menu: "home" }, decorators: [withRouterAt("/profile")] };
 export const AdminMenu: Story = {
   args: { menu: "admin" },
   decorators: [withRouterAt("/settings/users")],
@@ -35,11 +35,11 @@ export const Collapsed: Story = {
 };
 /** A regular user sees Documentation, Community and Support in place of the Admin menu. */
 export const RegularUser: Story = {
-  args: { menu: "profile", canAccessAdmin: false },
+  args: { menu: "home", canAccessAdmin: false },
   decorators: [withRouterAt("/profile")],
 };
 /** Experimental features add an item above the logo and a notice in the account menu. */
 export const ExperimentalFeaturesOn: Story = {
-  args: { menu: "profile", user: users[3]! },
+  args: { menu: "home", user: users[3]! },
   decorators: [withRouterAt("/profile")],
 };

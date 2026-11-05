@@ -94,7 +94,8 @@ const offRadius = /\brounded(?:-[tblrse]{1,2})?(?!-(?:md|lg|xl|full)\b)(?:-(?:no
 const zNumber = /\bz-\d+\b/g
 // w-1/2 is a share of the space, not a fixed size; w-3 to w-6 and h-3 to h-6 are icon sizes, like size-3 to size-6.
 const fixedSize = /(?:^|[\s:"'`])(?:(?:w|h)-(?![3-6](?![\d.\/]))|(?:min-w|max-w|min-h|max-h)-)(?:[1-9][\d.]*|px)(?![\/\w])|(?:^|[\s:"'`])size-(?![3-6](?![\d.]))[\d.]+(?![\w])/g
-const notShell = code.filter((f) => !f.path.startsWith('components/shell/'))
+// The shell and patterns are the layout, which PRINCIPLES.md (Conventions) lets set sizes.
+const notLayout = code.filter((f) => !f.path.startsWith('components/shell/') && !f.path.startsWith('components/patterns/'))
 const indexKey = /\bkey=\{(?:i|idx|index)\}/g
 const handId = /\bid="[^"]+"/g
 const builtClassName = /className=\{`/g
@@ -128,7 +129,7 @@ const rows = [
   ['Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)', count(code, offSpacing)],
   ['Corners other than rounded-md/lg/xl/full', count(code, offRadius)],
   ['z- numbers instead of a named layer', count(code, zNumber)],
-  ['Fixed widths or heights outside the shell', count(notShell, fixedSize)],
+  ['Fixed widths or heights outside the shell and patterns', count(notLayout, fixedSize)],
   ['List keys that are a position', count(code, indexKey)],
   ['Hand-written ids instead of useId()', count(code, handId)],
   ['className built from a template string', count(code, builtClassName)],
@@ -158,7 +159,7 @@ const ratchet = [
   'Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)',
   'Corners other than rounded-md/lg/xl/full',
   'z- numbers instead of a named layer',
-  'Fixed widths or heights outside the shell',
+  'Fixed widths or heights outside the shell and patterns',
   'List keys that are a position',
   'Hand-written ids instead of useId()',
   'className built from a template string',

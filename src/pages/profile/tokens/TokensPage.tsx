@@ -1,9 +1,7 @@
-import Header from "@/components/primitives/Header";
 import Button from "@/components/primitives/Button";
-import { Centered, PageContent } from "@/components/primitives/PageContent";
+import Section from "@/components/primitives/Section";
 import NewTokenBanner from "@/components/profile/NewTokenBanner";
 import TokensTable from "@/components/profile/TokensTable";
-import { Stack } from "@/components/primitives/Stack";
 import TokenDeletionModal from "@/components/profile/TokenDeletionModal";
 import { useState } from "react";
 import { useToast } from "@/components/primitives/Toast";
@@ -38,7 +36,7 @@ export interface TokensPageProps {
 
 /**
  * Inventory view `profile-tokens` (tokens_live/index.html.heex): "Generate
- * New Token" shows the new token once in a banner; the table masks the rest.
+ * new token" shows the new token once in a banner; the table masks the rest.
  * The page owns how it behaves (the banner, the toasts); its .query file,
  * TokensPage.query.tsx, only passes data and actions.
  */
@@ -59,27 +57,24 @@ export default function TokensPage({ status = { state: "ready" }, tokens, tokenI
   };
 
   return (
-    <PageContent
-      header={
-        <Header title="Personal Access Tokens">
-          <Button onClick={() => generate.run()} pending={generate.pending} icon="hero-plus">
-            Generate New Token
-          </Button>
-        </Header>
+    <Section
+      size="lg"
+      title="API tokens"
+      description="Personal access tokens let the OpenFn CLI and API act as you."
+      action={
+        <Button onClick={() => generate.run()} pending={generate.pending} icon="hero-plus">
+          Generate new token
+        </Button>
       }
     >
       {stepUpDialog}
-      <Centered>
-        {tokenId && tokens.some((t) => t.id === tokenId) && (
-          <TokenDeletionModal onClose={onClose} onDelete={() => remove(tokenId)} />
-        )}
-        <Stack>
-          {newToken && <NewTokenBanner token={newToken} />}
-          <AsyncBoundary status={status}>
-            <TokensTable tokens={tokens} />
-          </AsyncBoundary>
-        </Stack>
-      </Centered>
-    </PageContent>
+      {tokenId && tokens.some((t) => t.id === tokenId) && (
+        <TokenDeletionModal onClose={onClose} onDelete={() => remove(tokenId)} />
+      )}
+      {newToken && <NewTokenBanner token={newToken} />}
+      <AsyncBoundary status={status}>
+        <TokensTable tokens={tokens} />
+      </AsyncBoundary>
+    </Section>
   );
 }

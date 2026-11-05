@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import CredentialsIndexPage from "./CredentialsIndexPage";
 import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture } from "@/mock-data/credentials";
 import { session } from "@/mock-data/users";
-import { withCanvas, withRouter } from "@/stories/decorators";
+import { withCanvas } from "@/stories/decorators";
+import { withUserSettingsAt } from "@/stories/withUserSettings";
 
 const done = async () => {};
 const fixture = credentialsFixture();
@@ -10,8 +11,8 @@ const fixture = credentialsFixture();
 const meta: Meta<typeof CredentialsIndexPage> = {
   title: "Pages/Profile/CredentialsIndexPage",
   component: CredentialsIndexPage,
-  // PageContent fills its parent, so give it a screen to fill.
-  decorators: [withRouter, withCanvas("h-screen")],
+  // In its settings layout, which fills its parent, so give it a screen to fill.
+  decorators: [withUserSettingsAt("/credentials"), withCanvas("h-screen")],
   parameters: { layout: "fullscreen" },
   args: {
     ...credentialIndexDataFor(fixture, undefined, session.user),

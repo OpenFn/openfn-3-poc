@@ -20,6 +20,11 @@ export function authRedirectUri(provider: Pick<AuthProvider, "redirectHost" | "n
   return `${provider.redirectHost.replace(/\/$/, "")}/authenticate/${provider.name}/callback`;
 }
 
+/** Whether a path is at `path` or below it: /profile/tokens/x is at /profile/tokens. */
+export function isAt(pathname: string, path: string) {
+  return pathname === path || pathname.startsWith(path + "/");
+}
+
 /**
  * Where to go next: the `return_to` path if it's one in this app, otherwise
  * `fallback`. A full URL, `//host` or `/\host` could send the person off the

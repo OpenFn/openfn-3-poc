@@ -12,7 +12,7 @@ type Story = StoryObj<typeof Header>;
 
 export const Title: Story = { args: { title: "Projects" } };
 export const WithAction: Story = {
-  args: { title: "Personal Access Tokens", children: <Button>Generate New Token</Button> },
+  args: { title: "API tokens", children: <Button>Generate new token</Button> },
 };
 export const WithBreadcrumbs: Story = {
   args: { breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="History" /> },
