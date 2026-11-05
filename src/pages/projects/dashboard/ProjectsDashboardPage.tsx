@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "@/components/primitives/Button";
-import ListPage from "@/components/templates/ListPage";
+import ListPage from "@/components/patterns/ListPage";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import ProjectsTable from "@/components/projects/ProjectsTable";
 import WelcomeBanner from "@/components/projects/WelcomeBanner";
