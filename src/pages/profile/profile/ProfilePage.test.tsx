@@ -72,7 +72,7 @@ describe("ProfilePage", () => {
   it("shows who the user is and links to account deletion", () => {
     renderPage();
     expect(screen.getByRole("heading", { name: "Amy Admin" })).toBeTruthy();
-    expect(screen.getByText("Email: amy@example.org")).toBeTruthy();
+    expect(screen.getByText(/^amy@example\.org · Member since /)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Delete my account" }).getAttribute("href")).toBe("/profile/u1/delete");
   });
 
