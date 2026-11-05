@@ -6,10 +6,9 @@ import AuthPanelLayout, {
 import Alert from "@/components/primitives/Alert";
 import Form from "@/components/primitives/Form";
 import { blank } from "@/utils/validate";
-import TextLink from "@/components/primitives/TextLink";
 import Button from "@/components/primitives/Button";
 import UserAvatar from "@/components/primitives/UserAvatar";
-import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import ConfirmAccessField, { ConfirmAccessSwitch, type ConfirmAccessMethod } from "@/components/domain/ConfirmAccessField";
 import { errorMessage } from "@/utils/errors";
 import { useForm } from "@/utils/useForm";
 
@@ -30,12 +29,12 @@ export interface AuthConfirmAccessPageProps {
  * the page's own. Props only, so it can run unchanged in Lightning.
  */
 export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAccessPageProps) {
-  const [option, setOption] = useState<"password" | "totp">("password");
+  const [option, setOption] = useState<ConfirmAccessMethod>("password");
   // One box, for the password or the code: our own can't-be-blank, as on every form.
   const form = useForm({ initial: { value: "" }, validate: ({ value }) => ({ value: blank(value) }) });
   const { error, ...formProps } = form.formProps(({ value }) => onConfirm(option === "password" ? { password: value } : { code: value }));
 
-  const switchTo = (next: "password" | "totp") => {
+  const switchTo = (next: ConfirmAccessMethod) => {
     setOption(next);
     form.reset();
   };
@@ -54,47 +53,16 @@ export default function AuthConfirmAccessPage({ user, onConfirm }: AuthConfirmAc
         {/* The failure sits at the top of the panel, as Lightning's flash does; the button is inside the form, not after it. */}
         {error && <Alert tone="danger">{errorMessage(error)}</Alert>}
         <Form id="reauthentication-form" {...formProps}>
-          {option === "password" ? (
-            <PasswordInput
-              id="user_password"
-              name="password"
-              label="Password"
-              hint="Enter your password to confirm access"
-              required
-              autoComplete="current-password"
-              {...form.fieldProps("value")}
-            />
-          ) : (
-            <TextInput
-              id="user_code"
-              name="code"
-              label="Authentication Code"
-              hint="Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code."
-              required
-              autoComplete="one-time-code"
-              inputMode="numeric"
-              placeholder="XXXXXX"
-              {...form.fieldProps("value")}
-            />
-          )}
+          <ConfirmAccessField method={option} {...form.fieldProps("value")} />
           <Button type="submit" className="w-full">
             {option === "password" ? "Confirm" : "Verify"}
           </Button>
         </Form>
       </AuthPanel>
       <HavingProblems>
-        {option === "password" && user.mfaEnabled && (
+        {(option === "totp" || user.mfaEnabled) && (
           <li>
-            <TextLink id="use-totp" onClick={() => switchTo("totp")}>
-              Use your authenticator app instead
-            </TextLink>
-          </li>
-        )}
-        {option === "totp" && (
-          <li>
-            <TextLink id="use-password" onClick={() => switchTo("password")}>
-              Use your password instead
-            </TextLink>
+            <ConfirmAccessSwitch method={option} onSwitch={switchTo} />
           </li>
         )}
       </HavingProblems>
