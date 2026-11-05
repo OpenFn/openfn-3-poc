@@ -97,6 +97,22 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
+  it("a table leaves the empty state to ListPage", () => {
+    // A page on ListPage passes its table as `list`, and ListPage draws the empty state.
+    const drawers = components.filter((path) => /Table\.tsx$/.test(path) && sources[path]!.includes('from "@/components/primitives/EmptyState"'));
+    expectOnlyKnown(drawers, [
+      "./components/admin/AdminCollectionsTable.tsx",
+      "./components/history/ChannelRequestsTable.tsx",
+      "./components/profile/TokensTable.tsx",
+      "./components/project-settings/CollaboratorsTable.tsx",
+      "./components/project-settings/CollectionsTable.tsx",
+      "./components/project-settings/HistoryExportsTable.tsx",
+      "./components/project-settings/WebhookAuthMethodsTable.tsx",
+      "./components/projects/channels/ChannelsTable.tsx",
+      "./components/projects/WorkflowsTable.tsx",
+    ]);
+  });
+
   it("only a template builds a page from PageContent", () => {
     // A page fills a template (src/components/templates/), so every page of a
     // kind lays out its title, actions, loading and empty state the same way.

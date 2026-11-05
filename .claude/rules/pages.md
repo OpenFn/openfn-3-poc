@@ -15,5 +15,9 @@ permissions.
 - **One file per Lightning view**, named after its INVENTORY.md id, routed
   in `App.tsx` at Lightning's URL through its `.route.tsx` (new pages, in their own folder) or older `.replica.tsx` wrapper.
 - **Every new page gets a story and a `renderPage` test.**
+- **A list page uses ListPage**, which draws the header, layout, loading,
+  failure and empty state. Lint stops a file on ListPage importing Header,
+  PageContent, EmptyState or AsyncBoundary, and a test stops a new
+  `*Table.tsx` drawing its own EmptyState (the old ones are a shrinking list).
 - Put `data-annotation="<id>"` on any sub-panel that has its own inventory
   or shared id, so the annotations panel shows it.
