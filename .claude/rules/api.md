@@ -43,7 +43,7 @@ At the moment the app supports us moving to Lightning as a single page React app
   server's data back. The fake user's password and MFA code are
   `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
   steps the session up for five minutes.
-- `src/pages/profile/tokens/TokensPage.route.tsx` and its route story are
+- `src/pages/profile/tokens/TokensPage.route.tsx` and `TokensPage.route.test.tsx` are
   the worked example.
 
 ## The wrapper
