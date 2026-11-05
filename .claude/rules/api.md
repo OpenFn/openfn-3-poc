@@ -36,7 +36,11 @@ At the moment the app supports us moving to Lightning as a single page React app
   `detail`); branch on `code`, never on the words. Body errors arrive
   as `fieldErrors`, ready for the form. A form a route feeds names its fields
   as the API does (`name`, not `rawName`), so a 422 lands on its field with
-  no mapping; `CreateProjectModal` is the example.
+  no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
+  hook, the page's `on*` and the form's `useForm<…>` all use it, so a field
+  renamed in one place breaks the build. The route test makes the save fail
+  with a 422 on a field (`failNext`, pointer `#/name`) and checks the error
+  shows under it; `CreateProjectModal` is the example.
 - One file per resource (`credentials.ts`, `projects.ts`, …), holding, in
   this order: the API's type (`ApiCredential`, snake_case as sent), the mapper
   to the page's props type (a plain function), the query keys, the

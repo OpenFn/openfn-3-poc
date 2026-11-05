@@ -4,6 +4,7 @@ import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import ProjectsTable from "@/components/projects/ProjectsTable";
 import WelcomeBanner from "@/components/projects/WelcomeBanner";
 import { useToast } from "@/components/primitives/Toast";
+import type { ProjectInput } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 
@@ -19,7 +20,7 @@ export interface ProjectsDashboardPageProps {
    * Creates a project. Rejects on failure; field errors keyed `name` and
    * `description`, as the API keys them, show on the form. The page announces success.
    */
-  onCreate: (project: { name: string; description: string }) => Promise<void>;
+  onCreate: (project: ProjectInput) => Promise<void>;
 }
 
 /**
@@ -31,7 +32,7 @@ export interface ProjectsDashboardPageProps {
 export default function ProjectsDashboardPage({ status, firstName, projects, onCreate }: ProjectsDashboardPageProps) {
   const toast = useToast();
   const [creating, setCreating] = useState(false);
-  const create = async (project: { name: string; description: string }) => {
+  const create = async (project: ProjectInput) => {
     await onCreate(project);
     toast("Project created successfully");
   };

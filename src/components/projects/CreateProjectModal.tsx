@@ -6,6 +6,7 @@ import { urlSafeName } from "@/utils/format";
 import { useForm } from "@/utils/useForm";
 import { blank } from "@/utils/validate";
 import { Stack } from "@/components/primitives/Stack";
+import type { ProjectInput } from "@/types/projects";
 
 /**
  * "Create a new project" (DashboardLive.ProjectCreationModal): Name, with
@@ -21,9 +22,10 @@ export default function CreateProjectModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onCreate?: (project: { name: string; description: string }) => Promise<void>;
+  onCreate?: (project: ProjectInput) => Promise<void>;
 }) {
-  const form = useForm({
+  // Typed as the API's body, so the fields keep the API's names (`name` holds it as typed until it's sent).
+  const form = useForm<ProjectInput>({
     initial: { name: "", description: "" },
     validate: ({ name, description }) => ({
       name: blank(urlSafeName(name)),

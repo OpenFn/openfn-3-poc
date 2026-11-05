@@ -1,6 +1,7 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
+import type { ProjectInput } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { listAll, request, statusOf } from "./client";
@@ -57,9 +58,9 @@ export function useProjectOverviews(): { status: ResourceStatus; projects: Proje
 export function useProjectSaves() {
   const queryClient = useQueryClient();
   const create = useMutation({
-    mutationFn: (project: { name: string; description: string }) =>
+    mutationFn: (project: ProjectInput) =>
       request<{ data: ApiProject }>("PUT", `/api/projects/${crypto.randomUUID()}`, project),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
   });
-  return { create: async (project: { name: string; description: string }) => void (await create.mutateAsync(project)) };
+  return { create: async (project: ProjectInput) => void (await create.mutateAsync(project)) };
 }
