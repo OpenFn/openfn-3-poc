@@ -15,5 +15,13 @@
   "Hex or rgb() in src code": 0,
   "Palette shades set by themes (theme.css)": 0,
   "Colour roles named for a colour or shade": 0,
-  "Colour roles without a job comment": 0
+  "Colour roles without a job comment": 0,
+  "Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)": 26,
+  "Corners other than rounded-md/lg/xl/full": 27,
+  "z- numbers instead of a named layer": 27,
+  "Fixed widths or heights outside the shell": 339,
+  "List keys that are a position": 9,
+  "Hand-written ids instead of useId()": 212,
+  "className built from a template string": 6,
+  "Files over 300 lines": 8
 }

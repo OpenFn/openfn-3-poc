@@ -1,7 +1,9 @@
 # CLAUDE.md
 
-A React replica of OpenFn Lightning's UI, built page by page. It is
-becoming the frontend that replaces Lightning's LiveView UI. Built with React,
+The frontend that replaces Lightning's LiveView UI, decoupled from its
+backend. It started as a page-by-page React replica of Lightning; it now
+moves towards Brandon's design and the new API (`api/`), page by page as each
+is worked on (PRINCIPLES.md "Where the design comes from"). Built with React,
 TypeScript, Vite, Tailwind 4.
 
 **No backend.** Pages render from fixtures in `src/mock-data/`; save, delete
@@ -16,8 +18,9 @@ Lightning touches one wrapper file and nothing else (see The data seam).
 | Building or changing a page | The page's annotation, `annotations/views/<inventory-id>.md`: what Lightning's page does and says. Then [STANDARDS.md](./STANDARDS.md): the page and its `.replica.tsx` wrapper, pending, failure, lists |
 | Building or changing a component | [docs/building.md](./docs/building.md): which primitive to use, where a new one goes, the recurring patterns |
 | Choosing or changing a colour, or a theme | [docs/colour.md](./docs/colour.md): the roles, what a theme may change, when to add a role |
-| Building something Lightning doesn't have, or a redesign | PRINCIPLES.md "Where we're heading" |
-| Changing something that looks different from Lightning | [docs/lightning-differences.md](./docs/lightning-differences.md) first; it may be on purpose |
+| Building a component or page Brandon has designed | His version in [openfn-ia-demo](https://github.com/brandonjackson/openfn-ia-demo) and its story first. Rebuild it by PRINCIPLES.md, never by copying his code |
+| Changing or dropping something Lightning does | [docs/lightning-differences.md](./docs/lightning-differences.md): it may already be on purpose; if not, add a line, with why |
+| Shaping data | `api/`: the contract with Lightning |
 
 `.claude/rules/` holds the rules for one kind of file (tests, stories, mock
 data, comments, lint) and loads by itself when you touch one.
@@ -44,6 +47,11 @@ data, comments, lint) and loads by itself when you touch one.
   serve that folder. `npm run pixel-check:clear` deletes every saved run.
 - A lint exception is disabled on its line with a reason after ` -- `;
   `debt:` marks one to fix.
+- Once per piece of work, not after each edit: when components are ready,
+  the design-system and accessibility reviewers over all of them together;
+  when a page is ready, all four reviewers in `.claude/agents/` (React,
+  design system, accessibility, architecture) over the whole page. Fix
+  what they clearly get right; bring Lucy only the calls that are hers.
 
 ## Running it
 
@@ -81,20 +89,26 @@ data, comments, lint) and loads by itself when you touch one.
 
 ## Rules that matter everywhere
 
-- **Copy Lightning's behaviour and words, not its code.** Headings, labels,
-  button text, empty states, columns and what each action does come from
-  Lightning (paths in INVENTORY.md). The markup comes from our primitives.
-  Where two Lightning screens style the same thing differently, pick one
-  treatment in the primitive and list it in `docs/lightning-differences.md`,
-  so a comparison run doesn't undo it.
+- **Brandon's look and words, Lightning's behaviour, nobody's code.** What
+  each action does comes from Lightning (paths in INVENTORY.md). Headings,
+  labels, button text and empty states come from Brandon's design where he
+  has the screen, and from Lightning where he doesn't. The markup comes from
+  our primitives. Every change to what Lightning does or says goes in
+  `docs/lightning-differences.md`, so a comparison run doesn't undo it.
 - **Pages take props.** Data, the user and `can*` flags arrive from the
   `.replica.tsx` wrapper. Lint stops pages, components and utils importing
   `src/mock-data/`, `src/session/` or the router.
 - **No styling in pages.** Use a primitive; if none fits, extend one. Lint
   bans raw palette colours, hex, arbitrary values (`text-[13px]`) and type
   sizes outside primitives.
-- **Icons** are Heroicons classes: `<span className="hero-folder h-5 w-5" />`.
-  No icon packages. Conditional classes use `cn()`.
+- **Icons** are Heroicons classes: `<span className="hero-folder h-5 w-5" />`,
+  until the sweep to Lucide (PRINCIPLES.md, One way to do each thing).
+  Conditional classes use `cn()`.
+- **When a rule is missing**, and Brandon's design, Lightning and
+  PRINCIPLES.md don't settle it: take the simplest choice that's cheap to
+  undo, keep it in one place, and track it as an assumption for Lucy. A
+  choice that's expensive to undo is a question for her, not a guess copied
+  across ten files.
 - Fixes and open questions go in Lucy's project tracker, not in new files
   here.
 

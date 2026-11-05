@@ -86,6 +86,18 @@ const themePalette = (stripComments(themeCss).match(/--color-[a-z]+(?:-\d+)?\s*:
 const roleNamedForColour = roleLines.filter((l) => !/-color-tag-/.test(l) && new RegExp(`-color-[\\w-]*(?:${hues}|\\d)`).test(l.split(':')[0])).length
 const roleWithoutJob = roleLines.filter((l) => !l.includes('/*')).length
 
+// The conventions in PRINCIPLES.md "Conventions", counted so each falls to 0
+// and then becomes a lint rule. Existing code is held, not fixed.
+const offSpacing = /(?:^|[\s:"'`])-?(?:p[xytblrse]?|m[xytblrse]?|gap(?:-[xy])?|space-[xy])-(?!(?:0|0\.5|1|1\.5|2|3|4|6|8|px|auto)\b)[\d.]+\b/g
+const offRadius = /\brounded(?:-[tblrse]{1,2})?(?!-(?:md|lg|xl|full)\b)(?:-(?:none|sm|2xl|3xl))?(?![\w-])/g
+const zNumber = /\bz-\d+\b/g
+const fixedSize = /(?:^|[\s:"'`])(?:(?:w|h|min-w|max-w|min-h|max-h)-(?:[1-9][\d.]*|px)|size-(?![3-6]\b)\d+)\b/g
+const notShell = code.filter((f) => !f.path.startsWith('components/shell/'))
+const indexKey = /\bkey=\{(?:i|idx|index)\}/g
+const handId = /\bid="[^"]+"/g
+const builtClassName = /className=\{`/g
+const longFiles = code.filter((f) => f.raw.split('\n').length > 300).length
+
 const rows = [
   ['Source lines (non-blank, excl. stories/mock-data)', loc(files)],
   ['  in primitives', loc(prims)],
@@ -111,6 +123,14 @@ const rows = [
   ['Palette shades set by themes (theme.css)', themePalette],
   ['Colour roles named for a colour or shade', roleNamedForColour],
   ['Colour roles without a job comment', roleWithoutJob],
+  ['Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)', count(code, offSpacing)],
+  ['Corners other than rounded-md/lg/xl/full', count(code, offRadius)],
+  ['z- numbers instead of a named layer', count(code, zNumber)],
+  ['Fixed widths or heights outside the shell', count(notShell, fixedSize)],
+  ['List keys that are a position', count(code, indexKey)],
+  ['Hand-written ids instead of useId()', count(code, handId)],
+  ['className built from a template string', count(code, builtClassName)],
+  ['Files over 300 lines', longFiles],
 ]
 
 // The ratchet: these only go down. `--check` (CI) fails when one rises above the
@@ -133,7 +153,16 @@ const ratchet = [
   'Palette shades set by themes (theme.css)',
   'Colour roles named for a colour or shade',
   'Colour roles without a job comment',
+  'Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)',
+  'Corners other than rounded-md/lg/xl/full',
+  'z- numbers instead of a named layer',
+  'Fixed widths or heights outside the shell',
+  'List keys that are a position',
+  'Hand-written ids instead of useId()',
+  'className built from a template string',
+  'Files over 300 lines',
 ]
+const conventions = ratchet.slice(ratchet.indexOf('Spacing off the scale (0, 0.5, 1, 1.5, 2, 3, 4, 6, 8)'))
 const baselineFile = new URL('./design-system-baseline.json', import.meta.url)
 const now = Object.fromEntries(rows.filter(([k]) => ratchet.includes(k)))
 if (process.argv.includes('--update')) {
@@ -149,7 +178,9 @@ if (process.argv.includes('--check')) {
     console.error(
       k === 'Colour roles in theme/tokens.css'
         ? `Went up: ${k} ${base[k]} → ${now[k]}. A new colour role needs a human's yes; see "When to add a role" in docs/colour.md.`
-        : `Went up: ${k.trim()} ${base[k]} → ${now[k]}. Use a primitive or prop instead; see docs/building.md.`,
+        : conventions.includes(k)
+          ? `Went up: ${k} ${base[k]} → ${now[k]}. See "Conventions" in PRINCIPLES.md.`
+          : `Went up: ${k.trim()} ${base[k]} → ${now[k]}. Use a primitive or prop instead; see docs/building.md.`,
     )
   for (const k of down) console.log(`Went down: ${k.trim()} ${base[k]} → ${now[k]}. Lock it in: node scripts/design-system-metrics.mjs --update`)
   process.exit(up.length ? 1 : 0)

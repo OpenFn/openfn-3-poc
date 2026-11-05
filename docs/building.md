@@ -191,8 +191,9 @@ Lightning's wording wins wherever Lightning has the screen.
   `breadcrumbs` (`ProjectBreadcrumbs`). Don't repeat the title in the body;
   a settings tab opens with `SectionHeader size="lg"`.
 - Row actions go in `<Td actions>` as `Button size="xs" variant="secondary"`
-  with Lightning's verb. More than two go in a `ButtonMenu` labelled
-  "Actions" (a ••• menu on a redesign, PRINCIPLES "Where we're heading"). A
+  with Lightning's verb. More than two go in one ••• menu (PRINCIPLES, One
+  way to do each thing); older pages still use a `ButtonMenu` labelled
+  "Actions" until they're worked on. A
   page with several tables puts each in a `Section`.
 - A long value in a cell depends on what people do with it. A name they
   open the record to read: `<Td truncate>`, one line with an ellipsis. A

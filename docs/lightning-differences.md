@@ -1,12 +1,15 @@
-# Where the replica differs from Lightning on purpose
+# Where we differ from Lightning on purpose
 
-The replica copies what Lightning does and says (CLAUDE.md). When it looks or
-behaves differently on purpose, the difference is listed here, so a
-comparison run doesn't "fix" it back. Each entry says what Lightning does,
-where, and why the replica differs.
+What a page does starts from Lightning: the scenario tests check each page
+against it. Looks and words come from Brandon's design where he has the
+screen (PRINCIPLES.md, Where the design comes from). Every place this app
+does or says something different from Lightning, or drops something, is
+listed here, so a failing test or a comparison run can be told apart from a
+mistake. Each entry says what Lightning does, where, and why we differ.
 
-Wording and behaviour stay Lightning's. Most entries are where Lightning styles
-the same thing two ways and the replica picks one.
+Looks that come from Brandon's design don't need an entry. The older entries
+below are mostly where Lightning styles the same thing two ways and the
+replica picked one.
 
 Add an entry in the PR that makes the difference; delete it if the replica
 goes back to Lightning's way.
