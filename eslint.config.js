@@ -238,6 +238,7 @@ const mockDataImports = {
   regex: '(^|/)mock-data(/(?!models(/|$)).*)?$',
   message: 'Take data as props; the replica loads it. Types live in src/types/, helpers in src/utils/.',
 }
+const apiHookArgs = "A hook in src/api/ takes what it needs as arguments (useCurrentProject(projectId)); the page's .query file reads the URL and the user and passes them in."
 const sessionImports = {
   group: ['**/session', '**/session/**'],
   message: 'Take the user and permissions as props; the replica reads the session.',
@@ -468,12 +469,22 @@ export default defineConfig([
   },
   {
     // The API client has no UI: a failed save stays in its form, and success
-    // toasts are the wrapper's.
+    // toasts are the wrapper's. Its hooks take what they need as arguments:
+    // the .query file reads the URL and the user and passes them in.
     files: ['src/api/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [pageImports, relativeImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the page toasts success.' }] },
+        {
+          paths: routerImports.map((r) => ({ ...r, message: apiHookArgs })),
+          patterns: [
+            pageImports,
+            relativeImports,
+            // src/session/ (who's signed in), not src/api/session.ts, the API's own session resource.
+            { group: ['@/session', '@/session/**'], message: apiHookArgs },
+            { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the page toasts success.' },
+          ],
+        },
       ],
     },
   },

@@ -27,6 +27,10 @@ PRINCIPLES.md "How data flows" says what; this is how.
   app is built for the new API. A list answers through `paged()`, so it pages
   like api/conventions.md; a write checks the body and answers one 422
   `invalid` listing every problem, as api/errors.md says.
+- A hook takes what it needs as arguments (`useCurrentProject(projectId)`).
+  It never reads the URL or the signed-in user (lint): the page's `.query`
+  file reads those and passes them in. So every data hook lives here, in its
+  resource's file, and nowhere else.
 - `isApiError(error, "step_up_required")` is how a route spots a refusal.
   `ApiProvider` holds TanStack Query: a failed load is retried, a 4xx never.
   Only `src/api/` imports TanStack Query, and only routes, replicas,

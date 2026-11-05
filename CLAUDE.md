@@ -106,6 +106,9 @@ data, comments, lint) and loads by itself when you touch one.
 - **Icons** are Heroicons classes: `<span className="hero-folder size-5" />`,
   until the sweep to Lucide (PRINCIPLES.md, One way to do each thing).
   Conditional classes use `cn()`.
+- **When lint blocks you, find out why.** Never rename, move or re-suffix a
+  file to get past it: the rule is telling you the code belongs somewhere
+  else. If the rule is wrong, say so.
 - **When a rule is missing**, and Brandon's design, Lightning and
   PRINCIPLES.md don't settle it: take the simplest choice that's cheap to
   undo, keep it in one place, and track it as an assumption for Lucy. A
