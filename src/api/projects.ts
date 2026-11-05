@@ -4,7 +4,7 @@ import type { CredentialProjectRef } from "@/types/credentials";
 import type { ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { listAll, request, statusOf } from "./client";
+import { isApiError, listAll, request, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -19,6 +19,8 @@ export interface ApiProject {
     /** Planned: on `GET /api/projects/:id`, and on the list with `depth=all`. */
     parent_id?: string | null;
     color?: string | null;
+    /** Planned: a sandbox's project at the top of its tree. */
+    root_id?: string;
   };
 }
 
@@ -44,19 +46,23 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
 export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
 
 function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
-  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
+  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null, isSandbox: a.root_id !== undefined };
 }
 
 /** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
-export function useProject(id: string): { status: ResourceStatus; project: ProjectNode | undefined } {
+export function useProject(id: string | undefined): { status: ResourceStatus; project: ProjectNode | undefined } {
   const query = useQuery({
-    queryKey: projectKeys.one(id),
+    queryKey: projectKeys.one(id ?? ""),
+    // No id (a page outside any project): nothing to load.
+    enabled: id !== undefined,
     queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
     select: projectNode,
     // The gate and the route under it ask in turn; without this the route fetches it again.
     staleTime: 60_000,
   });
-  return { status: statusOf(query), project: query.data };
+  // A malformed id is a 400 for a superuser (api/projects.md); to the person it's a project that isn't there.
+  const status = isApiError(query.error, "invalid_parameter") ? ({ state: "notFound" } as const) : statusOf(query);
+  return { status, project: query.data };
 }
 
 /**

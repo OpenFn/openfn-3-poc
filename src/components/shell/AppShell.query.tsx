@@ -1,6 +1,6 @@
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useCurrentUser, useInstanceInfo, usePermissions } from "@/session/session";
-import { useProjectTree } from "@/api/projects";
+import { useProject, useProjectTree } from "@/api/projects";
 import Picker from "@/components/primitives/Picker";
 import Layout from "@/components/primitives/Layout";
 import Sidebar, { type SidebarMenu } from "./Sidebar";
@@ -19,10 +19,12 @@ export default function AppShell() {
   const { adminEmail, releaseLabel } = useInstanceInfo();
   const { canAccessAdmin } = usePermissions();
   const { status: projectsStatus, projects } = useProjectTree();
+  // The project menu only once ProjectGate's project has loaded: not beside its Not Found or No Access.
+  const { project } = useProject(projectId);
 
   const pickerEmpty =
     projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found";
-  const menu: SidebarMenu = pathname.startsWith("/settings") ? "admin" : projectId ? "project" : "profile";
+  const menu: SidebarMenu = pathname.startsWith("/settings") ? "admin" : project ? "project" : "profile";
 
   return (
     <>
@@ -30,7 +32,7 @@ export default function AppShell() {
         sidebar={({ collapsed, onToggle }) => (
           <Sidebar
             menu={menu}
-            project={projectId ? { id: projectId } : undefined}
+            project={project}
             user={user}
             canAccessAdmin={canAccessAdmin}
             adminEmail={adminEmail}

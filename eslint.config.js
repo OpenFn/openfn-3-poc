@@ -258,7 +258,7 @@ const fakeApiImports = {
   regex: '(^|/)fake-api(/.*)?$',
   message: 'Only src/api/client.ts (and src/api/testing.ts, for stories and tests) knows the fake server. Stories and tests get failNext and resetFakeApi from @/api/testing.',
 }
-const apiCallers = ['**/*.query.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
+const apiCallers = ['src/pages/**/*.query.{ts,tsx}', 'src/components/shell/**/*.query.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
 const apiBoundary = (patterns, paths = []) => ({ '@typescript-eslint/no-restricted-imports': ['error', { paths, patterns }] })
 
 const cacheWriteMessage = "Don't write into the query cache: invalidate the keys the save changed and return that from onSuccess (.claude/rules/api.md)."
