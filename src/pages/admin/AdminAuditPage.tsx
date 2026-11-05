@@ -1,4 +1,4 @@
-import ListPage from "@/components/templates/ListPage";
+import ListPage from "@/components/patterns/ListPage";
 import AuditTable from "@/components/admin/AuditTable";
 import type { AuditEvent } from "@/types/admin";
 import type { PageLinks } from "@/types/lists";

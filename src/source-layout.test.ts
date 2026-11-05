@@ -138,7 +138,6 @@ describe("every page and component can be seen and checked", () => {
     );
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",
-      "./pages/admin/AdminAuditPage.tsx",
       "./pages/admin/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminCollectionsPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
