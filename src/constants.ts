@@ -110,6 +110,7 @@ export const signupDisabledMessage =
 /** Flash messages the controllers put on these pages. */
 export const authMessages = {
   invalidLogin: "Invalid email or password",
+  loggedOut: "Logged out successfully.",
   resetSent:
     "If your email is in our system, you will receive instructions to reset your password shortly.",
   resetInvalid: "Reset password link is invalid or it has expired.",

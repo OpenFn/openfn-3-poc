@@ -192,8 +192,12 @@ screen for it (PRINCIPLES.md, When things go wrong).
 - Failure that needs reading (a form rejected, a conflict) is an inline
   `Alert` next to what failed. Failure of a one-shot button is an error
   toast.
-- A server flash that survives a redirect (login errors, "Project created"
-  after navigation) needs a small flash store read once by the shell.
+- A message that survives a redirect ("Logged out successfully.") travels in
+  the router's navigation state. The `.query` that navigates puts it there,
+  and `useFlash()` (`src/routing/flash.ts`) reads it once and clears it with
+  a replace navigate, so a reload or Back doesn't show it again. Signed-out
+  pages show it at the top of `AuthCard`. On signed-in pages `SessionGate`
+  shows it as a toast.
 
 ## 8. Live updates
 
@@ -221,6 +225,9 @@ and `/api/instance`, and sends the person to log in when signed out (with
 confirm-required when unconfirmed. Otherwise it supplies the user and
 instance through `SessionProvider`. Any request answered 401 reloads the
 session (`ApiProvider`), so a session that ends mid-use lands on login.
+After a sign-in or two-factor sends someone into the app, SessionGate moves
+focus to `<main>`, as ProjectGate does after a swap
+(`useFocusMainAfterSwap`).
 
 Two more gates sit under it, one guard each in the route tree, never a
 check in a page:

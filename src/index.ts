@@ -175,7 +175,7 @@ export type {
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";
-export type { SsoProvider, TwoFactorMethod } from "./types/auth";
+export type { Flash, SsoProvider, TwoFactorMethod } from "./types/auth";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 

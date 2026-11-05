@@ -1,4 +1,4 @@
-/** Logged-out views: SSO providers and two-factor methods. Types only: no data, no behaviour. */
+/** Sign-in views: SSO providers, two-factor methods and the message a redirect carries. Types only: no data, no behaviour. */
 
 export interface SsoProvider {
   /** Admin-facing name of the OIDC provider (Settings > Authentication). */
@@ -9,3 +9,9 @@ export interface SsoProvider {
 
 /** Which method the two-factor page asks for (`?authentication_type=`). */
 export type TwoFactorMethod = "totp" | "backup_code";
+
+/** A message carried across a redirect to the page it lands on. */
+export interface Flash {
+  tone: "info" | "danger";
+  message: string;
+}

@@ -9,7 +9,7 @@ const meta: Meta<typeof AuthLoginPage> = {
   component: AuthLoginPage,
   decorators: [withRouterAt("/users/log_in"), withCanvas("h-screen")],
   parameters: { layout: "fullscreen" },
-  args: { onLogIn: async () => {}, allowSignup: false, ssoProvider: null },
+  args: { onLogIn: async () => {}, allowSignup: false, ssoProvider: null, flash: null },
 };
 export default meta;
 type Story = StoryObj<typeof AuthLoginPage>;
@@ -28,6 +28,8 @@ const setValue = (input: HTMLInputElement, value: string) => {
 };
 
 export const Default: Story = {};
+/** Arrived from logging out: the message the redirect carried shows at the top of the card. */
+export const AfterLoggingOut: Story = { args: { flash: { tone: "info", message: authMessages.loggedOut } } };
 /** The host refuses the email and password: Lightning's flash shows at the top of the card. */
 export const InvalidCredentials: Story = {
   args: { onLogIn: () => Promise.reject(new Error(authMessages.invalidLogin)) },

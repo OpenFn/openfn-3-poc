@@ -217,6 +217,7 @@ const routerMessage = 'Navigate through useRouter() and Link from src/routing/ro
 const routerImports = [
   { name: 'react-router-dom', message: routerMessage },
   { name: 'react-router', message: routerMessage },
+  { name: '@/routing/flash', message: 'Read the flash in the .query file and pass it down as a prop (STANDARDS pattern 7).' },
 ]
 
 // The replica's models (src/mock-data/models/) are its own records. Contract

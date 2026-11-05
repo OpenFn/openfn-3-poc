@@ -229,13 +229,15 @@ goes back to Lightning's way.
   60 days (`user_session_html/new.html.heex`, `UserAuth.log_in_user/3`).
   `POST /api/session` has no `remember_me` field (api/account.md), so the
   replica leaves the box out until it does (docs/api-gaps.md).
-- **Logging out and being sent to log in say nothing yet.** Lightning
-  flashes "Logged out successfully." after `/users/log_out`, and "You must
-  log in to access this page." when it sends a signed-out person to log in
-  (`user_auth.ex`). The replica has no flash that survives a redirect yet
-  (STANDARDS.md pattern 7), so the login page just appears. If signing out
-  fails, the replica says so and stays, rather than showing the login page
-  while the session may still be live.
+- **Being sent to log in says nothing; logging out says so.** Logging out
+  shows Lightning's "Logged out successfully." on the login page. Being sent
+  to log in says nothing, which is what Lightning does too now
+  (`require_authenticated_user` in `user_auth.ex` dropped its "You must log
+  in" flash). If signing out fails, the replica says so and stays, rather
+  than showing the login page while the session may still be live.
+- **The login page's message is polite.** Lightning marks its info flash
+  `role="alert"`. Here it is Alert's `role="status"`, so a screen reader
+  reads it in turn rather than interrupting.
 
 - **Save stays pressable in the collaborator and YAML import modals.**
   Lightning disables Save until every row has an email and a role, and
@@ -313,10 +315,10 @@ goes back to Lightning's way.
   exists, and only a superuser hears Not Found.
 - **An admin page shows No Access in place to anyone but a superuser**, with
   the sidebar still there. Lightning redirects to /projects and shows "No
-  Access" there, which needs a message that survives a redirect (the same
-  hole as "Logged out successfully."). AdminGate shows the same words where
-  the page would be. /dashboard, which has no sidebar, still redirects to
-  /projects, but without the message.
+  Access" there. AdminGate shows the same words where the page would be.
+  /dashboard, which has no sidebar, still redirects to /projects without a
+  message, because Lightning's is a whole No Access screen, not a message
+  to carry.
 
 ## Side menu
 
