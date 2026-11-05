@@ -59,15 +59,7 @@ export function useProject(id: string): { status: ResourceStatus; project: Proje
   return { status: statusOf(query), project: query.data };
 }
 
-/** The project ProjectGate loaded, from the same cache. Routes call the gate's useGatedProject, which passes the id. */
-export function useLoadedProject(id: string): ProjectNode {
-  const { project } = useProject(id);
-  if (!project) throw new Error("useLoadedProject is for routes under ProjectGate, which loads the project first");
-  return project;
-}
-
 const toTree = (rows: ApiProject[]) => rows.map(projectNode);
-const NONE: ProjectNode[] = [];
 
 /** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
 export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
@@ -76,7 +68,7 @@ export function useProjectTree(): { status: ResourceStatus; projects: ProjectNod
     queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
     select: toTree,
   });
-  return { status: statusOf(query), projects: query.data ?? NONE };
+  return { status: statusOf(query), projects: query.data ?? [] };
 }
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */

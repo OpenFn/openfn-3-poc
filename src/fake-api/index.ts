@@ -194,7 +194,7 @@ const routes: Record<string, Handler> = {
     // Root projects you're a member of; with the planned depth=all, every sandbox you can open too.
     const tree = query.get("depth") === "all";
     const rows = projects
-      .filter((p) => (tree ? canOpen(p) : p.parentId === null && roleOf(p)))
+      .filter((p) => canOpen(p) && (tree || p.parentId === null))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((p) => projectEntry(p, { members: false, stats, tree }));
     return json(200, paged("/api/projects", rows, query));

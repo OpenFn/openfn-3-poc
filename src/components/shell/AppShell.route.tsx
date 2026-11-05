@@ -25,6 +25,8 @@ export default function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const toggle = useCallback(() => setCollapsed((c) => !c), []);
 
+  const pickerEmpty =
+    projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found";
   const menu: SidebarMenu = pathname.startsWith("/settings") ? "admin" : projectId ? "project" : "profile";
 
   return (
@@ -49,9 +51,7 @@ export default function AppShell() {
         items={buildProjectPickerItems(pathname, projects)}
         currentId={projectId}
         placeholder="Search projects..."
-        emptyMessage={
-          projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found"
-        }
+        emptyMessage={pickerEmpty}
         viewAllLabel="View all projects"
         viewAllHref="/projects"
         openEvent="open-project-picker"
