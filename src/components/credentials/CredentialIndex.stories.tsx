@@ -38,14 +38,18 @@ const projectScope = {
   onDeleteKeychainCredential: done,
 };
 
+const projectArgs = {
+  ...credentialIndexDataFor(fixture, project, session.user),
+  project: projectScope,
+};
+
 const meta: Meta<typeof CredentialIndex> = {
   title: "Credentials/CredentialIndex",
   component: CredentialIndex,
   decorators: [withGrayPanel],
   args: {
-    ...credentialIndexDataFor(fixture, undefined, session.user),
+    ...projectArgs,
     ...actions,
-    project: null,
     canCreateProjectCredential: true,
     canCreateGlobalOauthClient: true,
   },
@@ -53,14 +57,8 @@ const meta: Meta<typeof CredentialIndex> = {
 export default meta;
 type Story = StoryObj<typeof CredentialIndex>;
 
-const projectArgs = {
-  ...credentialIndexDataFor(fixture, project, session.user),
-  project: projectScope,
-};
-
-/** Project settings: owner column, keychains, project "Add new" options. */
+/** With project settings' "Add new" options. */
 export const ProjectCredentials: Story = {
-  args: projectArgs,
   render: (args) => (
     <div className="space-y-4">
       <div className="flex justify-end"><NewCredentialMenuButton options={projectCredentialMenuOptions(true, true)} /></div>

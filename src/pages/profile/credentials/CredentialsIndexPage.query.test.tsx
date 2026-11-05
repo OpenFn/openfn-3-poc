@@ -98,6 +98,13 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "New credential" })), wait);
   });
 
+  it("explains, and deletes nothing, when runs have used a scheduled credential", async () => {
+    renderRoute();
+    await choose("Legacy warehouse", "Delete now");
+    expect(within(await dialog()).getByText("Credential marked for deletion")).toBeTruthy();
+    expect(within(screen.getByRole("dialog")).queryByRole("button", { name: "Delete credential" })).toBeNull();
+  });
+
   it("keeps the delete dialog open when the server refuses to delete a credential runs have used", async () => {
     await request("PUT", "/api/credentials/cred-dhis2-play/scheduled_deletion");
     failNext("DELETE /api/credentials/:id", { status: 409, code: "in_use", detail: "Cannot delete a credential that has activities in projects" });

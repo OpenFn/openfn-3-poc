@@ -32,8 +32,8 @@ interface ProjectScope extends KeychainCredentialActions {
 }
 
 interface Props extends CredentialIndexData, CredentialActions {
-  /** Project settings › Credentials; null outside a project (no owner column, no keychains). */
-  project: ProjectScope | null;
+  /** The project whose settings show it. */
+  project: ProjectScope;
   /** The host's `can_create_project_credential`. */
   canCreateProjectCredential: boolean;
 }
@@ -51,7 +51,7 @@ type ActiveModal =
 /**
  * The shared credential index (annotations/shared/shared-credential-index-component.md,
  * credential_live/credential_index_component.html.heex): OAuth clients,
- * credentials and, in a project, keychain credentials, with their row
+ * credentials and the project's keychain credentials, with their row
  * actions and modals.
  *
  * The page's "Add new" menu (NewCredentialMenuButton) opens this component's
@@ -78,9 +78,8 @@ export default function CredentialIndex(props: Props) {
     [dropLoad]
   );
 
-  const showOwner = !!project;
-  const defaultProjectIds = project ? [project.id] : [];
-  const canCreateKeychain = project?.canCreateKeychainCredential ?? false;
+  const defaultProjectIds = [project.id];
+  const canCreateKeychain = project.canCreateKeychainCredential;
 
   const open = useCallback(
     (target: NewCredentialTarget) => {
@@ -111,7 +110,7 @@ export default function CredentialIndex(props: Props) {
   const activeId = active && "id" in active ? active.id : null;
   const activeCredential = credentials.find((c) => c.id === activeId);
   const activeClient = oauthClients.find((c) => c.id === activeId);
-  const activeKeychain = project?.keychainCredentials.find((k) => k.id === activeId);
+  const activeKeychain = project.keychainCredentials.find((k) => k.id === activeId);
   // A record that leaves the props takes its modal, and any secrets it holds, with it.
   if (activeId && !activeCredential && !activeClient && !activeKeychain) setActive(null);
   const credentialForm = {
@@ -129,7 +128,6 @@ export default function CredentialIndex(props: Props) {
     <Stack gap="md" id="credentials-index-component" data-annotation="shared-credential-index-component">
       <OauthClientsTable
         rows={oauthClients}
-        showOwner={showOwner}
         emptyState={
           <EmptyState
             message="No OAuth clients found."
@@ -149,7 +147,6 @@ export default function CredentialIndex(props: Props) {
       />
       <CredentialsTable
         rows={credentials}
-        showOwner={showOwner}
         emptyState={
           <EmptyState message="No credentials found." buttonText="Create a new Credential" disabled={!canCreate} onClick={() => open("new_credential")} />
         }
@@ -170,27 +167,25 @@ export default function CredentialIndex(props: Props) {
           )
         }
       />
-      {project && (
-        <KeychainCredentialsTable
-          rows={project.keychainCredentials}
-          emptyState={
-            <EmptyState
-              message="No keychain credentials found."
-              buttonText="Create a new keychain credential"
-              disabled={!canCreateKeychain}
-              onClick={() => open("new_keychain_credential")}
-            />
-          }
-          actions={(kc) =>
-            project.canEditKeychainCredential && (
-              <ButtonMenu label="Actions" disabled={busy}>
-                <MenuItem onClick={() => setActive({ kind: "edit_keychain_credential", id: kc.id })}>Edit</MenuItem>
-                <MenuItem onClick={() => setActive({ kind: "delete_keychain_credential", id: kc.id })}>Delete</MenuItem>
-              </ButtonMenu>
-            )
-          }
-        />
-      )}
+      <KeychainCredentialsTable
+        rows={project.keychainCredentials}
+        emptyState={
+          <EmptyState
+            message="No keychain credentials found."
+            buttonText="Create a new keychain credential"
+            disabled={!canCreateKeychain}
+            onClick={() => open("new_keychain_credential")}
+          />
+        }
+        actions={(kc) =>
+          project.canEditKeychainCredential && (
+            <ButtonMenu label="Actions" disabled={busy}>
+              <MenuItem onClick={() => setActive({ kind: "edit_keychain_credential", id: kc.id })}>Edit</MenuItem>
+              <MenuItem onClick={() => setActive({ kind: "delete_keychain_credential", id: kc.id })}>Delete</MenuItem>
+            </ButtonMenu>
+          )
+        }
+      />
 
       {active?.kind === "new_credential" && (
         <CredentialFormModal open {...credentialForm} defaultProjectIds={defaultProjectIds} onSave={props.onCreateCredential} />
@@ -262,10 +257,10 @@ export default function CredentialIndex(props: Props) {
           <p>Do you want to proceed with this action?</p>
         </ConfirmModal>
       )}
-      {project && active?.kind === "new_keychain_credential" && (
+      {active?.kind === "new_keychain_credential" && (
         <KeychainCredentialFormModal open onClose={close} credentials={credentials} onSave={project.onCreateKeychainCredential} />
       )}
-      {project && active?.kind === "edit_keychain_credential" && activeKeychain && (
+      {active?.kind === "edit_keychain_credential" && activeKeychain && (
         <KeychainCredentialFormModal
           open
           onClose={close}
@@ -274,7 +269,7 @@ export default function CredentialIndex(props: Props) {
           onSave={(values) => project.onUpdateKeychainCredential(activeKeychain.id, values)}
         />
       )}
-      {project && active?.kind === "delete_keychain_credential" && activeKeychain && (
+      {active?.kind === "delete_keychain_credential" && activeKeychain && (
         <ConfirmModal
           open
           title="Delete Keychain Credential"

@@ -160,7 +160,7 @@ export function useCredentialSaves() {
   const queryClient = useQueryClient();
   const reload = () => queryClient.invalidateQueries({ queryKey: credentialKeys.all });
   const path = (id: string, rest = "") => `/api/credentials/${encodeURIComponent(id)}${rest}`;
-  const onFields = (error: unknown) => Promise.reject(renameFields(error, { external_id: "externalId" }));
+  const onFields = (error: unknown) => Promise.reject(renameFields(error, { external_id: "externalId", project_credentials: "projectIds" }));
 
   const create = useMutation({
     mutationFn: (values: CredentialValues) =>

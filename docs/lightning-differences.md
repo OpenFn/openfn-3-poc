@@ -152,7 +152,8 @@ goes back to Lightning's way.
   pending transfer or a scheduled deletion is the menu's wording
   (`components/data_tables.ex`). A global OAuth client says "Global" (Lightning:
   "GLOBAL"). The Type column is the adaptor's name without his logo, and
-  the delete dialog keeps Lightning's words, which project settings shares.
+  the delete dialog keeps Lightning's words, which project settings shares
+  and which already say the credential leaves every job and project at once.
 - **One ⋮ menu per row, Delete last in red.** Lightning's is an "Actions"
   dropdown. A credential scheduled for deletion offers only "Cancel
   deletion" and "Delete now": Lightning also offers Transfer and Edit, which

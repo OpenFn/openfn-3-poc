@@ -24,7 +24,7 @@ export const Credentials: Story = {
   render: () => <CredentialsTable rows={credentials} emptyState={null} actions={actions} />,
 };
 export const CredentialsWithOwner: Story = {
-  render: () => <CredentialsTable rows={credentials} showOwner emptyState={null} actions={actions} />,
+  render: () => <CredentialsTable rows={credentials} emptyState={null} actions={actions} />,
 };
 export const CredentialsEmpty: Story = {
   render: () => (
@@ -35,7 +35,7 @@ export const CredentialsEmpty: Story = {
   ),
 };
 export const OauthClients: Story = {
-  render: () => <OauthClientsTable rows={oauthClients} showOwner emptyState={null} actions={actions} />,
+  render: () => <OauthClientsTable rows={oauthClients} emptyState={null} actions={actions} />,
 };
 export const KeychainCredentials: Story = {
   render: () => <KeychainCredentialsTable rows={keychainCredentials} emptyState={null} actions={actions} />,
@@ -48,13 +48,11 @@ export const LongValues: Story = {
       <div className="space-y-8">
         <CredentialsTable
           rows={credentials.map((c) => ({ ...c, name: `${c.name} ${long}`, externalId: `ext-${long}` }))}
-          showOwner
           emptyState={null}
           actions={actions}
         />
         <OauthClientsTable
           rows={oauthClients.map((c) => ({ ...c, name: `${c.name} ${long}`, authorizationEndpoint: `https://auth.example.org/${long}/oauth2/authorize` }))}
-          showOwner
           emptyState={null}
           actions={actions}
         />

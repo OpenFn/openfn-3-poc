@@ -135,7 +135,7 @@ export function toApiError(status: number, body: unknown): ApiError {
 
 
 /**
- * A refusal with each pointer's field renamed (`#/external_id` → `#/externalId`),
+ * A refusal with each pointer's field renamed (`#/project_credentials/0/project_id` → `#/projectIds`),
  * so it lands on a form field with another name: the forms project settings
  * shares keep their own names until it moves to the API.
  */
@@ -143,7 +143,7 @@ export function renameFields(error: unknown, names: Record<string, string>): unk
   if (!isApiError(error)) return error;
   const errors = error.errors.map((e) => {
     const field = e.pointer?.replace(/^#\//, "").split("/")[0];
-    return field && names[field] ? { ...e, pointer: e.pointer!.replace(`#/${field}`, `#/${names[field]}`) } : e;
+    return field && names[field] ? { ...e, pointer: `#/${names[field]}` } : e;
   });
   return new ApiError(error.status ?? 0, error.code, error.message, errors);
 }
@@ -162,6 +162,9 @@ export const isSignedOut = (error: unknown) =>
 
 /** Whether asking again might help: not for a refusal (4xx), which won't change. */
 export const canRetry = (error: unknown) => !(error instanceof ApiError && error.status !== undefined && error.status >= 400 && error.status < 500);
+
+/** The first of several loads that isn't ready, for a section that needs them all. */
+export const firstNotReady = (...statuses: ResourceStatus[]): ResourceStatus => statuses.find((s) => s.state !== "ready") ?? { state: "ready" };
 
 /**
  * A page's `status` from its query: loading while there's no data, Lightning's

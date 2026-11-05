@@ -12,12 +12,22 @@ import { isDisabled } from "@/test/disabled";
 
 type Props = CredentialIndexData & CredentialActions;
 
-/** The index with its "Add new" menu, outside a project: no owner column, no keychains. */
+const project = {
+  id: "p1",
+  keychainCredentials: [],
+  canCreateKeychainCredential: false,
+  canEditKeychainCredential: false,
+  onCreateKeychainCredential: async () => {},
+  onUpdateKeychainCredential: async () => {},
+  onDeleteKeychainCredential: async () => {},
+};
+
+/** The index with its "Add new" menu, in a project with no keychain credentials. */
 function IndexWithAddMenu(props: Props) {
   return (
     <>
       <NewCredentialMenuButton options={projectCredentialMenuOptions(true, false)} />
-      <CredentialIndex {...props} project={null} canCreateProjectCredential />
+      <CredentialIndex {...props} project={project} canCreateProjectCredential />
     </>
   );
 }
@@ -139,14 +149,12 @@ afterEach(() => vi.restoreAllMocks());
 
 // Each test drives the shared modals through several steps.
 describe("CredentialIndex", { timeout: 15_000 }, () => {
-  it("lists the viewer's credentials and clients as the host sends them, without an owner column", () => {
+  it("lists the credentials and clients as the host sends them, with their owner", () => {
     renderPage({ credentials: [dhis2, { ...sheets, oauthClient: null }] });
     const cells = (id: string) => [...row(id).querySelectorAll("td")].map((td) => td.textContent);
-    expect(cells("credentials-cred1").slice(0, 5)).toEqual(["DHIS2 play", "dhis2", "openhie", "dhis2-01", "2"]);
+    expect(cells("credentials-cred1").slice(0, 6)).toEqual(["DHIS2 play", "dhis2", "amy@example.org", "openhie", "dhis2-01", "2"]);
     expect(cells("credentials-cred2")[1]).toBe("oauth");
     expect(within(row("credentials-cred2")).getByLabelText("OAuth client not found")).toBeTruthy();
-    expect(screen.queryByRole("columnheader", { name: "Owner" })).toBeNull();
-    expect(document.getElementById("keychain-credentials-table-container")).toBeNull();
   });
 
   it("names an OAuth credential's type after its client", () => {
@@ -175,7 +183,7 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
         externalId: "",
         schema: "dhis2",
         oauthClientId: null,
-        projectIds: ["p2"],
+        projectIds: ["p1", "p2"],
         environments: [{ name: "main", previousName: null, body: '{"hostUrl":"https://dhis2.example.org"}', signInId: null }],
       })
     );

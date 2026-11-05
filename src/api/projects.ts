@@ -126,8 +126,9 @@ const shareable = (rows: ApiProject[]) =>
  * The projects you can share a credential or OAuth client with: those you
  * edit or own. A sandbox gets a share through its parent, as in Lightning.
  */
-export function useShareableProjects(): { id: string; name: string }[] {
-  return useQuery({ ...overviewsQuery, select: shareable }).data ?? [];
+export function useShareableProjects(): { status: ResourceStatus; projects: { id: string; name: string }[] } {
+  const query = useQuery({ ...overviewsQuery, select: shareable });
+  return { status: statusOf(query), projects: query.data ?? [] };
 }
 
 /**
