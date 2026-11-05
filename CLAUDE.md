@@ -29,6 +29,10 @@ data, comments, lint) and loads by itself when you touch one.
 
 - Before you say it's done: `npm run lint` (warnings fail too),
   `npm run build` (typechecks) and `npm test`.
+- Size the checks to the change. Docs and comments need none. A merge
+  conflict, an import or a rename needs `npx tsc -b`, lint and the test
+  file it touches. New logic needs its own tests while you work, and the
+  full suites once, before the final push.
 - Changed a component or a story: while you work, run only the stories
   you touched (`npm run test:stories -- Button`). Run the full
   `npm run test:stories` once, right before you commit, and under the
