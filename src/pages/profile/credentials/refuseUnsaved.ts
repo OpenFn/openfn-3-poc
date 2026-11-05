@@ -22,6 +22,6 @@ export function refuseUnsaved(values: CredentialValues, saved: CredentialRow | u
     values.environments.some((e) => !names.includes(e.name) || (e.previousName ?? e.name) !== e.name || (e.name !== "main" && isFilled(e.body)));
   const projectRemoved = saved?.projects.some((p) => !values.projectIds.includes(p.id));
   if (environmentsChanged || projectRemoved) {
-    throw new RequestError("Only main can be changed here yet, and a project can't be taken away. Undo that and save again.");
+    throw new RequestError("You can only change main here, and you can't remove a project. Undo that and save again.");
   }
 }

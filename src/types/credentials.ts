@@ -78,7 +78,7 @@ export interface CredentialRow {
 export interface OauthClientRow {
   id: string;
   name: string;
-  /** The provider's id for the app, which the edit form shows. */
+  /** The provider's id for the app. */
   clientId: string;
   ownerEmail: string;
   /** Usable by every project on the instance; shown as GLOBAL. */

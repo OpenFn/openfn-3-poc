@@ -15,8 +15,8 @@ interface Props {
   onCancelDeletion: (credential: CredentialRow) => void;
   /** Schedules the deletion, or for a scheduled one deletes it now. */
   onDelete: (credential: CredentialRow) => void;
-  /** The credential whose action is waiting on the server; its menu spins. */
-  pendingId: string | null;
+  /** Whether a credential's action is waiting on the server; its menu spins. */
+  isPending: (id: string) => boolean;
 }
 
 /**
@@ -25,7 +25,7 @@ interface Props {
  * credential offers only Cancel deletion and Delete now, since every other
  * action is refused until the deletion is cancelled.
  */
-export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer, onCancelDeletion, onDelete, pendingId }: Props) {
+export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer, onCancelDeletion, onDelete, isPending }: Props) {
   return (
     <Table
       header={
@@ -40,7 +40,6 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
     >
       {credentials.map((c) => (
         <Tr key={c.id}>
-          {/* The name wraps beside its badges. */}
           <Td wrap maxWidth={80}>
             <Stack gap="xs">
               <Row gap="sm" wrap>
@@ -56,6 +55,11 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
                   </Pill>
                 )}
               </Row>
+              {c.transferStatus === "pending" && (
+                <Text variant="body-sm" tone="muted">
+                  Confirm it from the email we sent you.
+                </Text>
+              )}
               {c.externalId && (
                 <Text variant="code-sm" tone="faint">
                   {c.externalId}
@@ -81,7 +85,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
           </Td>
           <Td actions>
             <Menu
-              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={pendingId === c.id} />}
+              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={isPending(c.id)} />}
             >
               {c.scheduledDeletion ? (
                 <MenuItem icon="hero-arrow-uturn-left" onClick={() => onCancelDeletion(c)}>

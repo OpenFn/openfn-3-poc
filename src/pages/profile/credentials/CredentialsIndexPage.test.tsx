@@ -125,7 +125,7 @@ describe("CredentialsIndexPage", () => {
     const form = screen.getByRole("dialog");
     await userEvent.click(within(form).getByRole("button", { name: "Add new environment" }));
     await userEvent.click(within(form).getByRole("button", { name: /Save/ }));
-    expect(await within(form).findByText(/Only main can be changed here yet/)).toBeTruthy();
+    expect(await within(form).findByText(/You can only change main here/)).toBeTruthy();
     expect(host.calls("onUpdateCredential")).toEqual([]);
   });
 
@@ -139,7 +139,7 @@ describe("CredentialsIndexPage", () => {
     await userEvent.click(within(form).getByRole("tab", { name: /staging/ }));
     await userEvent.type(within(form).getByLabelText("Password"), "new-secret");
     await userEvent.click(within(form).getByRole("button", { name: /Save/ }));
-    expect(await within(form).findByText(/Only main can be changed here yet/)).toBeTruthy();
+    expect(await within(form).findByText(/You can only change main here/)).toBeTruthy();
     expect(host.calls("onUpdateCredential")).toEqual([]);
   });
 

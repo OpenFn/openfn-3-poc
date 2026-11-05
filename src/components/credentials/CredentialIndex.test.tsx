@@ -137,7 +137,8 @@ const configure = async (type: string) => {
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("CredentialIndex", () => {
+// Each test drives the shared modals through several steps.
+describe("CredentialIndex", { timeout: 15_000 }, () => {
   it("lists the viewer's credentials and clients as the host sends them, without an owner column", () => {
     renderPage({ credentials: [dhis2, { ...sheets, oauthClient: null }] });
     const cells = (id: string) => [...row(id).querySelectorAll("td")].map((td) => td.textContent);

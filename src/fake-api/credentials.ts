@@ -6,7 +6,7 @@ import {
   withActivity,
 } from "@/mock-data/credentials";
 import { purgeDeletedAfterDays } from "@/mock-data/project-settings";
-import { forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
+import { SEEDED_AT, forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
 import { credentialSchemaRoutes, schemaPackage } from "./credentialSchemas";
 import { fakeOauthClients, oauthClientRoutes, resetOauthClients } from "./oauthClients";
 import { fakeProjects, isEditorIn, isMemberOf } from "./projects";
@@ -32,7 +32,6 @@ interface StoredCredential {
   updated_at: string;
 }
 
-const SEEDED_AT = "2026-01-01T00:00:00Z";
 const seed = (): StoredCredential[] => {
   const fixture = credentialsFixture();
   return credentialFixtures.map((c) => ({
@@ -116,8 +115,9 @@ function check(body: Body, existing: StoredCredential | undefined): Errors {
   if (bodies !== undefined && (!Array.isArray(bodies) || bodies.length !== 1 || (bodies[0] as Body)?.["name"] !== "main")) {
     errors.push({ code: "one_body", detail: "must be exactly one body, named main", pointer: "#/credential_bodies" });
   }
+  // A link it already has stays, so only a new one is checked.
   ((body["project_credentials"] ?? []) as { project_id: string }[]).forEach(({ project_id }, i) => {
-    if (!isEditorIn(project_id)) errors.push({ code: "no_access", detail: "you can't share credentials with this project", pointer: `#/project_credentials/${i}/project_id` });
+    if (!existing?.project_ids.includes(project_id) && !isEditorIn(project_id)) errors.push({ code: "no_access", detail: "you can't share credentials with this project", pointer: `#/project_credentials/${i}/project_id` });
   });
   return errors;
 }
@@ -206,7 +206,7 @@ export const credentialRoutes: Record<string, Handler> = {
   "PUT /api/credentials/:id/scheduled_deletion": ({ id }) => {
     const found = own(id!, true);
     if (found instanceof Response) return found;
-    found.scheduled_deletion ??= new Date(Date.now() + purgeDeletedAfterDays * 86_400_000).toISOString().replace(/\.\d+Z$/, "Z");
+    found.scheduled_deletion ??= now(new Date(Date.now() + purgeDeletedAfterDays * 86_400_000));
     found.project_ids = [];
     return answer(200, found);
   },

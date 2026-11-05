@@ -1,9 +1,9 @@
-/** OAuth clients on Lightning's API (api/credentials.md, OAuth clients): the API's shape, its mapper, its keys, and the hooks a .query file calls. */
+/** OAuth clients on Lightning's API (api/credentials.md, OAuth clients): the API's shape, its mapper, its keys, its queries and saves. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { OauthClientRow, OauthClientValues } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
-import { listAll, request, statusOf } from "./client";
-import { credentialKeys, renameFields } from "./credentials";
+import { listAll, renameFields, request, statusOf } from "./client";
+import { credentialKeys } from "./credentials";
 import { useProjectTree } from "./projects";
 
 /** An OAuth client as `GET /api/oauth_clients` lists it. `client_secret` is never sent. */

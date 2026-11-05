@@ -144,7 +144,8 @@ goes back to Lightning's way.
   systems.") and "No OAuth clients yet" (Lightning: "No credentials found."
   and "No OAuth clients found.", each with a create button).
 - **His columns.** A credential's name has its external ID under it and a
-  "Transfer pending" or "Scheduled for deletion" badge beside it; projects
+  "Transfer pending" or "Scheduled for deletion" badge beside it, and a
+  pending transfer says "Confirm it from the email we sent you."; projects
   are plain text, "None" when there are none; each environment is named.
   Lightning has an External ID column, project pills, the number of
   environments with their names on hover, and no badges: the only sign of a

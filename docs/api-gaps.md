@@ -107,6 +107,12 @@ apart.
   one answer for both, such as `no_access` "They need an account and a role
   in every project this credential is shared with". Replica: the fake
   answers that.
+- **Projects: where you can link a credential** (api/projects.md,
+  api/credentials.md). Linking needs editor or above, but the project list
+  sends no `create_project_credential`; only the planned `role` under
+  `include=stats`. Would need that permission on each listed project.
+  Replica: the share pickers offer the projects whose role is owner, admin
+  or editor, which works out a permission from a role.
 
 ## Changed, and that's fine
 
@@ -149,3 +155,7 @@ The replica shows less, or shows it another way, and nothing breaks.
 - **Credentials: who a transfer is waiting on** (api/credentials.md).
   Brandon's design shows "Waiting for <email> to accept"; `transfer_status`
   says only `pending`. Replica: the badge without the name.
+- **OAuth clients: projects come as ids** (api/credentials.md, OAuth
+  clients). A client sends `project_ids`, where a credential sends
+  `projects` with names. Replica: names them from the project list, so the
+  OAuth clients table waits for that list too.

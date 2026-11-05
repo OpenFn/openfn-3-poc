@@ -1,9 +1,9 @@
-/** Credentials on Lightning's API (api/credentials.md): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
+/** Credentials on Lightning's API (api/credentials.md): the API's shape, its mappers, its keys, its queries and saves. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialRow, CredentialTypeOption, CredentialValues, SchemaField } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
 import { adaptorShortName } from "@/utils/adaptors";
-import { ApiError, isApiError, listAll, request, statusOf } from "./client";
+import { listAll, renameFields, request, statusOf } from "./client";
 
 /** A credential as `GET /api/credentials` sends it. The optional fields are api/credentials.md's planned scope. */
 export interface ApiCredential {
@@ -85,20 +85,6 @@ export function schemaFields(schema: { properties?: Record<string, ApiSchemaProp
 }
 
 // What the saves send.
-
-/**
- * A refusal with each pointer's field renamed (`#/external_id` → `#/externalId`),
- * so it lands on the shared form's field. The forms keep their own names
- * while project settings, which shares them, is still on its replica.
- */
-export function renameFields(error: unknown, names: Record<string, string>): unknown {
-  if (!isApiError(error)) return error;
-  const errors = error.errors.map((e) => {
-    const field = e.pointer?.replace(/^#\//, "").split("/")[0];
-    return field && names[field] ? { ...e, pointer: e.pointer!.replace(`#/${field}`, `#/${names[field]}`) } : e;
-  });
-  return new ApiError(error.status ?? 0, error.code, error.message, errors);
-}
 
 /**
  * The `main` body to send, or undefined to keep what's saved. The form never

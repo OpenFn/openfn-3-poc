@@ -1,6 +1,6 @@
 /** OAuth clients on the pretend server (api/credentials.md, OAuth clients). */
 import { clientSecretsFor, credentialsFixture, oauthClients as clientFixtures } from "@/mock-data/credentials";
-import { forbidden, invalid, json, noContent, now, paged, type Body, type Handler, type Problem } from "./answers";
+import { SEEDED_AT, forbidden, invalid, json, noContent, now, paged, type Body, type Handler, type Problem } from "./answers";
 import { isEditorIn } from "./projects";
 import { currentUser } from "./session";
 
@@ -26,13 +26,12 @@ interface StoredClient {
   updated_at: string;
 }
 
-const SEEDED_AT = "2026-01-01T00:00:00Z";
 const seed = (): StoredClient[] =>
-  clientFixtures.map((c) => ({
+  clientFixtures.map((c) => ({ c, secrets: clientSecretsFor(credentialsFixture(), c.id) })).map(({ c, secrets }) => ({
     id: c.id,
     name: c.name,
-    client_id: clientSecretsFor(credentialsFixture(), c.id).clientId,
-    client_secret: clientSecretsFor(credentialsFixture(), c.id).clientSecret,
+    client_id: secrets.clientId,
+    client_secret: secrets.clientSecret,
     authorization_endpoint: c.authorizationEndpoint,
     token_endpoint: c.tokenEndpoint,
     revocation_endpoint: c.revocationEndpoint || null,
@@ -64,12 +63,12 @@ const ENDPOINTS = ["authorization_endpoint", "token_endpoint", "revocation_endpo
 const TEXT = ["name", "client_id", "client_secret", "mandatory_scopes", "optional_scopes", ...ENDPOINTS];
 const isUrl = (value: string) => URL.canParse(value) && /^https?:/.test(value);
 
-function check(body: Body, creating: boolean): NonNullable<Problem["errors"]> {
+function check(body: Body, existing: StoredClient | undefined): NonNullable<Problem["errors"]> {
   const errors: NonNullable<Problem["errors"]> = Object.keys(body)
     .filter((key) => ![...TEXT, "global", "project_ids", "id"].includes(key))
     .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
   // Leaving client_secret out of a replace keeps it.
-  const required = ["name", "client_id", "authorization_endpoint", "token_endpoint", ...(creating ? ["client_secret"] : [])];
+  const required = ["name", "client_id", "authorization_endpoint", "token_endpoint", ...(existing ? [] : ["client_secret"])];
   for (const key of required) {
     if (typeof body[key] !== "string" || body[key] === "") errors.push({ code: "required", detail: "can't be blank", pointer: `#/${key}` });
   }
@@ -77,8 +76,9 @@ function check(body: Body, creating: boolean): NonNullable<Problem["errors"]> {
     const value = body[key];
     if (typeof value === "string" && value !== "" && !isUrl(value)) errors.push({ code: "format", detail: "must be a valid URL", pointer: `#/${key}` });
   }
+  // A link it already has stays, so only a new one is checked.
   ((body["project_ids"] ?? []) as string[]).forEach((projectId, i) => {
-    if (!isEditorIn(projectId)) {
+    if (!existing?.project_ids.includes(projectId) && !isEditorIn(projectId)) {
       errors.push({ code: "no_access", detail: "you can't share a client with this project", pointer: `#/project_ids/${i}` });
     }
   });
@@ -97,7 +97,7 @@ export const oauthClientRoutes: Record<string, Handler> = {
   "PUT /api/oauth_clients/:id": ({ id }, body) => {
     const existing = clients.find((c) => c.id === id);
     if (existing && existing.user_id !== currentUser().id) return forbidden();
-    const errors = check(body, !existing);
+    const errors = check(body, existing);
     if (errors.length) return invalid(errors);
     // As Lightning, `global` is dropped, not refused, for anyone but a superuser.
     const global = currentUser().role === "superuser" ? body["global"] === true : (existing?.global ?? false);

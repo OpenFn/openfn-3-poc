@@ -94,6 +94,8 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     await userEvent.click(within(await dialog()).getByRole("button", { name: "Delete credential" }));
     expect(await notice('"DHIS2 play" deleted')).toBeTruthy();
     await waitFor(() => expect(screen.queryByRole("row", { name: /DHIS2 play/ })).toBeNull(), wait);
+    // Its menu went with it, so focus goes to the section's create button.
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "New credential" })), wait);
   });
 
   it("keeps the delete dialog open when the server refuses to delete a credential runs have used", async () => {
@@ -137,7 +139,7 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Configure credential" }));
     await screen.findByRole("button", { name: "Save Credential" }, wait);
     fireEvent.change(screen.getByLabelText(/^Credential Name/), { target: { value: "Mailchimp" } });
-    fireEvent.change(document.getElementById("credential-body-raw")!, { target: { value: '{"apiKey":"abc"}' } });
+    fireEvent.change(screen.getByLabelText(/^Credential Body/), { target: { value: '{"apiKey":"abc"}' } });
     fireEvent.click(screen.getByRole("button", { name: "Save Credential" }));
     expect(await notice("Credential created successfully")).toBeTruthy();
     expect(await screen.findByRole("row", { name: /Mailchimp/ }, wait)).toBeTruthy();
@@ -175,7 +177,7 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     expect(await screen.findByRole("row", { name: /Mailchimp app/ }, wait)).toBeTruthy();
   });
 
-  it("renames an OAuth client, keeping its secret", async () => {
+  it("renames an OAuth client without asking for its secret again", async () => {
     renderRoute();
     await choose("Google Workspace", "Edit");
     fireEvent.change(within(await dialog()).getByLabelText(/^Name/), { target: { value: "Google" } });

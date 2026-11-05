@@ -29,5 +29,5 @@ export default function NewCredentialMenuButton({ id = "credential-options-menu-
     </div>
   );
 }
-// eslint-disable-next-line react-refresh/only-export-components -- re-exported so pages import the menu and its option presets together
+// eslint-disable-next-line react-refresh/only-export-components -- re-exported so pages import the menu and its option preset together
 export { projectCredentialMenuOptions } from "./credentialModalEvents";

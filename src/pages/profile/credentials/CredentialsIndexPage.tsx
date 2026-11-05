@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Alert from "@/components/primitives/Alert";
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
 import Button from "@/components/primitives/Button";
@@ -22,6 +22,7 @@ import type {
 } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
 import { useActions } from "@/utils/useAction";
+import { useNotice } from "@/utils/useNotice";
 import { refuseUnsaved } from "./refuseUnsaved";
 
 /** What its .query file passes in: the viewer's credentials and OAuth clients, and the actions that change them. */
@@ -64,12 +65,11 @@ type Dialog =
 const withoutOauth = {
   oauthClients: [],
   oauthSignIns: [],
-  onAuthorizeOauth: () => Promise.reject(new Error("OAuth sign-in isn't available here yet.")),
+  onAuthorizeOauth: () => Promise.reject(new Error("OAuth credentials can't be added here yet.")),
   onDiscardOauthSignIns: async () => {},
 };
 
 type SectionKey = "credentials" | "oauth";
-type Tone = "success" | "info" | "danger";
 
 /**
  * Inventory view `credentials-index`: the credentials you own and your OAuth
@@ -88,16 +88,13 @@ export default function CredentialsIndexPage({
   ...on
 }: CredentialsIndexPageProps) {
   const [dialog, setDialog] = useState<Dialog | null>(null);
-  const [notice, setNotice] = useState<{ section: SectionKey; tone: Tone; message: string; key: number } | null>(null);
-  // A new key each time, so the same message twice is a new alert, and read out again.
-  const noticeCount = useRef(0);
-  const say = (section: SectionKey, tone: Tone, message: string) => setNotice({ section, tone, message, key: ++noticeCount.current });
-  // Success fades; an error stays until the next result.
-  useEffect(() => {
-    if (notice?.tone !== "success") return;
-    const timer = setTimeout(() => setNotice(null), 5000);
-    return () => clearTimeout(timer);
-  }, [notice]);
+  const { notice, say } = useNotice<SectionKey>();
+  const noticeIn = (where: SectionKey) =>
+    notice?.where === where && (
+      <Alert key={notice.key} tone={notice.tone}>
+        {notice.message}
+      </Alert>
+    );
   // Where focus goes when the row it came from is gone.
   const newCredentialButton = useRef<HTMLButtonElement>(null);
   const newClientButton = useRef<HTMLButtonElement>(null);
@@ -111,15 +108,15 @@ export default function CredentialsIndexPage({
   const rowAction = useActions((_id: string, run: () => Promise<void>) => run(), {
     onError: (error) => say("credentials", "danger", error.message),
   });
-  const pendingId = credentials.find((c) => rowAction.pending(c.id))?.id ?? null;
 
   const editCredential = (c: CredentialRow) => {
-    if (c.schema === "oauth") return say("credentials", "info", "OAuth credentials can't be edited here yet: signing in to the provider isn't on the API.");
+    if (c.schema === "oauth") return say("credentials", "info", "OAuth credentials can't be edited here yet.");
     void rowAction.run(c.id, async () => {
       const loaded = c.schema === "raw" ? undefined : await on.onLoadCredentialSchema(c.schema);
       // A blank field keeps what's saved, so none is required.
-      const schema = loaded && { fields: loaded.fields.map((f) => ({ ...f, required: false })) };
-      setDialog({ kind: "edit-credential", id: c.id, schema });
+      const schema = loaded && { fields: loaded.fields.map((f) => ({ ...f, required: false, placeholder: "Saved. Leave blank to keep it." })) };
+      // Unless another dialog opened while the fields loaded.
+      setDialog((open) => open ?? { kind: "edit-credential", id: c.id, schema });
     });
   };
   const cancelDeletion = (c: CredentialRow) =>
@@ -146,16 +143,12 @@ export default function CredentialsIndexPage({
         }
       >
         <Stack gap="md">
-          {notice?.section === "credentials" && (
-            <Alert key={notice.key} tone={notice.tone}>
-              {notice.message}
-            </Alert>
-          )}
+          {noticeIn("credentials")}
           <AsyncBoundary status={status}>
             {credentials.length ? (
               <OwnedCredentialsTable
                 credentials={credentials}
-                pendingId={pendingId}
+                isPending={rowAction.pending}
                 onEdit={editCredential}
                 onTransfer={(c) => setDialog({ kind: "transfer", id: c.id })}
                 onCancelDeletion={cancelDeletion}
@@ -179,11 +172,7 @@ export default function CredentialsIndexPage({
         }
       >
         <Stack gap="md">
-          {notice?.section === "oauth" && (
-            <Alert key={notice.key} tone={notice.tone}>
-              {notice.message}
-            </Alert>
-          )}
+          {noticeIn("oauth")}
           <AsyncBoundary status={oauthClientsStatus}>
             {oauthClients.length ? (
               <OwnedOauthClientsTable
