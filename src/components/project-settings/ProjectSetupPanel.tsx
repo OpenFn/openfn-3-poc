@@ -15,7 +15,7 @@ import { errorMessage } from "@/utils/errors";
 import { urlSafeName } from "@/utils/format";
 import { useChosenValue } from "@/utils/useChosenValue";
 import { useForm } from "@/utils/useForm";
-import { blank } from "@/utils/validate";
+import { projectNameErrors } from "@/utils/validate";
 import PlanLimitNote from "@/components/domain/PlanLimitNote";
 
 interface Props {
@@ -39,7 +39,7 @@ export default function ProjectSetupPanel({ setup, parent, onSaveIdentity, onSav
   const sandbox = parent !== null;
   const identity = useForm<ProjectIdentityValues>({
     initial: { rawName: setup.name, description: setup.description },
-    validate: ({ rawName }) => ({ rawName: blank(urlSafeName(rawName)) }),
+    validate: ({ rawName }) => ({ rawName: projectNameErrors(urlSafeName(rawName)) }),
   });
   const toast = useToast();
   // One setting, so it saves as you switch it (a switch takes effect now), after a confirm when turning it on.

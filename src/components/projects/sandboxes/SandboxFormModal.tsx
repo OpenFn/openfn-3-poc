@@ -1,6 +1,7 @@
 import type { SandboxForm, SandboxValues } from "@/types/sandboxes";
 import { urlSafeName } from "@/utils/format";
 import { useForm } from "@/utils/useForm";
+import { projectNameErrors } from "@/utils/validate";
 import FormModal from "@/components/primitives/FormModal";
 import NameField from "@/components/primitives/NameField";
 import ColorPalette from "./ColorPalette";
@@ -24,7 +25,7 @@ export default function SandboxFormModal({
   const isNew = form.mode === "new";
   const f = useForm<SandboxValues>({
     initial: isNew ? { rawName: "", color: form.initialColor } : form.initial,
-    validate: (v) => (urlSafeName(v.rawName) === "" ? { rawName: ["can't be blank"] } : {}),
+    validate: (v) => ({ rawName: projectNameErrors(urlSafeName(v.rawName)) }),
   });
 
   return (

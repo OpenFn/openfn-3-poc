@@ -58,6 +58,16 @@ describe("ProjectsDashboardPage", () => {
     expect(screen.getByText("Project created successfully")).toBeTruthy();
   });
 
+  it("shows Lightning's format error for a name it can't take, and doesn't create it", async () => {
+    const { onCreate } = renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Create project" }));
+    fireEvent.change(screen.getByLabelText(/Name/), { target: { value: "my_project" } });
+    fireEvent.submit(document.getElementById("project-form")!);
+
+    expect(await screen.findByText("has invalid format")).toBeTruthy();
+    expect(onCreate).not.toHaveBeenCalled();
+  });
+
   it("does not create a project when the modal is cancelled", async () => {
     const { onCreate } = renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Create project" }));
