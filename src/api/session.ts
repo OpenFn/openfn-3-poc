@@ -2,6 +2,7 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import type { SsoProvider } from "@/types/auth";
+import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues, ProfilePageData } from "@/types/profile";
 import type { ResourceStatus } from "@/types/resource";
 import type { Session, User } from "@/types/users";
 import { isSignedOut, request, statusOf } from "./client";
@@ -27,6 +28,7 @@ export interface ApiMe {
     support_user: boolean;
     disabled: boolean;
     scheduled_deletion: string | null;
+    has_activity_in_projects: boolean;
     mfa_enabled: boolean;
     inserted_at: string;
     confirmed_at: string | null;
@@ -43,6 +45,8 @@ export interface ApiInstance {
   /** Null without a session token. */
   admin_email: string | null;
   sign_in_providers: { name: string; kind: "social" | "external"; start_url: string }[];
+  /** Where to connect a GitHub account, or null when GitHub sync isn't set up. */
+  github_connect_url: string | null;
 }
 
 export function userFromMe({ id, attributes: a }: ApiMe): User {
@@ -64,6 +68,22 @@ export function userFromMe({ id, attributes: a }: ApiMe): User {
   };
 }
 
+/** The profile page's data: you, from `GET /api/me`, and where to connect GitHub, from `GET /api/instance`. */
+export function profileOf({ id, attributes: a }: ApiMe, instance: ApiInstance): ProfilePageData {
+  return {
+    user: { id, firstName: a.first_name, lastName: a.last_name, email: a.email, contactPreference: a.contact_preference, insertedAt: a.inserted_at },
+    mfa: { enabled: a.mfa_enabled },
+    // A lapsed token: `expires_at` is kept but it no longer works.
+    github: { connectHref: instance.github_connect_url, status: a.github.connected ? "connected" : a.github.expires_at ? "expired" : "none" },
+    experimentalFeatures: a.experimental_features,
+    deletion: {
+      hasActivityInProjects: a.has_activity_in_projects,
+      // Already scheduled, deleting goes ahead at once, which project activity blocks (UserDeletionModal).
+      blocked: a.scheduled_deletion !== null && a.has_activity_in_projects,
+    },
+  };
+}
+
 /** What the login page offers: Register, and the first external provider (Lightning shows only one). */
 export function signInOptions(instance: ApiInstance | undefined): { allowSignup: boolean; ssoProvider: SsoProvider | null } {
   const provider = instance?.sign_in_providers.find((p) => p.kind === "external");
@@ -76,6 +96,11 @@ export const sessionKeys = { all: ["session"] as const, me: ["session", "me"] as
 const instanceQuery = queryOptions({
   queryKey: sessionKeys.instance,
   queryFn: () => request<{ data: ApiInstance }>("GET", "/api/instance").then((answer) => answer.data),
+});
+
+const meQuery = queryOptions({
+  queryKey: sessionKeys.me,
+  queryFn: () => request<{ data: ApiMe }>("GET", "/api/me").then((answer) => answer.data),
 });
 
 /** The instance's sign-in options, before anyone signs in, and where loading them stands. Nothing extra until they load. */
@@ -99,8 +124,8 @@ export function useSession(): { status: ResourceStatus; state: GateState | undef
     queryFn: () => request<{ data: ApiSession }>("GET", "/api/session").then((answer) => answer.data),
   });
   // Side by side with the session: /api/me answers 401 too when there isn't one, and then isn't asked for again.
-  // Mapped in the queryFn, so an unchanged answer keeps the same objects.
-  const me = useQuery({ queryKey: sessionKeys.me, queryFn: () => request<{ data: ApiMe }>("GET", "/api/me").then((answer) => userFromMe(answer.data)) });
+  // `select` only maps again when the answer changes, so an unchanged answer keeps the same objects.
+  const me = useQuery({ ...meQuery, select: userFromMe });
   const instance = useQuery(instanceQuery);
   const user = me.data;
   const info = instance.data;
@@ -159,3 +184,41 @@ export const stepUp = (values: { password: string } | { mfaCode: string }) =>
   request<{ data: ApiSession }>("POST", "/api/session", "password" in values ? { password: values.password } : { mfa_code: values.mfaCode }).then(
     (answer) => answer.data
   );
+
+/** Your profile, and where loading it stands: loading until both answers are in, then the same object until either changes. */
+export function useProfile(): { status: ResourceStatus; profile: ProfilePageData | undefined } {
+  const me = useQuery(meQuery);
+  const instance = useQuery(instanceQuery);
+  const profile = useMemo(() => (me.data && instance.data ? profileOf(me.data, instance.data) : undefined), [me.data, instance.data]);
+  return { status: statusOf({ data: profile, error: me.error ?? instance.error }), profile };
+}
+
+/**
+ * Changing your own account (api/users.md, Update a user, planned for your own
+ * id), given your id from `useProfile`. Each resolves once you have reloaded
+ * and rejects with the `ApiError`. A new email or password steps the session
+ * up with your current password first, so a wrong one rejects with
+ * `invalid_credentials`; the new email waits for its link. Deleting signs you
+ * out on the server.
+ */
+export function useAccountSaves(userId: string) {
+  const queryClient = useQueryClient();
+  const path = `/api/users/${encodeURIComponent(userId)}`;
+  const reload = () => queryClient.invalidateQueries({ queryKey: sessionKeys.all });
+  // Reloads even when refused, so a step-up just taken shows in `stepped_up_until`.
+  const patch = useMutation({ mutationFn: (changes: object) => request("PATCH", path, changes), onSettled: reload });
+  const withPassword = async (currentPassword: string, changes: object) => {
+    await stepUp({ password: currentPassword });
+    await patch.mutateAsync(changes);
+  };
+  const disconnectGithub = useMutation({ mutationFn: () => request<void>("DELETE", "/api/me/github_connection"), onSuccess: reload });
+  const deleteAccount = useMutation({ mutationFn: () => request<void>("DELETE", path) });
+  return {
+    saveBasicInfo: async (values: BasicInfoValues) => void (await patch.mutateAsync(values)),
+    changeEmail: ({ email, currentPassword }: ChangeEmailValues) => withPassword(currentPassword, { email }),
+    changePassword: ({ password, currentPassword }: ChangePasswordValues) => withPassword(currentPassword, { password }),
+    setExperimentalFeatures: async (on: boolean) => void (await patch.mutateAsync({ experimental_features: on })),
+    disconnectGithub: () => disconnectGithub.mutateAsync(),
+    deleteAccount: () => deleteAccount.mutateAsync(),
+  };
+}

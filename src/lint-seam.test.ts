@@ -166,12 +166,12 @@ describe("the tier lint rule", () => {
       "src/mock-data/tierProbe.ts",
       "src/session/tierProbe.ts",
     ]) {
-      expect(await seamMessages(probe, code("@/pages/profile/ProfilePage"))).toEqual([expect.stringMatching(tier)]);
+      expect(await seamMessages(probe, code("@/pages/profile/profile/ProfilePage"))).toEqual([expect.stringMatching(tier)]);
     }
-    expect(await seamMessages("src/App.tsx", code("./pages/profile/ProfilePage"))).toEqual([]);
-    expect(await seamMessages("src/index.ts", code("./pages/profile/ProfilePage"))).toEqual([]);
-    expect(await seamMessages("src/pages/profile/ProfilePage.replica.tsx", code("./ProfilePage"))).toEqual([]);
-    expect(await seamMessages("src/pages/admin/TierProbe.tsx", code("@/pages/profile/ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/App.tsx", code("./pages/profile/profile/ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/index.ts", code("./pages/profile/profile/ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/pages/profile/profile/ProfilePage.query.tsx", code("./ProfilePage"))).toEqual([]);
+    expect(await seamMessages("src/pages/admin/TierProbe.tsx", code("@/pages/profile/profile/ProfilePage"))).toEqual([]);
   });
 
   // A file directly in src/components/ matches no tier's block, so it could import anything.

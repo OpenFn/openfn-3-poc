@@ -1,9 +1,10 @@
 /** MFA settings and backup codes on Lightning's API (api/account.md, MFA): the API's shape, its mapper, its keys, and the hooks a .query file calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { MfaSetupResult } from "@/types/profile";
 import type { ResourceStatus } from "@/types/resource";
 import type { BackupCode } from "@/types/tokens";
 import { request, statusOf } from "./client";
-import { useSessionSaves } from "./session";
+import { sessionKeys, useSessionSaves } from "./session";
 
 /** `GET /api/me/mfa`'s `data`. `backup_codes` is null unless the session is stepped up. */
 export interface ApiMfa {
@@ -15,6 +16,14 @@ export interface ApiMfa {
 export function mfaOf(mfa: ApiMfa): { enabled: boolean; codes: BackupCode[] | null } {
   return { enabled: mfa.enabled, codes: mfa.backup_codes?.map((c) => ({ code: c.code, usedAt: c.used_at })) ?? null };
 }
+
+/** `POST /api/me/mfa`'s `data`: a new secret, not saved until it comes back with a code. */
+export interface ApiMfaSetup {
+  secret: string;
+  otpauth_uri: string;
+}
+
+export const mfaSetupOf = (setup: ApiMfaSetup): MfaSetupResult => ({ secret: setup.secret, otpauthUri: setup.otpauth_uri });
 
 export const mfaKeys = { all: ["mfa"] as const };
 
@@ -33,8 +42,9 @@ export function useMfa(): { status: ResourceStatus; enabled: boolean; codes: Bac
 }
 
 /**
- * Regenerate the backup codes, and step up. Each resolves once the settings
- * have reloaded and rejects with the `ApiError`. Regenerating without a
+ * Regenerate the backup codes, step up, and set up or turn off MFA. Each
+ * rejects with the `ApiError`. All but `start` resolve once the settings have
+ * reloaded (confirm and disable reload you too). Regenerating without a
  * stepped-up session rejects with `step_up_required`. Stepping up reloads the
  * settings too, since that is when the server sends the codes.
  */
@@ -47,11 +57,25 @@ export function useMfaSaves() {
     mutationFn: () => request<{ data: ApiMfa }>("POST", "/api/me/mfa/backup_codes"),
     onSuccess: reload,
   });
+  // `mfa_enabled` is on /api/me too, and turning MFA on the first time steps the session up.
+  const reloadAll = () =>
+    Promise.all([queryClient.invalidateQueries({ queryKey: sessionKeys.all }), queryClient.invalidateQueries({ queryKey: mfaKeys.all })]);
+  const start = useMutation({
+    mutationFn: () => request<{ data: ApiMfaSetup }>("POST", "/api/me/mfa").then((answer) => mfaSetupOf(answer.data)),
+  });
+  const confirm = useMutation({
+    mutationFn: ({ code, secret }: { code: string; secret: string }) => request("PUT", "/api/me/mfa", { secret, code }),
+    onSuccess: reloadAll,
+  });
+  const disable = useMutation({ mutationFn: () => request<void>("DELETE", "/api/me/mfa"), onSuccess: reloadAll });
   return {
     regenerate: async () => void (await regenerate.mutateAsync()),
     stepUp: async (credentials: Parameters<typeof session.stepUp>[0]) => {
       await session.stepUp(credentials);
       await reload();
     },
+    start: () => start.mutateAsync(),
+    confirm: async (code: string, secret: string) => void (await confirm.mutateAsync({ code, secret })),
+    disable: () => disable.mutateAsync(),
   };
 }

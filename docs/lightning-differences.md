@@ -118,7 +118,13 @@ goes back to Lightning's way.
   `tokens_live/index.html.heex:13-18`). Credentials gains his line
   "Credentials you own. Share them with any project you collaborate on."
   Profile's section is headed by the user's name, as in his design, with
-  its cards as subheadings under it.
+  its cards as subheadings under it. The cards take his titles and the line
+  under each: "Basic information" ("Change your name and how often we
+  contact you."), "Change email", "Change password", "Multi-factor
+  authentication", "GitHub access" and "Delete account" ("Deleting your
+  account is irreversible, and your credentials go with it.") (Lightning:
+  "Change basic information", "Enable multi-factor authentication",
+  "GitHub Access", and no line under the forms). The two columns stay Lightning's for now.
 - **Parts of his screen we leave out, and why.**
   - His breadcrumb ("User settings › API tokens"): Lightning has none here,
     and the menu already marks the page.
@@ -330,6 +336,19 @@ goes back to Lightning's way.
   `StepUpDialog`, with that page's words, and runs the action again once the
   person has confirmed, so nothing they were doing is lost. A wrong password
   shows on the field rather than above the form.
+- **Turning MFA off and deleting your account ask for your password.**
+  Lightning asks for neither: `/profile` isn't a sudo route, and deleting
+  only asks you to type your email. The API needs a stepped-up session for
+  both (`api/account.md`, Turn off MFA; `api/users.md`, Delete a user), so
+  the popup opens after you press Disable or Delete account, unless you
+  confirmed in the last five minutes.
+- **A new password keeps this session.** Lightning signs this browser in
+  again with a fresh session after a password change; the API ends only the
+  other sessions (`api/users.md`, Update a user). Both land on /projects.
+- **Someone else's delete URL stays put.** Lightning answers
+  `/profile/:id/delete` for another user with a flash and goes back to
+  /profile. The page shows the same words, "You can't perform this action",
+  in an alert at the top and opens no dialog.
 - **Backup codes ask for your password on the page.** Lightning sends you
   to Confirm access first. Here the server holds the codes back, so the page
   opens the same pop-up over itself. Closing it leaves "Confirm it's you to

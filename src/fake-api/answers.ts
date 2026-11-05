@@ -18,6 +18,9 @@ export const json = (status: number, body: unknown) =>
 export const problem = ({ status, code, detail = "The server could not complete that request.", errors }: Problem) =>
   json(status, { type: "about:blank", status, title: titles[status] ?? "Error", code, detail, ...(errors ? { errors } : {}) });
 export const noContent = () => new Response(null, { status: 204 });
+/** The session must be stepped up first (api/authentication.md, session tokens). */
+export const stepUpRequired = () =>
+  problem({ status: 403, code: "step_up_required", detail: "Enter your password or an MFA code again to do this." });
 export const forbidden = () => problem({ status: 403, code: "forbidden", detail: "You are not allowed to do that." });
 // One 422 for every problem with a body (api/errors.md).
 export const invalid = (errors: NonNullable<Problem["errors"]>) =>

@@ -7,6 +7,7 @@
  */
 import { authConfig } from "@/mock-data/auth";
 import { backupCodes } from "@/mock-data/tokens";
+import { hasActivityInProjects } from "@/mock-data/profile";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
@@ -44,7 +45,7 @@ const read = (): Cookie => {
   if (!globalThis.localStorage) return memory;
   try {
     const cookie = JSON.parse(globalThis.localStorage.getItem(KEY) ?? "null") as Cookie | null;
-    const known = (id: string | null) => id === null || users.some((u) => u.id === id);
+    const known = (id: string | null) => id === null || people.some((u) => u.id === id);
     return cookie && known(cookie.userId) && known(cookie.mfaPendingId) ? cookie : DEFAULT;
   } catch {
     return DEFAULT;
@@ -57,16 +58,37 @@ const write = (cookie: Cookie) => {
 
 let steppedUpUntil = 0;
 
-/** Back to the first fixture user, signed in and not stepped up. */
+// The users table: copies, so a profile change lasts until the next reset.
+const seedPeople = (): User[] => users.map((u) => ({ ...u }));
+/** Every user, as the fake server holds them. */
+export let people = seedPeople();
+/** New addresses waiting for their confirmation link (which the fake never sends), by user id. */
+export const pendingEmails = new Map<string, string>();
+
+/** New passwords, by user id; everyone else signs in with FAKE_PASSWORD. */
+const passwords = new Map<string, string>();
+export const setPassword = (userId: string, password: string) => void passwords.set(userId, password);
+const passwordOf = (userId: string) => passwords.get(userId) ?? FAKE_PASSWORD;
+
+/** Back to the first fixture user, signed in and not stepped up, with the fixtures' users. */
 export function resetSession() {
   memory = DEFAULT;
   globalThis.localStorage?.removeItem(KEY);
+  steppedUpUntil = 0;
+  people = seedPeople();
+  pendingEmails.clear();
+  passwords.clear();
+}
+
+/** Ends this browser's session, as signing out does. */
+export function endSession() {
+  write(SIGNED_OUT);
   steppedUpUntil = 0;
 }
 
 /** The signed-in user. Only for routes behind `refuse`, which answers 401 when there isn't one. */
 export function currentUser(): User {
-  const user = users.find((u) => u.id === read().userId);
+  const user = people.find((u) => u.id === read().userId);
   if (!user) throw new Error("currentUser is for routes that need a session");
   return user;
 }
@@ -104,8 +126,8 @@ function signIn(body: Record<string, unknown>) {
     write(signedInAs(mfaPendingId));
     return json(201, sessionData());
   }
-  const user = users.find((u) => u.email === body["email"]);
-  if (!user || user.disabled || body["password"] !== FAKE_PASSWORD) return invalidCredentials();
+  const user = people.find((u) => u.email === body["email"]);
+  if (!user || user.disabled || body["password"] !== passwordOf(user.id)) return invalidCredentials();
   if (user.mfaEnabled && !codeIsGood(body)) {
     steppedUpUntil = 0;
     write({ userId: null, mfaPendingId: user.id, csrf: `fake-csrf-${crypto.randomUUID()}` });
@@ -116,11 +138,16 @@ function signIn(body: Record<string, unknown>) {
   return json(201, sessionData());
 }
 
+/** Steps the session up for five minutes, as turning MFA on for the first time does. */
+export function stepUpSession() {
+  steppedUpUntil = Date.now() + STEP_UP_MS;
+}
+
 function stepUp(body: Record<string, unknown>) {
   // The password or an MFA code steps the session up for five minutes. A backup code doesn't.
-  const ok = body["password"] !== undefined ? body["password"] === FAKE_PASSWORD : body["mfa_code"] === FAKE_MFA_CODE;
+  const ok = body["password"] !== undefined ? body["password"] === passwordOf(currentUser().id) : body["mfa_code"] === FAKE_MFA_CODE;
   if (!ok) return invalidCredentials();
-  steppedUpUntil = Date.now() + STEP_UP_MS;
+  stepUpSession();
   return json(201, sessionData());
 }
 
@@ -143,50 +170,56 @@ export function refuse(route: string, headers: Headers): Response | undefined {
   return undefined;
 }
 
+/** The users.md user object, with its planned additional scope. */
+export const userJson = (u: User) => ({
+  data: {
+    type: "users",
+    id: u.id,
+    attributes: {
+      email: u.email,
+      first_name: u.firstName,
+      last_name: u.lastName,
+      role: u.role,
+      support_user: u.supportUser,
+      disabled: u.disabled,
+      scheduled_deletion: u.scheduledDeletion,
+    },
+    links: { self: `${ORIGIN}/api/users/${u.id}` },
+  },
+});
+
+/** The user object with the extras a session token adds (api/account.md, Get the current user). */
+export const meJson = (u: User) => ({
+  data: {
+    ...userJson(u).data,
+    attributes: {
+      ...userJson(u).data.attributes,
+      has_activity_in_projects: hasActivityInProjects,
+      mfa_enabled: u.mfaEnabled,
+      has_password: true,
+      inserted_at: u.insertedAt,
+      confirmed_at: u.confirmedAt,
+      contact_preference: u.contactPreference,
+      experimental_features: u.experimentalFeatures,
+      pending_email: pendingEmails.get(u.id) ?? null,
+      identities: [],
+      github: { connected: u.githubConnected, expires_at: null },
+      ai_disclaimer_accepted_at: null,
+      consent: null,
+    },
+  },
+});
+
 export const sessionRoutes: Record<string, Handler> = {
   "GET /api/session": () => json(200, sessionData()),
   // With an email it's a sign-in, whoever was signed in before; without one, a signed-in session steps up.
   "POST /api/session": (_params, body) => (read().userId && body["email"] === undefined ? stepUp(body) : signIn(body)),
   "DELETE /api/session": () => {
-    write(SIGNED_OUT);
-    steppedUpUntil = 0;
+    endSession();
     return noContent();
   },
 
-  // The users.md user object, with the extras a session token adds (api/account.md, Get the current user).
-  "GET /api/me": () => {
-    const u = currentUser();
-    return json(200, {
-      data: {
-        type: "users",
-        id: u.id,
-        attributes: {
-          email: u.email,
-          first_name: u.firstName,
-          last_name: u.lastName,
-          role: u.role,
-          // Planned additional scope on the user object.
-          support_user: u.supportUser,
-          disabled: u.disabled,
-          scheduled_deletion: u.scheduledDeletion,
-          has_activity_in_projects: false,
-          // What a session token adds.
-          mfa_enabled: u.mfaEnabled,
-          has_password: true,
-          inserted_at: u.insertedAt,
-          confirmed_at: u.confirmedAt,
-          contact_preference: u.contactPreference,
-          experimental_features: u.experimentalFeatures,
-          pending_email: null,
-          identities: [],
-          github: { connected: u.githubConnected, expires_at: null },
-          ai_disclaimer_accepted_at: null,
-          consent: null,
-        },
-        links: { self: `${ORIGIN}/api/users/${u.id}` },
-      },
-    });
-  },
+  "GET /api/me": () => json(200, meJson(currentUser())),
 
   "GET /api/instance": () => {
     const signedIn = Boolean(read().userId);
