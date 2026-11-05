@@ -63,12 +63,11 @@ describe("every page and component can be seen and checked", () => {
       "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/auth/AuthResetPasswordPage.tsx",
       "./pages/auth/AuthTwoFactorPage.tsx",
-      "./pages/profile/tokens/TokensPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
     ]);
   });
 
-  it("a page's route is XPage.route.tsx in the page's own folder, not a .replica.tsx", () => {
+  it("no new page uses a .replica.tsx; new routes are XPage.route.tsx", () => {
     // The route connects, the page behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [

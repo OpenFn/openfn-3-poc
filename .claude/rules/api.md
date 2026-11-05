@@ -2,6 +2,7 @@
 paths:
   - 'src/api/**'
   - 'src/**/*.replica.tsx'
+  - 'src/pages/**/*.route.tsx'
   - 'src/**/*Replica.ts'
 ---
 
