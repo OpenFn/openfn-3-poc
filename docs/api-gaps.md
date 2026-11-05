@@ -18,3 +18,13 @@ The replica's pages map a gap to "none"; they never fake it.
 - **A description under each workflow's name.** The workflow object in
   `api/workflows.md` has no `description`. Would need a `description` field on
   the workflow, set through create and update. Replica: left out.
+
+## Login (Lightning's `auth-login`)
+
+Not from Brandon's design: Lightning's own login form has this, and the API
+doesn't.
+
+- **Remember me** ("Keep me logged in for 60 days"). `POST /api/session` has
+  no `remember_me` field, and the session cookie's lifetime is Lightning's
+  to set. Would need a `remember_me` boolean on sign in. Replica: checkbox
+  left out (docs/lightning-differences.md).

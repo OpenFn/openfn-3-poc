@@ -2,8 +2,7 @@
  * Users, modelled on Lightning's demo seed (lib/lightning/setup_utils.ex).
  * Static fixtures only: nothing here talks to a backend.
  */
-import type { Session } from "@/session/session";
-import type { User } from "@/types/users";
+import type { Session, User } from "@/types/users";
 
 export const users: User[] = [
   {
@@ -30,7 +29,7 @@ export const users: User[] = [
     role: "user",
     confirmedAt: "2024-03-14",
     insertedAt: "2024-03-14",
-    mfaEnabled: true,
+    mfaEnabled: false,
     githubConnected: true,
     experimentalFeatures: false,
     supportUser: false,
@@ -74,8 +73,10 @@ export const users: User[] = [
 
 /**
  * The signed-in session: Amy, a superuser, so the Admin menu is reachable.
- * main.tsx and Storybook hand it to <SessionProvider>; components read it
- * through useCurrentUser() / useInstanceInfo(), never from here.
+ * Storybook and tests hand it to <SessionProvider>; the app gets the session
+ * from the API (SessionGate), and the fake server starts signed in as Amy.
+ * Components read it through useCurrentUser() / useInstanceInfo(), never
+ * from here.
  */
 export const session: Session = {
   user: users[0]!,

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import FirstSetupShell from "@/components/auth/FirstSetupShell";
 import { simulateRequest } from "@/mock-data/request";
-import { useInstanceInfo } from "@/session/session";
+import { session } from "@/mock-data/users";
 import FirstSetupPage from "./FirstSetupPage";
 
 /**
@@ -11,7 +11,8 @@ import FirstSetupPage from "./FirstSetupPage";
  */
 export default function FirstSetupPageReplica() {
   const navigate = useNavigate();
-  const { releaseLabel } = useInstanceInfo();
+  // Outside SessionGate there is no session to read it from. debt: GET /api/instance has it, once this page moves to a .query file.
+  const { releaseLabel } = session.instance;
   return (
     <FirstSetupShell releaseLabel={releaseLabel}>
       <FirstSetupPage

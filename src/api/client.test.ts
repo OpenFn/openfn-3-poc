@@ -82,4 +82,34 @@ describe("request, on the fake server", () => {
     expect(await refusal(list())).toMatchObject({ status: 500, code: "internal", message: "Something went wrong in Lightning." });
     expect((await list()).map((t) => t.id)).not.toContain(first!.id);
   });
+
+  it("sends the session's CSRF token on writes, and a new session's after signing in again", async () => {
+    await stepUp({ password: FAKE_PASSWORD });
+    await expect(generate()).resolves.toBeTruthy();
+    await request("DELETE", "/api/session");
+    await request("POST", "/api/session", { email: "demo@openfn.org", password: FAKE_PASSWORD });
+    await expect(stepUp({ password: FAKE_PASSWORD })).resolves.toMatchObject({ state: "signed_in" });
+  });
+
+  it("asks for the token again when the session changed elsewhere, once", async () => {
+    await expect(stepUp({ password: FAKE_PASSWORD })).resolves.toBeTruthy();
+    // Another tab signed in again: the stored session has a new token the client hasn't seen.
+    localStorage.setItem("fake-api:session", JSON.stringify({ userId: "user-amy", mfaPendingId: null, csrf: "from-another-tab" }));
+    await expect(generate()).resolves.toBeTruthy();
+    // A 403 can't say it was the token (no code of its own), so it's tried once more, and the second answer stands.
+    failNext("DELETE /api/me/tokens/:id", { status: 403, code: "forbidden", detail: "No." });
+    expect(await refusal(request("DELETE", "/api/me/tokens/x"))).toMatchObject({ status: 404 });
+  });
+
+  it("signs in as someone else when already signed in", async () => {
+    await request("POST", "/api/session", { email: "viewer@openfn.org", password: FAKE_PASSWORD });
+    await expect(request("GET", "/api/me")).resolves.toMatchObject({ data: { id: "user-vikram" } });
+  });
+
+  it("answers 401 unauthenticated to every route but signing in once signed out", async () => {
+    await request("DELETE", "/api/session");
+    expect(await refusal(list())).toMatchObject({ status: 401, code: "unauthenticated" });
+    expect(await refusal(request("GET", "/api/me"))).toMatchObject({ status: 401, code: "unauthenticated" });
+    await expect(request("GET", "/api/instance")).resolves.toBeTruthy();
+  });
 });

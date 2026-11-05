@@ -19,3 +19,13 @@ export function webhookUrl(triggerId: string): string {
 export function authRedirectUri(provider: Pick<AuthProvider, "redirectHost" | "name">): string {
   return `${provider.redirectHost.replace(/\/$/, "")}/authenticate/${provider.name}/callback`;
 }
+
+/**
+ * Where to go next: the `return_to` path if it's one in this app, otherwise
+ * `fallback`. A full URL, or `//host`, could send the person off the site, so
+ * it's ignored.
+ */
+export function returnTo(params: URLSearchParams, fallback = "/projects"): string {
+  const to = params.get("return_to");
+  return to?.startsWith("/") && !to.startsWith("//") ? to : fallback;
+}

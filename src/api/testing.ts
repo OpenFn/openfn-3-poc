@@ -1,7 +1,11 @@
 /** For stories and tests only: drive the fake server. The app never imports this, so no build carries it. */
-export {
-  failNext,
-  resetFakeApi,
-  FAKE_PASSWORD,
-  FAKE_MFA_CODE,
-} from "@/fake-api";
+import { resetFakeApi as resetServer } from "@/fake-api";
+import { forgetCsrfToken } from "./client";
+
+export { failNext, FAKE_PASSWORD, FAKE_MFA_CODE, FAKE_BACKUP_CODE } from "@/fake-api";
+
+/** The fake server's starting data, signed in as the first fixture user, and a client that has forgotten the old session's CSRF token. */
+export function resetFakeApi() {
+  resetServer();
+  forgetCsrfToken();
+}

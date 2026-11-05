@@ -181,6 +181,17 @@ goes back to Lightning's way.
 - **The login password is required.** Lightning marks only the email as
   required on the login form. The replica marks both, and says "can't be
   blank" for an empty password.
+- **Login has no Remember me checkbox.** Lightning's keeps you signed in for
+  60 days (`user_session_html/new.html.heex`, `UserAuth.log_in_user/3`).
+  `POST /api/session` has no `remember_me` field (api/account.md), so the
+  replica leaves the box out until it does (docs/api-gaps.md).
+- **Logging out and being sent to log in say nothing yet.** Lightning
+  flashes "Logged out successfully." after `/users/log_out`, and "You must
+  log in to access this page." when it sends a signed-out person to log in
+  (`user_auth.ex`). The replica has no flash that survives a redirect yet
+  (STANDARDS.md pattern 7), so the login page just appears. If signing out
+  fails, the replica says so and stays, rather than showing the login page
+  while the session may still be live.
 
 - **Save stays pressable in the collaborator and YAML import modals.**
   Lightning disables Save until every row has an email and a role, and
