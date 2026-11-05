@@ -34,14 +34,13 @@ export function forgetCsrfToken() {
 
 export async function request<T>(method: Method, path: string, body?: unknown): Promise<T> {
   if (method === "GET") return call<T>(method, path, body, null);
-  const cached = csrfToken !== null;
   try {
     return await call<T>(method, path, body, await csrf());
   } catch (error) {
-    // A token kept from before the session changed (signed in again in another tab) is refused: ask for the new one, once.
-    if (!cached || !isApiError(error, "forbidden")) throw error;
-    csrfToken = null;
-    return await call<T>(method, path, body, await csrf());
+    // The token may be from a session that changed elsewhere: the next write asks again. Never resent
+    // here: the new session may be someone else's.
+    if (isApiError(error, "forbidden")) csrfToken = null;
+    throw error;
   } finally {
     // Signing in or out starts a new session, with a new token.
     if (path === "/api/session") csrfToken = null;

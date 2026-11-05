@@ -116,6 +116,8 @@ export function useSession(): { status: ResourceStatus; state: GateState | undef
     return { status: { state: "error", message: "Signing up through a sign-in provider isn't available yet." }, state: undefined, session: undefined };
   }
   if (state && state !== "signed_in") return { status: { state: "ready" }, state, session: undefined };
+  // Signed in, but the session ended before /api/me answered: signed out after all.
+  if (isSignedOut(me.error)) return { status: { state: "ready" }, state: "signed_out", session: undefined };
   const failed = [session, me, instance].find((q) => q.error);
   const status = failed ? statusOf(failed) : state && value ? ({ state: "ready" } as const) : ({ state: "loading" } as const);
   return { status, state, session: state ? value : undefined };

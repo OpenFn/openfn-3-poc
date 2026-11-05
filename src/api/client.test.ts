@@ -91,14 +91,13 @@ describe("request, on the fake server", () => {
     await expect(stepUp({ password: FAKE_PASSWORD })).resolves.toMatchObject({ state: "signed_in" });
   });
 
-  it("asks for the token again when the session changed elsewhere, once", async () => {
-    await expect(stepUp({ password: FAKE_PASSWORD })).resolves.toBeTruthy();
+  it("refuses a write with a token from before the session changed elsewhere, and asks again for the next", async () => {
+    await stepUp({ password: FAKE_PASSWORD });
+    await generate();
     // Another tab signed in again: the stored session has a new token the client hasn't seen.
     localStorage.setItem("fake-api:session", JSON.stringify({ userId: "user-amy", mfaPendingId: null, csrf: "from-another-tab" }));
+    expect(await refusal(generate())).toMatchObject({ status: 403, code: "forbidden" });
     await expect(generate()).resolves.toBeTruthy();
-    // A 403 can't say it was the token (no code of its own), so it's tried once more, and the second answer stands.
-    failNext("DELETE /api/me/tokens/:id", { status: 403, code: "forbidden", detail: "No." });
-    expect(await refusal(request("DELETE", "/api/me/tokens/x"))).toMatchObject({ status: 404 });
   });
 
   it("signs in as someone else when already signed in", async () => {

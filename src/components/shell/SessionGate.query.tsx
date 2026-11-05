@@ -10,10 +10,11 @@ import SessionProvider from "@/session/SessionProvider";
  * MFA code or an email confirmation goes to that page instead.
  */
 export default function SessionGate() {
-  const { pathname, search } = useLocation();
+  const { pathname, search, hash } = useLocation();
+  const here = encodeURIComponent(pathname + search + hash);
   const { status, state, session } = useSession();
-  if (state === "signed_out") return <Navigate to={`/users/log_in?return_to=${encodeURIComponent(pathname + search)}`} replace />;
-  if (state === "mfa_required") return <Navigate to={`/users/two-factor?return_to=${encodeURIComponent(pathname + search)}`} replace />;
+  if (state === "signed_out") return <Navigate to={`/users/log_in?return_to=${here}`} replace />;
+  if (state === "mfa_required") return <Navigate to={`/users/two-factor?return_to=${here}`} replace />;
   if (state === "confirmation_required") return <Navigate to="/users/confirm-required" replace />;
   return (
     <AsyncBoundary status={status} titleAs="h1">

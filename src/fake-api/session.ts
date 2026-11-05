@@ -36,9 +36,16 @@ const SIGNED_OUT: Cookie = { userId: null, mfaPendingId: null, csrf: "" };
 
 // No localStorage (a test outside the browser): the cookie only lasts while the module does.
 let memory: Cookie = DEFAULT;
+// A stored cookie that can't be read, or names a user the fixtures no longer have, starts over as the default.
 const read = (): Cookie => {
-  const stored = globalThis.localStorage?.getItem(KEY);
-  return stored ? (JSON.parse(stored) as Cookie) : globalThis.localStorage ? DEFAULT : memory;
+  if (!globalThis.localStorage) return memory;
+  try {
+    const cookie = JSON.parse(globalThis.localStorage.getItem(KEY) ?? "null") as Cookie | null;
+    const known = (id: string | null) => id === null || users.some((u) => u.id === id);
+    return cookie && known(cookie.userId) && known(cookie.mfaPendingId) ? cookie : DEFAULT;
+  } catch {
+    return DEFAULT;
+  }
 };
 const write = (cookie: Cookie) => {
   memory = cookie;
@@ -87,19 +94,21 @@ const codeIsGood = (body: Record<string, unknown>) =>
 
 function signIn(body: Record<string, unknown>) {
   const { mfaPendingId } = read();
-  steppedUpUntil = 0;
   // The second step: only the code, for the person who passed the password.
   if (body["email"] === undefined && mfaPendingId) {
     if (!codeIsGood(body)) return invalidCredentials();
+    steppedUpUntil = 0;
     write(signedInAs(mfaPendingId));
     return json(201, sessionData());
   }
   const user = users.find((u) => u.email === body["email"]);
   if (!user || user.disabled || body["password"] !== FAKE_PASSWORD) return invalidCredentials();
   if (user.mfaEnabled && !codeIsGood(body)) {
+    steppedUpUntil = 0;
     write({ userId: null, mfaPendingId: user.id, csrf: `fake-csrf-${crypto.randomUUID()}` });
     return problem({ status: 401, code: "mfa_required", detail: "Enter the code from your authenticator app." });
   }
+  steppedUpUntil = 0;
   write(signedInAs(user.id));
   return json(201, sessionData());
 }
