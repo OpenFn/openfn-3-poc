@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { projects } from "../../mock-data/projects";
-import { findWorkflowGraph, snapshotsOf } from "../../mock-data/workflow";
-import { withRouter } from "../../stories/decorators";
-import { projectLabel } from "../shell/projectPickerItems";
+import { projects } from "@/mock-data/projects";
+import { findWorkflowGraph, snapshotsOf } from "@/mock-data/workflow";
+import { withRouter } from "@/stories/decorators";
+import { projectLabel } from "@/components/shell/projectPickerItems";
 import EditorHeader from "./EditorHeader";
 
 const graph = findWorkflowGraph("wf-openhie")!;

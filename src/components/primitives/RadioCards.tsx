@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { Field } from "./Inputs";
 
 export interface RadioCardOption<T extends string = string> {

@@ -1,8 +1,8 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { HEALTH_LOAD_ERROR } from "../../../constants";
-import type { ErrorSignatures, HealthQuery, Outcomes, RunVolume } from "../../../types/workflow-health";
-import { formatMonthDayIn } from "../../../utils/format";
+import { HEALTH_LOAD_ERROR } from "@/constants";
+import type { ErrorSignatures, HealthQuery, Outcomes, RunVolume } from "@/types/workflow-health";
+import { formatMonthDayIn } from "@/utils/format";
 import { FAILED } from "./palette";
 import WorkflowHealth from "./WorkflowHealth";
 

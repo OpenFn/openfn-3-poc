@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import CreateProjectModal from "../../components/projects/CreateProjectModal";
-import ProjectsTable from "../../components/projects/ProjectsTable";
-import WelcomeBanner from "../../components/projects/WelcomeBanner";
-import type { ProjectOverview } from "../../types/workflows";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import CreateProjectModal from "@/components/projects/CreateProjectModal";
+import ProjectsTable from "@/components/projects/ProjectsTable";
+import WelcomeBanner from "@/components/projects/WelcomeBanner";
+import type { ProjectOverview } from "@/types/workflows";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface ProjectsDashboardPageProps {

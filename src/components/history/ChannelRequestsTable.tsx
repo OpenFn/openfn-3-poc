@@ -1,12 +1,12 @@
-import Pagination from "../primitives/Pagination";
-import EmptyState from "../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import type { ChannelLogRow } from "../../types/channels";
-import type { PageInfo } from "../../types/lists";
-import DateTime from "../primitives/DateTime";
-import TextLink from "../primitives/TextLink";
-import { ChannelStatePill } from "../domain/StatePill";
-import { shortUuid } from "../../utils/format";
+import Pagination from "@/components/primitives/Pagination";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import type { ChannelLogRow } from "@/types/channels";
+import type { PageInfo } from "@/types/lists";
+import DateTime from "@/components/primitives/DateTime";
+import TextLink from "@/components/primitives/TextLink";
+import { ChannelStatePill } from "@/components/domain/StatePill";
+import { shortUuid } from "@/utils/format";
 
 /** History's Channel Logs table (run_live/channel_logs_component.ex): one page of requests, newest first. */
 export default function ChannelRequestsTable({

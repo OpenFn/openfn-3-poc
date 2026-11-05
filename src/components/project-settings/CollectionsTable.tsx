@@ -1,10 +1,10 @@
-import EmptyState from "../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import { useTableSort, type SortValue } from "../../utils/useTableSort";
-import Button from "../primitives/Button";
-import IconButton from "../primitives/IconButton";
-import type { CollectionRow } from "../../types/project-settings";
-import { formatBytes } from "../../utils/format";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import { useTableSort, type SortValue } from "@/utils/useTableSort";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
+import type { CollectionRow } from "@/types/project-settings";
+import { formatBytes } from "@/utils/format";
 
 interface Props {
   collections: CollectionRow[];

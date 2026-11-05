@@ -1,7 +1,7 @@
 import { useRef, type FormHTMLAttributes, type ReactNode, type SubmitEvent } from "react";
 import { flushSync } from "react-dom";
-import { cn } from "../../utils/cn";
-import { errorMessage } from "../../utils/errors";
+import { cn } from "@/utils/cn";
+import { errorMessage } from "@/utils/errors";
 import Alert from "./Alert";
 import { useFocusFirstError } from "./focusFirstError";
 import { FormPendingContext } from "./formStatus";

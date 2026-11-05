@@ -253,7 +253,7 @@ const cacheWriteMessage = "Don't write into the query cache: invalidate the keys
 const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
 const seamImports = (extra = []) => [
   'error',
-  { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, apiImports, ...extra] },
+  { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, apiImports, relativeImports, ...extra] },
 ]
 
 // Each folder in src/components/ other than primitives/ and domain/ is an
@@ -263,17 +263,21 @@ const areas = fs
   .filter((entry) => entry.isDirectory() && !['primitives', 'domain'].includes(entry.name))
   .map((entry) => entry.name)
 const tiers = 'See docs/building.md, Where a new component goes.'
+// `@/x` is src/x. Every no-restricted-imports block below repeats this, because a later block replaces an earlier one's options.
+const relativeImports = {
+  regex: '^\\.\\./',
+  message: "Import from @/… instead of ../: `@/x` is src/x, so moving a file doesn't change its imports. A sibling stays ./x.",
+}
 const pageImports = {
   regex: '(^|/)pages(/|$)',
   message: `Nothing outside src/pages/ imports a page except App.tsx and src/index.ts. Move what you need into src/types/ or a component. ${tiers}`,
 }
 const primitiveImports = {
-  // From primitives/, `../x` is a sibling folder in src/components/; `../../components/x` is the long way round.
-  regex: '^\\.\\./[^.]|(^|/)pages(/|$)|(^|/)components/(?!primitives(/|$))',
+  regex: '(^|/)pages(/|$)|(^|/)components/(?!primitives(/|$))',
   message: `A primitive uses only other primitives (and utils, types, theme). Pass the feature in as a prop or children. ${tiers}`,
 }
 const domainImports = {
-  regex: '^\\.\\./(?!primitives(/|$))[^.]|(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain)(/|$))',
+  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain)(/|$))',
   message: `A domain component uses only primitives and other domain components. Pass the feature in as a prop or children. ${tiers}`,
 }
 const utilImports = {
@@ -281,7 +285,7 @@ const utilImports = {
   message: `A util may import primitives, not domain/, shell or area components or a page. ${tiers}`,
 }
 const otherAreaImports = (area) => ({
-  regex: `(^(\\.\\./)+|(^|/)components/)(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
+  regex: `(^|/)components/(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
   message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
 })
 
@@ -313,6 +317,8 @@ export default defineConfig([
   },
   // Accessibility. Stories stay in: they are the components' specs.
   { files: ['src/**/*.tsx'], ...jsxA11y.flatConfigs.recommended },
+  // Every file that imports from src, stories and tests included. The blocks below narrow it.
+  { files: ['src/**/*.{ts,tsx}', '.storybook/**/*.{ts,tsx}'], rules: { 'no-restricted-imports': ['error', { patterns: [relativeImports] }] } },
   {
     // Deprecated React, DOM and library APIs (FormEvent, navigator.platform) fail lint.
     // It needs the types, so it reads the tsconfig; that roughly doubles lint's time.
@@ -375,7 +381,7 @@ export default defineConfig([
   {
     // Annotations navigate through the router adapter too.
     files: ['src/annotations/**/*.{ts,tsx}'],
-    rules: { 'no-restricted-imports': ['error', { paths: routerImports, patterns: [pageImports] }] },
+    rules: { 'no-restricted-imports': ['error', { paths: routerImports, patterns: [pageImports, relativeImports] }] },
   },
   {
     // The data seam: components, pages and utils get records and permission
@@ -412,7 +418,7 @@ export default defineConfig([
     // A replica outside src/pages/ is wiring, not a page's wrapper, so it doesn't import pages either.
     files: ['src/components/**/*[rR]eplica.{ts,tsx}', 'src/utils/**/*[rR]eplica.{ts,tsx}'],
     ignores: ['**/*.stories.tsx', '**/*.test.{ts,tsx}'],
-    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports] }] },
+    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports, relativeImports] }] },
   },
   {
     // Outside src/pages/, only the route table and the package entry import a page.
@@ -428,7 +434,7 @@ export default defineConfig([
       'src/App.tsx',
       'src/index.ts',
     ],
-    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports] }] },
+    rules: { 'no-restricted-imports': ['error', { patterns: [pageImports, relativeImports] }] },
   },
   {
     // The API client has no UI: a failed save stays in its form, and success
@@ -437,13 +443,13 @@ export default defineConfig([
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [pageImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the wrapper toasts success.' }] },
+        { patterns: [pageImports, relativeImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the wrapper toasts success.' }] },
       ],
     },
   },
   {
     // Contract shapes are written by hand, never built on models or fixtures.
     files: ['src/types/**/*.ts'],
-    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, recordImports, mockDataImports, pageImports] }] },
+    rules: { 'no-restricted-imports': ['error', { patterns: [modelImports, recordImports, mockDataImports, pageImports, relativeImports] }] },
   },
 ])

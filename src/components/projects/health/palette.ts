@@ -1,5 +1,5 @@
-import type { FailureState } from "../../../types/workflow-health";
-import { stateTone, toneSolid } from "../../../theme/runStateColours";
+import type { FailureState } from "@/types/workflow-health";
+import { stateTone, toneSolid } from "@/theme/runStateColours";
 
 /** The health charts draw each state in its run-state tone (docs/colour.md, Run states). */
 export const SUCCESS = toneSolid("success");

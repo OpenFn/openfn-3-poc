@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Button from "./Button";
 import Form from "./Form";
 import { TextInput } from "./Inputs";
-import { withWhitePanel } from "../../stories/decorators";
+import { withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof Form> = {
   title: "Primitives/Form",

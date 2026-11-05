@@ -1,7 +1,7 @@
-import type { SandboxRow } from "../../../types/sandboxes";
-import { useAction } from "../../../utils/useAction";
-import Button from "../../primitives/Button";
-import IconButton from "../../primitives/IconButton";
+import type { SandboxRow } from "@/types/sandboxes";
+import { useAction } from "@/utils/useAction";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
 import BranchesIcon from "./BranchesIcon";
 
 /**

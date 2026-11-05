@@ -1,5 +1,5 @@
-import { formatElapsed } from "../../utils/format";
-import { useTick } from "../../utils/useTick";
+import { formatElapsed } from "@/utils/format";
+import { useTick } from "@/utils/useTick";
 
 /**
  * How long a run or step took (hooks/ElapsedIndicator.ts): "212 ms", "4 s",

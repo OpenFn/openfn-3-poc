@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "../primitives/Button";
-import ConfirmModal from "../primitives/ConfirmModal";
-import Heading from "../primitives/Heading";
-import { TextInput } from "../primitives/Inputs";
-import Modal from "../primitives/Modal";
-import SectionHeader from "../primitives/SectionHeader";
-import TextLink from "../primitives/TextLink";
-import Card from "../primitives/Card";
-import Form from "../primitives/Form";
-import type { MfaSettings, MfaSetupResult } from "../../types/profile";
-import { useAction } from "../../utils/useAction";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import Text from "../primitives/Text";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import Heading from "@/components/primitives/Heading";
+import { TextInput } from "@/components/primitives/Inputs";
+import Modal from "@/components/primitives/Modal";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import TextLink from "@/components/primitives/TextLink";
+import Card from "@/components/primitives/Card";
+import Form from "@/components/primitives/Form";
+import type { MfaSettings, MfaSetupResult } from "@/types/profile";
+import { useAction } from "@/utils/useAction";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import Text from "@/components/primitives/Text";
 
 interface Props {
   mfa: MfaSettings;

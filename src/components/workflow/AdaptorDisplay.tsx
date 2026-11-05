@@ -1,11 +1,11 @@
-import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
-import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Pill from "../primitives/Pill";
+import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "@/utils/adaptors";
+import { ADAPTORS_WITHOUT_CREDENTIALS } from "@/constants";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Pill from "@/components/primitives/Pill";
 import AdaptorIcon from "./AdaptorIcon";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 /** The help text on the Adaptor field label. */
 export const ADAPTOR_HELP =

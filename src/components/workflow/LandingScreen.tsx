@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { cn } from "../../utils/cn";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import { Field } from "../primitives/Inputs";
-import Pill from "../primitives/Pill";
-import TextLink from "../primitives/TextLink";
+import { cn } from "@/utils/cn";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import { Field } from "@/components/primitives/Inputs";
+import Pill from "@/components/primitives/Pill";
+import TextLink from "@/components/primitives/TextLink";
 import AIDisclaimerFooter from "./AIDisclaimerFooter";
-import Text from "../primitives/Text";
-import { Stack } from "../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   aiAssistantEnabled?: boolean;

@@ -1,10 +1,10 @@
-import type { RunDisplayState } from "../../types/history";
-import type { ChannelRequestState } from "../../types/channels";
-import Pill from "../primitives/Pill";
-import type { Tone } from "../primitives/tone";
-import { STATE_PILL } from "../../theme/runStateColours";
-import { capitalize } from "../../utils/format";
-import { stateLabel } from "../../utils/history";
+import type { RunDisplayState } from "@/types/history";
+import type { ChannelRequestState } from "@/types/channels";
+import Pill from "@/components/primitives/Pill";
+import type { Tone } from "@/components/primitives/tone";
+import { STATE_PILL } from "@/theme/runStateColours";
+import { capitalize } from "@/utils/format";
+import { stateLabel } from "@/utils/history";
 
 /**
  * A work order or run state pill (run_live/components.ex `state_pill`).

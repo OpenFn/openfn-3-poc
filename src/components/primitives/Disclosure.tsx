@@ -1,6 +1,6 @@
 import { DisclosureButton, DisclosurePanel, Disclosure as HeadlessDisclosure } from "@headlessui/react";
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import Card from "./Card";
 import Heading from "./Heading";
 import Text from "./Text";

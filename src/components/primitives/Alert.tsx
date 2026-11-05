@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import type { Tone } from "./tone";
 import Heading from "./Heading";
 import Text from "./Text";

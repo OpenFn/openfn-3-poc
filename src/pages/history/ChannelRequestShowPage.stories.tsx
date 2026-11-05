@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ChannelRequestShowPage from "./ChannelRequestShowPage";
-import { channelRequests } from "../../mock-data/channel-requests";
-import { findChannel } from "../../mock-data/channels";
-import { projects } from "../../mock-data/projects";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { channelRequests } from "@/mock-data/channel-requests";
+import { findChannel } from "@/mock-data/channels";
+import { projects } from "@/mock-data/projects";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const success = channelRequests[0]!;

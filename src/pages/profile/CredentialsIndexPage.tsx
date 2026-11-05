@@ -1,10 +1,10 @@
-import AsyncBoundary from "../../components/primitives/AsyncBoundary";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import CredentialIndex from "../../components/credentials/CredentialIndex";
-import NewCredentialMenuButton from "../../components/credentials/NewCredentialMenuButton";
-import type { CredentialActions, CredentialIndexData } from "../../types/credentials";
-import type { ResourceStatus } from "../../types/resource";
+import AsyncBoundary from "@/components/primitives/AsyncBoundary";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import CredentialIndex from "@/components/credentials/CredentialIndex";
+import NewCredentialMenuButton from "@/components/credentials/NewCredentialMenuButton";
+import type { CredentialActions, CredentialIndexData } from "@/types/credentials";
+import type { ResourceStatus } from "@/types/resource";
 
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,

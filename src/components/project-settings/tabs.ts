@@ -1,4 +1,4 @@
-import type { Tab } from "../primitives/Tabs";
+import type { Tab } from "@/components/primitives/Tabs";
 
 /** The project settings tabs, in Lightning's order (settings.html.heex:31-66). */
 export const projectSettingsTabs: Tab[] = [

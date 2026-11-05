@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import UserInfo from "./UserInfo";
-import { profilePropsFor } from "../../mock-data/profile";
-import { session } from "../../mock-data/users";
-import { withWhitePanel } from "../../stories/decorators";
+import { profilePropsFor } from "@/mock-data/profile";
+import { session } from "@/mock-data/users";
+import { withWhitePanel } from "@/stories/decorators";
 
 const user = profilePropsFor(session.user).user;
 

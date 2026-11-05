@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import JobSelector from "./JobSelector";
-import { withCanvas } from "../../stories/decorators";
+import { withCanvas } from "@/stories/decorators";
 
 const jobs = findWorkflowGraph("wf-openhie")!.jobs;
 const meta: Meta<typeof JobSelector> = {

@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
-import Toggle from "../primitives/Toggle";
-import type { CurrentProject } from "../../types/projects";
-import type { WorkflowSnapshot } from "../../types/workflow-graph";
-import IconButton from "../primitives/IconButton";
-import ProjectBreadcrumbs from "../shell/ProjectBreadcrumbs";
+import Toggle from "@/components/primitives/Toggle";
+import type { CurrentProject } from "@/types/projects";
+import type { WorkflowSnapshot } from "@/types/workflow-graph";
+import IconButton from "@/components/primitives/IconButton";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
 import NewRunButton from "./NewRunButton";
 import SaveButton from "./SaveButton";
 import VersionDropdown from "./VersionDropdown";
-import Tooltip from "../primitives/Tooltip";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import Tooltip from "@/components/primitives/Tooltip";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 interface Props {
   project: CurrentProject;

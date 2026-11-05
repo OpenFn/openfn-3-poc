@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CollaboratorsTable from "./CollaboratorsTable";
-import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
+import { projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
 
 const { collaborators } = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user).collaboration;
 const noop = () => {};

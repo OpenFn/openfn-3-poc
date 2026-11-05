@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { MergePreviewResult, MergeValues } from "../../../types/sandboxes";
-import { errorMessage } from "../../../utils/errors";
-import { formatGracePeriod } from "../../../utils/format";
-import { useAction } from "../../../utils/useAction";
-import Alert from "../../primitives/Alert";
-import FormModal from "../../primitives/FormModal";
-import { Checkbox, Select } from "../../primitives/Inputs";
-import Pill from "../../primitives/Pill";
-import Spinner from "../../primitives/Spinner";
-import Text from "../../primitives/Text";
-import { Stack, Row } from "../../primitives/Stack";
+import type { MergePreviewResult, MergeValues } from "@/types/sandboxes";
+import { errorMessage } from "@/utils/errors";
+import { formatGracePeriod } from "@/utils/format";
+import { useAction } from "@/utils/useAction";
+import Alert from "@/components/primitives/Alert";
+import FormModal from "@/components/primitives/FormModal";
+import { Checkbox, Select } from "@/components/primitives/Inputs";
+import Pill from "@/components/primitives/Pill";
+import Spinner from "@/components/primitives/Spinner";
+import Text from "@/components/primitives/Text";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 interface State {
   /** The latest preview that arrived. Merge always sends its target. */

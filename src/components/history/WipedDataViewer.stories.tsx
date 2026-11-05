@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 import WipedDataViewer from "./WipedDataViewer";
 
 const meta = {

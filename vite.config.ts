@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
@@ -11,6 +12,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/openfn-3-poc/',
     plugins: [react(), tailwindcss()],
+    // `@/x` is src/x, so moving a file doesn't change what imports it (tsconfig.app.json says the same).
+    resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     server: {
       // VITE_API=lightning sends the API client here. Same origin as the app, so
       // Lightning's session cookie counts.

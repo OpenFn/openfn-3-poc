@@ -1,8 +1,8 @@
-import FormModal from "../primitives/FormModal";
-import { Select, TextInput } from "../primitives/Inputs";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import type { CredentialRef, KeychainCredentialRow, KeychainCredentialValues } from "../../types/credentials";
+import FormModal from "@/components/primitives/FormModal";
+import { Select, TextInput } from "@/components/primitives/Inputs";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import type { CredentialRef, KeychainCredentialRow, KeychainCredentialValues } from "@/types/credentials";
 
 interface Props {
   open: boolean;

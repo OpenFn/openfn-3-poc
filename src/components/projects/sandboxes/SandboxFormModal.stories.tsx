@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { RequestError } from "../../../utils/errors";
+import { RequestError } from "@/utils/errors";
 import SandboxFormModal from "./SandboxFormModal";
 
 const meta: Meta<typeof SandboxFormModal> = {

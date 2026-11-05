@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withRouter, withGrayPanel } from "../../stories/decorators";
-import { findRun } from "../../mock-data/history";
-import { runRow } from "../../mock-data/history-extra";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
+import { findRun } from "@/mock-data/history";
+import { runRow } from "@/mock-data/history-extra";
 import { RunCard, StepListItem } from "./RunCard";
 
 const meta = {

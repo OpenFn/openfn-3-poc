@@ -1,20 +1,20 @@
-import type { LogLine } from "../../types/history";
+import type { LogLine } from "@/types/history";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
-import type { Dataclip, Run, Step } from "../../mock-data/models/history";
-import { finalRunStates } from "../../constants";
-import { formatElapsed, formatLocalDateTime, uuidOf } from "../../utils/format";
-import { cn } from "../../utils/cn";
-import CodeEditor from "../primitives/CodeEditor";
-import StatePill from "../domain/StatePill";
-import StepIcon from "../domain/StepIcon";
-import UuidChip from "../primitives/UuidChip";
-import LogViewer from "../domain/LogViewer";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import Heading from "../primitives/Heading";
-import InfoTooltip from "../primitives/InfoTooltip";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
-import { Stack, Row } from "../primitives/Stack";
+import type { Dataclip, Run, Step } from "@/mock-data/models/history";
+import { finalRunStates } from "@/constants";
+import { formatElapsed, formatLocalDateTime, uuidOf } from "@/utils/format";
+import { cn } from "@/utils/cn";
+import CodeEditor from "@/components/primitives/CodeEditor";
+import StatePill from "@/components/domain/StatePill";
+import StepIcon from "@/components/domain/StepIcon";
+import UuidChip from "@/components/primitives/UuidChip";
+import LogViewer from "@/components/domain/LogViewer";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Heading from "@/components/primitives/Heading";
+import InfoTooltip from "@/components/primitives/InfoTooltip";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 export type RunViewerTab = "log" | "input" | "output";
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
-import { cn } from "../../utils/cn";
-import { setUpMonaco } from "../../theme/monacoTheme";
+import { cn } from "@/utils/cn";
+import { setUpMonaco } from "@/theme/monacoTheme";
 
 /** A run of lines, 1-based and inclusive. */
 export interface LineRange {

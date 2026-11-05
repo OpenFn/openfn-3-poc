@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminCollectionsTable from "./AdminCollectionsTable";
-import { adminCollectionRows } from "../../mock-data/admin";
+import { adminCollectionRows } from "@/mock-data/admin";
 
 const collections = adminCollectionRows();
 

@@ -1,8 +1,8 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import MaintenanceCard from "../../components/admin/MaintenanceCard";
-import { useAction } from "../../utils/useAction";
-import { Stack } from "../../components/primitives/Stack";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import MaintenanceCard from "@/components/admin/MaintenanceCard";
+import { useAction } from "@/utils/useAction";
+import { Stack } from "@/components/primitives/Stack";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AdminMaintenancePageProps {

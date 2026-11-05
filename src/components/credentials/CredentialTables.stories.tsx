@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
-import EmptyState from "../primitives/EmptyState";
-import Button from "../primitives/Button";
-import { credentialIndexDataFor, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
+import EmptyState from "@/components/primitives/EmptyState";
+import Button from "@/components/primitives/Button";
+import { credentialIndexDataFor, credentialsFixture, keychainRowsFor } from "@/mock-data/credentials";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
 
 const meta: Meta = { title: "Credentials/CredentialTables" };
 export default meta;

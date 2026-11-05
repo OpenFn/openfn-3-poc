@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import FileDropZone from "../primitives/FileDropZone";
-import FormModal from "../primitives/FormModal";
-import { Field } from "../primitives/Inputs";
-import CodeEditor from "../primitives/CodeEditor";
+import Button from "@/components/primitives/Button";
+import FileDropZone from "@/components/primitives/FileDropZone";
+import FormModal from "@/components/primitives/FormModal";
+import { Field } from "@/components/primitives/Inputs";
+import CodeEditor from "@/components/primitives/CodeEditor";
 
 interface Props {
   isOpen: boolean;

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AnnotationCard from "./AnnotationCard";
-import type { Annotation } from "../../annotations/source";
-import { withWhitePanel } from "../../stories/decorators";
+import type { Annotation } from "@/annotations/source";
+import { withWhitePanel } from "@/stories/decorators";
 
 const sample: Annotation = {
   id: "project-settings-collaborators",

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import HistoryChannelLogsPage from "./HistoryChannelLogsPage";
-import { channelRequests } from "../../mock-data/channel-requests";
-import { channels } from "../../mock-data/channels";
-import { projects } from "../../mock-data/projects";
-import type { ChannelLogRow } from "../../types/channels";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { channelRequests } from "@/mock-data/channel-requests";
+import { channels } from "@/mock-data/channels";
+import { projects } from "@/mock-data/projects";
+import type { ChannelLogRow } from "@/types/channels";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const rows: ChannelLogRow[] = channelRequests.map((r) => ({

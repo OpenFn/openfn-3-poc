@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { FAILURE_STATES } from "../../../types/workflow-health";
+import { FAILURE_STATES } from "@/types/workflow-health";
 import { counts } from "./fixtures";
 import { FailureBreakdownDonut, OutcomesDonut } from "./HealthDonuts";
 

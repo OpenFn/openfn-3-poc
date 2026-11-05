@@ -1,13 +1,13 @@
-import { formatNumber } from "../../../utils/format";
-import { historyUrl, stateUrl } from "../../../utils/history";
-import type { ErrorSignature, FailureState } from "../../../types/workflow-health";
-import Button from "../../primitives/Button";
-import Card from "../../primitives/Card";
-import Pill from "../../primitives/Pill";
-import { Table, Td, Th, Tr } from "../../primitives/Table";
-import Text from "../../primitives/Text";
+import { formatNumber } from "@/utils/format";
+import { historyUrl, stateUrl } from "@/utils/history";
+import type { ErrorSignature, FailureState } from "@/types/workflow-health";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Pill from "@/components/primitives/Pill";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Text from "@/components/primitives/Text";
 import { DOT, EMPTY, FAILURE_COLORS, adaptorLabel } from "./palette";
-import { Stack } from "../../primitives/Stack";
+import { Stack } from "@/components/primitives/Stack";
 
 // One tip per error type the worker reports (TriageTable.tsx `TIPS`).
 const TIPS: Record<string, string> = {

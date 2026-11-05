@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { pickOption } from "../../test/select";
+import { pickOption } from "@/test/select";
 import { Checkbox, Field, Radio, Select, TextInput } from "./Inputs";
 import RadioCards from "./RadioCards";
 

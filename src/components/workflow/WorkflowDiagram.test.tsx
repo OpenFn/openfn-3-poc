@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import WorkflowDiagram from "./WorkflowDiagram";
 
 describe("WorkflowDiagram", () => {

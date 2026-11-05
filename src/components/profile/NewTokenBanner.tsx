@@ -1,7 +1,7 @@
-import Alert from "../primitives/Alert";
-import CopyButton from "../primitives/CopyButton";
-import { TextInput } from "../primitives/Inputs";
-import { Row } from "../primitives/Stack";
+import Alert from "@/components/primitives/Alert";
+import CopyButton from "@/components/primitives/CopyButton";
+import { TextInput } from "@/components/primitives/Inputs";
+import { Row } from "@/components/primitives/Stack";
 
 /**
  * The banner shown once after "Generate New Token"

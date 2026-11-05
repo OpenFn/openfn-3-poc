@@ -1,6 +1,6 @@
-import DateTime from "../primitives/DateTime";
-import Heading from "../primitives/Heading";
-import type { ProfileDetail } from "../../types/profile";
+import DateTime from "@/components/primitives/DateTime";
+import Heading from "@/components/primitives/Heading";
+import type { ProfileDetail } from "@/types/profile";
 
 /** Left column of /profile (profile_live/components.ex `user_info`). */
 export default function UserInfo({ user }: { user: ProfileDetail }) {

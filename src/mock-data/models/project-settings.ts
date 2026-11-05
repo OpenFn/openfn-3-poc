@@ -1,5 +1,5 @@
 /** Project settings: collections, webhook auth, exports, GitHub sync, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { ExportStatus, GithubRepoConnection, WebhookAuthType } from "../../types/project-settings";
+import type { ExportStatus, GithubRepoConnection, WebhookAuthType } from "@/types/project-settings";
 
 export interface ProjectSettings {
   /** Project environment ("Credentials will be loaded with values from this environment."). */

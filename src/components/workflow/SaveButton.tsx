@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Button from "../primitives/Button";
+import Button from "@/components/primitives/Button";
 
 interface Props {
   onClick: () => void;

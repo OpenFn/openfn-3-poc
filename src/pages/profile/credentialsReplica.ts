@@ -7,16 +7,16 @@ import {
   withActivity,
   type CredentialsFixture,
   type StoredEnvironment,
-} from "../../mock-data/credentials";
-import { purgeDeletedAfterDays } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { simulateRequest } from "../../mock-data/request";
-import { users } from "../../mock-data/users";
-import type { CredentialActions, CredentialValues, KeychainCredentialActions } from "../../types/credentials";
-import type { Project } from "../../types/projects";
-import type { User } from "../../types/users";
-import { RequestError } from "../../utils/errors";
-import { fullName } from "../../utils/format";
+} from "@/mock-data/credentials";
+import { purgeDeletedAfterDays } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { simulateRequest } from "@/mock-data/request";
+import { users } from "@/mock-data/users";
+import type { CredentialActions, CredentialValues, KeychainCredentialActions } from "@/types/credentials";
+import type { Project } from "@/types/projects";
+import type { User } from "@/types/users";
+import { RequestError } from "@/utils/errors";
+import { fullName } from "@/utils/format";
 
 type Change = (f: CredentialsFixture) => Partial<CredentialsFixture>;
 

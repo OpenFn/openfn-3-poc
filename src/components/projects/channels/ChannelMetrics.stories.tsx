@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ChannelMetrics from "./ChannelMetrics";
-import { projects } from "../../../mock-data/projects";
-import { withRouter } from "../../../stories/decorators";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof ChannelMetrics> = {
   title: "Projects/Channels/ChannelMetrics",

@@ -1,11 +1,11 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import type { LogLine, RunDetail, RunStep } from "../../types/history";
-import { RequestError } from "../../utils/errors";
-import { ToastProvider } from "../../components/primitives/Toast";
+import { RouterProvider, type Router } from "@/routing/router";
+import type { LogLine, RunDetail, RunStep } from "@/types/history";
+import { RequestError } from "@/utils/errors";
+import { ToastProvider } from "@/components/primitives/Toast";
 import RunShowPage from "./RunShowPage";
-import { tooltipOf } from "../../test/tooltip";
+import { tooltipOf } from "@/test/tooltip";
 
 const RUN_ID = "5e9a1c2b-1111-4a4a-8b8b-0123456789ab";
 const WO_ID = "7c1d2e3f-2222-4a4a-8b8b-0123456789ab";

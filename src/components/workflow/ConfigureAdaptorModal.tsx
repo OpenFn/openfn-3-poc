@@ -1,20 +1,20 @@
 // eslint-disable-next-line no-restricted-imports -- wiring: the project's credentials (and owner emails) for the picker.
-import { credentials, ownerEmail } from "../../mock-data/credentials";
-import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
-import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "../../utils/adaptors";
+import { credentials, ownerEmail } from "@/mock-data/credentials";
+import { ADAPTORS_WITHOUT_CREDENTIALS } from "@/constants";
+import { adaptorDisplayName, adaptorShortName, resolveAdaptor } from "@/utils/adaptors";
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
-import { resolvedAdaptorVersion } from "../../mock-data/adaptors";
-import EmptyState from "../primitives/EmptyState";
-import Button from "../primitives/Button";
-import IconButton from "../primitives/IconButton";
-import Card from "../primitives/Card";
-import { Field, Radio, Select } from "../primitives/Inputs";
-import Modal from "../primitives/Modal";
-import TextLink from "../primitives/TextLink";
+import { resolvedAdaptorVersion } from "@/mock-data/adaptors";
+import EmptyState from "@/components/primitives/EmptyState";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
+import Card from "@/components/primitives/Card";
+import { Field, Radio, Select } from "@/components/primitives/Inputs";
+import Modal from "@/components/primitives/Modal";
+import TextLink from "@/components/primitives/TextLink";
 import { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorIcon from "./AdaptorIcon";
-import Text from "../primitives/Text";
-import { Stack, Row } from "../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 const CREDENTIALS_HELP =
   "If the system you're working with requires authentication, choose a credential with login details (secrets) that will allow this job to connect. If you're not connecting to an external system you don't need a credential.";

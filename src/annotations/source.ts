@@ -12,14 +12,14 @@ const BLOB_BASE = `https://github.com/${ANNOTATIONS_REPO}/blob/${ANNOTATIONS_BRA
 /** Folders an annotation id can live in, tried in this order. */
 const FOLDERS = ["views", "shared", "flows", "capabilities"] as const;
 
-const files = import.meta.glob<string>("../../annotations/**/*.md", {
+const files = import.meta.glob<string>("/annotations/**/*.md", {
   query: "?raw",
   import: "default",
   eager: true,
 });
 
 function file(path: string): string | undefined {
-  return files[`../../annotations/${path}`];
+  return files[`/annotations/${path}`];
 }
 
 export interface Annotation {

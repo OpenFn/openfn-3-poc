@@ -1,11 +1,11 @@
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import InfoTooltip from "../primitives/InfoTooltip";
-import SectionHeader from "../primitives/SectionHeader";
-import type { BackupCode } from "../../types/tokens";
-import { useCopy } from "../../utils/useCopy";
-import Text from "../primitives/Text";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import InfoTooltip from "@/components/primitives/InfoTooltip";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import type { BackupCode } from "@/types/tokens";
+import { useCopy } from "@/utils/useCopy";
+import Text from "@/components/primitives/Text";
 
 /**
  * The recovery codes card (backup_codes_live/index.html.heex): the codes

@@ -1,4 +1,4 @@
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 /**
  * A spinning indicator for anything pending: inside a `Button`, beside a

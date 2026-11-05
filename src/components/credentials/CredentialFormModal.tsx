@@ -1,25 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import FormModal from "../primitives/FormModal";
-import Button from "../primitives/Button";
-import Alert from "../primitives/Alert";
-import Card from "../primitives/Card";
-import ConfirmModal from "../primitives/ConfirmModal";
-import IconButton from "../primitives/IconButton";
-import InfoTooltip from "../primitives/InfoTooltip";
-import { Checkbox, PasswordInput, Radio, TextArea, TextInput } from "../primitives/Inputs";
-import Tabs from "../primitives/Tabs";
-import Text from "../primitives/Text";
-import TextLink from "../primitives/TextLink";
-import Section from "../primitives/Section";
-import { Stack } from "../primitives/Stack";
+import FormModal from "@/components/primitives/FormModal";
+import Button from "@/components/primitives/Button";
+import Alert from "@/components/primitives/Alert";
+import Card from "@/components/primitives/Card";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import IconButton from "@/components/primitives/IconButton";
+import InfoTooltip from "@/components/primitives/InfoTooltip";
+import { Checkbox, PasswordInput, Radio, TextArea, TextInput } from "@/components/primitives/Inputs";
+import Tabs from "@/components/primitives/Tabs";
+import Text from "@/components/primitives/Text";
+import TextLink from "@/components/primitives/TextLink";
+import Section from "@/components/primitives/Section";
+import { Stack } from "@/components/primitives/Stack";
 import ProjectsPicker from "./ProjectsPicker";
-import { adaptorIconUrl } from "../../utils/adaptors";
-import { assetUrl } from "../../utils/assets";
-import { formatSchemaName } from "../../utils/format";
-import { errorMessage, RequestError } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
+import { adaptorIconUrl } from "@/utils/adaptors";
+import { assetUrl } from "@/utils/assets";
+import { formatSchemaName } from "@/utils/format";
+import { errorMessage, RequestError } from "@/utils/errors";
+import { useAction } from "@/utils/useAction";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
 import type {
   CredentialOauthClient,
   CredentialProjectRef,
@@ -34,7 +34,7 @@ import type {
   OauthSignInResult,
   SchemaField,
   StoredOauthToken,
-} from "../../types/credentials";
+} from "@/types/credentials";
 
 interface Props {
   open: boolean;

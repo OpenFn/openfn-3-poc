@@ -1,14 +1,14 @@
-import type { ChannelEvent } from "../../types/channels";
-import { cn } from "../../utils/cn";
-import Card from "../primitives/Card";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import Pill, { type PillColor } from "../primitives/Pill";
-import type { Tone } from "../primitives/tone";
-import { formatBinaryBytes as formatBytes } from "../../utils/format";
-import CopyButton from "../primitives/CopyButton";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
-import { Stack } from "../primitives/Stack";
+import type { ChannelEvent } from "@/types/channels";
+import { cn } from "@/utils/cn";
+import Card from "@/components/primitives/Card";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Pill, { type PillColor } from "@/components/primitives/Pill";
+import type { Tone } from "@/components/primitives/tone";
+import { formatBinaryBytes as formatBytes } from "@/utils/format";
+import CopyButton from "@/components/primitives/CopyButton";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
+import { Stack } from "@/components/primitives/Stack";
 
 /*
  * Building blocks of the channel request page

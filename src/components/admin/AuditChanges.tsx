@@ -1,8 +1,8 @@
-import type { AuditEvent, AuditValue } from "../../types/admin";
-import Card from "../primitives/Card";
-import { Td } from "../primitives/Table";
-import Text from "../primitives/Text";
-import { Stack } from "../primitives/Stack";
+import type { AuditEvent, AuditValue } from "@/types/admin";
+import Card from "@/components/primitives/Card";
+import { Td } from "@/components/primitives/Table";
+import Text from "@/components/primitives/Text";
+import { Stack } from "@/components/primitives/Stack";
 
 /** Values print as Lightning's HEEx prints them: `true` as "true", nil as "". */
 const show = (value: AuditValue) => (value === null ? "" : String(value));

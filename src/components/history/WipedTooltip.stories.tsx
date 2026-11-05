@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import IconButton from "../primitives/IconButton";
-import { withRouter } from "../../stories/decorators";
+import IconButton from "@/components/primitives/IconButton";
+import { withRouter } from "@/stories/decorators";
 import WipedTooltip from "./WipedTooltip";
 import { zeroPersistenceMessage } from "./runHelpers";
 

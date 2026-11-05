@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import Button from "../primitives/Button";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import Button from "@/components/primitives/Button";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import AdaptorConfigModals, { type AdaptorModal } from "./AdaptorConfigModals";
 
 const graph = findWorkflowGraph("wf-dhis2-sheets")!;

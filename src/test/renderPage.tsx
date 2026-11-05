@@ -1,8 +1,8 @@
 import { act, render } from "@testing-library/react";
 import type { ComponentType } from "react";
 import { vi } from "vitest";
-import { ToastProvider } from "../components/primitives/Toast";
-import { RouterProvider, type Router } from "../routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { RouterProvider, type Router } from "@/routing/router";
 
 type Fn = (...args: never[]) => unknown;
 /** A page's `on*` props. */

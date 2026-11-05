@@ -1,8 +1,8 @@
-import Toggle from "../primitives/Toggle";
-import Card from "../primitives/Card";
-import { useToast } from "../primitives/Toast";
-import { errorMessage } from "../../utils/errors";
-import { useChosenValue } from "../../utils/useChosenValue";
+import Toggle from "@/components/primitives/Toggle";
+import Card from "@/components/primitives/Card";
+import { useToast } from "@/components/primitives/Toast";
+import { errorMessage } from "@/utils/errors";
+import { useChosenValue } from "@/utils/useChosenValue";
 
 interface Props {
   enabled: boolean;

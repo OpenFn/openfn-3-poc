@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { simulateRequest } from "../../mock-data/request";
-import { useCurrentUser } from "../../session/session";
+import { simulateRequest } from "@/mock-data/request";
+import { useCurrentUser } from "@/session/session";
 import AuthConfirmAccessPage from "./AuthConfirmAccessPage";
 
 /**

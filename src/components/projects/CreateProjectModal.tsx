@@ -1,11 +1,11 @@
-import FormModal from "../primitives/FormModal";
-import { TextArea } from "../primitives/Inputs";
-import NameField from "../primitives/NameField";
-import Text from "../primitives/Text";
-import { urlSafeName } from "../../utils/format";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import { Stack } from "../primitives/Stack";
+import FormModal from "@/components/primitives/FormModal";
+import { TextArea } from "@/components/primitives/Inputs";
+import NameField from "@/components/primitives/NameField";
+import Text from "@/components/primitives/Text";
+import { urlSafeName } from "@/utils/format";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import { Stack } from "@/components/primitives/Stack";
 
 /**
  * "Create a new project" (DashboardLive.ProjectCreationModal): Name, with

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import HistoryExportsPanel from "./HistoryExportsPanel";
-import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withRouter, withGrayPanel } from "../../stories/decorators";
+import { projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
 
 const { historyExports } = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user);
 

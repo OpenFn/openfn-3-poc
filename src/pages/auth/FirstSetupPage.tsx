@@ -1,11 +1,11 @@
-import Header from "../../components/primitives/Header";
-import Button from "../../components/primitives/Button";
-import Form from "../../components/primitives/Form";
-import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import { Stack } from "../../components/primitives/Stack";
-import { useForm } from "../../utils/useForm";
-import { blank, isValidEmail } from "../../utils/validate";
+import Header from "@/components/primitives/Header";
+import Button from "@/components/primitives/Button";
+import Form from "@/components/primitives/Form";
+import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import { Stack } from "@/components/primitives/Stack";
+import { useForm } from "@/utils/useForm";
+import { blank, isValidEmail } from "@/utils/validate";
 
 export interface FirstSetupValues {
   firstName: string;

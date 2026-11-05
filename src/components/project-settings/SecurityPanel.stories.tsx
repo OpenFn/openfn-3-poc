@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SecurityPanel from "./SecurityPanel";
-import { withRouter, withGrayPanel } from "../../stories/decorators";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
 
 const meta: Meta<typeof SecurityPanel> = {
   title: "Project settings/SecurityPanel",

@@ -1,9 +1,9 @@
-import { formatNumber } from "../../../utils/format";
-import { Link } from "../../../routing/router";
-import TextLink from "../../primitives/TextLink";
+import { formatNumber } from "@/utils/format";
+import { Link } from "@/routing/router";
+import TextLink from "@/components/primitives/TextLink";
 import { DOT, EMPTY, FRAME, LEGEND, percent } from "./palette";
-import Text from "../../primitives/Text";
-import { Row } from "../../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 export interface Slice {
   key: string;

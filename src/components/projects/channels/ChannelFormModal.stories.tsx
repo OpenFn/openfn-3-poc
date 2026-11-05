@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ChannelFormModal from "./ChannelFormModal";
-import { channels, projectCredentialOptions, webhookAuthMethods } from "../../../mock-data/channels";
-import { projects } from "../../../mock-data/projects";
-import { withRouter } from "../../../stories/decorators";
-import { RequestError } from "../../../utils/errors";
-import { channelProxyUrl } from "../../../utils/urls";
+import { channels, projectCredentialOptions, webhookAuthMethods } from "@/mock-data/channels";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
+import { RequestError } from "@/utils/errors";
+import { channelProxyUrl } from "@/utils/urls";
 
 const existing = channels[0]!;
 

@@ -1,11 +1,11 @@
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import AdminProjectForm from "../../components/admin/AdminProjectForm";
-import AdminProjectsTable from "../../components/admin/AdminProjectsTable";
-import ProjectDeletionModal from "../../components/domain/ProjectDeletionModal";
-import type { AdminDeleteProject, AdminProjectForm as FormData, AdminProjectFormValues, AdminProjectRow } from "../../types/admin";
-import { useAction } from "../../utils/useAction";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import AdminProjectForm from "@/components/admin/AdminProjectForm";
+import AdminProjectsTable from "@/components/admin/AdminProjectsTable";
+import ProjectDeletionModal from "@/components/domain/ProjectDeletionModal";
+import type { AdminDeleteProject, AdminProjectForm as FormData, AdminProjectFormValues, AdminProjectRow } from "@/types/admin";
+import { useAction } from "@/utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AdminProjectsPageProps {

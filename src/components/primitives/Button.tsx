@@ -1,6 +1,6 @@
 import { useContext, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type MouseEvent, type ReactElement, type ReactNode, type Ref } from "react";
-import { Link } from "../../routing/router";
-import { cn } from "../../utils/cn";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
 import { FormPendingContext } from "./formStatus";
 import Spinner from "./Spinner";
 import Tooltip from "./Tooltip";

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import VolumeBars from "./VolumeBars";
-import { healthFor } from "../../../mock-data/workflow-health";
-import { withRouter, withWhitePanel } from "../../../stories/decorators";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withRouter, withWhitePanel } from "@/stories/decorators";
 
 const week = healthFor("wf-openhie", "7").runs;
 const month = healthFor("wf-openhie", "30").runs;

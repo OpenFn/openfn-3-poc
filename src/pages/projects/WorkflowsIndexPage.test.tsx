@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/primitives/Toast";
-import type { WorkflowRow } from "../../types/workflows";
+import { RouterProvider, type Router } from "@/routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
+import type { WorkflowRow } from "@/types/workflows";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
-import { isDisabled } from "../../test/disabled";
+import { isDisabled } from "@/test/disabled";
 
 const row = (id: string, name: string, extra: Partial<WorkflowRow> = {}): WorkflowRow => ({
   workflow: { id, name, updatedAt: "2026-10-01T10:00:00Z", enabled: true, triggerType: "webhook" },

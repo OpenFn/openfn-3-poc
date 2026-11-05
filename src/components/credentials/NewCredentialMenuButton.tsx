@@ -1,8 +1,8 @@
-import ButtonMenu from "../primitives/ButtonMenu";
-import { MenuItem } from "../primitives/Menu";
-import Pill from "../primitives/Pill";
+import ButtonMenu from "@/components/primitives/ButtonMenu";
+import { MenuItem } from "@/components/primitives/Menu";
+import Pill from "@/components/primitives/Pill";
 import { showCredentialModal, userCredentialMenuOptions, type NewCredentialOption } from "./credentialModalEvents";
-import { Row } from "../primitives/Stack";
+import { Row } from "@/components/primitives/Stack";
 
 interface Props {
   id?: string;

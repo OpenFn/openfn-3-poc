@@ -1,13 +1,13 @@
-import { useAnnotations } from "../../annotations/annotations-context";
-import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "../../annotations/source";
-import Heading from "../primitives/Heading";
-import CloseButton from "../primitives/CloseButton";
-import IconButton from "../primitives/IconButton";
-import Text from "../primitives/Text";
-import TextLink from "../primitives/TextLink";
+import { useAnnotations } from "@/annotations/annotations-context";
+import { ANNOTATIONS_BRANCH, getAnnotation, inventory, inventoryUrl } from "@/annotations/source";
+import Heading from "@/components/primitives/Heading";
+import CloseButton from "@/components/primitives/CloseButton";
+import IconButton from "@/components/primitives/IconButton";
+import Text from "@/components/primitives/Text";
+import TextLink from "@/components/primitives/TextLink";
 import AnnotationCard from "./AnnotationCard";
-import Tooltip from "../primitives/Tooltip";
-import { Row } from "../primitives/Stack";
+import Tooltip from "@/components/primitives/Tooltip";
+import { Row } from "@/components/primitives/Stack";
 
 export const ANNOTATIONS_PANEL_WIDTH = 440;
 

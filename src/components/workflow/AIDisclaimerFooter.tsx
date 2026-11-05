@@ -1,7 +1,7 @@
-import { cn } from "../../utils/cn";
-import TextLink from "../primitives/TextLink";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import { cn } from "@/utils/cn";
+import TextLink from "@/components/primitives/TextLink";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 /** "Please use AI responsibly. Never share PII." (AIDisclaimerFooter.tsx). `muted` is the quieter one, without the icon. */
 export default function AIDisclaimerFooter({ variant = "default" }: { variant?: "default" | "muted" }) {

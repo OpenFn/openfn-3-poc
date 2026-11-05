@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TemplateBrowserModal from "./TemplateBrowserModal";
-import { workflowTemplates } from "../../mock-data/workflow";
+import { workflowTemplates } from "@/mock-data/workflow";
 
 const meta: Meta<typeof TemplateBrowserModal> = {
   title: "Workflow/TemplateBrowserModal",

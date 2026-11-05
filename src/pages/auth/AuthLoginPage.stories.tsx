@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthLoginPage from "./AuthLoginPage";
-import { withCanvas, withRouterAt } from "../../stories/decorators";
+import { withCanvas, withRouterAt } from "@/stories/decorators";
 
 const meta: Meta<typeof AuthLoginPage> = {
   title: "Pages/Auth/AuthLoginPage",

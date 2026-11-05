@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import JobInspector from "./JobInspector";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel } from "@/stories/decorators";
 
 const graph = findWorkflowGraph("wf-openhie")!;
 const noop = () => {};

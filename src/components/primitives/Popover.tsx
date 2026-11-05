@@ -1,6 +1,6 @@
 import { Popover as HeadlessPopover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { Fragment, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { floatingPanelClasses, type FloatingAlign, type PanelProps } from "./floating";
 
 interface Props {

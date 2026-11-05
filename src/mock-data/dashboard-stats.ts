@@ -5,9 +5,9 @@
  * live.
  */
 import { projects } from "./projects";
-import { roleIn } from "../permissions";
+import { roleIn } from "@/permissions";
 import { workflows, workflowsIn } from "./workflows";
-import type { ProjectOverview } from "../types/workflows";
+import type { ProjectOverview } from "@/types/workflows";
 import type { WorkflowStats } from "./models/workflows";
 
 /** Root projects the user belongs to (sandboxes never show on the dashboard). */

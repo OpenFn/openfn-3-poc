@@ -1,4 +1,4 @@
-import ConfirmModal from "../primitives/ConfirmModal";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
 
 /** Lightning's TokenDeletionModal (live/components/token_deletion_modal.ex). */
 export default function TokenDeletionModal({ onClose, onDelete }: { onClose: () => void; onDelete?: () => void | Promise<void> }) {

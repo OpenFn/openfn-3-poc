@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "../../routing/router";
-import { cn } from "../../utils/cn";
+import { useRouter } from "@/routing/router";
+import { cn } from "@/utils/cn";
 import Modal from "./Modal";
 import SearchList from "./SearchList";
 import Text from "./Text";
-import { matchesQuery } from "../../utils/search";
+import { matchesQuery } from "@/utils/search";
 
 /**
  * Generic command-palette picker. Content-agnostic: the server ships a

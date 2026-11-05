@@ -1,10 +1,10 @@
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import UserDeletionModal from "../../components/domain/UserDeletionModal";
-import UsersTable from "../../components/admin/UsersTable";
-import type { AdminDeleteUser, AdminUserRow } from "../../types/admin";
-import { useAction } from "../../utils/useAction";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import UserDeletionModal from "@/components/domain/UserDeletionModal";
+import UsersTable from "@/components/admin/UsersTable";
+import type { AdminDeleteUser, AdminUserRow } from "@/types/admin";
+import { useAction } from "@/utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AdminUsersPageProps {

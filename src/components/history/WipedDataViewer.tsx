@@ -1,8 +1,8 @@
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import TextLink from "../primitives/TextLink";
-import Text from "../primitives/Text";
-import Tooltip from "../primitives/Tooltip";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import TextLink from "@/components/primitives/TextLink";
+import Text from "@/components/primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
 
 const labels = { input: "Input", output: "Output", request_response: "Request/Response" } as const;
 const subjects = { input: "step", output: "step", request_response: "channel request" } as const;

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Link } from "../../../routing/router";
-import { cn } from "../../../utils/cn";
-import { formatMonthDayIn, formatNumber, hourIn } from "../../../utils/format";
-import { historyUrl } from "../../../utils/history";
-import type { RunBucket } from "../../../types/workflow-health";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
+import { formatMonthDayIn, formatNumber, hourIn } from "@/utils/format";
+import { historyUrl } from "@/utils/history";
+import type { RunBucket } from "@/types/workflow-health";
 import { CANCELLED, DOT, EMPTY, FAILED, FRAME, LEGEND, SUCCESS } from "./palette";
-import Text from "../../primitives/Text";
-import { Row } from "../../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 /** A run has no `rejected` state, so the red band folds the other five. */
 const RUN_FAILURE_KEYS = ["failed", "crashed", "killed", "exception", "lost"] as const;

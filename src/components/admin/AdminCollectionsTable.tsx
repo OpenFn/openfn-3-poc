@@ -1,9 +1,9 @@
-import type { AdminCollectionRow } from "../../types/admin";
-import { formatBytes } from "../../utils/format";
-import Button from "../primitives/Button";
-import EmptyState from "../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import { useTableSort, type SortValue } from "../../utils/useTableSort";
+import type { AdminCollectionRow } from "@/types/admin";
+import { formatBytes } from "@/utils/format";
+import Button from "@/components/primitives/Button";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import { useTableSort, type SortValue } from "@/utils/useTableSort";
 
 const sortMap: Record<"name" | "byte_size_sum", (c: AdminCollectionRow) => SortValue> = {
   name: (c) => c.name,

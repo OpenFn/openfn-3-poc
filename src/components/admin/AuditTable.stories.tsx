@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuditTable from "./AuditTable";
-import { auditEvents, auditPageSize } from "../../mock-data/admin";
+import { auditEvents, auditPageSize } from "@/mock-data/admin";
 
 const meta: Meta<typeof AuditTable> = {
   title: "Admin/AuditTable",

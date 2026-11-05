@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectSettingsPage from "./ProjectSettingsPage";
-import { generateApiKey, projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { generateApiKey, projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 const sample = (index: number) => ({

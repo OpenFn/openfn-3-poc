@@ -1,6 +1,6 @@
-import type { StepExitReason } from "../../types/history";
-import { cn } from "../../utils/cn";
-import { STEP_ICON } from "../../theme/runStateColours";
+import type { StepExitReason } from "@/types/history";
+import { cn } from "@/utils/cn";
+import { STEP_ICON } from "@/theme/runStateColours";
 
 const icons: Record<StepExitReason | "pending", string> = {
   pending: "hero-ellipsis-horizontal-circle-solid",
