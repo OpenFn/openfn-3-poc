@@ -101,7 +101,7 @@ data, comments, lint) and loads by itself when you touch one.
 - **No styling in pages.** Use a primitive; if none fits, extend one. Lint
   bans raw palette colours, hex, arbitrary values (`text-[13px]`) and type
   sizes outside primitives.
-- **Icons** are Heroicons classes: `<span className="hero-folder h-5 w-5" />`,
+- **Icons** are Heroicons classes: `<span className="hero-folder size-5" />`,
   until the sweep to Lucide (PRINCIPLES.md, One way to do each thing).
   Conditional classes use `cn()`.
 - **When a rule is missing**, and Brandon's design, Lightning and

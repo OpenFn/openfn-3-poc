@@ -87,11 +87,13 @@ const roleNamedForColour = roleLines.filter((l) => !/-color-tag-/.test(l) && new
 const roleWithoutJob = roleLines.filter((l) => !l.includes('/*')).length
 
 // The conventions in PRINCIPLES.md "Conventions", counted so each falls to 0
-// and then becomes a lint rule. Existing code is held, not fixed.
-const offSpacing = /(?:^|[\s:"'`])-?(?:p[xytblrse]?|m[xytblrse]?|gap(?:-[xy])?|space-[xy])-(?!(?:0|0\.5|1|1\.5|2|3|4|6|8|px|auto)\b)[\d.]+\b/g
-const offRadius = /\brounded(?:-[tblrse]{1,2})?(?!-(?:md|lg|xl|full)\b)(?:-(?:none|sm|2xl|3xl))?(?![\w-])/g
+// and then becomes a lint rule. Existing code is held, not fixed. Fixed sizes
+// exclude only the shell; a layout primitive's size is counted and reviewed.
+const offSpacing = /(?:^|[\s:"'`])-?(?:p[xytblrse]?|m[xytblrse]?|gap(?:-[xy])?|space-[xy])-(?!(?:0|0\.5|1|1\.5|2|3|4|6|8|px|auto)(?![\d.\w]))[\d.]+\b/g
+const offRadius = /\brounded(?:-[tblrse]{1,2})?(?!-(?:md|lg|xl|full)\b)(?:-(?:none|xs|sm|2xl|3xl|4xl))?(?![\w-])/g
 const zNumber = /\bz-\d+\b/g
-const fixedSize = /(?:^|[\s:"'`])(?:(?:w|h|min-w|max-w|min-h|max-h)-(?:[1-9][\d.]*|px)|size-(?![3-6]\b)\d+)\b/g
+// w-1/2 is a share of the space, not a fixed size; w-3 to w-6 and h-3 to h-6 are icon sizes, like size-3 to size-6.
+const fixedSize = /(?:^|[\s:"'`])(?:(?:w|h)-(?![3-6](?![\d.\/]))|(?:min-w|max-w|min-h|max-h)-)(?:[1-9][\d.]*|px)(?![\/\w])|(?:^|[\s:"'`])size-(?![3-6](?![\d.]))[\d.]+(?![\w])/g
 const notShell = code.filter((f) => !f.path.startsWith('components/shell/'))
 const indexKey = /\bkey=\{(?:i|idx|index)\}/g
 const handId = /\bid="[^"]+"/g

@@ -106,7 +106,8 @@ else.
 - Removing one thing from a list is `secondary` + `danger` with its word
   ("Delete", "Remove"), never a bare icon.
 - Inside a tool panel (the editor, the assistant), the main action is dark,
-  so it doesn't compete with the page's main action.
+  so it doesn't compete with the page's main action. Not built until the
+  editor or assistant needs it.
 - Someone else's brand never colours a button. Connecting GitHub is a
   `secondary` button with GitHub's icon.
 
@@ -182,7 +183,8 @@ out labels, errors or buttons itself.
   on is ignored.
 - The server decides who can do what and sends it with the data, with a
   reason when the answer is no. The page shows that answer; it never works
-  out a permission from someone's role. Until the API sends permissions,
+  out a permission from someone's role. The server checks again when the
+  action arrives. Until the API sends permissions,
   `src/permissions.ts` stands in for it, and nothing else does.
 
 ## How data flows
@@ -268,8 +270,8 @@ most often.
 - We test behaviour, not markup. A test passes on old and new Lightning, or
   we know why it doesn't.
 - A failing test isn't fixed blind. It might be a difference we meant.
-- Every check is proven once: plant the bug it's meant to catch and confirm
-  it fails.
+- Every check is proven once by an independent agent: plant the bug it's
+  meant to catch and confirm it fails.
 - An independent reviewer checks the work, not the one who built it
   (`.claude/agents/`).
 - Lint enforces what it can. A rule only written in a doc gets broken.

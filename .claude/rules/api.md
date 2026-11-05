@@ -64,7 +64,8 @@ At the moment the app supports us moving to Lightning as a single page React app
 - Never `setQueryData` (lint): the server's answer comes back through the
   refetch. Show a change early only where the page already uses
   `useChosenValue`.
-- A success toast is the page's, after the save resolves, in Lightning's
+- On a new or reworked page, the result shows where it happened
+  (PRINCIPLES.md, When things go wrong). Otherwise a success toast is the page's, after the save resolves, in Lightning's
   flash wording (STANDARDS pattern 7). An error toast is the page's, for an action with no form
   (`useAction(handler, { onError: "toast" })`, STANDARDS pattern 1); it
   stays until dismissed. Nothing in `src/api/` toasts.
