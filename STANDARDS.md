@@ -182,6 +182,10 @@ The `/…/delete` routes stay, because Lightning has them; they open a
 
 ## 7. Feedback
 
+This is how existing pages give feedback. New and reworked pages show an
+action's result where it happened and toast only when there's nowhere on
+screen for it (PRINCIPLES.md, When things go wrong).
+
 - Success is announced by the **page**, once its action resolves (tokens:
   "Token created successfully"). Older pages still toast from their
   `.replica.tsx` wrapper, and move when they get a `.route.tsx` (pattern 11).

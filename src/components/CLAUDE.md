@@ -13,11 +13,12 @@ Allowed (after `sm:`, `hover:`, `@5xl/main:` prefixes and `!`):
   `justify-*`, `content-*`, `self-*`, `place-*`, `order-*`, `gap-*`,
   `space-x|y-*`
 - sizing: `w-*`, `h-*`, `min-*`, `max-*`, `size-*`, `shrink`, `grow`,
-  `basis-*`, `aspect-*`
+  `basis-*`, `aspect-*` (fixed sizes only in layout and the shell;
+  PRINCIPLES.md Conventions)
 - text overflow: `truncate`, `line-clamp-*`, `whitespace-*`, `break-*`,
   `wrap-*`, `text-wrap|nowrap|balance|pretty|ellipsis|clip`
 - `overflow-*`; position: `relative`, `absolute`, `sticky`, `inset-*`,
-  `top|right|bottom|left-*`, `z-*`; `sr-only`, `group`, `peer`,
+  `top|right|bottom|left-*`; `sr-only`, `group`, `peer`,
   `isolate`, `@container`
 
 Everything else fails: margin, padding, colour, type (`font-mono`,
