@@ -305,10 +305,12 @@ goes back to Lightning's way.
   Found there. ProjectGate shows the API's answer where the page would be:
   the API says No Access (403) to a non-member whether or not the project
   exists, and only a superuser hears Not Found.
-- **A member who hasn't set up MFA on a project that requires it sees No
-  Access**, not Lightning's redirect to /mfa_required, because the API
-  answers both with the same 403 `forbidden`. Needs its own error code in
-  the API to tell them apart.
+- **An admin page shows No Access in place to anyone but a superuser**, with
+  the sidebar still there. Lightning redirects to /projects and shows "No
+  Access" there, which needs a message that survives a redirect (the same
+  hole as "Logged out successfully."). AdminGate shows the same words where
+  the page would be. /dashboard, which has no sidebar, still redirects to
+  /projects, but without the message.
 
 ## Side menu
 

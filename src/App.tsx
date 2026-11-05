@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import AdminGate from "./components/shell/AdminGate.query";
 import AppShell from "./components/shell/AppShell.query";
 import ProjectGate from "./components/shell/ProjectGate.query";
 import SessionGate from "./components/shell/SessionGate.query";
@@ -66,7 +67,9 @@ export default function App() {
       {/* Everything below needs someone signed in: SessionGate loads them, or sends the person to log in. */}
       <Route element={<SessionGate />}>
         {/* Phoenix LiveDashboard is a full page of its own, outside Lightning's layout. */}
-        <Route path="/dashboard" element={<AdminLiveDashboardPage />} /> {/* admin-live-dashboard */}
+        <Route element={<AdminGate redirect />}>
+          <Route path="/dashboard" element={<AdminLiveDashboardPage />} /> {/* admin-live-dashboard */}
+        </Route>
 
         <Route element={<AppShell />}>
           <Route path="/" element={<Navigate to="/projects" replace />} />
@@ -108,21 +111,23 @@ export default function App() {
           </Route>
           <Route path="/profile/auth/backup_codes" element={<BackupCodesPage />} /> {/* profile-backup-codes */}
 
-          {/* Admin (superuser) */}
-          <Route path="/settings" element={<Navigate to="/settings/projects" replace />} />
-          <Route path="/settings/users" element={<AdminUsersPage />} /> {/* admin-users */}
-          <Route path="/settings/users/:userId/delete" element={<AdminUsersPage />} />
-          <Route path="/settings/users/new" element={<AdminUserEditPage />} /> {/* admin-user-edit */}
-          <Route path="/settings/users/:userId" element={<AdminUserEditPage />} />
-          <Route path="/settings/projects" element={<AdminProjectsPage />} /> {/* admin-projects */}
-          <Route path="/settings/projects/new" element={<AdminProjectsPage />} />
-          <Route path="/settings/projects/:projectId" element={<AdminProjectsPage />} />
-          <Route path="/settings/projects/:projectId/delete" element={<AdminProjectsPage />} />
-          <Route path="/settings/audit" element={<AdminAuditPage />} /> {/* admin-audit */}
-          <Route path="/settings/maintenance" element={<AdminMaintenancePage />} /> {/* admin-maintenance */}
-          <Route path="/settings/authentication" element={<AdminAuthProvidersPage />} /> {/* admin-auth-providers */}
-          <Route path="/settings/authentication/new" element={<AdminAuthProvidersPage />} />
-          <Route path="/settings/collections" element={<AdminCollectionsPage />} /> {/* admin-collections */}
+          {/* Admin: superusers only (shared-admin-space). */}
+          <Route element={<AdminGate />}>
+            <Route path="/settings" element={<Navigate to="/settings/projects" replace />} />
+            <Route path="/settings/users" element={<AdminUsersPage />} /> {/* admin-users */}
+            <Route path="/settings/users/:userId/delete" element={<AdminUsersPage />} />
+            <Route path="/settings/users/new" element={<AdminUserEditPage />} /> {/* admin-user-edit */}
+            <Route path="/settings/users/:userId" element={<AdminUserEditPage />} />
+            <Route path="/settings/projects" element={<AdminProjectsPage />} /> {/* admin-projects */}
+            <Route path="/settings/projects/new" element={<AdminProjectsPage />} />
+            <Route path="/settings/projects/:projectId" element={<AdminProjectsPage />} />
+            <Route path="/settings/projects/:projectId/delete" element={<AdminProjectsPage />} />
+            <Route path="/settings/audit" element={<AdminAuditPage />} /> {/* admin-audit */}
+            <Route path="/settings/maintenance" element={<AdminMaintenancePage />} /> {/* admin-maintenance */}
+            <Route path="/settings/authentication" element={<AdminAuthProvidersPage />} /> {/* admin-auth-providers */}
+            <Route path="/settings/authentication/new" element={<AdminAuthProvidersPage />} />
+            <Route path="/settings/collections" element={<AdminCollectionsPage />} /> {/* admin-collections */}
+          </Route>
 
           <Route path="*" element={<Navigate to="/projects" replace />} />
         </Route>

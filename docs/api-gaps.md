@@ -61,3 +61,19 @@ doesn't.
   `client.ts` forgets its token on any refused write, so the next one asks
   for the current token. It never resends: the new session may be someone
   else's.
+
+## Project access (api/projects.md, api/errors.md)
+
+- **No error code for a project's MFA requirement.** A member who hasn't set
+  up MFA gets 403 `forbidden` from every route on a project that requires
+  it, the same answer as a non-member. Lightning sends that member to
+  /mfa_required to set it up; the app can't tell the two apart from the
+  answer. Would need a 403 `mfa_required` on project routes. Replica:
+  `useRefusedForMfa` (`src/api/projects.ts`) reads the project list, which
+  holds every project you're a member of: a listed project that requires
+  MFA and still refuses you is the requirement, so ProjectGate sends you to
+  /mfa_required. It leans on `requires_mfa` in the list, which is planned:
+  until Lightning sends it, everyone refused sees No Access. And it breaks
+  once the planned superuser scope lists every project: a superuser who
+  isn't a member of an MFA project would be sent to set up MFA, though that
+  wouldn't let them in.
