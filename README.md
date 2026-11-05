@@ -28,5 +28,21 @@ npm run lint
 The app uses hash routing, so a page's address looks like
 `/#/projects/<project-id>/history`.
 
+## Signing in
+
+The app opens signed in as Amy (demo@openfn.org, a superuser), so any link
+works straight away. To see the login page, go to `/#/users/log_out`.
+
+| Email | Who | Password | MFA code |
+| --- | --- | --- | --- |
+| demo@openfn.org | Amy, superuser | `welcome12345` | |
+| editor@openfn.org | Esther | `welcome12345` | |
+| viewer@openfn.org | Vikram | `welcome12345` | |
+| super@openfn.org | Sizwe, superuser | `welcome12345` | `123456`, or the backup code `fakebackup01` |
+
+Signing in as someone else shows their projects and what they may do there.
+You stay signed in across reloads: the pretend server (`src/fake-api/`) keeps
+the session in the browser's localStorage. Clear it to start again as Amy.
+
 See [CLAUDE.md](./CLAUDE.md) for how the code is organised and where the rules
 for adding pages and components are.
