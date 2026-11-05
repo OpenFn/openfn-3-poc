@@ -308,6 +308,18 @@ goes back to Lightning's way.
   person has confirmed, so nothing they were doing is lost. A wrong password
   shows on the field rather than above the form.
 
+## Audit
+
+- **The audit trail no longer shows which credential environments an event
+  recorded.** Lightning's page lists the encrypted bodies under a credential
+  event (`audit_live/index.html.heex`). The API leaves them out of
+  `GET /api/audit_events` (api/audit-events.md), so the page has none to show.
+- **The audit trail's pagination says "Page 2 of 3", not "Showing 11 to 20 of
+  24 total results"**, and the actor is one line ("Amy Admin
+  (demo@openfn.org)") with the actor's short id under it, where Lightning puts
+  the email under the name. The API sends no total and joins the actor into
+  one string (docs/api-gaps.md, Audit trail).
+
 ## Type
 
 - **The waiting messages in the log and dataclip viewers stay 12px.**

@@ -23,6 +23,6 @@ type Story = StoryObj<typeof AuditChanges>;
 const byId = (id: string) => auditEvents.find((e) => e.id === id)!;
 
 export const NewValueOnly: Story = { args: { audit: byId("audit-01") } };
-export const ChangedWithCredentialBody: Story = { args: { audit: byId("audit-03") } };
+export const Changed: Story = { args: { audit: byId("audit-03") } };
 export const NoChanges: Story = { args: { audit: byId("audit-05") } };
 export const ManyFields: Story = { args: { audit: byId("audit-14") } };
