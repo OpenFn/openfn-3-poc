@@ -71,7 +71,6 @@ describe("every page and component can be seen and checked", () => {
     // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
-      "./pages/admin/AdminAuditPage.replica.tsx",
       "./pages/admin/AdminAuthProvidersPage.replica.tsx",
       "./pages/admin/AdminCollectionsPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",

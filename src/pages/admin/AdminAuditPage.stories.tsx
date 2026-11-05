@@ -11,12 +11,15 @@ const meta: Meta<typeof AdminAuditPage> = {
   parameters: { layout: "fullscreen" },
   args: {
     events: auditEvents.slice(0, auditPageSize),
-    page: { number: 1, size: auditPageSize, totalEntries: auditEvents.length },
+    page: { number: 1, size: auditPageSize, totalPages: 2 },
+    status: { state: "ready" },
   },
 };
 export default meta;
 type Story = StoryObj<typeof AdminAuditPage>;
 
 export const FirstPage: Story = {};
-export const SecondPage: Story = { args: { events: auditEvents.slice(auditPageSize), page: { number: 2, size: auditPageSize, totalEntries: auditEvents.length } } };
-export const Empty: Story = { args: { events: [], page: { number: 1, size: auditPageSize, totalEntries: 0 } } };
+export const SecondPage: Story = { args: { events: auditEvents.slice(auditPageSize), page: { number: 2, size: auditPageSize, totalPages: 2 } } };
+export const Empty: Story = { args: { events: [], page: { number: 1, size: auditPageSize, totalPages: 1 } } };
+export const Loading: Story = { args: { events: [], status: { state: "loading" } } };
+export const NoAccess: Story = { args: { events: [], status: { state: "forbidden" } } };

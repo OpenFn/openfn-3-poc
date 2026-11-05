@@ -46,4 +46,14 @@ describe("Pagination", () => {
     );
     expect(shown()).toEqual(["Previous", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Next"]);
   });
+
+  it("says which page of how many when the API sends no total", () => {
+    render(
+      <RouterProvider value={hashRouter()}>
+        <Pagination page={{ number: 2, size: 10, totalPages: 3 }} />
+      </RouterProvider>
+    );
+    expect(screen.getByText((_, el) => el?.tagName === "P").textContent).toBe("Page 2 of 3");
+    expect(shown()).toEqual(["Previous", "1", "2", "3", "Next"]);
+  });
 });

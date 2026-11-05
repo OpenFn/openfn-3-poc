@@ -17,7 +17,7 @@ const event: AuditEvent = {
 
 describe("AdminAuditPage", () => {
   it("renders the events it is given and links to the next page", () => {
-    render(<AdminAuditPage events={[event]} page={{ number: 1, size: 10, totalEntries: 14 }} />);
+    render(<AdminAuditPage events={[event]} page={{ number: 1, size: 10, totalPages: 2 }} status={{ state: "ready" }} />);
 
     expect(screen.getByText("Amy Admin")).toBeTruthy();
     expect(screen.getByRole("link", { name: "2" }).getAttribute("href")).toMatch(/\?page=2$/);
