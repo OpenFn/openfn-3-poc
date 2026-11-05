@@ -8,12 +8,9 @@
  */
 import type { ResourceStatus } from "@/types/resource";
 import { RequestError } from "@/utils/errors";
-import { fakeFetch } from "@/fake-api";
-
-// For stories and tests only: drive the fake server.
-export { failNext, resetFakeApi, FAKE_PASSWORD, FAKE_MFA_CODE } from "@/fake-api";
-
-const send = import.meta.env["VITE_API"] === "lightning" ? fetch : fakeFetch;
+// Decided when the app is built, so a build for real Lightning leaves the fake out entirely.
+const send: (path: string, init?: RequestInit) => Promise<Response> =
+  import.meta.env.VITE_API === "lightning" ? fetch : async (path, init) => (await import("@/fake-api")).fakeFetch(path, init);
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 

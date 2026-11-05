@@ -255,7 +255,7 @@ const apiImports = {
 const queryImports = { name: '@tanstack/react-query', message: 'Only src/api/ uses TanStack Query; a route calls its hooks.' }
 const fakeApiImports = {
   regex: '(^|/)fake-api(/.*)?$',
-  message: 'Only src/api/client.ts knows the fake server. Stories and tests get failNext and resetFakeApi from the client.',
+  message: 'Only src/api/client.ts (and src/api/testing.ts, for stories and tests) knows the fake server. Stories and tests get failNext and resetFakeApi from @/api/testing.',
 }
 const apiCallers = ['**/*.route.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
 const apiBoundary = (patterns, paths = []) => ({ '@typescript-eslint/no-restricted-imports': ['error', { paths, patterns }] })
@@ -465,7 +465,7 @@ export default defineConfig([
     ignores: ['src/api/**', 'src/fake-api/**', ...apiCallers],
     rules: apiBoundary([fakeApiImports, apiImports], [queryImports]),
   },
-  { files: ['src/api/**/*.{ts,tsx}'], ignores: ['src/api/client.ts'], rules: apiBoundary([fakeApiImports]) },
+  { files: ['src/api/**/*.{ts,tsx}'], ignores: ['src/api/client.ts', 'src/api/testing.ts'], rules: apiBoundary([fakeApiImports]) },
   {
     // Contract shapes are written by hand, never built on models or fixtures.
     files: ['src/types/**/*.ts'],

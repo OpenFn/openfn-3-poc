@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
-import { FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/client";
+import { FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/testing";
 import { stepUp } from "@/api/session";
 import { ToastProvider } from "@/components/primitives/Toast";
 import { session } from "@/mock-data/users";

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { canRetry, FAKE_MFA_CODE, FAKE_PASSWORD, failNext, isApiError, request, resetFakeApi, toApiError } from "./client";
+import { canRetry, isApiError, request, toApiError } from "./client";
+import { FAKE_MFA_CODE, FAKE_PASSWORD, failNext, resetFakeApi } from "./testing";
 import { stepUp } from "./session";
 import type { ApiTokenEntry } from "./tokens";
 
