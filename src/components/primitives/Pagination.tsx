@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 import { Link } from "@/routing/router";
-import type { PageInfo } from "@/types/lists";
+import type { PageInfo, PageLinks } from "@/types/lists";
 import { cn } from "@/utils/cn";
 import { useUrlParams } from "@/utils/useUrlParams";
 import Text from "./Text";
 
 interface Props {
-  /** The page shown, as the server paged it. Each page links to this URL with `?page=` changed. */
-  page: PageInfo;
+  /**
+   * The page shown, as the server paged it. Each page links to this URL with
+   * `?page=` changed. Without a total it says "Page 2 of 3" instead of the count.
+   */
+  page: PageInfo | PageLinks;
   /** Extra controls after the count, e.g. the export button on History. */
   actions?: ReactNode;
 }
@@ -37,22 +40,25 @@ function pageWindow(current: number, totalPages: number, distance = 5): (number 
 /** Footer bar for paginated tables (Lightning's `Pagination.pagination_bar`). */
 export default function Pagination({ page, actions }: Props) {
   const { href } = useUrlParams();
-  const { number, size, totalEntries } = page;
-  const totalPages = Math.max(1, Math.ceil(totalEntries / size));
-  const from = number * size - size + 1;
-  const to = Math.min(number * size, totalEntries);
+  const { number, size } = page;
+  const totalPages = "totalPages" in page ? page.totalPages : Math.max(1, Math.ceil(page.totalEntries / size));
   const pageHref = (n: number) => href({ page: n > 1 ? String(n) : null });
 
   return (
     <div data-ui="pagination" className="bg-surface px-4 py-3 flex items-center justify-between sm:px-6 rounded-b-lg">
       <div className="flex items-center space-x-4">
         <Text as="p" className="text-body">
-          {totalEntries === 0 ? (
+          {"totalPages" in page ? (
+            <>
+              Page <span className="font-medium">{number}</span> of <span className="font-medium">{totalPages}</span>
+            </>
+          ) : page.totalEntries === 0 ? (
             "No results found"
           ) : (
             <>
-              Showing <span className="font-medium">{from}</span> to <span className="font-medium">{to}</span> of{" "}
-              <span className="font-medium">{totalEntries}</span> total results
+              Showing <span className="font-medium">{number * size - size + 1}</span> to{" "}
+              <span className="font-medium">{Math.min(number * size, page.totalEntries)}</span> of{" "}
+              <span className="font-medium">{page.totalEntries}</span> total results
             </>
           )}
         </Text>

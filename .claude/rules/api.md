@@ -101,3 +101,7 @@ PRINCIPLES.md "How data flows" says what; this is how.
   If a page needs an existing prop changed, stop and ask.
 - What the API can't give a page yet, not even as planned scope, is mapped to the answer for "none" and
   tracked as a finding, not faked in the page.
+- Don't edit `api/`: it's the contract, and only Brandon changes it. A page
+  shows what the API sends, as it sends it. What's missing or awkward goes in
+  `docs/api-gaps.md`, saying what the API should send instead and what the
+  page does until then.

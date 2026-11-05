@@ -70,7 +70,6 @@ describe("every page and component can be seen and checked", () => {
     // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
-      "./pages/admin/AdminAuditPage.replica.tsx",
       "./pages/admin/AdminAuthProvidersPage.replica.tsx",
       "./pages/admin/AdminCollectionsPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",
@@ -91,6 +90,27 @@ describe("every page and component can be seen and checked", () => {
       "./pages/projects/ChannelsIndexPage.replica.tsx",
       "./pages/projects/SandboxesIndexPage.replica.tsx",
       "./pages/projects/WorkflowHealthPage.replica.tsx",
+    ]);
+  });
+
+  // A page moved to the API, with its XPage.query.tsx (STANDARDS.md pattern 11).
+  const queryPages = paths.filter((path) => /^\.\/pages\/.+\.query\.tsx$/.test(path)).map((path) => path.replace(".query", ""));
+
+  it("a page fed by a .query.tsx sits in its own folder", () => {
+    // ./pages/<area>/<page>/XPage.tsx splits into 5 parts; ./pages/<area>/XPage.tsx into 4.
+    expect(queryPages.filter((path) => path.split("/").length < 5)).toEqual([]);
+  });
+
+  it("index.ts exports every type a page fed by a .query.tsx imports", () => {
+    const missing = queryPages.flatMap((page) =>
+      [...sources[page]!.matchAll(/^import type \{([^}]+)\}/gm)]
+        .flatMap(([, names]) => names!.split(",").map((n) => n.trim()))
+        .filter((name) => name && !new RegExp(`\\b${name}\\b`).test(sources["./index.ts"]!))
+        .map((name) => `${page}: ${name}`)
+    );
+    expectOnlyKnown(missing, [
+      "./pages/profile/tokens/TokensPage.tsx: StepUpCredentials",
+      "./pages/projects/dashboard/ProjectsDashboardPage.tsx: ProjectInput",
     ]);
   });
 
@@ -137,7 +157,6 @@ describe("every page and component can be seen and checked", () => {
     );
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",
-      "./pages/admin/AdminAuditPage.tsx",
       "./pages/admin/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminCollectionsPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",

@@ -1,6 +1,6 @@
 // The package's public surface: anything a consumer needs goes through here.
 
-export { default as AdminAuditPage } from "./pages/admin/AdminAuditPage";
+export { default as AdminAuditPage } from "./pages/admin/audit/AdminAuditPage";
 export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvidersPage";
 export { default as AdminCollectionsPage } from "./pages/admin/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
@@ -29,7 +29,7 @@ export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPa
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
-export type { AdminAuditPageProps } from "./pages/admin/AdminAuditPage";
+export type { AdminAuditPageProps } from "./pages/admin/audit/AdminAuditPage";
 export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
 export type { AdminCollectionsPageProps } from "./pages/admin/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
@@ -122,7 +122,7 @@ export type {
   WorkOrderRow,
   WorkOrderTarget,
 } from "./types/history";
-export type { PageInfo, SortState } from "./types/lists";
+export type { PageInfo, PageLinks, SortState } from "./types/lists";
 export type {
   AddCollaboratorsResult,
   CollaborationSettings,
@@ -173,6 +173,7 @@ export type {
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";
+export type { SsoProvider, TwoFactorMethod } from "./types/auth";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 
