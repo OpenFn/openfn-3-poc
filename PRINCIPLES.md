@@ -119,9 +119,11 @@ out labels, errors or buttons itself.
 
 A page only shows what it's given (props). That way the same page works inside today's Lightning and in the new app. Fetching and saving happen in a small file beside each page, the wrapper and never in the page itself. 
 
-- **Loading.** The wrapper loads with TanStack Query. The page never
-  fetches, and never imports `src/api/`.
-- **Saving.** After a save, the wrapper marks the affected queries
+- **Loading.** The route calls one hook per kind of data, from
+  `src/api/<resource>.ts` (`useTokens()`), and those hooks hold TanStack
+  Query. The route never calls TanStack Query itself; the page never fetches,
+  and never imports `src/api/`.
+- **Saving.** After a save, the resource's hook marks the affected queries
   stale, and the page's `on*` promise resolves once they've reloaded, the way
   LiveView re-renders after an event. Never write a response into the cache.
   Show a change before the server confirms it only where the page already

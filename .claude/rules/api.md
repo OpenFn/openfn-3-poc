@@ -46,28 +46,30 @@ At the moment the app supports us moving to Lightning as a single page React app
 - `src/pages/profile/tokens/TokensPage.route.tsx` and `TokensPage.route.test.tsx` are
   the worked example.
 
-## The wrapper
+## The route
 
-- Loads with `useQuery`, maps the answer with the resource's mapper, and
-  passes the page its usual props plus `status`. Independent queries run side
-  by side, never one after another.
+- Calls the resource's hooks (`useTokens()`, `useTokenSaves()` in
+  `src/api/tokens.ts`) and passes the page what they return plus `status`.
+  It never calls TanStack Query itself (lint). The hooks hold `useQuery`, the
+  keys and the mapper, so two pages showing the same data load it the same
+  way. Independent queries run side by side, never one after another.
 - `status` comes from the query: loading while there's no data, `notFound` /
   `forbidden` from the `ApiError` code, otherwise `error` with its message.
   The page draws it with `AsyncBoundary`. A refetch keeps the old rows on
   screen.
-- A save is a `useMutation` whose `onSuccess` returns the invalidation of
+- A save is a `useMutation` (in the resource's hook) whose `onSuccess` returns the invalidation of
   every key the save changed. The page's `on*` gets `mutateAsync`, so it
   resolves once the lists have reloaded and rejects with the `ApiError` the
   form shows (STANDARDS pattern 1).
 - Never `setQueryData` (lint): the server's answer comes back through the
   refetch. Show a change early only where the page already uses
   `useChosenValue`.
-- A success toast is the wrapper's, after the save resolves, in Lightning's
-  flash wording. An error toast is the page's, for an action with no form
+- A success toast is the page's, after the save resolves, in Lightning's
+  flash wording (STANDARDS pattern 7). An error toast is the page's, for an action with no form
   (`useAction(handler, { onError: "toast" })`, STANDARDS pattern 1); it
   stays until dismissed. Nothing in `src/api/` toasts.
 - The page's props and action types don't change to suit the API. A new
-  thing is an optional prop, so Lightning's LiveView wrapper keeps compiling.
-  If a page needs a prop changed, stop and ask.
+  prop may be required, so the build catches a route that forgets it.
+  If a page needs an existing prop changed, stop and ask.
 - What the API can't give a page yet is mapped to the answer for "none" and
   tracked as a finding, not faked in the page.
