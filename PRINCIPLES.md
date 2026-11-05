@@ -117,7 +117,7 @@ out labels, errors or buttons itself.
 
 ## How data flows
 
-A page only shows what it's given (props). That way the same page works inside today's Lightning and in the new app. Fetching and saving happen in a small file beside each page, the wrapper and never in the page itself. 
+A page only shows what it's given (props). Fetching and saving happen in hooks in `src/api/`, one file per kind of data; the page's route calls them and passes the results down. Never in the page itself.
 
 - **Loading.** The route calls one hook per kind of data, from
   `src/api/<resource>.ts` (`useTokens()`), and those hooks hold TanStack
