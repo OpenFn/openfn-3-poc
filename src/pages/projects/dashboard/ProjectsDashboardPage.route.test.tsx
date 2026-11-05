@@ -75,6 +75,16 @@ describe("ProjectsDashboardPageRoute", () => {
     expect(screen.getByText("malaria-programme").closest("tr")!.textContent).toContain("Owner");
   });
 
+  it("refuses a name Lightning can't take: the server's error shows under Name and nothing is created", async () => {
+    renderRoute();
+    const before = within(await screen.findByRole("table", {}, wait)).getAllByRole("row").length;
+    await createProject("my_project");
+    expect(await screen.findByText("has invalid format", {}, wait)).toBeTruthy();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+    expect(screen.queryByText(/will be named/)).toBeNull();
+    expect(within(screen.getByRole("table", { hidden: true })).getAllByRole("row", { hidden: true })).toHaveLength(before);
+  });
+
   it("shows the server's field error on the Name field and keeps the modal open", async () => {
     failNext("PUT /api/projects/:id", {
       status: 422,
