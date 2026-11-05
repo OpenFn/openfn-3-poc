@@ -15,8 +15,8 @@ export default function ProjectGate() {
   const { projectId = "" } = useParams();
   const { status } = useProject(projectId);
   // Opening another project swaps the page for the spinner, and with it the
-  // picker button focus would return to. Once the new page is in, give focus to
-  // the page instead of leaving it on <body> (WCAG 2.4.3).
+  // picker button focus would return to. Once the page (or Not Found) is in,
+  // give focus to it instead of leaving it on <body> (WCAG 2.4.3).
   const wasLoading = useRef(false);
   useEffect(() => {
     if (status.state === "loading") wasLoading.current = true;
@@ -26,7 +26,7 @@ export default function ProjectGate() {
     }
   }, [status.state]);
   return (
-    <AsyncBoundary status={status}>
+    <AsyncBoundary status={status} titleAs="h1">
       <Outlet />
     </AsyncBoundary>
   );

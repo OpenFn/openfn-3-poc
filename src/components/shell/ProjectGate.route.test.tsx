@@ -51,7 +51,9 @@ describe("ProjectGate", () => {
     renderAt(crypto.randomUUID());
     // Only a superuser hears that a project doesn't exist (api/projects.md).
     const title = session.user.role === "superuser" ? "Not Found" : "No Access";
-    expect(await screen.findByText(title, {}, wait)).toBeTruthy();
+    // The page h1 is gone, so the refusal stands in for it, inside a status so it is announced.
+    const heading = await screen.findByRole("heading", { level: 1, name: title }, wait);
+    expect(heading.closest("[role=status]")).toBeTruthy();
     expect(screen.queryByText(/Inside/)).toBeNull();
   });
 
