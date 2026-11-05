@@ -20,7 +20,7 @@ export const WithHint: Story = {
     hint: "Collection names must be unique across all projects within this instance.",
   },
 };
-export const WithErrors: Story = { args: { value: "!!", errors: ["can't be blank"], hideBadgeOnError: true } };
+export const WithErrors: Story = { args: { value: "!!", errors: ["can't be blank"] } };
 function InteractiveNameField(args: Parameters<typeof NameField>[0]) {
   const [value, setValue] = useState("");
   return <NameField {...args} value={value} onChange={setValue} />;
