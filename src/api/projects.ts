@@ -1,7 +1,7 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
-import type { ProjectInput } from "@/types/projects";
+import type { ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { listAll, request, statusOf } from "./client";
@@ -16,6 +16,11 @@ export interface ApiProject {
     workflows_count?: number;
     collaborators_count?: number;
     last_activity?: string | null;
+    /** Planned: on `GET /api/projects/:id`, and on the list with `depth=all`. */
+    parent_id?: string | null;
+    color?: string | null;
+    /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
+    permissions?: Partial<Record<string, boolean>>;
   };
 }
 
@@ -38,7 +43,37 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
   };
 }
 
-export const projectKeys = { all: ["projects"] as const };
+export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
+
+function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
+  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
+}
+
+const getProject = (id: string) => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data);
+
+/** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
+export function useProject(id: string): { status: ResourceStatus; project: ProjectNode | undefined } {
+  const query = useQuery({
+    queryKey: projectKeys.one(id),
+    queryFn: () => getProject(id),
+    select: projectNode,
+    // The gate and the route under it ask in turn; without this the route fetches it again.
+    staleTime: 60_000,
+  });
+  return { status: statusOf(query), project: query.data };
+}
+
+const toTree = (rows: ApiProject[]) => rows.map(projectNode);
+
+/** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
+export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "tree"],
+    queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
+    select: toTree,
+  });
+  return { status: statusOf(query), projects: query.data ?? [] };
+}
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */
 export function useProjectOverviews(): { status: ResourceStatus; projects: ProjectOverview[] } {
@@ -63,4 +98,20 @@ export function useProjectSaves() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
   });
   return { create: async (project: ProjectInput) => void (await create.mutateAsync(project)) };
+}
+
+/**
+ * What the caller may do in a project, from the same `GET /api/projects/:id`
+ * and cache as useProject (the planned `permissions`), by the API's names:
+ * `can("create_workflow")`. False until it has loaded, and for anything the
+ * server doesn't say.
+ */
+export function useProjectPermissions(id: string): (action: string) => boolean {
+  const { data } = useQuery({
+    queryKey: projectKeys.one(id),
+    queryFn: () => getProject(id),
+    select: (p) => p.attributes.permissions ?? {},
+    staleTime: 60_000,
+  });
+  return (action) => data?.[action] ?? false;
 }

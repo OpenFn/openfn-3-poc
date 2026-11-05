@@ -96,6 +96,41 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
+  // Either quote style: nothing here enforces one.
+  const imports = (path: string, from: string) => new RegExp(`from ["']@/${from}["']`).test(sources[path]!);
+  const drawsEmptyState = (path: string) => imports(path, "components/primitives/EmptyState");
+
+  it("a table leaves the empty state to ListPage", () => {
+    // A page on ListPage passes its table as `list`, and ListPage draws the empty state.
+    // A table is any component on the Table primitive, whatever its file is called.
+    const drawers = components.filter((path) => imports(path, "components/primitives/Table") && drawsEmptyState(path));
+    expectOnlyKnown(drawers, [
+      "./components/admin/AdminCollectionsTable.tsx",
+      "./components/history/ChannelRequestsTable.tsx",
+      "./components/profile/TokensTable.tsx",
+      "./components/project-settings/CollaboratorsTable.tsx",
+      "./components/project-settings/CollectionsTable.tsx",
+      "./components/project-settings/HistoryExportsTable.tsx",
+      "./components/project-settings/WebhookAuthMethodsTable.tsx",
+      "./components/projects/channels/ChannelsTable.tsx",
+    ]);
+  });
+
+  it("a page on ListPage doesn't draw an empty state through a component", () => {
+    // Lint stops the page importing EmptyState; this stops a component it imports doing it instead.
+    // ponytail: one level deep; follow imports further if a nested component ever slips through.
+    const onListPage = paths.filter(
+      (path) => isSource(path) && !path.startsWith("./components/templates/") && imports(path, "components/templates/ListPage")
+    );
+    const drawers = onListPage.flatMap((page) =>
+      [...sources[page]!.matchAll(/from ["']@\/(components\/[^"']+)["']/g)]
+        .map(([, from]) => `./${from}.tsx`)
+        .filter((child) => sources[child] && !/^\.\/components\/(primitives|templates)\//.test(child) && drawsEmptyState(child))
+        .map((child) => `${page} imports ${child}`)
+    );
+    expect(drawers).toEqual([]);
+  });
+
   it("only a template builds a page from PageContent", () => {
     // A page fills a template (src/components/templates/), so every page of a
     // kind lays out its title, actions, loading and empty state the same way.
@@ -161,7 +196,8 @@ describe("every page and component can be seen and checked", () => {
     const routes = [...sources["./App.tsx"]!.matchAll(/<Route path="([^"]+)" element={<\w+Page /g)];
     expect(routes.length).toBeGreaterThan(30);
     const missing = routes
-      .map(([, path]) => path!)
+      // A relative path sits under ProjectGate, the one parent route.
+      .map(([, path]) => (path!.startsWith("/") ? path! : `/projects/:projectId/${path}`))
       .filter((path) => !viewIdForLocation(path.replace(/:\w+/g, "x"), "", ""));
     expect(missing).toEqual([]);
   });

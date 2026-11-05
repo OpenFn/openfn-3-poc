@@ -8,6 +8,7 @@ import { projects } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
+import ProjectGate from "@/components/shell/ProjectGate.route";
 import WorkflowsIndexPageRoute from "./WorkflowsIndexPage.route";
 
 const wait = { timeout: 3000 };
@@ -24,7 +25,9 @@ function renderRoute() {
         <MemoryRouter initialEntries={[`/projects/${project.id}/w`]}>
           <ReactRouterAdapter>
             <Routes>
-              <Route path="/projects/:projectId/w" element={<><WorkflowsIndexPageRoute /><Search /></>} />
+              <Route path="/projects/:projectId" element={<ProjectGate />}>
+                <Route path="w" element={<><WorkflowsIndexPageRoute /><Search /></>} />
+              </Route>
             </Routes>
           </ReactRouterAdapter>
         </MemoryRouter>
@@ -56,6 +59,12 @@ describe("WorkflowsIndexPageRoute", () => {
     fireEvent.click(screen.getByRole("button", { name: /Name/ }));
     expect(screen.getByTestId("search").textContent).toBe("?sort=name&dir=desc");
     await waitFor(() => expect(names()).toEqual([...byName].reverse()), wait);
+  });
+
+  it("turns Create on from the project's permissions", async () => {
+    renderRoute();
+    const create = await screen.findByRole("link", { name: "Create new workflow" }, wait);
+    expect(create.getAttribute("href")).toBe(`/projects/${project.id}/w/new`);
   });
 
   it("shows the server's message when the list fails to load", async () => {

@@ -13,6 +13,7 @@ import { workflowsIn } from "@/mock-data/workflows";
 import { workOrdersIn } from "@/mock-data/history";
 import { workflowStatsFor } from "@/mock-data/dashboard-stats";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
+import { permissionsFor, type Permissions } from "@/permissions";
 import type { Project } from "@/types/projects";
 import { FAILURE_STATES } from "@/types/workflow-health";
 
@@ -91,19 +92,52 @@ function paged<T>(path: string, rows: T[], query: URLSearchParams, key = "data")
   };
 }
 
-// A project as GET /api/projects/:id answers it; the list leaves out members.
-const projectEntry = (p: Project, { members = true, stats = false } = {}) => ({
+// A project as GET /api/projects/:id answers it; the list leaves out members. parent_id and
+// color are planned on both; the list sends them with the planned depth=all.
+const projectEntry = (p: Project, { members = true, stats = false, tree = true } = {}) => ({
   type: "projects",
   id: p.id,
   attributes: {
     name: p.name,
     description: p.description || null,
+    ...(tree && { parent_id: openParentId(p), color: p.color }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
     ...(stats && projectStats(p)),
   },
   relationships: {},
   links: { self: `${ORIGIN}/api/projects/${p.id}` },
 });
+
+// Planned `permissions` on GET /api/projects/:id (api/projects.md), from the same rules as permissions.ts.
+const PERMISSIONS: Record<string, keyof Permissions> = {
+  access_project: "canAccessProject",
+  delete_project: "canDeleteProject",
+  edit_project: "canEditProject",
+  edit_data_retention: "canEditDataRetention",
+  edit_run_settings: "canEditRunSettings",
+  add_project_user: "canAddProjectUser",
+  remove_project_user: "canRemoveProjectUser",
+  write_webhook_auth_method: "canWriteWebhookAuthMethod",
+  write_github_connection: "canInstallGithub",
+  create_workflow: "canCreateWorkflow",
+  edit_workflow: "canEditWorkflow",
+  delete_workflow: "canDeleteWorkflow",
+  run_workflow: "canRunWorkflow",
+  create_project_credential: "canCreateProjectCredential",
+  initiate_github_sync: "canInitiateGithubSync",
+  create_channel: "canCreateChannel",
+  update_channel: "canEditChannel",
+  delete_channel: "canDeleteChannel",
+  edit_failure_alerts: "canEditFailureAlerts",
+  edit_digest_alerts: "canEditDigestAlerts",
+  create_keychain_credential: "canCreateKeychainCredential",
+  manage_collection: "canCreateCollection",
+  provision_sandbox: "canCreateSandbox",
+};
+const permissionsIn = (p: Project) => {
+  const can = permissionsFor(p, session.user);
+  return Object.fromEntries(Object.entries(PERMISSIONS).map(([name, flag]) => [name, can[flag]]));
+};
 
 /** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
 const badSort = (field: string) =>
@@ -139,6 +173,13 @@ function badInclude(query: URLSearchParams, known: string[]) {
 
 const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === session.user.id)?.role;
+// Membership is per project: a sandbox copies its parent's members when it's made.
+const canOpen = (p: Project) => !!roleOf(p);
+// The nearest project above that you can open, or null (api/projects.md, depth=all).
+const openParentId = (p: Project): string | null => {
+  const parent = projects.find((q) => q.id === p.parentId);
+  return !parent ? null : canOpen(parent) ? parent.id : openParentId(parent);
+};
 const projectStats = (p: Project) => {
   const workflows = workflowsIn(p.id);
   return {
@@ -208,18 +249,19 @@ const routes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    // Root projects you're a member of: no sandboxes.
+    // Root projects you're a member of; with the planned depth=all, every sandbox you can open too.
+    const tree = query.get("depth") === "all";
     const rows = projects
-      .filter((p) => p.parentId === null && roleOf(p))
+      .filter((p) => canOpen(p) && (tree || p.parentId === null))
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((p) => projectEntry(p, { members: false, stats }));
+      .map((p) => projectEntry(p, { members: false, stats, tree }));
     return json(200, paged("/api/projects", rows, query));
   },
   // api/workflows.md "List workflows". sort, include=stats (only last_work_order here) and paging are planned.
   "GET /api/projects/:id/workflows": ({ id }, _body, query) => {
     const project = projects.find((p) => p.id === id);
     // 403 whether or not the project exists.
-    if (!project || !roleOf(project)) return forbidden();
+    if (!project || !canOpen(project)) return forbidden();
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
@@ -231,6 +273,19 @@ const routes: Record<string, Handler> = {
       .sort(compareBy(by, sort.startsWith("-") ? "desc" : "asc", "last"))
       .map((s) => workflowEntry(s, stats));
     return json(200, paged(`/api/projects/${id}/workflows`, rows, query, "workflows"));
+  },
+  // A non-member hears 403 whether or not the project exists; only a superuser hears 404.
+  "GET /api/projects/:id": ({ id }) => {
+    if (!isUuid(id!) && session.user.role === "superuser") {
+      return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
+    }
+    const project = projects.find((p) => p.id === id);
+    if (project && canOpen(project)) {
+      const entry = projectEntry(project);
+      return json(200, { data: { ...entry, attributes: { ...entry.attributes, permissions: permissionsIn(project) } }, included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
+    }
+    if (!project && session.user.role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
+    return forbidden();
   },
   // Creates the project under :id, the caller its owner, or replaces the name and description.
   "PUT /api/projects/:id": ({ id }, body) => {
