@@ -68,7 +68,7 @@ function GenerateTokenDemo() {
   return (
     <>
       <Button pending={action.pending} onClick={() => void action.run()}>
-        Generate New Token
+        Generate new token
       </Button>
       {token && <Text as="p">{token}</Text>}
       {stepUpDialog}
@@ -81,7 +81,7 @@ export const RetriesAfterSteppingUp: StoryObj = {
   render: () => <GenerateTokenDemo />,
   play: async ({ canvasElement }) => {
     const body = page(canvasElement);
-    const generate = body.getByRole("button", { name: "Generate New Token" });
+    const generate = body.getByRole("button", { name: "Generate new token" });
     await userEvent.click(generate);
     const password = await body.findByLabelText(/Password/);
     await waitFor(() => expect(password).toHaveFocus());

@@ -13,17 +13,11 @@ export interface MenuUser {
   experimentalFeatures: boolean;
 }
 
-const items = [
-  { to: "/projects", icon: "hero-folder", label: "Projects" },
-  { to: "/profile", icon: "hero-user-circle", label: "User Profile" },
-  { to: "/credentials", icon: "hero-key", label: "Credentials" },
-  { to: "/profile/tokens", icon: "hero-command-line", label: "API Tokens" },
-];
-
 /**
  * The account button at the top of the side menu and its dropdown
  * (Lightning's `user_menu_dropdown`): who you're signed in as, the
- * experimental-features notice, your pages, and log out.
+ * experimental-features notice, your settings, and log out. Like Brandon's
+ * AccountMenu, one way into settings: their own menu lists the pages.
  */
 export default function UserMenu({ user }: { user: MenuUser }) {
   return (
@@ -74,11 +68,9 @@ export default function UserMenu({ user }: { user: MenuUser }) {
           </div>
         )}
         <MenuDivider />
-        {items.map((item) => (
-          <MenuItem key={item.to} to={item.to} icon={item.icon}>
-            {item.label}
-          </MenuItem>
-        ))}
+        <MenuItem to="/profile" icon="hero-cog-6-tooth">
+          User settings
+        </MenuItem>
         <MenuDivider />
         <MenuItem to="/users/log_out">Log out</MenuItem>
       </Menu>

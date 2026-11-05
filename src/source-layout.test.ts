@@ -95,6 +95,22 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
+  it("the app never routes to a bare page: a .query file feeds it, or a replica on the list above", () => {
+    const direct = [...sources["./App.tsx"]!.matchAll(/["'](?:\.|@)\/(pages\/[^"']+)["']/g)]
+      .map(([, from]) => `./${from}.tsx`)
+      .filter((path) => !/\.(query|replica)\.tsx$/.test(path));
+    expectOnlyKnown(direct, [
+      "./pages/admin/AdminLiveDashboardPage.tsx",
+      "./pages/auth/AuthConfirmAccountPage.tsx",
+      "./pages/auth/AuthLoginPage.tsx",
+      "./pages/auth/AuthRegisterPage.tsx",
+      "./pages/auth/AuthResetPasswordPage.tsx",
+      "./pages/auth/AuthTwoFactorPage.tsx",
+      "./pages/projects/MfaRequiredPage.tsx",
+      "./pages/workflow-editor/WorkflowEditorPage.tsx",
+    ]);
+  });
+
   // A page moved to the API, with its XPage.query.tsx (STANDARDS.md pattern 11).
   const queryPages = paths.filter((path) => /^\.\/pages\/.+\.query\.tsx$/.test(path)).map((path) => path.replace(".query", ""));
 
@@ -172,9 +188,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryWorkOrdersPage.tsx",
       "./pages/history/RunShowPage.tsx",
       "./pages/profile/BackupCodesPage.tsx",
-      "./pages/profile/CredentialsIndexPage.tsx",
-      "./pages/profile/ProfilePage.tsx",
-      "./pages/profile/tokens/TokensPage.tsx",
       "./pages/project-settings/ProjectSettingsPage.tsx",
       "./pages/projects/ChannelsIndexPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",

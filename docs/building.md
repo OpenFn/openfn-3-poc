@@ -69,9 +69,9 @@ enforces it (`eslint.config.js`, tested in `src/lint-seam.test.ts`).
 |---|---|---|
 | `src/pages/` | One Lightning view each | anything |
 | `<area>/` (`history/`, `credentials/`, …) | What only that area uses | primitives, `patterns/`, `domain/`, `shell/`, its own area |
-| `shell/` | The chrome around every page (the frame itself is the `Layout` pattern), and the `.query` files that feed it (`AppShell.query.tsx`, `ProjectGate.query.tsx`) | primitives, `patterns/`, `domain/`, `shell/` |
+| `shell/` | The chrome around every page (the frame itself is the `Layout` pattern), the `.query` files that feed it (`AppShell.query.tsx`, `ProjectGate.query.tsx`), and layout routes around a group of pages (`UserSettings.query.tsx`) | primitives, `patterns/`, `domain/`, `shell/` |
 | `domain/` | Lightning pieces two or more areas use | primitives, `patterns/`, `domain/` |
-| `patterns/` | The shape of a page or a region of one, with none of Lightning's words (`ListPage`, `Layout`). Lightning's content comes in through slots: `children` or `ReactNode` props | primitives, `patterns/` |
+| `patterns/` | The shape of a page or a region of one, with none of Lightning's words (`ListPage`, `SettingsLayout`, `Layout`). Lightning's content comes in through slots: `children` or `ReactNode` props | primitives, `patterns/` |
 | `primitives/` | General pieces | primitives |
 
 The order is Brandon's (openfn-ia-demo `docs/architecture.md`): patterns

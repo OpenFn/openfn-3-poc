@@ -6,7 +6,7 @@ import { RequestError } from "@/utils/errors";
 import TokensPage from "./TokensPage";
 
 const render = (tokenId: string | null = null) => renderPage(TokensPage, { tokens: apiTokens, tokenId, isStepUpRequired: () => false, hasMfa: false }, ["onGenerate", "onDelete", "onClose", "onStepUp"]);
-const generate = () => fireEvent.click(screen.getByRole("button", { name: "Generate New Token" }));
+const generate = () => fireEvent.click(screen.getByRole("button", { name: "Generate new token" }));
 
 describe("TokensPage", () => {
   it("shows a new token once it's generated, and says so", async () => {

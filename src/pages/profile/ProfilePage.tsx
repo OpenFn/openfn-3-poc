@@ -1,5 +1,4 @@
-import Header from "@/components/primitives/Header";
-import { Centered, PageContent } from "@/components/primitives/PageContent";
+import { NestedSections } from "@/components/primitives/SectionHeader";
 import UserInfo from "@/components/profile/UserInfo";
 import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "@/components/profile/ProfileForms";
 import MfaCard from "@/components/profile/MfaCard";
@@ -62,12 +61,13 @@ export interface ProfilePageProps extends ProfilePageData {
 export default function ProfilePage(props: ProfilePageProps) {
   const { user, deletion } = props;
   return (
-    <PageContent header={<Header title="User Profile" />}>
-      <Centered>
-        {/* Keyed by user so the forms start again from a new user's values. */}
-        <div key={user.id} className="grid gap-8 md:grid-cols-3">
-          <UserInfo user={user} />
-          <div id={`user-${user.id}`} className="space-y-4 md:col-span-2">
+    <>
+      {/* Keyed by user so the forms start again from a new user's values. */}
+      <div key={user.id} className="grid gap-8 @3xl:grid-cols-3">
+        {/* Its h2, the user's name, heads the section, as in Brandon's; the cards sit under it. */}
+        <UserInfo user={user} />
+        <NestedSections>
+          <div id={`user-${user.id}`} className="space-y-4 @3xl:col-span-2">
             <BasicInfoForm
               values={{ firstName: user.firstName, lastName: user.lastName, contactPreference: user.contactPreference }}
               onSave={props.onSaveBasicInfo}
@@ -84,8 +84,8 @@ export default function ProfilePage(props: ProfilePageProps) {
             <ExperimentalFeaturesCard enabled={props.experimentalFeatures} onChange={props.onSetExperimentalFeatures} />
             <DeleteAccountCard to={deletion.href} />
           </div>
-        </div>
-      </Centered>
+        </NestedSections>
+      </div>
       {props.deleting && (
         <UserDeletionModal
           isCurrentUser
@@ -96,6 +96,6 @@ export default function ProfilePage(props: ProfilePageProps) {
           onDelete={props.onDeleteAccount}
         />
       )}
-    </PageContent>
+    </>
   );
 }
