@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useToast } from "../../components/primitives/Toast";
-import { credentialIndexDataFor, credentialsFixture, type CredentialsFixture } from "../../mock-data/credentials";
-import { useCurrentUser } from "../../session/session";
+import { useToast } from "@/components/primitives/Toast";
+import { credentialIndexDataFor, credentialsFixture, type CredentialsFixture } from "@/mock-data/credentials";
+import { useCurrentUser } from "@/session/session";
 import { credentialReplicaActions } from "./credentialsReplica";
 import CredentialsIndexPage from "./CredentialsIndexPage";
 

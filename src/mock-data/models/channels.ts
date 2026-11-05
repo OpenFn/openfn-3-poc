@@ -1,5 +1,5 @@
 /** Channels (the HTTP proxy) and the requests made through them, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { ChannelEvent, ChannelRequestState } from "../../types/channels";
+import type { ChannelEvent, ChannelRequestState } from "@/types/channels";
 
 export interface Channel {
   id: string;

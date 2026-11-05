@@ -1,6 +1,6 @@
 import { cloneElement, type ReactElement } from "react";
-import TextLink from "../primitives/TextLink";
-import Tooltip from "../primitives/Tooltip";
+import TextLink from "@/components/primitives/TextLink";
+import Tooltip from "@/components/primitives/Tooltip";
 
 /**
  * The tooltip on a control the retention policy disabled: what was lost,

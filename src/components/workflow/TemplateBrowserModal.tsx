@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { templateGraph } from "../../utils/workflowGraph";
-import type { WorkflowTemplate } from "../../types/workflow-graph";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import Modal from "../primitives/Modal";
-import RadioCards from "../primitives/RadioCards";
-import SearchInput from "../primitives/SearchInput";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
+import { templateGraph } from "@/utils/workflowGraph";
+import type { WorkflowTemplate } from "@/types/workflow-graph";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import Modal from "@/components/primitives/Modal";
+import RadioCards from "@/components/primitives/RadioCards";
+import SearchInput from "@/components/primitives/SearchInput";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
 import WorkflowDiagram from "./WorkflowDiagram";
-import { matchesQuery } from "../../utils/search";
+import { matchesQuery } from "@/utils/search";
 
 interface Props {
   isOpen: boolean;

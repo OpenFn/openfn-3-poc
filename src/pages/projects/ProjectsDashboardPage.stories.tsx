@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectsDashboardPage from "./ProjectsDashboardPage";
-import { projectsOverviewFor } from "../../mock-data/dashboard-stats";
-import { session } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
+import { session } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof ProjectsDashboardPage> = {
   title: "Pages/Projects/ProjectsDashboardPage",

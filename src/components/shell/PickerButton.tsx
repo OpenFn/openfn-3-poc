@@ -1,6 +1,6 @@
-import { cn } from "../../utils/cn";
-import { prefersDarkText } from "../../utils/colour";
-import Tooltip from "../primitives/Tooltip";
+import { cn } from "@/utils/cn";
+import { prefersDarkText } from "@/utils/colour";
+import Tooltip from "@/components/primitives/Tooltip";
 
 interface Props {
   label: string;

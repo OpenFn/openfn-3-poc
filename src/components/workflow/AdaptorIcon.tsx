@@ -1,5 +1,5 @@
-import { adaptorIconUrl, adaptorShortName } from "../../utils/adaptors";
-import { cn } from "../../utils/cn";
+import { adaptorIconUrl, adaptorShortName } from "@/utils/adaptors";
+import { cn } from "@/utils/cn";
 
 const sizeClasses = {
   sm: "h-5 w-5",

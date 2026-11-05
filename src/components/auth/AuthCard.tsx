@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import Alert from "../primitives/Alert";
-import Card from "../primitives/Card";
-import Text from "../primitives/Text";
-import { cn } from "../../utils/cn";
+import Alert from "@/components/primitives/Alert";
+import Card from "@/components/primitives/Card";
+import Text from "@/components/primitives/Text";
+import { cn } from "@/utils/cn";
 
 /**
  * The white form card on logged-out pages: half the centred column on

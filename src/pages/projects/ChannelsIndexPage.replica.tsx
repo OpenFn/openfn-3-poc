@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/primitives/Toast";
-import { projectLabel } from "../../components/shell/projectPickerItems";
-import { channelsIn, findChannel, projectCredentialOptions, webhookAuthMethods } from "../../mock-data/channels";
-import { findProject, projects } from "../../mock-data/projects";
-import { simulateRequest } from "../../mock-data/request";
-import { permissionsFor } from "../../permissions";
-import { useCurrentUser } from "../../session/session";
-import type { ChannelForm, ChannelRow } from "../../types/channels";
-import { channelProxyUrl } from "../../utils/urls";
+import { useToast } from "@/components/primitives/Toast";
+import { projectLabel } from "@/components/shell/projectPickerItems";
+import { channelsIn, findChannel, projectCredentialOptions, webhookAuthMethods } from "@/mock-data/channels";
+import { findProject, projects } from "@/mock-data/projects";
+import { simulateRequest } from "@/mock-data/request";
+import { permissionsFor } from "@/permissions";
+import { useCurrentUser } from "@/session/session";
+import type { ChannelForm, ChannelRow } from "@/types/channels";
+import { channelProxyUrl } from "@/utils/urls";
 import ChannelsIndexPage from "./ChannelsIndexPage";
 
 /**

@@ -1,14 +1,14 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/primitives/Toast";
+import { RouterProvider, type Router } from "@/routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
 import userEvent from "@testing-library/user-event";
-import type { CredentialRow, KeychainCredentialRow } from "../../types/credentials";
-import type { CollaboratorRow, WebhookAuthMethodRow } from "../../types/project-settings";
-import { pickOption } from "../../test/select";
-import { RequestError } from "../../utils/errors";
+import type { CredentialRow, KeychainCredentialRow } from "@/types/credentials";
+import type { CollaboratorRow, WebhookAuthMethodRow } from "@/types/project-settings";
+import { pickOption } from "@/test/select";
+import { RequestError } from "@/utils/errors";
 import ProjectSettingsPage, { type ProjectSettingsPageProps } from "./ProjectSettingsPage";
-import { isDisabled } from "../../test/disabled";
+import { isDisabled } from "@/test/disabled";
 
 const me: CollaboratorRow = {
   id: "pu-me",

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import FirstSetupShell from "../../components/auth/FirstSetupShell";
-import { simulateRequest } from "../../mock-data/request";
-import { useInstanceInfo } from "../../session/session";
+import FirstSetupShell from "@/components/auth/FirstSetupShell";
+import { simulateRequest } from "@/mock-data/request";
+import { useInstanceInfo } from "@/session/session";
 import FirstSetupPage from "./FirstSetupPage";
 
 /**

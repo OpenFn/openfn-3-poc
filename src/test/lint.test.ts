@@ -15,9 +15,9 @@ async function lint(code: string, path = "src/components/history/WorkOrdersTable
 
 const component = (jsx: string, imports = "") =>
   `${imports}\nexport default function Example() {\n  return ${jsx};\n}\n`;
-const table = 'import { Td } from "../primitives/Table";';
-const text = 'import Text from "../primitives/Text";';
-const card = 'import Card from "../primitives/Card";';
+const table = 'import { Td } from "@/components/primitives/Table";';
+const text = 'import Text from "@/components/primitives/Text";';
+const card = 'import Card from "@/components/primitives/Card";';
 
 const cases: { rule: string; bad: string; good: string; message: RegExp; path?: string }[] = [
   {
@@ -70,9 +70,15 @@ const cases: { rule: string; bad: string; good: string; message: RegExp; path?: 
   },
   {
     rule: "data seam: no mock data in a component",
-    bad: 'import { projects } from "../../mock-data/projects";\nexport const n = projects.length;\n',
-    good: 'import type { ProjectRow } from "../../types/projects";\nexport const n = (p: ProjectRow[]) => p.length;\n',
+    bad: 'import { projects } from "@/mock-data/projects";\nexport const n = projects.length;\n',
+    good: 'import type { ProjectRow } from "@/types/projects";\nexport const n = (p: ProjectRow[]) => p.length;\n',
     message: /Take data as props/,
+  },
+  {
+    rule: "imports use @/, not ../",
+    bad: component("<Text>x</Text>", 'import Text from "../primitives/Text";'),
+    good: component("<Text>x</Text>", text),
+    message: /instead of \.\.\//,
   },
 ];
 

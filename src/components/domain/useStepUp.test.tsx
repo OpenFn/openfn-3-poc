@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import Button from "../primitives/Button";
+import Button from "@/components/primitives/Button";
 import { useStepUp, type StepUpOptions } from "./useStepUp";
 
 const stepUpRequired = new Error("You must confirm access to do this.");

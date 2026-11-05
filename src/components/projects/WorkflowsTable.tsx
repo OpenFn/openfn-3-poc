@@ -1,20 +1,20 @@
 import { useState, type ReactNode } from "react";
-import type { SortState } from "../../types/lists";
-import type { WorkflowRow } from "../../types/workflows";
-import { cn } from "../../utils/cn";
-import EmptyState from "../primitives/EmptyState";
-import { RowLink, Table, Td, Th, Tr } from "../primitives/Table";
-import Toggle from "../primitives/Toggle";
-import Tooltip from "../primitives/Tooltip";
-import DateTime from "../primitives/DateTime";
-import Button from "../primitives/Button";
-import ConfirmModal from "../primitives/ConfirmModal";
-import Pill from "../primitives/Pill";
-import TextLink from "../primitives/TextLink";
+import type { SortState } from "@/types/lists";
+import type { WorkflowRow } from "@/types/workflows";
+import { cn } from "@/utils/cn";
+import EmptyState from "@/components/primitives/EmptyState";
+import { RowLink, Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Toggle from "@/components/primitives/Toggle";
+import Tooltip from "@/components/primitives/Tooltip";
+import DateTime from "@/components/primitives/DateTime";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import Pill from "@/components/primitives/Pill";
+import TextLink from "@/components/primitives/TextLink";
 import WorkOrderStatus from "./WorkOrderStatus";
-import { useUrlParams } from "../../utils/useUrlParams";
-import Text from "../primitives/Text";
-import { Stack } from "../primitives/Stack";
+import { useUrlParams } from "@/utils/useUrlParams";
+import Text from "@/components/primitives/Text";
+import { Stack } from "@/components/primitives/Stack";
 
 /**
  * The workflows index table (DashboardComponents.workflows_table): name and

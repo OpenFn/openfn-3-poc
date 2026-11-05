@@ -1,13 +1,13 @@
-import Button from "../primitives/Button";
-import IconButton from "../primitives/IconButton";
-import { Checkbox } from "../primitives/Inputs";
-import Pagination from "../primitives/Pagination";
-import { Table, Th, Tr } from "../primitives/Table";
-import type { WorkOrderRow } from "../../types/history";
-import type { PageInfo, SortState } from "../../types/lists";
-import { activeStates } from "../../constants";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
+import { Checkbox } from "@/components/primitives/Inputs";
+import Pagination from "@/components/primitives/Pagination";
+import { Table, Th, Tr } from "@/components/primitives/Table";
+import type { WorkOrderRow } from "@/types/history";
+import type { PageInfo, SortState } from "@/types/lists";
+import { activeStates } from "@/constants";
 import WorkOrderTableRow from "./WorkOrderTableRow";
-import { allTicked } from "../../utils/history";
+import { allTicked } from "@/utils/history";
 
 /** The columns History sorts by (`filters[sort_by]`). */
 export type WorkOrderSortKey = "inserted_at" | "last_activity";

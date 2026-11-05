@@ -1,9 +1,9 @@
-import Section from "../primitives/Section";
-import Modal from "../primitives/Modal";
-import TextLink from "../primitives/TextLink";
+import Section from "@/components/primitives/Section";
+import Modal from "@/components/primitives/Modal";
+import TextLink from "@/components/primitives/TextLink";
 import { byName } from "./usageRefs";
-import type { WebhookAuthMethodRow, WebhookUsageRef } from "../../types/project-settings";
-import { Stack } from "../primitives/Stack";
+import type { WebhookAuthMethodRow, WebhookUsageRef } from "@/types/project-settings";
+import { Stack } from "@/components/primitives/Stack";
 
 /** The workflow triggers or channels an auth method protects, as a bulleted list of links in the order given. */
 export function UsageLinks({ refs }: { refs: WebhookUsageRef[] }) {

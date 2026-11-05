@@ -1,12 +1,12 @@
 import { Fragment } from "react";
-import type { AuditEvent } from "../../types/admin";
-import type { PageInfo } from "../../types/lists";
-import { shortUuid } from "../../utils/format";
-import Pagination from "../primitives/Pagination";
-import Pill from "../primitives/Pill";
-import DateTime from "../primitives/DateTime";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import Text from "../primitives/Text";
+import type { AuditEvent } from "@/types/admin";
+import type { PageInfo } from "@/types/lists";
+import { shortUuid } from "@/utils/format";
+import Pagination from "@/components/primitives/Pagination";
+import Pill from "@/components/primitives/Pill";
+import DateTime from "@/components/primitives/DateTime";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Text from "@/components/primitives/Text";
 import AuditChanges from "./AuditChanges";
 
 function TwoLine({ label, sub }: { label: string; sub: string }) {

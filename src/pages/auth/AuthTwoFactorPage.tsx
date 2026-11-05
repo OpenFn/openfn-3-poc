@@ -3,16 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AuthPanelLayout, {
   AuthPanel,
   HavingProblems,
-} from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/primitives/Alert";
-import Form from "../../components/primitives/Form";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import TextLink from "../../components/primitives/TextLink";
-import Button from "../../components/primitives/Button";
-import { TextInput } from "../../components/primitives/Inputs";
-import { authMessages } from "../../constants";
-import type { TwoFactorMethod } from "../../types/auth";
+} from "@/components/auth/AuthPanelLayout";
+import Alert from "@/components/primitives/Alert";
+import Form from "@/components/primitives/Form";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import TextLink from "@/components/primitives/TextLink";
+import Button from "@/components/primitives/Button";
+import { TextInput } from "@/components/primitives/Inputs";
+import { authMessages } from "@/constants";
+import type { TwoFactorMethod } from "@/types/auth";
 
 /**
  * Inventory view `auth-two-factor` (user_totp_html/new.html.heex).

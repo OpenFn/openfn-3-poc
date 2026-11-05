@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import InfoTooltip from "../primitives/InfoTooltip";
-import SectionHeader from "../primitives/SectionHeader";
-import { useToast } from "../primitives/Toast";
-import Toggle from "../primitives/Toggle";
+import Button from "@/components/primitives/Button";
+import InfoTooltip from "@/components/primitives/InfoTooltip";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import { useToast } from "@/components/primitives/Toast";
+import Toggle from "@/components/primitives/Toggle";
 import AddCollaboratorsModal from "./AddCollaboratorsModal";
 import CollaboratorsTable from "./CollaboratorsTable";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
@@ -16,9 +16,9 @@ import type {
   CollaboratorValues,
   Digest,
   InviteValues,
-} from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
-import { useChosenValue } from "../../utils/useChosenValue";
+} from "@/types/project-settings";
+import { errorMessage } from "@/utils/errors";
+import { useChosenValue } from "@/utils/useChosenValue";
 
 interface Props {
   collaboration: CollaborationSettings;

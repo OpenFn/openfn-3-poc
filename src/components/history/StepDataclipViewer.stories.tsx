@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withRouter } from "../../stories/decorators";
-import { findDataclip as findMock, steps } from "../../mock-data/history";
+import { withRouter } from "@/stories/decorators";
+import { findDataclip as findMock, steps } from "@/mock-data/history";
 import StepDataclipViewer from "./StepDataclipViewer";
 
 const meta = {

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { ADAPTORS_WITHOUT_CREDENTIALS } from "../../constants";
-import { adaptorShortName } from "../../utils/adaptors";
-import type { EditorJob } from "../../types/workflow-graph";
+import { ADAPTORS_WITHOUT_CREDENTIALS } from "@/constants";
+import { adaptorShortName } from "@/utils/adaptors";
+import type { EditorJob } from "@/types/workflow-graph";
 import AdaptorDisplay, { ADAPTOR_HELP } from "./AdaptorDisplay";
 import AdaptorConfigModals, { type AdaptorModal } from "./AdaptorConfigModals";
-import ConfirmModal from "../primitives/ConfirmModal";
-import IconButton from "../primitives/IconButton";
-import { Field, TextInput } from "../primitives/Inputs";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import IconButton from "@/components/primitives/IconButton";
+import { Field, TextInput } from "@/components/primitives/Inputs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
 

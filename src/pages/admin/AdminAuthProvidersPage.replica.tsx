@@ -1,7 +1,7 @@
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { useToast } from "../../components/primitives/Toast";
-import { authProvider, emptyAuthProvider } from "../../mock-data/admin";
-import { simulateRequest } from "../../mock-data/request";
+import { useToast } from "@/components/primitives/Toast";
+import { authProvider, emptyAuthProvider } from "@/mock-data/admin";
+import { simulateRequest } from "@/mock-data/request";
 import AdminAuthProvidersPage from "./AdminAuthProvidersPage";
 
 /**

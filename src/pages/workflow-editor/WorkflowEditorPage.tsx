@@ -1,38 +1,38 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { Navigate, useParams } from "react-router-dom";
-import Pill from "../../components/primitives/Pill";
-import { useToast } from "../../components/primitives/Toast";
-import AdaptorConfigModals, { type AdaptorModal } from "../../components/workflow/AdaptorConfigModals";
-import AIAssistantPanel from "../../components/workflow/AIAssistantPanel";
-import EdgeInspector from "../../components/workflow/EdgeInspector";
-import EditorHeader from "../../components/workflow/EditorHeader";
-import FullScreenIDE, { type IDEPanelState } from "../../components/workflow/FullScreenIDE";
-import JobInspector from "../../components/workflow/JobInspector";
-import LandingScreen from "../../components/workflow/LandingScreen";
-import ManualRunPanel from "../../components/workflow/ManualRunPanel";
-import MiniHistory from "../../components/workflow/MiniHistory";
-import RunViewerPanel, { type RunViewerTab } from "../../components/workflow/RunViewerPanel";
-import TemplateBrowserModal from "../../components/workflow/TemplateBrowserModal";
-import TriggerInspector from "../../components/workflow/TriggerInspector";
-import WorkflowCodePanel from "../../components/workflow/WorkflowCodePanel";
-import WorkflowDiagram, { type Selection } from "../../components/workflow/WorkflowDiagram";
-import WorkflowSettings from "../../components/workflow/WorkflowSettings";
-import YAMLImportModal from "../../components/workflow/YAMLImportModal";
-import { workflowNameFromYaml } from "../../components/workflow/workflowYaml";
+import Pill from "@/components/primitives/Pill";
+import { useToast } from "@/components/primitives/Toast";
+import AdaptorConfigModals, { type AdaptorModal } from "@/components/workflow/AdaptorConfigModals";
+import AIAssistantPanel from "@/components/workflow/AIAssistantPanel";
+import EdgeInspector from "@/components/workflow/EdgeInspector";
+import EditorHeader from "@/components/workflow/EditorHeader";
+import FullScreenIDE, { type IDEPanelState } from "@/components/workflow/FullScreenIDE";
+import JobInspector from "@/components/workflow/JobInspector";
+import LandingScreen from "@/components/workflow/LandingScreen";
+import ManualRunPanel from "@/components/workflow/ManualRunPanel";
+import MiniHistory from "@/components/workflow/MiniHistory";
+import RunViewerPanel, { type RunViewerTab } from "@/components/workflow/RunViewerPanel";
+import TemplateBrowserModal from "@/components/workflow/TemplateBrowserModal";
+import TriggerInspector from "@/components/workflow/TriggerInspector";
+import WorkflowCodePanel from "@/components/workflow/WorkflowCodePanel";
+import WorkflowDiagram, { type Selection } from "@/components/workflow/WorkflowDiagram";
+import WorkflowSettings from "@/components/workflow/WorkflowSettings";
+import YAMLImportModal from "@/components/workflow/YAMLImportModal";
+import { workflowNameFromYaml } from "@/components/workflow/workflowYaml";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
-import { aiSessionsFor } from "../../mock-data/ai-assistant";
-import { adaptorShortName } from "../../utils/adaptors";
+import { aiSessionsFor } from "@/mock-data/ai-assistant";
+import { adaptorShortName } from "@/utils/adaptors";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
-import { findProject, projects } from "../../mock-data/projects";
-import { projectLabel } from "../../components/shell/projectPickerItems";
+import { findProject, projects } from "@/mock-data/projects";
+import { projectLabel } from "@/components/shell/projectPickerItems";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
-import type { Project } from "../../types/projects";
-import { blankWorkflowGraph, newWorkflowGraph, templateGraph } from "../../utils/workflowGraph";
+import type { Project } from "@/types/projects";
+import { blankWorkflowGraph, newWorkflowGraph, templateGraph } from "@/utils/workflowGraph";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
-import { findWorkflowGraph, snapshotsOf, workflowTemplates } from "../../mock-data/workflow";
-import type { WorkflowGraph } from "../../types/workflow-graph";
-import { useUrlParams, type ParamPatch } from "../../utils/useUrlParams";
+import { findWorkflowGraph, snapshotsOf, workflowTemplates } from "@/mock-data/workflow";
+import type { WorkflowGraph } from "@/types/workflow-graph";
+import { useUrlParams, type ParamPatch } from "@/utils/useUrlParams";
 import { useEditorRuns } from "./useEditorRuns";
 import { useWorkflowEditorState } from "./useWorkflowEditorState";
 

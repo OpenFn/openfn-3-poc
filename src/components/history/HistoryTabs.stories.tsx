@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import HistoryTabs from "./HistoryTabs";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof HistoryTabs> = {
   title: "History/HistoryTabs",

@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { CredentialRow, CredentialSecretsResult, OauthClientRow, OauthSignInResult } from "../../types/credentials";
-import { RequestError } from "../../utils/errors";
+import type { CredentialRow, CredentialSecretsResult, OauthClientRow, OauthSignInResult } from "@/types/credentials";
+import { RequestError } from "@/utils/errors";
 import CredentialFormModal from "./CredentialFormModal";
-import { isDisabled } from "../../test/disabled";
+import { isDisabled } from "@/test/disabled";
 
 const credential: CredentialRow = {
   id: "cred-1",

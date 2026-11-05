@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { samplePreview } from "../../../mock-data/sandboxes";
-import { RequestError } from "../../../utils/errors";
+import { samplePreview } from "@/mock-data/sandboxes";
+import { RequestError } from "@/utils/errors";
 import MergeSandboxModal from "./MergeSandboxModal";
 
 const meta: Meta<typeof MergeSandboxModal> = {

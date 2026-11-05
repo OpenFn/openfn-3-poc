@@ -1,6 +1,6 @@
-import Tooltip from "../../primitives/Tooltip";
-import { cn } from "../../../utils/cn";
-import Text from "../../primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
+import { cn } from "@/utils/cn";
+import Text from "@/components/primitives/Text";
 
 /**
  * A channel's proxy URL that copies itself on click (ChannelLive.Helpers

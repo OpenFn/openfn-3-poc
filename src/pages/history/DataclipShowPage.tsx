@@ -1,13 +1,13 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import EmptyState from "../../components/primitives/EmptyState";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import DataclipDetailsCard, { DataclipBodyCard } from "../../components/history/DataclipDetailsCard";
-import JsonViewer from "../../components/history/JsonViewer";
-import type { DataclipBody, DataclipDetail } from "../../types/history";
-import type { CurrentProject } from "../../types/projects";
-import { shortUuid } from "../../utils/format";
-import { Stack } from "../../components/primitives/Stack";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import EmptyState from "@/components/primitives/EmptyState";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import DataclipDetailsCard, { DataclipBodyCard } from "@/components/history/DataclipDetailsCard";
+import JsonViewer from "@/components/history/JsonViewer";
+import type { DataclipBody, DataclipDetail } from "@/types/history";
+import type { CurrentProject } from "@/types/projects";
+import { shortUuid } from "@/utils/format";
+import { Stack } from "@/components/primitives/Stack";
 
 export interface DataclipShowPageProps {
   project: CurrentProject;

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { userEvent, within } from "storybook/test";
 import MfaCard from "./MfaCard";
-import { fakeMfaSetup } from "../../mock-data/profile";
-import { withRouter } from "../../stories/decorators";
-import { RequestError } from "../../utils/errors";
+import { fakeMfaSetup } from "@/mock-data/profile";
+import { withRouter } from "@/stories/decorators";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta<typeof MfaCard> = {
   title: "Profile/MfaCard",

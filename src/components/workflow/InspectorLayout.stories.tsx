@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "storybook/test";
-import Button from "../primitives/Button";
+import Button from "@/components/primitives/Button";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof InspectorLayout> = {
   title: "Workflow/InspectorLayout",

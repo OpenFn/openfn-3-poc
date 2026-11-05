@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import SearchList from "./SearchList";
-import { adaptors } from "../../mock-data/adaptors";
-import type { Adaptor } from "../../types/adaptors";
-import { projects } from "../../mock-data/projects";
-import type { Project } from "../../types/projects";
-import { matchesQuery } from "../../utils/search";
+import { adaptors } from "@/mock-data/adaptors";
+import type { Adaptor } from "@/types/adaptors";
+import { projects } from "@/mock-data/projects";
+import type { Project } from "@/types/projects";
+import { matchesQuery } from "@/utils/search";
 
 const meta: Meta<typeof SearchList> = {
   title: "Primitives/SearchList",

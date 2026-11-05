@@ -1,15 +1,15 @@
 import { useState } from "react";
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import DeleteSandboxModal from "../../components/domain/DeleteSandboxModal";
-import MergeSandboxModal from "../../components/projects/sandboxes/MergeSandboxModal";
-import SandboxFormModal from "../../components/projects/sandboxes/SandboxFormModal";
-import WorkspaceList from "../../components/projects/sandboxes/WorkspaceList";
-import { useRouter } from "../../routing/router";
-import type { CurrentProject } from "../../types/projects";
-import type { MergePreviewResult, MergeValues, SandboxForm, SandboxRow, SandboxValues } from "../../types/sandboxes";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import DeleteSandboxModal from "@/components/domain/DeleteSandboxModal";
+import MergeSandboxModal from "@/components/projects/sandboxes/MergeSandboxModal";
+import SandboxFormModal from "@/components/projects/sandboxes/SandboxFormModal";
+import WorkspaceList from "@/components/projects/sandboxes/WorkspaceList";
+import { useRouter } from "@/routing/router";
+import type { CurrentProject } from "@/types/projects";
+import type { MergePreviewResult, MergeValues, SandboxForm, SandboxRow, SandboxValues } from "@/types/sandboxes";
 
 export interface SandboxesIndexPageProps {
   /** The project the page is under. Its card gets the "active" badge. */

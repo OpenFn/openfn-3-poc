@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../components/primitives/Toast";
-import { session } from "../../mock-data/users";
-import { RouterProvider, type Router } from "../../routing/router";
-import SessionProvider from "../../session/SessionProvider";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { session } from "@/mock-data/users";
+import { RouterProvider, type Router } from "@/routing/router";
+import SessionProvider from "@/session/SessionProvider";
 import HistoryWorkOrdersPageReplica from "./HistoryWorkOrdersPage.replica";
 
 const PROJECT = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";

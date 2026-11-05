@@ -30,7 +30,10 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* `@/x` is src/x; vite.config.ts says the same for the bundler */
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src"]
 }

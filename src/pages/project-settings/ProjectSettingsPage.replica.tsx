@@ -1,22 +1,22 @@
 import { useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/primitives/Toast";
-import { projectLabel } from "../../components/shell/projectPickerItems";
+import { useToast } from "@/components/primitives/Toast";
+import { projectLabel } from "@/components/shell/projectPickerItems";
 import {
   generateApiKey,
   projectSettingsPropsFor,
   rootOf,
   settingsFixtureFor,
   type SettingsFixture,
-} from "../../mock-data/project-settings";
-import { findProject, projects } from "../../mock-data/projects";
-import { simulateRequest } from "../../mock-data/request";
-import { users } from "../../mock-data/users";
-import type { Project } from "../../types/projects";
-import { useCurrentUser } from "../../session/session";
-import { RequestError } from "../../utils/errors";
-import { urlSafeName } from "../../utils/format";
-import { credentialReplicaActions } from "../profile/credentialsReplica";
+} from "@/mock-data/project-settings";
+import { findProject, projects } from "@/mock-data/projects";
+import { simulateRequest } from "@/mock-data/request";
+import { users } from "@/mock-data/users";
+import type { Project } from "@/types/projects";
+import { useCurrentUser } from "@/session/session";
+import { RequestError } from "@/utils/errors";
+import { urlSafeName } from "@/utils/format";
+import { credentialReplicaActions } from "@/pages/profile/credentialsReplica";
 import ProjectSettingsPage from "./ProjectSettingsPage";
 
 /** new_collaborator_component.ex `generate_flash_message`: existing accounts are added, the rest are invited. */

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiTokens, generateFakeToken } from "../../../mock-data/tokens";
-import { simulateRequest } from "../../../mock-data/request";
+import { apiTokens, generateFakeToken } from "@/mock-data/tokens";
+import { simulateRequest } from "@/mock-data/request";
 import TokensPage from "./TokensPage";
 
 /**

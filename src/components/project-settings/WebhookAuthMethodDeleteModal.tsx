@@ -1,9 +1,9 @@
-import Alert from "../primitives/Alert";
-import ConfirmModal from "../primitives/ConfirmModal";
+import Alert from "@/components/primitives/Alert";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
 import { UsageLinks } from "./LinkedUsageModal";
 import { byName } from "./usageRefs";
-import type { WebhookAuthMethodRow } from "../../types/project-settings";
-import { Stack } from "../primitives/Stack";
+import type { WebhookAuthMethodRow } from "@/types/project-settings";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   authMethod: WebhookAuthMethodRow;

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useRef, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import Button from "../primitives/Button";
-import Text from "../primitives/Text";
-import { useAction } from "../../utils/useAction";
+import Button from "@/components/primitives/Button";
+import Text from "@/components/primitives/Text";
+import { useAction } from "@/utils/useAction";
 import StepUpDialog from "./StepUpDialog";
 import { useStepUp } from "./useStepUp";
 

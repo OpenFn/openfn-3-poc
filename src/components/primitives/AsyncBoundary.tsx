@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ResourceStatus } from "../../types/resource";
+import type { ResourceStatus } from "@/types/resource";
 import Alert from "./Alert";
 import EmptyState from "./EmptyState";
 import Spinner from "./Spinner";

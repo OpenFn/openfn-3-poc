@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { runs, workOrders } from "../../mock-data/history";
-import { withRouter, withCanvas } from "../../stories/decorators";
+import { runs, workOrders } from "@/mock-data/history";
+import { withRouter, withCanvas } from "@/stories/decorators";
 import MiniHistory from "./MiniHistory";
 
 const history = workOrders

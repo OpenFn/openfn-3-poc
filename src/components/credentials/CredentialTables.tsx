@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import Section from "../primitives/Section";
-import InfoTooltip from "../primitives/InfoTooltip";
-import Pill from "../primitives/Pill";
-import CopyChip from "../primitives/CopyChip";
-import { Row } from "../primitives/Stack";
-import { Table, Td, Th, Tr, Truncated } from "../primitives/Table";
-import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "../../types/credentials";
-import Tooltip from "../primitives/Tooltip";
+import Section from "@/components/primitives/Section";
+import InfoTooltip from "@/components/primitives/InfoTooltip";
+import Pill from "@/components/primitives/Pill";
+import CopyChip from "@/components/primitives/CopyChip";
+import { Row } from "@/components/primitives/Stack";
+import { Table, Td, Th, Tr, Truncated } from "@/components/primitives/Table";
+import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "@/types/credentials";
+import Tooltip from "@/components/primitives/Tooltip";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):

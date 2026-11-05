@@ -13,7 +13,7 @@ form, 3 for a server-driven list, 6 to confirm, 7 for feedback, 9 for
 permissions.
 
 - **One file per Lightning view**, named after its INVENTORY.md id, routed
-  in `App.tsx` at Lightning's URL through its `.replica.tsx` wrapper.
+  in `App.tsx` at Lightning's URL through its `.route.tsx` (new pages, in their own folder) or older `.replica.tsx` wrapper.
 - **Every new page gets a story and a `renderPage` test.**
 - Put `data-annotation="<id>"` on any sub-panel that has its own inventory
   or shared id, so the annotations panel shows it.

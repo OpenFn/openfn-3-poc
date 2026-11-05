@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { dataclips } from "../../mock-data/history";
-import { withCanvas } from "../../stories/decorators";
+import { dataclips } from "@/mock-data/history";
+import { withCanvas } from "@/stories/decorators";
 import JsonViewer from "./JsonViewer";
 
 const meta = {

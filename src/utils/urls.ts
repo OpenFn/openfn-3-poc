@@ -2,7 +2,7 @@
  * URLs Lightning builds from the instance's own address. The host is fixed
  * here; once wired it comes from the instance config.
  */
-import type { AuthProvider } from "../types/admin";
+import type { AuthProvider } from "@/types/admin";
 
 /** Base URL the proxy URLs hang off (`LightningWeb.Endpoint.url()`). */
 export const channelProxyBase = "https://app.openfn.org";

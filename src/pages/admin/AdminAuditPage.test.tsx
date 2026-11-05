@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { AuditEvent } from "../../types/admin";
+import type { AuditEvent } from "@/types/admin";
 import AdminAuditPage from "./AdminAuditPage";
 
 const event: AuditEvent = {

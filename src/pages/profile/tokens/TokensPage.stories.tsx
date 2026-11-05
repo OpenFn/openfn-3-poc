@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TokensPage from "./TokensPage";
-import { apiTokens } from "../../../mock-data/tokens";
-import { withCanvas, withRouter } from "../../../stories/decorators";
+import { apiTokens } from "@/mock-data/tokens";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof TokensPage> = {
   title: "Pages/Profile/TokensPage",

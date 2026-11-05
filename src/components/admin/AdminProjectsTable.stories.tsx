@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminProjectsTable from "./AdminProjectsTable";
-import { adminProjectRows } from "../../mock-data/admin";
-import { withRouter } from "../../stories/decorators";
+import { adminProjectRows } from "@/mock-data/admin";
+import { withRouter } from "@/stories/decorators";
 
 const projects = adminProjectRows();
 

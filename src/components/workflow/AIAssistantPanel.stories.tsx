@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { aiSessionsFor } from "../../mock-data/ai-assistant";
+import { aiSessionsFor } from "@/mock-data/ai-assistant";
 import AIAssistantPanel from "./AIAssistantPanel";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof AIAssistantPanel> = {
   title: "Workflow/AIAssistantPanel",

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Header from "../../components/primitives/Header";
-import HistoryTabs from "../../components/history/HistoryTabs";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import Text from "../../components/primitives/Text";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "../../components/primitives/FilterChip";
-import HistorySearchBar from "../../components/history/HistorySearchBar";
+import Header from "@/components/primitives/Header";
+import HistoryTabs from "@/components/history/HistoryTabs";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import Text from "@/components/primitives/Text";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import FilterChip, { FilterCheckboxes, FilterDateRange, FilterMenu } from "@/components/primitives/FilterChip";
+import HistorySearchBar from "@/components/history/HistorySearchBar";
 import {
   BulkCancelModal,
   BulkRerunModal,
@@ -13,17 +13,17 @@ import {
   RerunFromJobModal,
   type BulkScope,
   type BulkSelection,
-} from "../../components/history/HistoryModals";
-import WorkOrdersTable from "../../components/history/WorkOrdersTable";
-import { allTicked, describeWorkOrderQuery, workOrderFilterParams } from "../../utils/history";
-import { useToast } from "../../components/primitives/Toast";
-import { historySearchFields, historyStatuses } from "../../constants";
-import type { HistoryWorkflowRef, HistoryWorkOrderState, WorkOrderFilters, WorkOrderRow, WorkOrderTarget } from "../../types/history";
-import type { PageInfo, SortState } from "../../types/lists";
-import type { CurrentProject } from "../../types/projects";
-import { errorMessage } from "../../utils/errors";
-import { capitalize, formatChipDateRange, formatRunRange, shortUuid } from "../../utils/format";
-import { useUrlParams, type ParamPatch } from "../../utils/useUrlParams";
+} from "@/components/history/HistoryModals";
+import WorkOrdersTable from "@/components/history/WorkOrdersTable";
+import { allTicked, describeWorkOrderQuery, workOrderFilterParams } from "@/utils/history";
+import { useToast } from "@/components/primitives/Toast";
+import { historySearchFields, historyStatuses } from "@/constants";
+import type { HistoryWorkflowRef, HistoryWorkOrderState, WorkOrderFilters, WorkOrderRow, WorkOrderTarget } from "@/types/history";
+import type { PageInfo, SortState } from "@/types/lists";
+import type { CurrentProject } from "@/types/projects";
+import { errorMessage } from "@/utils/errors";
+import { capitalize, formatChipDateRange, formatRunRange, shortUuid } from "@/utils/format";
+import { useUrlParams, type ParamPatch } from "@/utils/useUrlParams";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface HistoryWorkOrdersPageProps {

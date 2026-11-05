@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { ToastProvider } from "../../components/primitives/Toast";
-import { ReactRouterAdapter } from "../../routing/ReactRouterAdapter";
-import { session } from "../../mock-data/users";
-import SessionProvider from "../../session/SessionProvider";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
+import { session } from "@/mock-data/users";
+import SessionProvider from "@/session/SessionProvider";
 import WorkflowEditorPage from "./WorkflowEditorPage";
 
 const renderEditor = () =>

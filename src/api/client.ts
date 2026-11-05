@@ -5,7 +5,7 @@
  * recorded answers (`recorded/`) after a short delay. A refused request throws
  * an `ApiError`: show its `message`, branch on its `code`.
  */
-import { RequestError } from "../utils/errors";
+import { RequestError } from "@/utils/errors";
 import credentials from "./recorded/credentials.json";
 import projects from "./recorded/projects.json";
 

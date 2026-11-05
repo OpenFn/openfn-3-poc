@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import Tabs, { type Tab } from "./Tabs";
 import IconButton from "./IconButton";
-import { withRouter } from "../../stories/decorators";
-import { projectSettingsTabs } from "../project-settings/tabs";
+import { withRouter } from "@/stories/decorators";
+import { projectSettingsTabs } from "@/components/project-settings/tabs";
 
 const meta: Meta<typeof Tabs> = { title: "Primitives/Tabs", component: Tabs, decorators: [withRouter] };
 export default meta;

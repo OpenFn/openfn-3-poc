@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ChannelsIndexPage from "./ChannelsIndexPage";
-import { channelsIn } from "../../mock-data/channels";
-import { projects } from "../../mock-data/projects";
-import type { ChannelRow } from "../../types/channels";
-import { channelProxyUrl } from "../../utils/urls";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { channelsIn } from "@/mock-data/channels";
+import { projects } from "@/mock-data/projects";
+import type { ChannelRow } from "@/types/channels";
+import { channelProxyUrl } from "@/utils/urls";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const logs = `/projects/${project.id}/history/channels`;

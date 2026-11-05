@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode, type TdHTMLAttributes } from "react";
-import { Link } from "../../routing/router";
-import { cn } from "../../utils/cn";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
 import EmptyState from "./EmptyState";
 import Tooltip from "./Tooltip";
 

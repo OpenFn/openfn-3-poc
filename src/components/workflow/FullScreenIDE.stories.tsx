@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { dataclips, findRun, runLogs, stepsOf } from "../../mock-data/history";
-import { findWorkflowGraph } from "../../mock-data/workflow";
-import { withRouter, withCanvas } from "../../stories/decorators";
+import { dataclips, findRun, runLogs, stepsOf } from "@/mock-data/history";
+import { findWorkflowGraph } from "@/mock-data/workflow";
+import { withRouter, withCanvas } from "@/stories/decorators";
 import FullScreenIDE from "./FullScreenIDE";
 import ManualRunPanel from "./ManualRunPanel";
 import MiniHistory from "./MiniHistory";

@@ -1,20 +1,20 @@
 import { useState } from "react";
-import IconButton from "../primitives/IconButton";
-import { Checkbox } from "../primitives/Inputs";
-import Pill from "../primitives/Pill";
-import { RowToggle, Td, Tr } from "../primitives/Table";
-import type { WorkOrderRow } from "../../types/history";
-import { activeStates } from "../../constants";
-import DateTime from "../primitives/DateTime";
-import TextLink from "../primitives/TextLink";
-import Text from "../primitives/Text";
+import IconButton from "@/components/primitives/IconButton";
+import { Checkbox } from "@/components/primitives/Inputs";
+import Pill from "@/components/primitives/Pill";
+import { RowToggle, Td, Tr } from "@/components/primitives/Table";
+import type { WorkOrderRow } from "@/types/history";
+import { activeStates } from "@/constants";
+import DateTime from "@/components/primitives/DateTime";
+import TextLink from "@/components/primitives/TextLink";
+import Text from "@/components/primitives/Text";
 import ElapsedTime from "./ElapsedTime";
-import StatePill from "../domain/StatePill";
-import UuidChip from "../primitives/UuidChip";
+import StatePill from "@/components/domain/StatePill";
+import UuidChip from "@/components/primitives/UuidChip";
 import { RunCard } from "./RunCard";
 import WipedTooltip from "./WipedTooltip";
 import { zeroPersistenceMessage as zeroPersistence } from "./runHelpers";
-import Tooltip from "../primitives/Tooltip";
+import Tooltip from "@/components/primitives/Tooltip";
 
 /**
  * A work order row in History plus, when expanded, its runs and steps

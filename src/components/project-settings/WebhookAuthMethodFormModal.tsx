@@ -1,19 +1,19 @@
 import { useState } from "react";
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
-import CopyButton from "../primitives/CopyButton";
-import { Field, TextInput } from "../primitives/Inputs";
-import Form from "../primitives/Form";
-import FormModal from "../primitives/FormModal";
-import Modal from "../primitives/Modal";
-import RadioCards from "../primitives/RadioCards";
-import Text from "../primitives/Text";
-import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import { Stack } from "../primitives/Stack";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
+import CopyButton from "@/components/primitives/CopyButton";
+import { Field, TextInput } from "@/components/primitives/Inputs";
+import Form from "@/components/primitives/Form";
+import FormModal from "@/components/primitives/FormModal";
+import Modal from "@/components/primitives/Modal";
+import RadioCards from "@/components/primitives/RadioCards";
+import Text from "@/components/primitives/Text";
+import type { ReauthValues, WebhookAuthMethodRow, WebhookAuthMethodValues, WebhookAuthType } from "@/types/project-settings";
+import { errorMessage } from "@/utils/errors";
+import { useAction } from "@/utils/useAction";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   /** Omit to create a new method (starts at the "choose a type" step). */

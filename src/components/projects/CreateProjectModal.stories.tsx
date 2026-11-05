@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CreateProjectModal from "./CreateProjectModal";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta<typeof CreateProjectModal> = {
   title: "Projects/CreateProjectModal",

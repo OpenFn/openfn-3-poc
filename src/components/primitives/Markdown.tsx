@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Marked } from "marked";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 const escape = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

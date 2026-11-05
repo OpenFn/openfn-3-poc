@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Table } from "../primitives/Table";
-import type { RunRow, WorkOrderRow } from "../../types/history";
-import { hover, openTooltips } from "../../test/tooltip";
+import { Table } from "@/components/primitives/Table";
+import type { RunRow, WorkOrderRow } from "@/types/history";
+import { hover, openTooltips } from "@/test/tooltip";
 import { zeroPersistenceMessage } from "./runHelpers";
 import WorkOrderTableRow from "./WorkOrderTableRow";
 

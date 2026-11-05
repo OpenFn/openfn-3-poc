@@ -1,13 +1,13 @@
-import Header from "../../components/primitives/Header";
-import HistoryTabs from "../../components/history/HistoryTabs";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import ChannelRequestsTable from "../../components/history/ChannelRequestsTable";
-import FilterChip, { FilterMenu } from "../../components/primitives/FilterChip";
-import { useUrlParams } from "../../utils/useUrlParams";
-import type { ChannelLogRow } from "../../types/channels";
-import type { PageInfo } from "../../types/lists";
-import type { CurrentProject } from "../../types/projects";
+import Header from "@/components/primitives/Header";
+import HistoryTabs from "@/components/history/HistoryTabs";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import ChannelRequestsTable from "@/components/history/ChannelRequestsTable";
+import FilterChip, { FilterMenu } from "@/components/primitives/FilterChip";
+import { useUrlParams } from "@/utils/useUrlParams";
+import type { ChannelLogRow } from "@/types/channels";
+import type { PageInfo } from "@/types/lists";
+import type { CurrentProject } from "@/types/projects";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface HistoryChannelLogsPageProps {

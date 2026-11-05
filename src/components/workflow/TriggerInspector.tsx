@@ -1,17 +1,17 @@
 import { useState, type ReactNode } from "react";
-import { webhookUrl } from "../../utils/urls";
-import type { EditorTrigger } from "../../types/workflow-graph";
-import { cn } from "../../utils/cn";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Disclosure from "../primitives/Disclosure";
-import { Field, Radio, TextInput } from "../primitives/Inputs";
-import Pill from "../primitives/Pill";
-import TextLink from "../primitives/TextLink";
+import { webhookUrl } from "@/utils/urls";
+import type { EditorTrigger } from "@/types/workflow-graph";
+import { cn } from "@/utils/cn";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Disclosure from "@/components/primitives/Disclosure";
+import { Field, Radio, TextInput } from "@/components/primitives/Inputs";
+import Pill from "@/components/primitives/Pill";
+import TextLink from "@/components/primitives/TextLink";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
-import CopyButton from "../primitives/CopyButton";
-import Text from "../primitives/Text";
-import { Stack, Row } from "../primitives/Stack";
+import CopyButton from "@/components/primitives/CopyButton";
+import Text from "@/components/primitives/Text";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 const TITLES = { webhook: "On webhook call", cron: "On a schedule" } as const;
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import ConfirmModal from "../primitives/ConfirmModal";
-import Modal from "../primitives/Modal";
-import Text from "../primitives/Text";
-import type { CredentialRow } from "../../types/credentials";
-import { Stack } from "../primitives/Stack";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import Modal from "@/components/primitives/Modal";
+import Text from "@/components/primitives/Text";
+import type { CredentialRow } from "@/types/credentials";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   onClose: () => void;

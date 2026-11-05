@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import EdgeInspector from "./EdgeInspector";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel } from "@/stories/decorators";
 
 const openhie = findWorkflowGraph("wf-openhie")!;
 const referrals = findWorkflowGraph("wf-referrals")!;

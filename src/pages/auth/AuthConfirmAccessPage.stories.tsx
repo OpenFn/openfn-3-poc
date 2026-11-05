@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthConfirmAccessPage from "./AuthConfirmAccessPage";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AuthConfirmAccessPage> = {
   title: "Pages/Auth/AuthConfirmAccessPage",

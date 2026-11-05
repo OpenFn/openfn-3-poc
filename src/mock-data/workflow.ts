@@ -11,8 +11,8 @@
  */
 
 import { kickstartGraphs } from "./generated/kickstart";
-import type { EditorJob, WorkflowGraph, WorkflowSnapshot, WorkflowTemplate } from "../types/workflow-graph";
-import { RANK, SEED_BODY, cron, edge, webhook } from "../utils/workflowGraph";
+import type { EditorJob, WorkflowGraph, WorkflowSnapshot, WorkflowTemplate } from "@/types/workflow-graph";
+import { RANK, SEED_BODY, cron, edge, webhook } from "@/utils/workflowGraph";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const DHIS2 = "1f0b7c2e-9d3a-4a4b-8f5e-2c6d7e8f9a01";

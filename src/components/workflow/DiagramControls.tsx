@@ -1,4 +1,4 @@
-import IconButton from "../primitives/IconButton";
+import IconButton from "@/components/primitives/IconButton";
 
 interface Props {
   onZoomIn: () => void;

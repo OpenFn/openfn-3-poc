@@ -1,17 +1,17 @@
-import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
-import Card from "../primitives/Card";
-import DateTime from "../primitives/DateTime";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import Heading from "../primitives/Heading";
-import Section from "../primitives/Section";
-import TextLink from "../primitives/TextLink";
-import Text from "../primitives/Text";
+import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "@/types/channels";
+import Card from "@/components/primitives/Card";
+import DateTime from "@/components/primitives/DateTime";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Heading from "@/components/primitives/Heading";
+import Section from "@/components/primitives/Section";
+import TextLink from "@/components/primitives/TextLink";
+import Text from "@/components/primitives/Text";
 import { MethodBadge, RequestPathDisplay, StatusCodeBadge } from "./ChannelRequestParts";
-import { ChannelStatePill } from "../domain/StatePill";
+import { ChannelStatePill } from "@/components/domain/StatePill";
 import { humanizeError } from "./channelErrors";
-import { formatUs, shortUuid } from "../../utils/format";
-import CopyButton from "../primitives/CopyButton";
-import { Row } from "../primitives/Stack";
+import { formatUs, shortUuid } from "@/utils/format";
+import CopyButton from "@/components/primitives/CopyButton";
+import { Row } from "@/components/primitives/Stack";
 
 /**
  * The channel request page's summary card (channel_request_live/show.ex

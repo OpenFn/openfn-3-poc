@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type SyntheticEvent } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import CloseButton from "./CloseButton";
 import type { Tone } from "./tone";
 

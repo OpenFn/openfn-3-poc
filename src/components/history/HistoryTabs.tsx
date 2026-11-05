@@ -1,4 +1,4 @@
-import Tabs from "../primitives/Tabs";
+import Tabs from "@/components/primitives/Tabs";
 
 /** The Work Orders / Channel Logs tabs beside History's title (run_live/index.html.heex). */
 export default function HistoryTabs({

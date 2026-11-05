@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { PasswordInput, TextInput } from "../primitives/Inputs";
-import TextLink from "../primitives/TextLink";
+import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import TextLink from "@/components/primitives/TextLink";
 
 /** How the person proves it's them: their password, or a code from their authenticator. */
 export type ConfirmAccessMethod = "password" | "totp";

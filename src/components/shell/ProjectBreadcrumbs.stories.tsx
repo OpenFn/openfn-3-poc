@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectBreadcrumbs from "./ProjectBreadcrumbs";
 import { projectLabel } from "./projectPickerItems";
-import { projects } from "../../mock-data/projects";
-import { withRouter } from "../../stories/decorators";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof ProjectBreadcrumbs> = { title: "Shell/ProjectBreadcrumbs", component: ProjectBreadcrumbs, decorators: [withRouter] };
 export default meta;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdaptorDisplay from "./AdaptorDisplay";
-import { withWhitePanel } from "../../stories/decorators";
+import { withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof AdaptorDisplay> = {
   title: "Workflow/AdaptorDisplay",

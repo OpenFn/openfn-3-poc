@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Breadcrumb, Breadcrumbs } from "./Breadcrumbs";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta = { title: "Primitives/Breadcrumbs", decorators: [withRouter] };
 export default meta;

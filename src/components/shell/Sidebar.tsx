@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { useRouter } from "../../routing/router";
-import { cn } from "../../utils/cn";
+import { useRouter } from "@/routing/router";
+import { cn } from "@/utils/cn";
 import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
-import Tooltip from "../primitives/Tooltip";
-import Text from "../primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
+import Text from "@/components/primitives/Text";
 
 /** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
 export type SidebarMenu = "project" | "profile" | "admin";

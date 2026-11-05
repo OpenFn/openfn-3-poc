@@ -1,14 +1,14 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import Button from "../../components/primitives/Button";
-import { ToastProvider } from "../../components/primitives/Toast";
-import { findUser, session } from "../../mock-data/users";
-import { sandboxColorPalette } from "../../constants";
-import { fixturesUnder, type SandboxFixture } from "../../mock-data/sandboxes";
-import SessionProvider from "../../session/SessionProvider";
+import Button from "@/components/primitives/Button";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { findUser, session } from "@/mock-data/users";
+import { sandboxColorPalette } from "@/constants";
+import { fixturesUnder, type SandboxFixture } from "@/mock-data/sandboxes";
+import SessionProvider from "@/session/SessionProvider";
 import SandboxesIndexPageReplica from "./SandboxesIndexPage.replica";
-import { isDisabled } from "../../test/disabled";
+import { isDisabled } from "@/test/disabled";
 
 const ROOT = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const FHIR = "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f";

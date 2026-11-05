@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminProjectsPage from "./AdminProjectsPage";
-import { adminProjectRows } from "../../mock-data/admin";
-import { purgeDeletedAfterDays } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { users } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { adminProjectRows } from "@/mock-data/admin";
+import { purgeDeletedAfterDays } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { users } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 const rows = adminProjectRows();

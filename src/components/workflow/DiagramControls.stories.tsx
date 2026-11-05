@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import DiagramControls from "./DiagramControls";
-import { withCanvas } from "../../stories/decorators";
+import { withCanvas } from "@/stories/decorators";
 
 const noop = () => {};
 const meta: Meta<typeof DiagramControls> = {

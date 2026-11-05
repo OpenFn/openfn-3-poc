@@ -1,7 +1,7 @@
 import { useState, type ComponentProps } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectsPicker from "./ProjectsPicker";
-import { projects } from "../../mock-data/projects";
+import { projects } from "@/mock-data/projects";
 
 const meta: Meta<typeof ProjectsPicker> = { title: "Credentials/ProjectsPicker", component: ProjectsPicker };
 export default meta;

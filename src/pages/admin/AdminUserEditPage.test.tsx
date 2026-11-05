@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { AdminUserRow } from "../../types/admin";
-import { RequestError } from "../../utils/errors";
-import { pickOption } from "../../test/select";
+import type { AdminUserRow } from "@/types/admin";
+import { RequestError } from "@/utils/errors";
+import { pickOption } from "@/test/select";
 import AdminUserEditPage from "./AdminUserEditPage";
 
 const amara: AdminUserRow = { id: "u1", firstName: "Amara", lastName: "Okafor", email: "amara@example.org", role: "user", supportUser: false, disabled: false, scheduledDeletion: null };

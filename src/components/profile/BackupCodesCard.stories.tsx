@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import BackupCodesCard from "./BackupCodesCard";
-import { backupCodes } from "../../mock-data/tokens";
+import { backupCodes } from "@/mock-data/tokens";
 
 const meta: Meta<typeof BackupCodesCard> = {
   title: "Profile/BackupCodesCard",

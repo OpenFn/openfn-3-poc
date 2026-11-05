@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminMaintenancePage from "./AdminMaintenancePage";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AdminMaintenancePage> = {
   title: "Pages/Admin/AdminMaintenancePage",

@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import Button, { type ButtonLook, type ButtonSize } from "./Button";
 
 type Props = Omit<ComponentProps<typeof Button>, "children" | "icon" | "tooltip" | "title" | "variant" | "tone"> & {

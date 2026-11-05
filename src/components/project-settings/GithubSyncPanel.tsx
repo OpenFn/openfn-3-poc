@@ -1,15 +1,15 @@
 import { useState, type ReactNode } from "react";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import ConfirmModal from "../primitives/ConfirmModal";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import Pill from "../primitives/Pill";
-import SectionHeader from "../primitives/SectionHeader";
-import TextLink from "../primitives/TextLink";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Pill from "@/components/primitives/Pill";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import TextLink from "@/components/primitives/TextLink";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { GithubSyncSettings } from "../../types/project-settings";
-import { useAction } from "../../utils/useAction";
-import { Stack } from "../primitives/Stack";
+import type { GithubSyncSettings } from "@/types/project-settings";
+import { useAction } from "@/utils/useAction";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   githubSync: GithubSyncSettings;

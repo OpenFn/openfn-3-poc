@@ -1,5 +1,5 @@
-import { auditEvents, auditPageSize } from "../../mock-data/admin";
-import { useUrlParams } from "../../utils/useUrlParams";
+import { auditEvents, auditPageSize } from "@/mock-data/admin";
+import { useUrlParams } from "@/utils/useUrlParams";
 import AdminAuditPage from "./AdminAuditPage";
 
 /**

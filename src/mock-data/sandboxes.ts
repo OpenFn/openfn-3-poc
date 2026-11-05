@@ -5,8 +5,8 @@
  * scheduled for deletion so that section renders.
  */
 import { findProject, projects } from "./projects";
-import type { Project } from "../types/projects";
-import type { MergePreviewResult, SandboxRow } from "../types/sandboxes";
+import type { Project } from "@/types/projects";
+import type { MergePreviewResult, SandboxRow } from "@/types/sandboxes";
 
 /** A project in the workspace tree, as the replica's server holds it. */
 export interface SandboxFixture {

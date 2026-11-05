@@ -1,9 +1,9 @@
-import TextLink from "../primitives/TextLink";
-import EmptyState from "../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import Button from "../primitives/Button";
-import { linkedUsageSummary } from "../../utils/format";
-import type { WebhookAuthMethodRow } from "../../types/project-settings";
+import TextLink from "@/components/primitives/TextLink";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Button from "@/components/primitives/Button";
+import { linkedUsageSummary } from "@/utils/format";
+import type { WebhookAuthMethodRow } from "@/types/project-settings";
 
 interface Props {
   authMethods: WebhookAuthMethodRow[];

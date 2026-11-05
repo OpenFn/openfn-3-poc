@@ -1,9 +1,9 @@
-import type { RunStep, StepDataclip } from "../../types/history";
+import type { RunStep, StepDataclip } from "@/types/history";
 import JsonViewer from "./JsonViewer";
-import TextPingLoader from "../primitives/TextPingLoader";
+import TextPingLoader from "@/components/primitives/TextPingLoader";
 import WipedDataViewer from "./WipedDataViewer";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
 
 /**
  * A selected step's input or output on the run page (viewers.ex

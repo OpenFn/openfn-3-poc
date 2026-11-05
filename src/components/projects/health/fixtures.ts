@@ -1,4 +1,4 @@
-import type { ErrorSignature, RunBucket, WorkOrderStateCounts } from "../../../types/workflow-health";
+import type { ErrorSignature, RunBucket, WorkOrderStateCounts } from "@/types/workflow-health";
 
 /** Zero-filled work order counts, so a test names only the states it cares about. */
 export const counts = (overrides: Partial<WorkOrderStateCounts> = {}): WorkOrderStateCounts => ({

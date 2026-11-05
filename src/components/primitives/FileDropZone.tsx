@@ -1,5 +1,5 @@
 import { useId, useState, type DragEvent } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { useFieldControl } from "./fieldControl";
 
 /** Lightning's YAML import limit, applied to every upload here. */

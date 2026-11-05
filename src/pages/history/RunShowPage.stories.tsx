@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import RunShowPage from "./RunShowPage";
-import { findDataclip, findRun, findWorkOrder, stepsOf } from "../../mock-data/history";
-import { finalDataclipIdOf, logsOf } from "../../mock-data/history-extra";
-import { projects } from "../../mock-data/projects";
-import type { RunDetail, RunStep, StepDataclip } from "../../types/history";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { findDataclip, findRun, findWorkOrder, stepsOf } from "@/mock-data/history";
+import { finalDataclipIdOf, logsOf } from "@/mock-data/history-extra";
+import { projects } from "@/mock-data/projects";
+import type { RunDetail, RunStep, StepDataclip } from "@/types/history";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 

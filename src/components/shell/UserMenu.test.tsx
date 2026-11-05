@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
+import { RouterProvider, type Router } from "@/routing/router";
 import UserMenu from "./UserMenu";
 
 // Headless UI's menus watch their trigger's size; jsdom has no ResizeObserver.

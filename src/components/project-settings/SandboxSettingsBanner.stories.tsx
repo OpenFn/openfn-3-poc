@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof SandboxSettingsBanner> = {
   title: "Project settings/SandboxSettingsBanner",

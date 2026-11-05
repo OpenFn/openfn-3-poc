@@ -1,4 +1,4 @@
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 /**
  * The shared look of text inputs, textareas and selects. Focus is the same

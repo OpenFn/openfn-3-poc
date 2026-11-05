@@ -1,5 +1,5 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mapper and its requests. */
-import type { CredentialProjectRef } from "../types/credentials";
+import type { CredentialProjectRef } from "@/types/credentials";
 import { listAll } from "./client";
 
 /** A project as `GET /api/projects` lists it. */

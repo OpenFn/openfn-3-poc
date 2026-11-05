@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CollectionDeleteModal from "./CollectionDeleteModal";
-import { collections } from "../../mock-data/project-settings";
+import { collections } from "@/mock-data/project-settings";
 
 const meta: Meta<typeof CollectionDeleteModal> = {
   title: "Domain/CollectionDeleteModal",

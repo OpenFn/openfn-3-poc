@@ -1,8 +1,8 @@
-import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "../primitives/Menu";
-import UserAvatar from "../primitives/UserAvatar";
-import Heading from "../primitives/Heading";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import Menu, { MenuDivider, MenuHeader, MenuItem, MenuLink } from "@/components/primitives/Menu";
+import UserAvatar from "@/components/primitives/UserAvatar";
+import Heading from "@/components/primitives/Heading";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 /** What the account menu shows of the signed-in user. */
 export interface MenuUser {

@@ -2,11 +2,11 @@ import { useCallback, useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- wiring: the layout route reads route params and renders the route Outlet.
 import { Outlet, useLocation, useParams } from "react-router-dom";
 // eslint-disable-next-line no-restricted-imports -- wiring: the layout route loads the project in the URL and the picker's project tree.
-import { findProject, projects } from "../../mock-data/projects";
+import { findProject, projects } from "@/mock-data/projects";
 // eslint-disable-next-line no-restricted-imports -- wiring: the shell reads the signed-in user, their permissions and instance info for the header and sidebar.
-import { useCurrentUser, useInstanceInfo, usePermissions } from "../../session/session";
+import { useCurrentUser, useInstanceInfo, usePermissions } from "@/session/session";
 import Sidebar, { type SidebarMenu } from "./Sidebar";
-import Picker from "../primitives/Picker";
+import Picker from "@/components/primitives/Picker";
 import { buildProjectPickerItems } from "./projectPickerItems";
 
 /**

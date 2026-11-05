@@ -1,5 +1,5 @@
-import type { RunDisplayState, StepExitReason } from "../types/history";
-import type { WorkOrderDisplayState } from "../types/workflows";
+import type { RunDisplayState, StepExitReason } from "@/types/history";
+import type { WorkOrderDisplayState } from "@/types/workflows";
 
 /**
  * Run-state colours. Each state takes a tone, and every place a state is

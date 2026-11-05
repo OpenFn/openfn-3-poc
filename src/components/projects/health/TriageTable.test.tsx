@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { ErrorSignature, FailureState } from "../../../types/workflow-health";
+import type { ErrorSignature, FailureState } from "@/types/workflow-health";
 import { signature } from "./fixtures";
 import { FAILURE_COLORS } from "./palette";
 import TriageTable from "./TriageTable";

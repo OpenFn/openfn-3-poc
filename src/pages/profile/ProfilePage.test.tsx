@@ -1,13 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/primitives/Toast";
-import { RequestError } from "../../utils/errors";
-import { pickOption } from "../../test/select";
+import { RouterProvider, type Router } from "@/routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { RequestError } from "@/utils/errors";
+import { pickOption } from "@/test/select";
 import ProfilePage, { type ProfilePageProps } from "./ProfilePage";
-import { tooltipOf } from "../../test/tooltip";
-import { isDisabled } from "../../test/disabled";
+import { tooltipOf } from "@/test/tooltip";
+import { isDisabled } from "@/test/disabled";
 
 const data = (): Omit<ProfilePageProps, `on${string}`> => ({
   user: {

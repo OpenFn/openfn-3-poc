@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import Button from "../primitives/Button";
-import { MenuItem } from "../primitives/Menu";
-import SplitButton from "../primitives/SplitButton";
+import Button from "@/components/primitives/Button";
+import { MenuItem } from "@/components/primitives/Menu";
+import SplitButton from "@/components/primitives/SplitButton";
 
 interface Props {
   onClick: () => void;

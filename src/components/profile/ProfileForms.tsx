@@ -1,12 +1,12 @@
 import type { SubmitEvent, ReactNode } from "react";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Form from "../primitives/Form";
-import { PasswordInput, Select, TextInput } from "../primitives/Inputs";
-import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "../../types/profile";
-import { contactPreferenceHint, contactPreferenceOptions } from "../../constants";
-import { useForm } from "../../utils/useForm";
-import { blank, isValidEmail } from "../../utils/validate";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Form from "@/components/primitives/Form";
+import { PasswordInput, Select, TextInput } from "@/components/primitives/Inputs";
+import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues } from "@/types/profile";
+import { contactPreferenceHint, contactPreferenceOptions } from "@/constants";
+import { useForm } from "@/utils/useForm";
+import { blank, isValidEmail } from "@/utils/validate";
 
 /**
  * The three forms of ProfileLive.FormComponent (profile_live/form_component.html.heex),

@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { useFieldControl } from "./fieldControl";
 import Text from "./Text";
 import Tooltip from "./Tooltip";

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph, snapshotsOf } from "../../mock-data/workflow";
+import { findWorkflowGraph, snapshotsOf } from "@/mock-data/workflow";
 import VersionDropdown from "./VersionDropdown";
-import { withCanvas } from "../../stories/decorators";
+import { withCanvas } from "@/stories/decorators";
 
 const snapshots = snapshotsOf(findWorkflowGraph("wf-openhie")!);
 

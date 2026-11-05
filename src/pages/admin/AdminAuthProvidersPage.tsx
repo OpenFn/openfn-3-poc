@@ -1,7 +1,7 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import AuthProviderForm from "../../components/admin/AuthProviderForm";
-import type { AuthProvider, AuthProviderValues } from "../../types/admin";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import AuthProviderForm from "@/components/admin/AuthProviderForm";
+import type { AuthProvider, AuthProviderValues } from "@/types/admin";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AdminAuthProvidersPageProps {

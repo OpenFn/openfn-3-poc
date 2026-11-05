@@ -1,7 +1,7 @@
-import CodeViewer from "../primitives/CodeViewer";
-import Modal from "../primitives/Modal";
-import Text from "../primitives/Text";
-import TextLink from "../primitives/TextLink";
+import CodeViewer from "@/components/primitives/CodeViewer";
+import Modal from "@/components/primitives/Modal";
+import Text from "@/components/primitives/Text";
+import TextLink from "@/components/primitives/TextLink";
 
 interface Props {
   name: string;

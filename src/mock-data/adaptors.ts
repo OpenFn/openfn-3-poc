@@ -6,8 +6,8 @@
  */
 
 import { kickstartAdaptorDocs } from "./generated/kickstart";
-import type { Adaptor, AdaptorFunction } from "../types/adaptors";
-import { adaptorShortName, resolveAdaptor } from "../utils/adaptors";
+import type { Adaptor, AdaptorFunction } from "@/types/adaptors";
+import { adaptorShortName, resolveAdaptor } from "@/utils/adaptors";
 
 /**
  * OpenFn supported adaptors list.

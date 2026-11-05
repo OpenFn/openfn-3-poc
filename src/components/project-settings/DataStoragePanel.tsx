@@ -1,16 +1,16 @@
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import Form from "../primitives/Form";
-import { Field, Radio, Select } from "../primitives/Inputs";
-import SectionHeader from "../primitives/SectionHeader";
-import { Stack } from "../primitives/Stack";
-import PlanLimitNote from "../domain/PlanLimitNote";
-import TextLink from "../primitives/TextLink";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import Form from "@/components/primitives/Form";
+import { Field, Radio, Select } from "@/components/primitives/Inputs";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import { Stack } from "@/components/primitives/Stack";
+import PlanLimitNote from "@/components/domain/PlanLimitNote";
+import TextLink from "@/components/primitives/TextLink";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { DataStorageSettings, DataStorageValues } from "../../types/project-settings";
-import type { RetentionPolicy } from "../../types/projects";
-import { useForm } from "../../utils/useForm";
+import type { DataStorageSettings, DataStorageValues } from "@/types/project-settings";
+import type { RetentionPolicy } from "@/types/projects";
+import { useForm } from "@/utils/useForm";
 
 interface Props {
   dataStorage: DataStorageSettings;

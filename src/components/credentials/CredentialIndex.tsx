@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
-import ConfirmModal from "../primitives/ConfirmModal";
-import ButtonMenu from "../primitives/ButtonMenu";
-import { MenuItem } from "../primitives/Menu";
-import EmptyState from "../primitives/EmptyState";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import ButtonMenu from "@/components/primitives/ButtonMenu";
+import { MenuItem } from "@/components/primitives/Menu";
+import EmptyState from "@/components/primitives/EmptyState";
 import { CredentialsTable, KeychainCredentialsTable, OauthClientsTable } from "./CredentialTables";
 import CredentialFormModal from "./CredentialFormModal";
 import OauthClientFormModal from "./OauthClientFormModal";
@@ -19,9 +19,9 @@ import type {
   KeychainCredentialActions,
   KeychainCredentialRow,
   OauthClientSecretsResult,
-} from "../../types/credentials";
-import { useActions } from "../../utils/useAction";
-import { Stack } from "../primitives/Stack";
+} from "@/types/credentials";
+import { useActions } from "@/utils/useAction";
+import { Stack } from "@/components/primitives/Stack";
 
 /** Project settings' scope: the project, its keychain credentials and their actions. */
 interface ProjectScope extends KeychainCredentialActions {

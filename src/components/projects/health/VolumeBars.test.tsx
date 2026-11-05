@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { RunBucket } from "../../../types/workflow-health";
-import { formatMonthDayIn } from "../../../utils/format";
+import type { RunBucket } from "@/types/workflow-health";
+import { formatMonthDayIn } from "@/utils/format";
 import { bucket } from "./fixtures";
 import VolumeBars from "./VolumeBars";
 

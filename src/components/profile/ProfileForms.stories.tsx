@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "./ProfileForms";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta = { title: "Profile/ProfileForms" };
 export default meta;

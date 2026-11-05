@@ -1,8 +1,8 @@
 import { useState } from "react";
-import FormModal from "../primitives/FormModal";
-import { errorMessage, RequestError } from "../../utils/errors";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
+import FormModal from "@/components/primitives/FormModal";
+import { errorMessage, RequestError } from "@/utils/errors";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
 import ConfirmAccessField, { ConfirmAccessSwitch, type ConfirmAccessMethod } from "./ConfirmAccessField";
 
 /** What the person steps up with: one or the other, as `POST /api/session` takes them. */

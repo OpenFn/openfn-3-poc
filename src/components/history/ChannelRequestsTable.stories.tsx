@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withRouter } from "../../stories/decorators";
-import { channelRequests } from "../../mock-data/channel-requests";
-import { channels } from "../../mock-data/channels";
-import type { ChannelLogRow } from "../../types/channels";
+import { withRouter } from "@/stories/decorators";
+import { channelRequests } from "@/mock-data/channel-requests";
+import { channels } from "@/mock-data/channels";
+import type { ChannelLogRow } from "@/types/channels";
 import ChannelRequestsTable from "./ChannelRequestsTable";
 
 const rows: ChannelLogRow[] = channelRequests.map((r) => ({

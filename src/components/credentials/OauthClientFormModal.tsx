@@ -1,14 +1,14 @@
 import { useState } from "react";
-import FormModal from "../primitives/FormModal";
-import Alert from "../primitives/Alert";
-import Card from "../primitives/Card";
-import Pill from "../primitives/Pill";
-import { Checkbox, Field, PasswordInput, TextInput } from "../primitives/Inputs";
+import FormModal from "@/components/primitives/FormModal";
+import Alert from "@/components/primitives/Alert";
+import Card from "@/components/primitives/Card";
+import Pill from "@/components/primitives/Pill";
+import { Checkbox, Field, PasswordInput, TextInput } from "@/components/primitives/Inputs";
 import ProjectsPicker from "./ProjectsPicker";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import type { CredentialProjectRef, OauthClientRow, OauthClientSecretsResult, OauthClientValues } from "../../types/credentials";
-import { Stack } from "../primitives/Stack";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import type { CredentialProjectRef, OauthClientRow, OauthClientSecretsResult, OauthClientValues } from "@/types/credentials";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   open: boolean;

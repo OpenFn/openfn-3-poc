@@ -1,7 +1,7 @@
 import { MemoryRouter } from "react-router-dom";
-import { ReactRouterAdapter } from "../routing/ReactRouterAdapter";
+import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import type { Decorator } from "@storybook/react";
-import { cn } from "../utils/cn";
+import { cn } from "@/utils/cn";
 
 /**
  * Wraps a story in a MemoryRouter at a given URL, with the adapter that lets

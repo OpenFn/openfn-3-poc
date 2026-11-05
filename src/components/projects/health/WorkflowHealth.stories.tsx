@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkflowHealth from "./WorkflowHealth";
-import { DEFAULT_HEALTH_DAYS, HEALTH_LOAD_ERROR } from "../../../constants";
-import { projects } from "../../../mock-data/projects";
-import { healthFor } from "../../../mock-data/workflow-health";
-import { withRouter, withGrayPanel } from "../../../stories/decorators";
+import { DEFAULT_HEALTH_DAYS, HEALTH_LOAD_ERROR } from "@/constants";
+import { projects } from "@/mock-data/projects";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
 
 const loaded = <T,>(data: T) => ({ data, error: null });
 const loading = { data: null, error: null };
