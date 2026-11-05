@@ -9,7 +9,7 @@ import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
-import ProjectsDashboardPageRoute from "./ProjectsDashboardPage.query";
+import ProjectsDashboardPageQuery from "./ProjectsDashboardPage.query";
 
 const wait = { timeout: 3000 };
 
@@ -21,7 +21,7 @@ function renderRoute() {
           <MemoryRouter initialEntries={["/projects"]}>
             <ReactRouterAdapter>
               <Routes>
-                <Route path="/projects" element={<ProjectsDashboardPageRoute />} />
+                <Route path="/projects" element={<ProjectsDashboardPageQuery />} />
               </Routes>
             </ReactRouterAdapter>
           </MemoryRouter>
@@ -31,7 +31,7 @@ function renderRoute() {
   );
 }
 
-describe("ProjectsDashboardPageRoute", () => {
+describe("ProjectsDashboardPageQuery", () => {
   beforeEach(() => {
     resetFakeApi();
     // The fake server waits 300ms before each answer; Testing Library moves the fake clock on while it waits.
