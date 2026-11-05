@@ -6,9 +6,11 @@
  * already set.
  */
 import { authConfig } from "@/mock-data/auth";
+import { backupCodes } from "@/mock-data/tokens";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
+import { spendBackupCode } from "./mfa";
 
 /**
  * The password every fixture user signs in with (the same as Lightning's demo
@@ -17,7 +19,8 @@ import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
  */
 export const FAKE_PASSWORD = "welcome12345";
 export const FAKE_MFA_CODE = "123456";
-export const FAKE_BACKUP_CODE = "fakebackup01";
+// The first of the fake's backup codes; signing in with it marks it used.
+export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
 
 /** How long a step-up lasts (api/authentication.md, session tokens). */
 const STEP_UP_MS = 5 * 60_000;
@@ -90,7 +93,7 @@ const invalidCredentials = () =>
 const unauthenticated = () => problem({ status: 401, code: "unauthenticated", detail: "You must sign in first." });
 
 const codeIsGood = (body: Record<string, unknown>) =>
-  body["mfa_code"] === FAKE_MFA_CODE || body["backup_code"] === FAKE_BACKUP_CODE;
+  body["mfa_code"] === FAKE_MFA_CODE || (typeof body["backup_code"] === "string" && spendBackupCode(body["backup_code"]));
 
 function signIn(body: Record<string, unknown>) {
   const { mfaPendingId } = read();
