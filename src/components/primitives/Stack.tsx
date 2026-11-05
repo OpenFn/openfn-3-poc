@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/utils/cn";
 
 /** The spacing scale between siblings: 4, 8, 16 and 24px. */
-const gaps = { xs: "gap-1", sm: "gap-2", md: "gap-4", lg: "gap-6" };
+const gaps = { xs: "gap-1", sm: "gap-2", md: "gap-4", lg: "gap-6", xl: "gap-8" };
 type Gap = keyof typeof gaps;
 
 /** An id, aria-* and data-* pass through to the element, so a list, a landmark or a test hook can be a Stack. */

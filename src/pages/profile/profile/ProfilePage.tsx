@@ -1,16 +1,17 @@
 import Alert from "@/components/primitives/Alert";
+import Section from "@/components/primitives/Section";
 import { Stack } from "@/components/primitives/Stack";
 import { NestedSections } from "@/components/primitives/SectionHeader";
 import { useToast } from "@/components/primitives/Toast";
 import type { StepUpCredentials } from "@/components/domain/StepUpDialog";
 import { useStepUp } from "@/components/domain/useStepUp";
-import UserInfo from "@/components/profile/UserInfo";
 import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "@/components/profile/ProfileForms";
 import MfaCard from "@/components/profile/MfaCard";
 import GithubCard from "@/components/profile/GithubCard";
 import ExperimentalFeaturesCard from "@/components/profile/ExperimentalFeaturesCard";
 import DeleteAccountCard from "@/components/profile/DeleteAccountCard";
 import UserDeletionModal from "@/components/domain/UserDeletionModal";
+import { formatLocalDate } from "@/utils/format";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues, MfaSetupResult, ProfilePageData } from "@/types/profile";
 
 /**
@@ -59,8 +60,9 @@ export interface ProfilePageProps extends ProfilePageData {
 /**
  * Inventory views `profile-account`, `profile-mfa`, `profile-github`,
  * `profile-experimental-features` and `profile-delete-account`
- * (profile_live/edit.html.heex): user info on the left, the cards on the
- * right. `deleting` opens the deletion modal over the page. Lightning's
+ * (profile_live/edit.html.heex), in Brandon's layout: the user's name heads
+ * the section, with their email and when they joined under it, and the cards
+ * stack below. `deleting` opens the deletion modal over the page. Lightning's
  * optional GDPR preferences card isn't part of the page: an instance that
  * configures it renders it beside the page.
  */
@@ -73,49 +75,61 @@ export default function ProfilePage(props: ProfilePageProps) {
       await action(...args);
       toast(message);
     };
-  const stepUp = { isStepUpRequired: props.isStepUpRequired, stepUp: props.onStepUp, hasMfa: props.mfa.enabled };
-  const [disableMfa, disableMfaStepUp] = useStepUp(props.onDisableMfa, { ...stepUp, description: "Confirm it's you to turn off MFA." });
-  const [deleteAccount, deleteStepUp] = useStepUp(props.onDeleteAccount, { ...stepUp, description: "Confirm it's you to delete your account." });
+  const stepUp = {
+    isStepUpRequired: props.isStepUpRequired,
+    stepUp: props.onStepUp,
+    hasMfa: props.mfa.enabled,
+  };
+  const [disableMfa, disableMfaStepUp] = useStepUp(props.onDisableMfa, {
+    ...stepUp,
+    description: "Confirm it's you to turn off MFA.",
+  });
+  const [deleteAccount, deleteStepUp] = useStepUp(props.onDeleteAccount, {
+    ...stepUp,
+    description: "Confirm it's you to delete your account.",
+  });
   return (
     <>
       {disableMfaStepUp}
       {deleteStepUp}
-      <Stack gap="lg">
+      {/* Keyed by user so the forms start again from a new user's values. */}
+      <Section
+        key={user.id}
+        size="lg"
+        title={`${user.firstName} ${user.lastName}`}
+        description={`${user.email} · Member since ${formatLocalDate(user.insertedAt)}`}
+      >
         {/* edit.ex's flash for someone else's delete URL. */}
         {props.refused && <Alert tone="danger">You can't perform this action</Alert>}
-        {/* Keyed by user so the forms start again from a new user's values. */}
-        <div key={user.id} className="grid gap-8 @3xl:grid-cols-3">
-          {/* Its h2, the user's name, heads the section, as in Brandon's; the cards sit under it. */}
-          <UserInfo user={user} />
-          <NestedSections>
-            <div id={`user-${user.id}`} className="space-y-4 @3xl:col-span-2">
-              <BasicInfoForm
-                values={{
-                  first_name: user.firstName,
-                  last_name: user.lastName,
-                  contact_preference: user.contactPreference,
-                }}
-                onSave={announce(props.onSaveBasicInfo, "User information updated successfully")}
-              />
-              <ChangeEmailForm onSubmit={announce(props.onChangeEmail, "You will receive an email with instructions shortly.")} />
-              <ChangePasswordForm onSubmit={announce(props.onChangePassword, "Password changed successfully.")} />
-              <MfaCard
-                mfa={props.mfa}
-                backupCodesHref={props.backupCodesHref}
-                onStartSetup={props.onStartMfaSetup}
-                onConfirm={announce(props.onConfirmMfa, "MFA Setup")}
-                onDisable={announce(disableMfa, "MFA Disabled")}
-              />
-              <GithubCard github={props.github} onDisconnect={announce(props.onDisconnectGithub, "GitHub connection removed successfully")} />
-              <ExperimentalFeaturesCard
-                enabled={props.experimentalFeatures}
-                onChange={announce(props.onSetExperimentalFeatures, "Experimental features updated successfully")}
-              />
-              <DeleteAccountCard to={props.deleteHref} />
-            </div>
-          </NestedSections>
-        </div>
-      </Stack>
+        {/* The cards' titles are h3s under the name's h2. */}
+        <NestedSections>
+          <Stack gap="xl">
+            <BasicInfoForm
+              values={{
+                first_name: user.firstName,
+                last_name: user.lastName,
+                contact_preference: user.contactPreference,
+              }}
+              onSave={announce(props.onSaveBasicInfo, "User information updated successfully")}
+            />
+            <ChangeEmailForm onSubmit={announce(props.onChangeEmail, "You will receive an email with instructions shortly.")} />
+            <ChangePasswordForm onSubmit={announce(props.onChangePassword, "Password changed successfully.")} />
+            <MfaCard
+              mfa={props.mfa}
+              backupCodesHref={props.backupCodesHref}
+              onStartSetup={props.onStartMfaSetup}
+              onConfirm={announce(props.onConfirmMfa, "MFA Setup")}
+              onDisable={announce(disableMfa, "MFA Disabled")}
+            />
+            <GithubCard github={props.github} onDisconnect={announce(props.onDisconnectGithub, "GitHub connection removed successfully")} />
+            <ExperimentalFeaturesCard
+              enabled={props.experimentalFeatures}
+              onChange={announce(props.onSetExperimentalFeatures, "Experimental features updated successfully")}
+            />
+            <DeleteAccountCard to={props.deleteHref} />
+          </Stack>
+        </NestedSections>
+      </Section>
       {props.deleting && (
         <UserDeletionModal
           isCurrentUser
