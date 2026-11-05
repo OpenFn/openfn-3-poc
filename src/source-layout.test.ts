@@ -119,22 +119,22 @@ describe("every page and component can be seen and checked", () => {
     // Lint stops the page importing EmptyState; this stops a component it imports doing it instead.
     // ponytail: one level deep; follow imports further if a nested component ever slips through.
     const onListPage = paths.filter(
-      (path) => isSource(path) && !path.startsWith("./components/templates/") && imports(path, "components/templates/ListPage")
+      (path) => isSource(path) && !path.startsWith("./components/patterns/") && imports(path, "components/patterns/ListPage")
     );
     const drawers = onListPage.flatMap((page) =>
       [...sources[page]!.matchAll(/from ["']@\/(components\/[^"']+)["']/g)]
         .map(([, from]) => `./${from}.tsx`)
-        .filter((child) => sources[child] && !/^\.\/components\/(primitives|templates)\//.test(child) && drawsEmptyState(child))
+        .filter((child) => sources[child] && !/^\.\/components\/(primitives|patterns)\//.test(child) && drawsEmptyState(child))
         .map((child) => `${page} imports ${child}`)
     );
     expect(drawers).toEqual([]);
   });
 
-  it("only a template builds a page from PageContent", () => {
-    // A page fills a template (src/components/templates/), so every page of a
+  it("only a pattern builds a page from PageContent", () => {
+    // A page fills a pattern (src/components/patterns/), so every page of a
     // kind lays out its title, actions, loading and empty state the same way.
     const builders = paths.filter(
-      (path) => isSource(path) && !path.startsWith("./components/templates/") && sources[path]!.includes('from "@/components/primitives/PageContent"')
+      (path) => isSource(path) && !path.startsWith("./components/patterns/") && sources[path]!.includes('from "@/components/primitives/PageContent"')
     );
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",

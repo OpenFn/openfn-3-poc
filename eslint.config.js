@@ -269,11 +269,11 @@ const seamImports = (extra = []) => [
   { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, relativeImports, ...extra] },
 ]
 
-// Each folder in src/components/ other than primitives/, domain/ and templates/ is an
+// Each folder in src/components/ other than primitives/, patterns/ and domain/ is an
 // area of feature components (history/, credentials/, …) or the app shell (shell/).
 const areas = fs
   .readdirSync(new URL('./src/components', import.meta.url), { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && !['primitives', 'domain', 'templates'].includes(entry.name))
+  .filter((entry) => entry.isDirectory() && !['primitives', 'patterns', 'domain'].includes(entry.name))
   .map((entry) => entry.name)
 const tiers = 'See docs/building.md, Where a new component goes.'
 // `@/x` is src/x. Every no-restricted-imports block below repeats this, because a later block replaces an earlier one's options.
@@ -289,13 +289,13 @@ const primitiveImports = {
   regex: '(^|/)pages(/|$)|(^|/)components/(?!primitives(/|$))',
   message: `A primitive uses only other primitives (and utils, types, theme). Pass the feature in as a prop or children. ${tiers}`,
 }
-const domainImports = {
-  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain)(/|$))',
-  message: `A domain component uses only primitives and other domain components. Pass the feature in as a prop or children. ${tiers}`,
+const patternImports = {
+  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|patterns)(/|$))',
+  message: `A pattern uses only primitives and other patterns, so it knows none of OpenFn's nouns. Whoever uses it passes OpenFn content in as children or props. ${tiers}`,
 }
-const templateImports = {
-  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain|templates)(/|$))',
-  message: `A template uses only primitives, domain and other templates. The page passes its words and its list in as props. ${tiers}`,
+const domainImports = {
+  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|patterns|domain)(/|$))',
+  message: `A domain component uses only primitives, patterns and other domain components. Pass the feature in as a prop or children. ${tiers}`,
 }
 const utilImports = {
   regex: '(^|/)components/(?!primitives(/|$))|(^|/)pages(/|$)',
@@ -303,14 +303,14 @@ const utilImports = {
 }
 const otherAreaImports = (area) => ({
   regex: `(^|/)components/(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
-  message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
+  message: `A feature component uses primitives, patterns/, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
 })
 
 // ListPage draws the header, the layout, loading, failure and the empty state, so a file that
 // uses it doesn't import the primitives behind them: it passes words, actions and its list instead.
 const listPageOwns = {
   selector:
-    'Program:has(ImportDeclaration[source.value="@/components/templates/ListPage"]) > ImportDeclaration[source.value=/^@\\x2fcomponents\\x2fprimitives\\x2f(Header|PageContent|EmptyState|AsyncBoundary)$/]',
+    'Program:has(ImportDeclaration[source.value="@/components/patterns/ListPage"]) > ImportDeclaration[source.value=/^@\\x2fcomponents\\x2fprimitives\\x2f(Header|PageContent|EmptyState|AsyncBoundary)$/]',
   message:
     "ListPage owns the header, the layout, loading, failure and the empty state, so a page on it doesn't import Header, PageContent, EmptyState or AsyncBoundary. Pass `title`, `actions`, `status` and `empty` instead.",
 }
@@ -419,9 +419,10 @@ export default defineConfig([
     ignores: seamIgnores,
     rules: { 'no-restricted-imports': seamImports() },
   },
-  // The tiers: imports only go down, pages → templates and feature components → domain →
-  // primitives. A primitive uses only other primitives; a domain component
-  // uses primitives and domain; a feature component uses those, the shell and
+  // The tiers: imports only go down, pages and feature components → domain → patterns →
+  // primitives. A primitive uses only other primitives; a pattern uses
+  // primitives and patterns; a domain component uses those and domain; a
+  // feature component uses those, the shell and
   // its own area. These blocks repeat the seam's patterns, because a later
   // block replaces an earlier one's options.
   {
@@ -435,9 +436,9 @@ export default defineConfig([
     rules: { 'no-restricted-imports': seamImports([domainImports]) },
   },
   {
-    files: ['src/components/templates/**/*.{ts,tsx}'],
+    files: ['src/components/patterns/**/*.{ts,tsx}'],
     ignores: seamIgnores,
-    rules: { 'no-restricted-imports': seamImports([templateImports]) },
+    rules: { 'no-restricted-imports': seamImports([patternImports]) },
   },
   ...areas.map((area) => ({
     files: [`src/components/${area}/**/*.{ts,tsx}`],

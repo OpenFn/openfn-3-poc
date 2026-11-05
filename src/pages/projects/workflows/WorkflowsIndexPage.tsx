@@ -1,5 +1,5 @@
 import Button from "@/components/primitives/Button";
-import ListPage from "@/components/templates/ListPage";
+import ListPage from "@/components/patterns/ListPage";
 import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
 import WorkflowsTable from "@/components/projects/WorkflowsTable";
 import type { CurrentProject } from "@/types/projects";

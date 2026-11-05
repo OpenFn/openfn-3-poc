@@ -2,7 +2,7 @@ import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useCurrentUser, useInstanceInfo, usePermissions } from "@/session/session";
 import { useProject, useProjectTree } from "@/api/projects";
 import Picker from "@/components/primitives/Picker";
-import Layout from "@/components/primitives/Layout";
+import Layout from "@/components/patterns/Layout";
 import Sidebar, { type SidebarMenu } from "./Sidebar";
 import { buildProjectPickerItems } from "./projectPickerItems";
 
