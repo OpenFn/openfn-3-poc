@@ -30,3 +30,5 @@ export const NewToken: Story = {
   },
 };
 export const DeleteModalOpen: Story = { args: { tokenId: apiTokens[0]!.id } };
+export const Loading: Story = { args: { status: { state: "loading" }, tokens: [] } };
+export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, tokens: [] } };

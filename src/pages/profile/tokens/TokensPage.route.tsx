@@ -1,32 +1,27 @@
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiTokens, generateFakeToken } from "../../../mock-data/tokens";
-import { simulateRequest } from "../../../mock-data/request";
+import { useTokens, useTokenSaves } from "../../../api/tokens";
 import TokensPage from "./TokensPage";
 
 /**
- * TokensPage's route: holds the fixtures in state as the server would, and
- * reads the delete modal's token from the URL. It only passes data and
- * actions; the banner and toasts are the page's.
+ * TokensPage's route: loads the tokens from the API and reads the delete
+ * modal's token from the URL. It only passes data and actions; the banner and
+ * toasts are the page's. Generating without a stepped-up session rejects with
+ * an `ApiError` whose code is `step_up_required` (`isApiError` in
+ * src/api/client.ts); until the password pop-up is wired, the page toasts it.
  */
-export default function TokensPageReplica() {
+export default function TokensPageRoute() {
   const { tokenId } = useParams();
   const navigate = useNavigate();
-  const [tokens, setTokens] = useState(apiTokens);
+  const { status, tokens } = useTokens();
+  const { generate, remove } = useTokenSaves();
 
   return (
     <TokensPage
+      status={status}
       tokens={tokens}
       tokenId={tokenId ?? null}
-      onGenerate={async () => {
-        const { token, secret } = await simulateRequest(generateFakeToken());
-        setTokens((list) => [token, ...list]);
-        return secret;
-      }}
-      onDelete={async (id) => {
-        await simulateRequest();
-        setTokens((list) => list.filter((t) => t.id !== id));
-      }}
+      onGenerate={generate}
+      onDelete={remove}
       onClose={() => navigate("/profile/tokens")}
     />
   );

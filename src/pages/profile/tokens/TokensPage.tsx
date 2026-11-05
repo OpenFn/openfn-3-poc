@@ -7,11 +7,15 @@ import { Stack } from "../../../components/primitives/Stack";
 import TokenDeletionModal from "../../../components/profile/TokenDeletionModal";
 import { useState } from "react";
 import { useToast } from "../../../components/primitives/Toast";
+import AsyncBoundary from "../../../components/primitives/AsyncBoundary";
 import type { ApiToken } from "../../../types/tokens";
+import type { ResourceStatus } from "../../../types/resource";
 import { useAction } from "../../../utils/useAction";
 
 /** What the route passes in: data, the actions that change it, and where you are. */
 export interface TokensPageProps {
+  /** Where loading the tokens stands, when the host loads them after the page renders. Left out, they are ready. */
+  status?: ResourceStatus;
   /** The signed-in user's tokens, newest first, as the server lists them. */
   tokens: ApiToken[];
   /** The token whose delete modal is open (/profile/tokens/:tokenId/delete); otherwise null. */
@@ -30,7 +34,7 @@ export interface TokensPageProps {
  * The page owns how it behaves (the banner, the toasts); its route,
  * TokensPage.route.tsx, only passes data and actions.
  */
-export default function TokensPage({ tokens, tokenId, onGenerate, onDelete, onClose }: TokensPageProps) {
+export default function TokensPage({ status = { state: "ready" }, tokens, tokenId, onGenerate, onDelete, onClose }: TokensPageProps) {
   const toast = useToast();
   const [newToken, setNewToken] = useState<string | null>(null);
   const generate = useAction(onGenerate, {
@@ -61,7 +65,9 @@ export default function TokensPage({ tokens, tokenId, onGenerate, onDelete, onCl
         )}
         <Stack>
           {newToken && <NewTokenBanner token={newToken} />}
-          <TokensTable tokens={tokens} />
+          <AsyncBoundary status={status}>
+            <TokensTable tokens={tokens} />
+          </AsyncBoundary>
         </Stack>
       </Centered>
     </PageContent>
