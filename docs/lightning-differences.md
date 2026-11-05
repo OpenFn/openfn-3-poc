@@ -311,6 +311,16 @@ goes back to Lightning's way.
   hole as "Logged out successfully."). AdminGate shows the same words where
   the page would be.
 
+## Side menu
+
+- **The project menu has Build and Maintain groups and an "All projects"
+  link.** Lightning lists the project's pages in one flat run
+  (`Menu.project_items`, from `layout_components.ex:221`). The replica
+  follows Brandon's design: "All projects" (to /projects), then Workflows,
+  Channels and Sandboxes under Build, and History and Settings under
+  Maintain. Collapsed, the group names are hidden and only screen readers
+  get them.
+
 ## Confirm access
 
 - **Confirming access is a pop-up on the page, not a trip to a page.**
@@ -319,6 +329,15 @@ goes back to Lightning's way.
   `StepUpDialog`, with that page's words, and runs the action again once the
   person has confirmed, so nothing they were doing is lost. A wrong password
   shows on the field rather than above the form.
+- **Backup codes ask for your password on the page.** Lightning sends you
+  to Confirm access first. Here the server holds the codes back, so the page
+  opens the same pop-up over itself. Closing it leaves "Confirm it's you to
+  see your backup codes." and a "Confirm access" button where the codes go.
+- **The replica has no `/auth/confirm_access` route.** Nothing sends anyone
+  there, and on the API confirming is one `POST /api/session` the dialog
+  already sends. The page itself (`src/pages/auth/confirm-access/`) stays,
+  with its stories, because Lightning's design-system port renders it on its
+  own confirm-access screen.
 
 ## Audit
 

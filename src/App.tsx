@@ -12,7 +12,6 @@ import AuthResetPasswordPage from "./pages/auth/AuthResetPasswordPage";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
 import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
 import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage.replica";
-import AuthConfirmAccessPage from "./pages/auth/confirm-access/AuthConfirmAccessPage.query";
 import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
 
 import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.query";
@@ -34,7 +33,7 @@ import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.re
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
 import ProfilePage from "./pages/profile/ProfilePage.replica";
 import TokensPage from "./pages/profile/tokens/TokensPage.query";
-import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
+import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
@@ -67,8 +66,6 @@ export default function App() {
 
       {/* Everything below needs someone signed in: SessionGate loads them, or sends the person to log in. */}
       <Route element={<SessionGate />}>
-        <Route path="/auth/confirm_access" element={<AuthConfirmAccessPage />} /> {/* auth-confirm-access */}
-
         {/* Phoenix LiveDashboard is a full page of its own, outside Lightning's layout. */}
         <Route element={<AdminGate />}>
           <Route path="/dashboard" element={<AdminLiveDashboardPage />} /> {/* admin-live-dashboard */}

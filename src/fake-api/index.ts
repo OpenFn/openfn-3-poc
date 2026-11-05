@@ -10,6 +10,7 @@ import credentials from "./recorded/credentials.json";
 import { json, noContent, now, problem, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
+import { mfaRoutes, resetMfa } from "./mfa";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 
 export type { Problem } from "./answers";
@@ -55,6 +56,7 @@ const routes: Record<string, Handler> = {
 
   ...projectRoutes,
   ...auditRoutes,
+  ...mfaRoutes,
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */
@@ -99,5 +101,6 @@ export function resetFakeApi() {
   tokens = seed();
   resetProjects();
   resetSession();
+  resetMfa();
   failures.clear();
 }

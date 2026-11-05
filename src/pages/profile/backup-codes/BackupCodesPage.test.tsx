@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ToastProvider } from "@/components/primitives/Toast";
 import BackupCodesPage from "./BackupCodesPage";
@@ -13,7 +13,16 @@ function renderPage(props: Partial<React.ComponentProps<typeof BackupCodesPage>>
   const onPrint = vi.fn();
   render(
     <ToastProvider>
-      <BackupCodesPage codes={codes} mfaEnabled onRegenerate={onRegenerate} onPrint={onPrint} profileHref="/profile" {...props} />
+      <BackupCodesPage
+        codes={codes}
+        mfaEnabled
+        onRegenerate={onRegenerate}
+        isStepUpRequired={() => false}
+        onStepUp={vi.fn()}
+        onPrint={onPrint}
+        profileHref="/profile"
+        {...props}
+      />
     </ToastProvider>
   );
   return { onRegenerate, onPrint };
@@ -39,5 +48,14 @@ describe("BackupCodesPage", () => {
     renderPage({ mfaEnabled: false });
     expect(screen.getByText("MFA Disabled")).toBeTruthy();
     expect(screen.getByRole("link", { name: "Back to profile" })).toBeTruthy();
+  });
+
+  it("without the codes, asks for the password, and once closed offers a button that asks again", async () => {
+    renderPage({ codes: null });
+    expect(screen.getByRole("dialog", { name: "Confirm access" })).toBeTruthy();
+    fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "Confirm access" }));
+    expect(screen.getByRole("dialog", { name: "Confirm access" })).toBeTruthy();
   });
 });
