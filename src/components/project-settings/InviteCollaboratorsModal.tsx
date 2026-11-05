@@ -1,12 +1,12 @@
 import { useState } from "react";
-import FormModal from "../primitives/FormModal";
-import { TextInput } from "../primitives/Inputs";
-import IconButton from "../primitives/IconButton";
+import FormModal from "@/components/primitives/FormModal";
+import { TextInput } from "@/components/primitives/Inputs";
+import IconButton from "@/components/primitives/IconButton";
 import RoleSelect from "./RoleSelect";
-import type { CollaboratorValues, InviteValues } from "../../types/project-settings";
-import type { ProjectRole } from "../../types/projects";
-import { RequestError } from "../../utils/errors";
-import { blank } from "../../utils/validate";
+import type { CollaboratorValues, InviteValues } from "@/types/project-settings";
+import type { ProjectRole } from "@/types/projects";
+import { RequestError } from "@/utils/errors";
+import { blank } from "@/utils/validate";
 
 interface InviteDraft {
   firstName: string;

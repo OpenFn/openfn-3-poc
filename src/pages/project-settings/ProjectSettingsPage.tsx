@@ -1,24 +1,24 @@
 import type { ReactNode } from "react";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import SectionHeader, { NestedSections } from "../../components/primitives/SectionHeader";
-import CredentialIndex from "../../components/credentials/CredentialIndex";
-import NewCredentialMenuButton, { projectCredentialMenuOptions } from "../../components/credentials/NewCredentialMenuButton";
-import CollaborationPanel from "../../components/project-settings/CollaborationPanel";
-import CollectionsPanel from "../../components/project-settings/CollectionsPanel";
-import DataStoragePanel from "../../components/project-settings/DataStoragePanel";
-import GithubSyncPanel from "../../components/project-settings/GithubSyncPanel";
-import HistoryExportsPanel from "../../components/project-settings/HistoryExportsPanel";
-import ProjectDeletionModal from "../../components/domain/ProjectDeletionModal";
-import ProjectSetupPanel from "../../components/project-settings/ProjectSetupPanel";
-import SandboxSettingsBanner from "../../components/project-settings/SandboxSettingsBanner";
-import SecurityPanel from "../../components/project-settings/SecurityPanel";
-import Tabs from "../../components/primitives/Tabs";
-import WebhookSecurityPanel from "../../components/project-settings/WebhookSecurityPanel";
-import { defaultSettingsHash, projectSettingsTabs } from "../../components/project-settings/tabs";
-import DeleteSandboxModal from "../../components/domain/DeleteSandboxModal";
-import { useRouter } from "../../routing/router";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import SectionHeader, { NestedSections } from "@/components/primitives/SectionHeader";
+import CredentialIndex from "@/components/credentials/CredentialIndex";
+import NewCredentialMenuButton, { projectCredentialMenuOptions } from "@/components/credentials/NewCredentialMenuButton";
+import CollaborationPanel from "@/components/project-settings/CollaborationPanel";
+import CollectionsPanel from "@/components/project-settings/CollectionsPanel";
+import DataStoragePanel from "@/components/project-settings/DataStoragePanel";
+import GithubSyncPanel from "@/components/project-settings/GithubSyncPanel";
+import HistoryExportsPanel from "@/components/project-settings/HistoryExportsPanel";
+import ProjectDeletionModal from "@/components/domain/ProjectDeletionModal";
+import ProjectSetupPanel from "@/components/project-settings/ProjectSetupPanel";
+import SandboxSettingsBanner from "@/components/project-settings/SandboxSettingsBanner";
+import SecurityPanel from "@/components/project-settings/SecurityPanel";
+import Tabs from "@/components/primitives/Tabs";
+import WebhookSecurityPanel from "@/components/project-settings/WebhookSecurityPanel";
+import { defaultSettingsHash, projectSettingsTabs } from "@/components/project-settings/tabs";
+import DeleteSandboxModal from "@/components/domain/DeleteSandboxModal";
+import { useRouter } from "@/routing/router";
 import type {
   AddCollaboratorsResult,
   CollaboratorValues,
@@ -29,9 +29,9 @@ import type {
   ProjectSettingsPageData,
   ReauthValues,
   WebhookAuthMethodValues,
-} from "../../types/project-settings";
-import type { CredentialActions, KeychainCredentialActions } from "../../types/credentials";
-import { cn } from "../../utils/cn";
+} from "@/types/project-settings";
+import type { CredentialActions, KeychainCredentialActions } from "@/types/credentials";
+import { cn } from "@/utils/cn";
 
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,

@@ -3,7 +3,7 @@
  * returns for `outcomes`, `failures` and `runs` (assets/js/health/types.ts).
  * Static per workflow and per range; the demo never queries.
  */
-import type { ErrorSignature, ErrorSignatures, HealthRange, Outcomes, RunBucket, RunVolume, WorkOrderStateCounts } from "../types/workflow-health";
+import type { ErrorSignature, ErrorSignatures, HealthRange, Outcomes, RunBucket, RunVolume, WorkOrderStateCounts } from "@/types/workflow-health";
 
 const zero: WorkOrderStateCounts = {
   success: 0,

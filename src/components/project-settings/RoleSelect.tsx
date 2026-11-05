@@ -1,7 +1,7 @@
-import { Select } from "../primitives/Inputs";
-import type { ProjectRole } from "../../types/projects";
-import { collaboratorRoles } from "../../constants";
-import { capitalize } from "../../utils/format";
+import { Select } from "@/components/primitives/Inputs";
+import type { ProjectRole } from "@/types/projects";
+import { collaboratorRoles } from "@/constants";
+import { capitalize } from "@/utils/format";
 
 /** The role options ("Admin", "Editor", …). */
 const roleOptions = collaboratorRoles.map((r) => [capitalize(r), r] as [string, string]);

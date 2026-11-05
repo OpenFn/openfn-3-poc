@@ -1,19 +1,19 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import UserInfo from "../../components/profile/UserInfo";
-import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "../../components/profile/ProfileForms";
-import MfaCard from "../../components/profile/MfaCard";
-import GithubCard from "../../components/profile/GithubCard";
-import ExperimentalFeaturesCard from "../../components/profile/ExperimentalFeaturesCard";
-import DeleteAccountCard from "../../components/profile/DeleteAccountCard";
-import UserDeletionModal from "../../components/domain/UserDeletionModal";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import UserInfo from "@/components/profile/UserInfo";
+import { BasicInfoForm, ChangeEmailForm, ChangePasswordForm } from "@/components/profile/ProfileForms";
+import MfaCard from "@/components/profile/MfaCard";
+import GithubCard from "@/components/profile/GithubCard";
+import ExperimentalFeaturesCard from "@/components/profile/ExperimentalFeaturesCard";
+import DeleteAccountCard from "@/components/profile/DeleteAccountCard";
+import UserDeletionModal from "@/components/domain/UserDeletionModal";
 import type {
   BasicInfoValues,
   ChangeEmailValues,
   ChangePasswordValues,
   MfaSetupResult,
   ProfilePageData,
-} from "../../types/profile";
+} from "@/types/profile";
 
 /**
  * The contract between this page and whatever feeds it (the replica wrapper,

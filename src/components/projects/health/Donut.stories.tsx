@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Donut from "./Donut";
-import { withRouter, withWhitePanel } from "../../../stories/decorators";
+import { withRouter, withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof Donut> = {
   title: "Projects/Health/Donut",

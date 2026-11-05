@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Disclosure from "../primitives/Disclosure";
-import { channelRequests } from "../../mock-data/channel-requests";
+import Disclosure from "@/components/primitives/Disclosure";
+import { channelRequests } from "@/mock-data/channel-requests";
 import {
   BodyViewer,
   HeadersList,

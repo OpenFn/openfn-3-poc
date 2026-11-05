@@ -1,13 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/primitives/Toast";
-import type { CredentialRow, OauthClientRow } from "../../types/credentials";
-import { RequestError } from "../../utils/errors";
-import { pickOption } from "../../test/select";
+import { RouterProvider, type Router } from "@/routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
+import type { CredentialRow, OauthClientRow } from "@/types/credentials";
+import { RequestError } from "@/utils/errors";
+import { pickOption } from "@/test/select";
 import CredentialsIndexPage, { type CredentialsIndexPageProps } from "./CredentialsIndexPage";
-import { isDisabled } from "../../test/disabled";
+import { isDisabled } from "@/test/disabled";
 
 const dhis2: CredentialRow = {
   id: "cred1",

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useRouter } from "../routing/router";
+import { useRouter } from "@/routing/router";
 
 /** Query params to set (a string) or remove (`null`); others are left alone. */
 export type ParamPatch = Record<string, string | null>;

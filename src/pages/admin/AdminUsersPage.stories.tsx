@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminUsersPage from "./AdminUsersPage";
-import { users } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { users } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 const target = users[1]!;

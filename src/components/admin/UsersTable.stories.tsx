@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import UsersTable from "./UsersTable";
-import { users } from "../../mock-data/users";
-import { withRouter } from "../../stories/decorators";
+import { users } from "@/mock-data/users";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof UsersTable> = {
   title: "Admin/UsersTable",

@@ -4,6 +4,7 @@ paths:
   - 'src/fake-api/**'
   - 'src/**/*.route.tsx'
   - 'src/**/*.replica.tsx'
+  - 'src/pages/**/*.route.tsx'
   - 'src/**/*Replica.ts'
 ---
 

@@ -1,15 +1,15 @@
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import ProjectMetrics from "../../components/projects/ProjectMetrics";
-import WorkflowsTable from "../../components/projects/WorkflowsTable";
-import SearchInput from "../../components/primitives/SearchInput";
-import { useToast } from "../../components/primitives/Toast";
-import type { CurrentProject } from "../../types/projects";
-import type { SortState } from "../../types/lists";
-import type { ProjectMetrics as Metrics, WorkflowRow } from "../../types/workflows";
-import { errorMessage } from "../../utils/errors";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import ProjectMetrics from "@/components/projects/ProjectMetrics";
+import WorkflowsTable from "@/components/projects/WorkflowsTable";
+import SearchInput from "@/components/primitives/SearchInput";
+import { useToast } from "@/components/primitives/Toast";
+import type { CurrentProject } from "@/types/projects";
+import type { SortState } from "@/types/lists";
+import type { ProjectMetrics as Metrics, WorkflowRow } from "@/types/workflows";
+import { errorMessage } from "@/utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface WorkflowsIndexPageProps {

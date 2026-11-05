@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 import FirstSetupPage from "./FirstSetupPage";
 
 const fill = (id: string, value: string) => fireEvent.change(document.getElementById(id)!, { target: { value } });

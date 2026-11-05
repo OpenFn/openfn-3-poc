@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import AdminCollectionModal from "../../components/admin/AdminCollectionModal";
-import AdminCollectionsTable from "../../components/admin/AdminCollectionsTable";
-import CollectionDeleteModal from "../../components/domain/CollectionDeleteModal";
-import type { AdminCollectionRow, CollectionFormValues } from "../../types/admin";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import AdminCollectionModal from "@/components/admin/AdminCollectionModal";
+import AdminCollectionsTable from "@/components/admin/AdminCollectionsTable";
+import CollectionDeleteModal from "@/components/domain/CollectionDeleteModal";
+import type { AdminCollectionRow, CollectionFormValues } from "@/types/admin";
 
 type Dialog = { kind: "create" } | { kind: "edit"; collection: AdminCollectionRow } | { kind: "delete"; collection: AdminCollectionRow };
 

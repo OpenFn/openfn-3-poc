@@ -1,7 +1,7 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react";
 import { Route, Routes } from "react-router-dom";
 import AuthResetPasswordPage from "./AuthResetPasswordPage";
-import { withCanvas, withRouterAt } from "../../stories/decorators";
+import { withCanvas, withRouterAt } from "@/stories/decorators";
 
 /** Opens the page at `url` under its route, so the `:token` param reaches it. */
 const at =

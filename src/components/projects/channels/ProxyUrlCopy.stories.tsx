@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProxyUrlCopy from "./ProxyUrlCopy";
-import { channels } from "../../../mock-data/channels";
-import { channelProxyUrl } from "../../../utils/urls";
+import { channels } from "@/mock-data/channels";
+import { channelProxyUrl } from "@/utils/urls";
 
 const meta: Meta<typeof ProxyUrlCopy> = {
   title: "Projects/Channels/ProxyUrlCopy",

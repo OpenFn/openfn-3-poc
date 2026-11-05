@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import HistoryWorkOrdersPage from "./HistoryWorkOrdersPage";
-import type { WorkOrderFilters } from "../../types/history";
-import { workOrdersIn } from "../../mock-data/history";
-import { workflowJobs, workOrderRow } from "../../mock-data/history-extra";
-import { projects } from "../../mock-data/projects";
-import { workflowsIn } from "../../mock-data/workflows";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import type { WorkOrderFilters } from "@/types/history";
+import { workOrdersIn } from "@/mock-data/history";
+import { workflowJobs, workOrderRow } from "@/mock-data/history-extra";
+import { projects } from "@/mock-data/projects";
+import { workflowsIn } from "@/mock-data/workflows";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const rows = workOrdersIn(project.id).map(workOrderRow);

@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { StepExitReason } from "../../types/history";
+import type { StepExitReason } from "@/types/history";
 import StepIcon from "./StepIcon";
 
 const icon = (reason: StepExitReason | null, errorType: string | null = null) =>

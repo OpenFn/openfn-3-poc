@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import IconButton from "./IconButton";
 import { Checkbox, TextInput } from "./Inputs";
 import Menu, { MenuItem } from "./Menu";

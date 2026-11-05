@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminLiveDashboardPage from "./AdminLiveDashboardPage";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AdminLiveDashboardPage> = {
   title: "Pages/Admin/AdminLiveDashboardPage",

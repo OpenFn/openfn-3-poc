@@ -1,9 +1,9 @@
 import { Navigate, useParams } from "react-router-dom";
-import { findChannel } from "../../mock-data/channels";
-import { findChannelRequest } from "../../mock-data/channel-requests";
-import { findProject } from "../../mock-data/projects";
-import { findUser } from "../../mock-data/users";
-import { usePermissions } from "../../session/session";
+import { findChannel } from "@/mock-data/channels";
+import { findChannelRequest } from "@/mock-data/channel-requests";
+import { findProject } from "@/mock-data/projects";
+import { findUser } from "@/mock-data/users";
+import { usePermissions } from "@/session/session";
 import ChannelRequestShowPage from "./ChannelRequestShowPage";
 
 /**

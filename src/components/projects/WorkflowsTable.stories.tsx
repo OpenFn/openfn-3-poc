@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkflowsTable from "./WorkflowsTable";
-import { workflowStatsFor } from "../../mock-data/dashboard-stats";
-import { projects } from "../../mock-data/projects";
-import { withRouter } from "../../stories/decorators";
+import { workflowStatsFor } from "@/mock-data/dashboard-stats";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof WorkflowsTable> = {
   title: "Projects/WorkflowsTable",

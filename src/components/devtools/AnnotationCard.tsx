@@ -1,15 +1,15 @@
-import type { Annotation, InventoryRow } from "../../annotations/source";
-import Button from "../primitives/Button";
-import Disclosure from "../primitives/Disclosure";
-import Heading from "../primitives/Heading";
-import IconButton from "../primitives/IconButton";
-import Pill from "../primitives/Pill";
-import Text from "../primitives/Text";
-import type { Tone } from "../primitives/tone";
-import EmptyState from "../primitives/EmptyState";
-import TextLink from "../primitives/TextLink";
-import Markdown from "../primitives/Markdown";
-import { Stack, Row } from "../primitives/Stack";
+import type { Annotation, InventoryRow } from "@/annotations/source";
+import Button from "@/components/primitives/Button";
+import Disclosure from "@/components/primitives/Disclosure";
+import Heading from "@/components/primitives/Heading";
+import IconButton from "@/components/primitives/IconButton";
+import Pill from "@/components/primitives/Pill";
+import Text from "@/components/primitives/Text";
+import type { Tone } from "@/components/primitives/tone";
+import EmptyState from "@/components/primitives/EmptyState";
+import TextLink from "@/components/primitives/TextLink";
+import Markdown from "@/components/primitives/Markdown";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 interface Props {
   id: string;

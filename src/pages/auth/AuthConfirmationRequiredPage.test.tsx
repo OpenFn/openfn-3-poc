@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 import AuthConfirmationRequiredPage from "./AuthConfirmationRequiredPage";
 
 function renderPage(props: Partial<React.ComponentProps<typeof AuthConfirmationRequiredPage>> = {}) {

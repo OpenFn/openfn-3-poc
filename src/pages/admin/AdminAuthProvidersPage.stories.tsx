@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminAuthProvidersPage from "./AdminAuthProvidersPage";
-import { authProvider, emptyAuthProvider } from "../../mock-data/admin";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { authProvider, emptyAuthProvider } from "@/mock-data/admin";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 

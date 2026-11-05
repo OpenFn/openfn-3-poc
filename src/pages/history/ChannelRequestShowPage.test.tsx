@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
+import { RouterProvider, type Router } from "@/routing/router";
+import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "@/types/channels";
 import ChannelRequestShowPage from "./ChannelRequestShowPage";
-import { tooltipOf } from "../../test/tooltip";
+import { tooltipOf } from "@/test/tooltip";
 
 const channel: ChannelRequestChannel = {
   id: "c1",

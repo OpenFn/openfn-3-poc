@@ -1,11 +1,11 @@
 import { useParams, useSearchParams } from "react-router-dom";
-import { findDataclip, findRun, findWorkOrder, stepsOf } from "../../mock-data/history";
-import { finalDataclipIdOf, logsOf } from "../../mock-data/history-extra";
-import { findProject } from "../../mock-data/projects";
-import { findUser } from "../../mock-data/users";
-import { usePermissions } from "../../session/session";
-import type { RunDetail, RunStep, StepDataclip } from "../../types/history";
-import { capitalize } from "../../utils/format";
+import { findDataclip, findRun, findWorkOrder, stepsOf } from "@/mock-data/history";
+import { finalDataclipIdOf, logsOf } from "@/mock-data/history-extra";
+import { findProject } from "@/mock-data/projects";
+import { findUser } from "@/mock-data/users";
+import { usePermissions } from "@/session/session";
+import type { RunDetail, RunStep, StepDataclip } from "@/types/history";
+import { capitalize } from "@/utils/format";
 import RunShowPage from "./RunShowPage";
 
 /**

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import FirstSetupShell from "./FirstSetupShell";
-import Header from "../primitives/Header";
-import { Centered, PageContent } from "../primitives/PageContent";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
 
 const meta: Meta<typeof FirstSetupShell> = {
   title: "Auth/FirstSetupShell",

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 // The type scale: a role (body, label, code) at a size (md 14px, sm 12px),
 // and the big number a card or chart is about (stat, at 30, 24 and 18px).

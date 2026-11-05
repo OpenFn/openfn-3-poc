@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
+import { RouterProvider, type Router } from "@/routing/router";
 import DataclipShowPage from "./DataclipShowPage";
 
 const ID = "9a8b7c6d-3333-4a4a-8b8b-0123456789ab";

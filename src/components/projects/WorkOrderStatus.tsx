@@ -1,9 +1,9 @@
-import type { WorkOrderDisplayState } from "../../types/workflows";
-import { cn } from "../../utils/cn";
-import DateTime from "../primitives/DateTime";
-import { stateLabel } from "../../utils/history";
-import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "../../theme/runStateColours";
-import Text from "../primitives/Text";
+import type { WorkOrderDisplayState } from "@/types/workflows";
+import { cn } from "@/utils/cn";
+import DateTime from "@/components/primitives/DateTime";
+import { stateLabel } from "@/utils/history";
+import { WORK_ORDER_DOT as DOT, WORK_ORDER_TEXT as TEXT } from "@/theme/runStateColours";
+import Text from "@/components/primitives/Text";
 
 /**
  * The "Latest Work Order" cell (DashboardComponents.state_card /

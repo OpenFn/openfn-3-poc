@@ -1,9 +1,9 @@
-import FormModal from "../primitives/FormModal";
-import { TextInput } from "../primitives/Inputs";
-import Text from "../primitives/Text";
-import type { CredentialRow } from "../../types/credentials";
-import { useForm } from "../../utils/useForm";
-import { isValidEmail } from "../../utils/validate";
+import FormModal from "@/components/primitives/FormModal";
+import { TextInput } from "@/components/primitives/Inputs";
+import Text from "@/components/primitives/Text";
+import type { CredentialRow } from "@/types/credentials";
+import { useForm } from "@/utils/useForm";
+import { isValidEmail } from "@/utils/validate";
 
 interface Props {
   open: boolean;

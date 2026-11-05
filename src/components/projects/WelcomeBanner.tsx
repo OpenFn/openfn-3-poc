@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { localHour } from "../../utils/format";
-import TextLink from "../primitives/TextLink";
+import { localHour } from "@/utils/format";
+import TextLink from "@/components/primitives/TextLink";
 
 const PARAGRAPH =
   "Click on a project to get started. If you need some help, head to docs.openfn.org or community.openfn.org to learn more.";

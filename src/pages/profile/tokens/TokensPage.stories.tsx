@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TokensPage from "./TokensPage";
-import { apiTokens } from "../../../mock-data/tokens";
-import { withCanvas, withRouter } from "../../../stories/decorators";
+import { apiTokens } from "@/mock-data/tokens";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof TokensPage> = {
   title: "Pages/Profile/TokensPage",
@@ -15,6 +15,9 @@ const meta: Meta<typeof TokensPage> = {
     onGenerate: async () => "demo.fake-token-not-real.QrStU-24680",
     onDelete: async () => {},
     onClose: () => {},
+    isStepUpRequired: () => false,
+    onStepUp: async () => {},
+    hasMfa: false,
   },
 };
 export default meta;

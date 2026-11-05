@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SidebarLogo } from "../shell/Sidebar";
+import { SidebarLogo } from "@/components/shell/Sidebar";
 
 /**
  * The logged-in live layout as it renders during first setup

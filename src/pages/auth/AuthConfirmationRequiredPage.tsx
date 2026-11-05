@@ -1,18 +1,18 @@
 import { useState } from "react";
-import AuthPanelLayout, { AuthPanel } from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/primitives/Alert";
-import Form from "../../components/primitives/Form";
-import TextLink from "../../components/primitives/TextLink";
-import Text from "../../components/primitives/Text";
-import Button from "../../components/primitives/Button";
-import Heading from "../../components/primitives/Heading";
-import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
-import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
-import { useForm } from "../../utils/useForm";
-import { blank, emailErrors } from "../../utils/validate";
-import type { ChangeEmailValues } from "../../types/profile";
-import { Stack, Row } from "../../components/primitives/Stack";
+import AuthPanelLayout, { AuthPanel } from "@/components/auth/AuthPanelLayout";
+import Alert from "@/components/primitives/Alert";
+import Form from "@/components/primitives/Form";
+import TextLink from "@/components/primitives/TextLink";
+import Text from "@/components/primitives/Text";
+import Button from "@/components/primitives/Button";
+import Heading from "@/components/primitives/Heading";
+import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import { errorMessage } from "@/utils/errors";
+import { useAction } from "@/utils/useAction";
+import { useForm } from "@/utils/useForm";
+import { blank, emailErrors } from "@/utils/validate";
+import type { ChangeEmailValues } from "@/types/profile";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 /** What the host answers a resend with. */
 export type ResendResult = { status: "sent" } | { status: "throttled"; message: string } | { status: "failed" };

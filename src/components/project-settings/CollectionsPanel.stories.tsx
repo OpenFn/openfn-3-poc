@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CollectionsPanel from "./CollectionsPanel";
-import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withRouter } from "../../stories/decorators";
+import { projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withRouter } from "@/stories/decorators";
 
 const { collections } = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user);
 const done = async () => {};

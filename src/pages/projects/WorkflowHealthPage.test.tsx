@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { HealthQuery, Outcomes } from "../../types/workflow-health";
+import type { HealthQuery, Outcomes } from "@/types/workflow-health";
 import WorkflowHealthPage from "./WorkflowHealthPage";
 
 const loading = { data: null, error: null };

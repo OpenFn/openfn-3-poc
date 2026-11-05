@@ -1,4 +1,4 @@
-import ConfirmModal from "../primitives/ConfirmModal";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
 
 interface Props {
   project: { name: string };

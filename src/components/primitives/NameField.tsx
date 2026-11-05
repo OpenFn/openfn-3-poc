@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
-import { cn } from "../../utils/cn";
-import { urlSafeName } from "../../utils/format";
+import { cn } from "@/utils/cn";
+import { urlSafeName } from "@/utils/format";
 import { TextInput } from "./Inputs";
 import NameBadge from "./NameBadge";
 import Text from "./Text";

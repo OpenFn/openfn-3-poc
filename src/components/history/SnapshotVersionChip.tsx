@@ -1,5 +1,5 @@
-import Pill from "../primitives/Pill";
-import Tooltip from "../primitives/Tooltip";
+import Pill from "@/components/primitives/Pill";
+import Tooltip from "@/components/primitives/Tooltip";
 
 /**
  * The workflow version a run used (Common.snapshot_version_chip): "latest"

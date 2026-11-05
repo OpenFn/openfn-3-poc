@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { runLogs } from "../../mock-data/history";
-import { withCanvas } from "../../stories/decorators";
-import type { LogLine } from "../../types/history";
+import { runLogs } from "@/mock-data/history";
+import { withCanvas } from "@/stories/decorators";
+import type { LogLine } from "@/types/history";
 import LogViewer from "./LogViewer";
 
 const meta = {

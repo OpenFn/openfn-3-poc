@@ -1,10 +1,10 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import RangePicker from "../../components/projects/health/RangePicker";
-import WorkflowHealth from "../../components/projects/health/WorkflowHealth";
-import type { CurrentProject } from "../../types/projects";
-import type { ErrorSignatures, HealthQuery, HealthRange, Outcomes, RunVolume } from "../../types/workflow-health";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import RangePicker from "@/components/projects/health/RangePicker";
+import WorkflowHealth from "@/components/projects/health/WorkflowHealth";
+import type { CurrentProject } from "@/types/projects";
+import type { ErrorSignatures, HealthQuery, HealthRange, Outcomes, RunVolume } from "@/types/workflow-health";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface WorkflowHealthPageProps {

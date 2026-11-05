@@ -1,16 +1,18 @@
-import Header from "../../../components/primitives/Header";
-import Button from "../../../components/primitives/Button";
-import { Centered, PageContent } from "../../../components/primitives/PageContent";
-import NewTokenBanner from "../../../components/profile/NewTokenBanner";
-import TokensTable from "../../../components/profile/TokensTable";
-import { Stack } from "../../../components/primitives/Stack";
-import TokenDeletionModal from "../../../components/profile/TokenDeletionModal";
+import Header from "@/components/primitives/Header";
+import Button from "@/components/primitives/Button";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import NewTokenBanner from "@/components/profile/NewTokenBanner";
+import TokensTable from "@/components/profile/TokensTable";
+import { Stack } from "@/components/primitives/Stack";
+import TokenDeletionModal from "@/components/profile/TokenDeletionModal";
 import { useState } from "react";
-import { useToast } from "../../../components/primitives/Toast";
-import AsyncBoundary from "../../../components/primitives/AsyncBoundary";
-import type { ApiToken } from "../../../types/tokens";
-import type { ResourceStatus } from "../../../types/resource";
-import { useAction } from "../../../utils/useAction";
+import { useToast } from "@/components/primitives/Toast";
+import AsyncBoundary from "@/components/primitives/AsyncBoundary";
+import type { ApiToken } from "@/types/tokens";
+import type { ResourceStatus } from "@/types/resource";
+import { useAction } from "@/utils/useAction";
+import { useStepUp } from "@/components/domain/useStepUp";
+import type { StepUpCredentials } from "@/components/domain/StepUpDialog";
 
 /** What the route passes in: data, the actions that change it, and where you are. */
 export interface TokensPageProps {
@@ -26,6 +28,12 @@ export interface TokensPageProps {
   onDelete: (id: string) => Promise<void>;
   /** Closes the delete modal, after a delete or on Cancel. */
   onClose: () => void;
+  /** Whether a refusal means "confirm it's you first" (the API's step_up_required). Generate then asks for the password and tries again. */
+  isStepUpRequired: (error: unknown) => boolean;
+  /** Confirms it's you with a password or authenticator code. Rejects with the server's words when it's wrong. */
+  onStepUp: (credentials: StepUpCredentials) => Promise<void>;
+  /** Whether the person has an authenticator, so the popup offers the code. */
+  hasMfa: boolean;
 }
 
 /**
@@ -34,10 +42,11 @@ export interface TokensPageProps {
  * The page owns how it behaves (the banner, the toasts); its route,
  * TokensPage.route.tsx, only passes data and actions.
  */
-export default function TokensPage({ status = { state: "ready" }, tokens, tokenId, onGenerate, onDelete, onClose }: TokensPageProps) {
+export default function TokensPage({ status = { state: "ready" }, tokens, tokenId, onGenerate, onDelete, onClose, isStepUpRequired, onStepUp, hasMfa }: TokensPageProps) {
   const toast = useToast();
   const [newToken, setNewToken] = useState<string | null>(null);
-  const generate = useAction(onGenerate, {
+  const [guardedGenerate, stepUpDialog] = useStepUp(onGenerate, { isStepUpRequired, stepUp: onStepUp, hasMfa });
+  const generate = useAction(guardedGenerate, {
     onError: "toast",
     onSuccess: (secret) => {
       setNewToken(secret);
@@ -59,6 +68,7 @@ export default function TokensPage({ status = { state: "ready" }, tokens, tokenI
         </Header>
       }
     >
+      {stepUpDialog}
       <Centered>
         {tokenId && tokens.some((t) => t.id === tokenId) && (
           <TokenDeletionModal onClose={onClose} onDelete={() => remove(tokenId)} />

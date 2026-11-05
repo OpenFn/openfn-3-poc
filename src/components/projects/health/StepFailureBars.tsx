@@ -1,10 +1,10 @@
-import { formatNumber } from "../../../utils/format";
-import type { ErrorSignature } from "../../../types/workflow-health";
-import { cn } from "../../../utils/cn";
+import { formatNumber } from "@/utils/format";
+import type { ErrorSignature } from "@/types/workflow-health";
+import { cn } from "@/utils/cn";
 import { EMPTY, FAILED, UNATTRIBUTED, adaptorLabel } from "./palette";
-import Text from "../../primitives/Text";
-import Tooltip from "../../primitives/Tooltip";
-import { Stack } from "../../primitives/Stack";
+import Text from "@/components/primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
+import { Stack } from "@/components/primitives/Stack";
 
 const NO_STEP = "no-step";
 

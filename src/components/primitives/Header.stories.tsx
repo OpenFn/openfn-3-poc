@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Header from "./Header";
 import Button from "./Button";
-import ProjectBreadcrumbs from "../shell/ProjectBreadcrumbs";
-import { projectLabel } from "../shell/projectPickerItems";
-import { projects } from "../../mock-data/projects";
-import { withRouter } from "../../stories/decorators";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import { projectLabel } from "@/components/shell/projectPickerItems";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof Header> = { title: "Primitives/Header", component: Header, decorators: [withRouter] };
 export default meta;

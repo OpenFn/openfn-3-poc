@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { adaptorIconUrl } from "../../utils/adaptors";
-import { diagramParameters } from "../../stories/decorators";
+import { adaptorIconUrl } from "@/utils/adaptors";
+import { diagramParameters } from "@/stories/decorators";
 import DiagramNode from "./DiagramNode";
 
 const meta: Meta<typeof DiagramNode> = {

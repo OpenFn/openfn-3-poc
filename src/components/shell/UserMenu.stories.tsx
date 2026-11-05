@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import UserMenu from "./UserMenu";
-import { session, users } from "../../mock-data/users";
-import { withRouter } from "../../stories/decorators";
+import { session, users } from "@/mock-data/users";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof UserMenu> = {
   title: "Shell/UserMenu",

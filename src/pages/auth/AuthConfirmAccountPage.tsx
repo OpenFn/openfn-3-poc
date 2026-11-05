@@ -1,15 +1,15 @@
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import AuthLayout from "../../components/auth/AuthLayout";
-import AuthCard, { AuthFooterLinks } from "../../components/auth/AuthCard";
-import Button from "../../components/primitives/Button";
-import Form from "../../components/primitives/Form";
-import { useForm } from "../../utils/useForm";
-import { emailErrors } from "../../utils/validate";
-import { TextInput } from "../../components/primitives/Inputs";
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthCard, { AuthFooterLinks } from "@/components/auth/AuthCard";
+import Button from "@/components/primitives/Button";
+import Form from "@/components/primitives/Form";
+import { useForm } from "@/utils/useForm";
+import { emailErrors } from "@/utils/validate";
+import { TextInput } from "@/components/primitives/Inputs";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
-import { authFlags } from "../../mock-data/auth";
-import TextLink from "../../components/primitives/TextLink";
+import { authFlags } from "@/mock-data/auth";
+import TextLink from "@/components/primitives/TextLink";
 
 /**
  * Inventory view `auth-confirm-account`.

@@ -1,11 +1,11 @@
 /// <reference types="vite/client" />
 import type { Preview, Decorator } from "@storybook/react";
-import "../src/index.css";
-import "../src/monacoSetup";
-import { DEFAULT_THEME_ID, THEMES } from "../src/theme/themes";
-import SessionProvider from "../src/session/SessionProvider";
-import { session } from "../src/mock-data/users";
-import ApiProvider from "../src/api/ApiProvider";
+import "@/index.css";
+import "@/monacoSetup";
+import { DEFAULT_THEME_ID, THEMES } from "@/theme/themes";
+import SessionProvider from "@/session/SessionProvider";
+import { session } from "@/mock-data/users";
+import ApiProvider from "@/api/ApiProvider";
 
 /*
  * Each deploy replaces every hashed file on GitHub Pages, so a tab or cached

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import WorkflowCodePanel from "./WorkflowCodePanel";
-import { withSidePanel } from "../../stories/decorators";
+import { withSidePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof WorkflowCodePanel> = {
   title: "Workflow/WorkflowCodePanel",

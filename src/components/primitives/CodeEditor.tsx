@@ -2,8 +2,8 @@ import Editor, { type OnMount } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import type { editor } from "monaco-editor";
 import { useFieldControl } from "./fieldControl";
-import { cn } from "../../utils/cn";
-import { setUpMonaco } from "../../theme/monacoTheme";
+import { cn } from "@/utils/cn";
+import { setUpMonaco } from "@/theme/monacoTheme";
 
 interface Props {
   value: string;

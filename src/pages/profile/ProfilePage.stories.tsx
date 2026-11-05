@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProfilePage from "./ProfilePage";
-import { fakeMfaSetup, profilePropsFor } from "../../mock-data/profile";
-import { session } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { fakeMfaSetup, profilePropsFor } from "@/mock-data/profile";
+import { session } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 const sample = profilePropsFor(session.user);

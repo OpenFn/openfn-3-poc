@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import Header from "../primitives/Header";
-import { Centered, PageContent } from "../primitives/PageContent";
-import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import { OpenFnLogoCollapsed } from "@/components/shell/OpenFnLogo";
 
 /** The dark top bar with the boxed Fn logo (Lightning's `LayoutComponents.nav`). */
 export function AuthNav() {

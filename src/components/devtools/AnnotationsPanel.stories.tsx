@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useEffect } from "react";
 import AnnotationsPanel from "./AnnotationsPanel";
-import { AnnotationsProvider } from "../../annotations/AnnotationsContext";
-import { useAnnotations } from "../../annotations/annotations-context";
-import { withRouterAt } from "../../stories/decorators";
+import { AnnotationsProvider } from "@/annotations/AnnotationsContext";
+import { useAnnotations } from "@/annotations/annotations-context";
+import { withRouterAt } from "@/stories/decorators";
 
 function OpenPanel() {
   const { setOpen } = useAnnotations();

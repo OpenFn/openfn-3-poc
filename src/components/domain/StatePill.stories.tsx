@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withWhitePanel } from "../../stories/decorators";
+import { withWhitePanel } from "@/stories/decorators";
 import StatePill, { ChannelStatePill } from "./StatePill";
 
 const meta = { title: "Domain/StatePill", component: StatePill, decorators: [withWhitePanel("w-auto")] } satisfies Meta<typeof StatePill>;

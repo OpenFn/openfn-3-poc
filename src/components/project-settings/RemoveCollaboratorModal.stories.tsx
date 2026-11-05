@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import RemoveCollaboratorModal from "./RemoveCollaboratorModal";
-import type { CollaboratorRow } from "../../types/project-settings";
+import type { CollaboratorRow } from "@/types/project-settings";
 
 const collaborator: CollaboratorRow = {
   id: "pu-1",

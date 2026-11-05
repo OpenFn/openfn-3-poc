@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import DeleteAccountCard from "./DeleteAccountCard";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof DeleteAccountCard> = {
   title: "Profile/DeleteAccountCard",

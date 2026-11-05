@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import type { LogLine } from "../../types/history";
-import { logsAtLevel } from "../../utils/history";
-import { cn } from "../../utils/cn";
-import { prettyJson } from "../../utils/format";
-import CodeViewer, { type LineRange } from "../primitives/CodeViewer";
-import Menu, { MenuItem } from "../primitives/Menu";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
-import TextPingLoader from "../primitives/TextPingLoader";
+import type { LogLine } from "@/types/history";
+import { logsAtLevel } from "@/utils/history";
+import { cn } from "@/utils/cn";
+import { prettyJson } from "@/utils/format";
+import CodeViewer, { type LineRange } from "@/components/primitives/CodeViewer";
+import Menu, { MenuItem } from "@/components/primitives/Menu";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
+import TextPingLoader from "@/components/primitives/TextPingLoader";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 const levels: LogLevel[] = ["debug", "info", "warn", "error"];

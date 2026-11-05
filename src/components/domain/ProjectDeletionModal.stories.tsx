@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectDeletionModal from "./ProjectDeletionModal";
-import { projects } from "../../mock-data/projects";
+import { projects } from "@/mock-data/projects";
 
 const meta: Meta<typeof ProjectDeletionModal> = {
   title: "Domain/ProjectDeletionModal",

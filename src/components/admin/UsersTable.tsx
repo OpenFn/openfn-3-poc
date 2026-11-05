@@ -1,12 +1,12 @@
-import type { AdminUserRow as User } from "../../types/admin";
-import SearchInput from "../primitives/SearchInput";
-import { Stack } from "../primitives/Stack";
-import ButtonMenu from "../primitives/ButtonMenu";
-import { MenuItem } from "../primitives/Menu";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import { useTableSort, type SortValue } from "../../utils/useTableSort";
-import { formatShortDateTime } from "../../utils/format";
-import Tooltip from "../primitives/Tooltip";
+import type { AdminUserRow as User } from "@/types/admin";
+import SearchInput from "@/components/primitives/SearchInput";
+import { Stack } from "@/components/primitives/Stack";
+import ButtonMenu from "@/components/primitives/ButtonMenu";
+import { MenuItem } from "@/components/primitives/Menu";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import { useTableSort, type SortValue } from "@/utils/useTableSort";
+import { formatShortDateTime } from "@/utils/format";
+import Tooltip from "@/components/primitives/Tooltip";
 
 type SortKey = "first_name" | "last_name" | "email" | "role" | "enabled" | "support_user" | "scheduled_deletion";
 

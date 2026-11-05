@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthPanelLayout, { AuthPanel, HavingProblems } from "./AuthPanelLayout";
-import Button from "../primitives/Button";
-import { TextInput } from "../primitives/Inputs";
-import TextLink from "../primitives/TextLink";
-import { withRouter } from "../../stories/decorators";
+import Button from "@/components/primitives/Button";
+import { TextInput } from "@/components/primitives/Inputs";
+import TextLink from "@/components/primitives/TextLink";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AuthPanelLayout> = {
   title: "Auth/AuthPanelLayout",

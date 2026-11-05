@@ -1,17 +1,17 @@
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
 import { useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "../../components/auth/AuthLayout";
-import AuthCard, { AuthFooterLinks } from "../../components/auth/AuthCard";
-import PlainTextResponse from "../../components/auth/PlainTextResponse";
-import TextLink from "../../components/primitives/TextLink";
-import Form from "../../components/primitives/Form";
-import { useForm } from "../../utils/useForm";
-import { blank, emailErrors } from "../../utils/validate";
-import Button from "../../components/primitives/Button";
-import { Checkbox, Field, PasswordInput, TextInput } from "../../components/primitives/Inputs";
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthCard, { AuthFooterLinks } from "@/components/auth/AuthCard";
+import PlainTextResponse from "@/components/auth/PlainTextResponse";
+import TextLink from "@/components/primitives/TextLink";
+import Form from "@/components/primitives/Form";
+import { useForm } from "@/utils/useForm";
+import { blank, emailErrors } from "@/utils/validate";
+import Button from "@/components/primitives/Button";
+import { Checkbox, Field, PasswordInput, TextInput } from "@/components/primitives/Inputs";
 // eslint-disable-next-line no-restricted-imports -- debt: not yet split into page and .replica.tsx wrapper (STANDARDS §11).
-import { authFlags } from "../../mock-data/auth";
-import { signupDisabledMessage } from "../../constants";
+import { authFlags } from "@/mock-data/auth";
+import { signupDisabledMessage } from "@/constants";
 
 /**
  * Inventory view `auth-register` (user_registration_html/new.html.heex).

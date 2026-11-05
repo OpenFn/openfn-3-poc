@@ -1,9 +1,9 @@
-import type { SandboxRow } from "../../../types/sandboxes";
-import Section from "../../primitives/Section";
-import TextLink from "../../primitives/TextLink";
+import type { SandboxRow } from "@/types/sandboxes";
+import Section from "@/components/primitives/Section";
+import TextLink from "@/components/primitives/TextLink";
 import WorkspaceCard from "./WorkspaceCard";
-import EmptyState from "../../primitives/EmptyState";
-import { Stack } from "../../primitives/Stack";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Stack } from "@/components/primitives/Stack";
 
 /**
  * The sandboxes page list (SandboxLive.Components.workspace_list): the root

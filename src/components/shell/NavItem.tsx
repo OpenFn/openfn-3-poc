@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { Link } from "../../routing/router";
-import { cn } from "../../utils/cn";
-import Tooltip from "../primitives/Tooltip";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
+import Tooltip from "@/components/primitives/Tooltip";
 
 interface Props {
   /** In-app route. */

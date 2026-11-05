@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import ConfirmModal from "../primitives/ConfirmModal";
-import Card from "../primitives/Card";
-import type { GithubAccessSettings } from "../../types/profile";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import Card from "@/components/primitives/Card";
+import type { GithubAccessSettings } from "@/types/profile";
 
 interface Props {
   github: GithubAccessSettings;

@@ -227,6 +227,15 @@ goes back to Lightning's way.
 - **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)
   and its other empty states use 32px; the replica uses 24px in every one.
 
+## Confirm access
+
+- **Confirming access is a pop-up on the page, not a trip to a page.**
+  Lightning sends the person to `/auth/confirm_access` and back
+  (`user_auth.ex:397-410`). Every action that needs it opens one dialog,
+  `StepUpDialog`, with that page's words, and runs the action again once the
+  person has confirmed, so nothing they were doing is lost. A wrong password
+  shows on the field rather than above the form.
+
 ## Type
 
 - **The waiting messages in the log and dataclip viewers stay 12px.**

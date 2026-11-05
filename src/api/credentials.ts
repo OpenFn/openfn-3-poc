@@ -1,5 +1,5 @@
 /** Credentials on Lightning's API (api/credentials.md): the API's shape, its mapper and its requests. */
-import type { CredentialRow } from "../types/credentials";
+import type { CredentialRow } from "@/types/credentials";
 import { listAll } from "./client";
 
 /** A credential as `GET /api/credentials` sends it. */

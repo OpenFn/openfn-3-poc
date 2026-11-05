@@ -182,10 +182,10 @@ The `/…/delete` routes stay, because Lightning has them; they open a
 
 ## 7. Feedback
 
-- Success is announced by the **host**, never the page: the replica wrapper
-  toasts it, and Lightning shows its own flash (put by the server) as the
-  same toast. Components report through callbacks. Wording is Lightning's
-  flash text.
+- Success is announced by the **page**, once its action resolves (tokens:
+  "Token created successfully"). Older pages still toast from their
+  `.replica.tsx` wrapper, and move when they get a `.route.tsx` (pattern 11).
+  Components report through callbacks. Wording is Lightning's flash text.
 - Failure that needs reading (a form rejected, a conflict) is an inline
   `Alert` next to what failed. Failure of a one-shot button is an error
   toast.

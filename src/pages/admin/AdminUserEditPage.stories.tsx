@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminUserEditPage from "./AdminUserEditPage";
-import { users } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { users } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AdminUserEditPage> = {
   title: "Pages/Admin/AdminUserEditPage",

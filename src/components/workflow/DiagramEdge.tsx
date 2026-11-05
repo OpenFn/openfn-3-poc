@@ -1,5 +1,5 @@
-import { edgeConditionOptions } from "../../constants";
-import type { EdgeConditionType, Position } from "../../types/workflow-graph";
+import { edgeConditionOptions } from "@/constants";
+import type { EdgeConditionType, Position } from "@/types/workflow-graph";
 import {
   EDGE_COLOR,
   EDGE_COLOR_SELECTED,

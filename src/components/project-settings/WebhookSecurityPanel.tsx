@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import SectionHeader from "../primitives/SectionHeader";
-import TextLink from "../primitives/TextLink";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import TextLink from "@/components/primitives/TextLink";
 import LinkedUsageModal from "./LinkedUsageModal";
 import WebhookAuthMethodDeleteModal from "./WebhookAuthMethodDeleteModal";
 import WebhookAuthMethodFormModal from "./WebhookAuthMethodFormModal";
@@ -13,7 +13,7 @@ import type {
   WebhookAuthMethodRow,
   WebhookAuthMethodValues,
   WebhookSecuritySettings,
-} from "../../types/project-settings";
+} from "@/types/project-settings";
 
 interface Props {
   webhookSecurity: WebhookSecuritySettings;

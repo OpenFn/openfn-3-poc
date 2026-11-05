@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import IconButton from "../primitives/IconButton";
-import type { SearchFieldId } from "../../types/history";
-import SearchInput from "../primitives/SearchInput";
-import Text from "../primitives/Text";
-import Tooltip from "../primitives/Tooltip";
-import { Row } from "../primitives/Stack";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
+import type { SearchFieldId } from "@/types/history";
+import SearchInput from "@/components/primitives/SearchInput";
+import Text from "@/components/primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
+import { Row } from "@/components/primitives/Stack";
 
 /**
  * History's search row (run_live/index.html.heex): the search input, "by",

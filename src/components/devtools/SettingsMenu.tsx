@@ -1,16 +1,16 @@
-import { useTheme } from "../../theme/theme-context";
-import type { ThemeMeta } from "../../theme/themes";
-import { useAnnotations } from "../../annotations/annotations-context";
-import { cn } from "../../utils/cn";
-import Heading from "../primitives/Heading";
-import CloseButton from "../primitives/CloseButton";
-import IconButton from "../primitives/IconButton";
-import { Field, Radio } from "../primitives/Inputs";
-import Popover from "../primitives/Popover";
-import Toggle from "../primitives/Toggle";
+import { useTheme } from "@/theme/theme-context";
+import type { ThemeMeta } from "@/theme/themes";
+import { useAnnotations } from "@/annotations/annotations-context";
+import { cn } from "@/utils/cn";
+import Heading from "@/components/primitives/Heading";
+import CloseButton from "@/components/primitives/CloseButton";
+import IconButton from "@/components/primitives/IconButton";
+import { Field, Radio } from "@/components/primitives/Inputs";
+import Popover from "@/components/primitives/Popover";
+import Toggle from "@/components/primitives/Toggle";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
-import Tooltip from "../primitives/Tooltip";
-import { Stack } from "../primitives/Stack";
+import Tooltip from "@/components/primitives/Tooltip";
+import { Stack } from "@/components/primitives/Stack";
 
 /**
  * Floating settings button in the bottom-right corner. Its panel opens and

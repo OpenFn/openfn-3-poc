@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
-import type { LiveDashboardData } from "../../types/admin";
-import { cn } from "../../utils/cn";
-import Alert from "../primitives/Alert";
-import Card from "../primitives/Card";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import Heading from "../primitives/Heading";
-import Pill from "../primitives/Pill";
-import TextLink from "../primitives/TextLink";
-import { Stack, Row } from "../primitives/Stack";
+import type { LiveDashboardData } from "@/types/admin";
+import { cn } from "@/utils/cn";
+import Alert from "@/components/primitives/Alert";
+import Card from "@/components/primitives/Card";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Heading from "@/components/primitives/Heading";
+import Pill from "@/components/primitives/Pill";
+import TextLink from "@/components/primitives/TextLink";
+import { Stack, Row } from "@/components/primitives/Stack";
 
 type Data = LiveDashboardData;
 

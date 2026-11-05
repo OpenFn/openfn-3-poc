@@ -1,11 +1,11 @@
-import { Link, useRouter } from "../../routing/router";
-import type { RunStep } from "../../types/history";
-import { cn } from "../../utils/cn";
+import { Link, useRouter } from "@/routing/router";
+import type { RunStep } from "@/types/history";
+import { cn } from "@/utils/cn";
 import ElapsedTime from "./ElapsedTime";
-import StepIcon from "../domain/StepIcon";
+import StepIcon from "@/components/domain/StepIcon";
 import { clonedStepMessage, inspectStepPath, isClonedStep } from "./runHelpers";
-import Text from "../primitives/Text";
-import Tooltip from "../primitives/Tooltip";
+import Text from "@/components/primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
 
 /**
  * The run page's step list (run_live/components.ex `step_list` +

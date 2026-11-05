@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { RouterProvider, type Router } from "../../routing/router";
-import { ToastProvider } from "../../components/primitives/Toast";
-import type { AdminProjectRow, AdminProjectUser } from "../../types/admin";
-import { RequestError } from "../../utils/errors";
+import { RouterProvider, type Router } from "@/routing/router";
+import { ToastProvider } from "@/components/primitives/Toast";
+import type { AdminProjectRow, AdminProjectUser } from "@/types/admin";
+import { RequestError } from "@/utils/errors";
 import AdminProjectsPage from "./AdminProjectsPage";
 
 const rows: AdminProjectRow[] = [

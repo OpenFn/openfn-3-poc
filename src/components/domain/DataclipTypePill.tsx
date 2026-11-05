@@ -1,5 +1,5 @@
-import type { DataclipType } from "../../types/history";
-import Pill, { type PillColor } from "../primitives/Pill";
+import type { DataclipType } from "@/types/history";
+import Pill, { type PillColor } from "@/components/primitives/Pill";
 
 const TYPE_COLORS: Record<DataclipType, PillColor> = {
   step_result: "purple",

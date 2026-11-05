@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import type { DataclipDetail } from "../../types/history";
-import Card from "../primitives/Card";
-import DateTime from "../primitives/DateTime";
-import { DetailItem, DetailList } from "../primitives/DetailList";
-import DataclipTypePill from "../domain/DataclipTypePill";
+import type { DataclipDetail } from "@/types/history";
+import Card from "@/components/primitives/Card";
+import DateTime from "@/components/primitives/DateTime";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import DataclipTypePill from "@/components/domain/DataclipTypePill";
 
 /** The "Dataclip Details" metadata card (dataclip_live/show.ex). */
 export default function DataclipDetailsCard({ dataclip }: { dataclip: DataclipDetail }) {

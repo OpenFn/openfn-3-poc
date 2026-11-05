@@ -1,6 +1,6 @@
-import Alert from "../primitives/Alert";
-import ConfirmModal from "../primitives/ConfirmModal";
-import { formatGracePeriod } from "../../utils/format";
+import Alert from "@/components/primitives/Alert";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import { formatGracePeriod } from "@/utils/format";
 
 /**
  * "Delete sandbox" (SandboxLive.Components.confirm_delete_modal): what gets

@@ -1,5 +1,5 @@
 /** Workflow summaries and the dashboard figures built on them, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { TriggerType, WorkflowRow } from "../../types/workflows";
+import type { TriggerType, WorkflowRow } from "@/types/workflows";
 
 export interface WorkflowSummary {
   id: string;

@@ -1,5 +1,5 @@
-import type { PickerItem } from "../primitives/Picker";
-import type { CurrentProject } from "../../types/projects";
+import type { PickerItem } from "@/components/primitives/Picker";
+import type { CurrentProject } from "@/types/projects";
 
 /** A project in the picker's tree. */
 type TreeProject = CurrentProject & { name: string };

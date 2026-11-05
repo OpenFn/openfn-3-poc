@@ -1,5 +1,5 @@
 /** Credentials, OAuth clients and keychain credentials, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { TransferStatus } from "../../types/credentials";
+import type { TransferStatus } from "@/types/credentials";
 
 export interface Credential {
   id: string;

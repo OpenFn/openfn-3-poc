@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Button from "./Button";
 import IconButton from "./IconButton";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof IconButton> = {
   title: "Primitives/IconButton",

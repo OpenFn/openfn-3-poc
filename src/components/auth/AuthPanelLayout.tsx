@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import { OpenFnLogoCollapsed } from "../shell/OpenFnLogo";
+import { cn } from "@/utils/cn";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import { OpenFnLogoCollapsed } from "@/components/shell/OpenFnLogo";
 
 /**
  * The full-screen gray layout used by the two-factor, confirm-access and

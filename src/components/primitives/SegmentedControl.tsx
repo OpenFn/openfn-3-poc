@@ -1,6 +1,6 @@
 import { Radio, RadioGroup } from "@headlessui/react";
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { tabStyles } from "./tabStyles";
 import Tooltip from "./Tooltip";
 

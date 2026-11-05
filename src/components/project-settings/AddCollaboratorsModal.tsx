@@ -1,12 +1,12 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import { TextInput } from "../primitives/Inputs";
-import IconButton from "../primitives/IconButton";
-import FormModal from "../primitives/FormModal";
+import Button from "@/components/primitives/Button";
+import { TextInput } from "@/components/primitives/Inputs";
+import IconButton from "@/components/primitives/IconButton";
+import FormModal from "@/components/primitives/FormModal";
 import RoleSelect from "./RoleSelect";
-import type { CollaboratorValues } from "../../types/project-settings";
-import type { ProjectRole } from "../../types/projects";
-import { isValidEmail } from "../../utils/validate";
+import type { CollaboratorValues } from "@/types/project-settings";
+import type { ProjectRole } from "@/types/projects";
+import { isValidEmail } from "@/utils/validate";
 
 interface CollaboratorDraft {
   email: string;

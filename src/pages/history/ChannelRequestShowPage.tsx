@@ -1,24 +1,24 @@
-import Disclosure from "../../components/primitives/Disclosure";
-import { DetailItem, DetailList } from "../../components/primitives/DetailList";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import Pill from "../../components/primitives/Pill";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
+import Disclosure from "@/components/primitives/Disclosure";
+import { DetailItem, DetailList } from "@/components/primitives/DetailList";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import Pill from "@/components/primitives/Pill";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
 import {
   BodyViewer,
   HeadersList,
   ResponseEmpty,
   SectionSizeBadge,
   StatusCodeBadge,
-} from "../../components/history/ChannelRequestParts";
-import ChannelRequestSummary from "../../components/history/ChannelRequestSummary";
-import ChannelTiming from "../../components/history/ChannelTiming";
-import WipedDataViewer from "../../components/history/WipedDataViewer";
-import { errorCategory, humanizeError } from "../../components/history/channelErrors";
-import type { ChannelRequestChannel, ChannelRequestDetail } from "../../types/channels";
-import type { CurrentProject } from "../../types/projects";
-import { shortUuid } from "../../utils/format";
-import { primaryEvent } from "../../utils/history";
+} from "@/components/history/ChannelRequestParts";
+import ChannelRequestSummary from "@/components/history/ChannelRequestSummary";
+import ChannelTiming from "@/components/history/ChannelTiming";
+import WipedDataViewer from "@/components/history/WipedDataViewer";
+import { errorCategory, humanizeError } from "@/components/history/channelErrors";
+import type { ChannelRequestChannel, ChannelRequestDetail } from "@/types/channels";
+import type { CurrentProject } from "@/types/projects";
+import { shortUuid } from "@/utils/format";
+import { primaryEvent } from "@/utils/history";
 
 const sizeNote = (size: number | null) => (size ? <SectionSizeBadge size={size} /> : null);
 

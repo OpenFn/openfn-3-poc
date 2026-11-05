@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthProviderForm from "./AuthProviderForm";
-import { authProvider, emptyAuthProvider } from "../../mock-data/admin";
+import { authProvider, emptyAuthProvider } from "@/mock-data/admin";
 
 const resolve = async () => {};
 

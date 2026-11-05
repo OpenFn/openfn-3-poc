@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkflowHealthPage from "./WorkflowHealthPage";
-import { DEFAULT_HEALTH_DAYS, HEALTH_LOAD_ERROR } from "../../constants";
-import { workflowStatsFor } from "../../mock-data/dashboard-stats";
-import { projects } from "../../mock-data/projects";
-import { healthFor } from "../../mock-data/workflow-health";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { DEFAULT_HEALTH_DAYS, HEALTH_LOAD_ERROR } from "@/constants";
+import { workflowStatsFor } from "@/mock-data/dashboard-stats";
+import { projects } from "@/mock-data/projects";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const { workflow } = workflowStatsFor(project.id)[0]!;

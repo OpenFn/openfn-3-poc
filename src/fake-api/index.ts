@@ -5,8 +5,8 @@
  * (api/errors.md), after a short wait. The fixtures in src/mock-data/ are its
  * database. Only src/api/client.ts imports this folder; going real deletes it.
  */
-import { session } from "../mock-data/users";
-import { apiTokens } from "../mock-data/tokens";
+import { session } from "@/mock-data/users";
+import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
 import projects from "./recorded/projects.json";
 

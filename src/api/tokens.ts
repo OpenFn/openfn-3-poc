@@ -1,7 +1,7 @@
 /** Personal access tokens on Lightning's API (api/account.md): the API's shape, its mapper, its keys, and the hooks a route calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ResourceStatus } from "../types/resource";
-import type { ApiToken } from "../types/tokens";
+import type { ResourceStatus } from "@/types/resource";
+import type { ApiToken } from "@/types/tokens";
 import { request, statusOf } from "./client";
 
 /** A token as `GET /api/me/tokens` lists it. `token` is masked, except in the answer that creates it. */

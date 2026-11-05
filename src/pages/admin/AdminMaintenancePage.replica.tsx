@@ -1,5 +1,5 @@
-import { useToast } from "../../components/primitives/Toast";
-import { simulateRequest } from "../../mock-data/request";
+import { useToast } from "@/components/primitives/Toast";
+import { simulateRequest } from "@/mock-data/request";
 import AdminMaintenancePage from "./AdminMaintenancePage";
 
 /**

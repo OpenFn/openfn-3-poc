@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { ProjectOverview } from "../../types/workflows";
+import type { ProjectOverview } from "@/types/workflows";
 import ProjectsTable from "./ProjectsTable";
 
 // What DashboardLive's server-side sort did; the table sorts in the browser now.

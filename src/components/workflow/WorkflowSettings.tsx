@@ -1,13 +1,13 @@
 import { useState } from "react";
-import type { WorkflowGraph } from "../../types/workflow-graph";
-import Button from "../primitives/Button";
-import ConfirmModal from "../primitives/ConfirmModal";
-import { TextInput } from "../primitives/Inputs";
-import Section from "../primitives/Section";
-import Toggle from "../primitives/Toggle";
-import TextLink from "../primitives/TextLink";
+import type { WorkflowGraph } from "@/types/workflow-graph";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import { TextInput } from "@/components/primitives/Inputs";
+import Section from "@/components/primitives/Section";
+import Toggle from "@/components/primitives/Toggle";
+import TextLink from "@/components/primitives/TextLink";
 import InspectorLayout from "./InspectorLayout";
-import Text from "../primitives/Text";
+import Text from "@/components/primitives/Text";
 
 interface Props {
   graph: WorkflowGraph;

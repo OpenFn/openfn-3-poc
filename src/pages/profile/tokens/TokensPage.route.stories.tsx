@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Route, Routes } from "react-router-dom";
 import { expect, userEvent, within } from "storybook/test";
-import { FAKE_PASSWORD, failNext, resetFakeApi } from "../../../api/client";
-import { stepUp } from "../../../api/session";
-import { ToastProvider } from "../../../components/primitives/Toast";
-import { withCanvas, withRouterAt } from "../../../stories/decorators";
+import { FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/client";
+import { stepUp } from "@/api/session";
+import { ToastProvider } from "@/components/primitives/Toast";
+import { withCanvas, withRouterAt } from "@/stories/decorators";
 import TokensPageRoute from "./TokensPage.route";
 
 // The real route on the fake server, through the API client and TanStack Query: what the app runs.
@@ -54,13 +54,30 @@ export const GenerateAfterSteppingUp: Story = {
   },
 };
 
-/** Not stepped up, Lightning refuses with step_up_required. Until the password pop-up is wired, the page toasts it. */
+/** Not stepped up, Lightning refuses with step_up_required: a popup asks for the password, then Generate runs again. */
 export const StepUpRequired: Story = {
   play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const before = await rows(canvasElement);
+    await generate(canvasElement);
+    await userEvent.type(await body.findByLabelText(/Password/), FAKE_PASSWORD);
+    await userEvent.click(body.getByRole("button", { name: "Confirm" }));
+    const secret = (await body.findByRole("textbox", { name: "New token" })) as HTMLInputElement;
+    await expect(secret.value).toMatch(/^demo\.fake-token-not-real\./);
+    await expect(await rows(canvasElement)).toBe(before + 1);
+  },
+};
+
+/** A wrong password: the server's words show on the field and the popup stays open. */
+export const StepUpWrongPassword: Story = {
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
     await rows(canvasElement);
     await generate(canvasElement);
-    const toast = await within(canvasElement.ownerDocument.body).findByRole("alert");
-    await expect(toast).toHaveTextContent("Enter your password or an MFA code again to do this.");
+    await userEvent.type(await body.findByLabelText(/Password/), "not-the-password");
+    await userEvent.click(body.getByRole("button", { name: "Confirm" }));
+    await expect(await body.findByRole("dialog")).toBeVisible();
+    await expect(body.queryByRole("textbox", { name: "New token" })).toBeNull();
   },
 };
 

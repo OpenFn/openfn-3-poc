@@ -6,12 +6,12 @@
  * knows the fake exists. A refused request throws an `ApiError`: show its
  * `message`, branch on its `code`.
  */
-import type { ResourceStatus } from "../types/resource";
-import { RequestError } from "../utils/errors";
-import { fakeFetch } from "../fake-api";
+import type { ResourceStatus } from "@/types/resource";
+import { RequestError } from "@/utils/errors";
+import { fakeFetch } from "@/fake-api";
 
 // For stories and tests only: drive the fake server.
-export { failNext, resetFakeApi, FAKE_PASSWORD, FAKE_MFA_CODE } from "../fake-api";
+export { failNext, resetFakeApi, FAKE_PASSWORD, FAKE_MFA_CODE } from "@/fake-api";
 
 const send = import.meta.env["VITE_API"] === "lightning" ? fetch : fakeFetch;
 

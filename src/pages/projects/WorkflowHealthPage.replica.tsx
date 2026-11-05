@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { projectLabel } from "../../components/shell/projectPickerItems";
-import { findProject, projects } from "../../mock-data/projects";
-import { findWorkflow } from "../../mock-data/workflows";
-import { healthFor } from "../../mock-data/workflow-health";
-import { DEFAULT_HEALTH_DAYS } from "../../constants";
-import type { HealthRange } from "../../types/workflow-health";
+import { projectLabel } from "@/components/shell/projectPickerItems";
+import { findProject, projects } from "@/mock-data/projects";
+import { findWorkflow } from "@/mock-data/workflows";
+import { healthFor } from "@/mock-data/workflow-health";
+import { DEFAULT_HEALTH_DAYS } from "@/constants";
+import type { HealthRange } from "@/types/workflow-health";
 import WorkflowHealthPage from "./WorkflowHealthPage";
 
 /**

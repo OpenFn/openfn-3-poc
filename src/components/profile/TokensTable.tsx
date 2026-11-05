@@ -1,8 +1,8 @@
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import EmptyState from "../primitives/EmptyState";
-import DateTime from "../primitives/DateTime";
-import IconButton from "../primitives/IconButton";
-import type { ApiToken } from "../../types/tokens";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import EmptyState from "@/components/primitives/EmptyState";
+import DateTime from "@/components/primitives/DateTime";
+import IconButton from "@/components/primitives/IconButton";
+import type { ApiToken } from "@/types/tokens";
 
 /**
  * The personal access tokens table (tokens_live/index.html.heex): masked

@@ -9,12 +9,12 @@
 import { credentialIndexDataFor, credentials, credentialsFixture, keychainRowsFor, type CredentialsFixture } from "./credentials";
 import { findProject, projects } from "./projects";
 import { findUser } from "./users";
-import { permissionsFor } from "../permissions";
-import type { CollaboratorRow, GithubRepoConnection, ProjectSettingsPageData, WebhookAuthMethodRow } from "../types/project-settings";
+import { permissionsFor } from "@/permissions";
+import type { CollaboratorRow, GithubRepoConnection, ProjectSettingsPageData, WebhookAuthMethodRow } from "@/types/project-settings";
 import type { Collection, ProjectFile, ProjectSettings, VcsFixture, WebhookAuthMethod } from "./models/project-settings";
-import type { Project, ProjectMember } from "../types/projects";
-import type { User } from "../types/users";
-import { fullName } from "../utils/format";
+import type { Project, ProjectMember } from "@/types/projects";
+import type { User } from "@/types/users";
+import { fullName } from "@/utils/format";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const DHIS2 = "1f0b7c2e-9d3a-4a4b-8f5e-2c6d7e8f9a01";

@@ -1,11 +1,11 @@
-import type { ChannelForm, ChannelFormValues } from "../../../types/channels";
-import FormModal from "../../primitives/FormModal";
-import { Checkbox, Field, Select, TextInput } from "../../primitives/Inputs";
-import TextLink from "../../primitives/TextLink";
-import { useForm } from "../../../utils/useForm";
-import { blank } from "../../../utils/validate";
+import type { ChannelForm, ChannelFormValues } from "@/types/channels";
+import FormModal from "@/components/primitives/FormModal";
+import { Checkbox, Field, Select, TextInput } from "@/components/primitives/Inputs";
+import TextLink from "@/components/primitives/TextLink";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
 import ProxyUrlCopy from "./ProxyUrlCopy";
-import EmptyState from "../../primitives/EmptyState";
+import EmptyState from "@/components/primitives/EmptyState";
 
 /**
  * New / Edit Channel (ChannelLive.FormComponent): the proxy URL when editing,

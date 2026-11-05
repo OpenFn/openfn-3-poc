@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TextLink from "./TextLink";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof TextLink> = {
   title: "Primitives/TextLink",

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withRouter } from "../../stories/decorators";
-import { findRun, stepsOf } from "../../mock-data/history";
+import { withRouter } from "@/stories/decorators";
+import { findRun, stepsOf } from "@/mock-data/history";
 import RunStepList from "./RunStepList";
 
 const run = findRun("run-1")!;
