@@ -237,9 +237,10 @@ goes back to Lightning's way.
   fails, the replica says so and stays, rather than showing the login page
   while the session may still be live.
 
-- **Save stays pressable in the collaborator and YAML import modals.**
-  Lightning disables Save until every row has an email and a role, and
-  disables Create until the YAML looks right. The replica keeps them
+- **Save stays pressable in the collaborator, YAML import and admin
+  collection modals.** Lightning disables Save until every row has an email
+  and a role, disables Create until the YAML looks right, and disables the
+  collection's Save until its name is URL safe. The replica keeps them
   pressable and says what's missing when pressed ("can't be blank", "Enter
   YAML content to create workflow"), and shows a row's email error only
   then, not while typing.
@@ -317,6 +318,11 @@ goes back to Lightning's way.
   hole as "Logged out successfully."). AdminGate shows the same words where
   the page would be. /dashboard, which has no sidebar, still redirects to
   /projects, but without the message.
+- **A superuser's Projects dashboard and project picker list every project
+  and sandbox on the instance.** Lightning shows them only the projects
+  they're a member of. The API's planned superuser scope on
+  `GET /api/projects` answers every project, which the admin pages need, and
+  has no filter for just your own (docs/api-gaps.md, Project access).
 
 ## Side menu
 
@@ -358,6 +364,45 @@ goes back to Lightning's way.
   already sends. The page itself (`src/pages/auth/confirm-access/`) stays,
   with its stories, because Lightning's design-system port renders it on its
   own confirm-access screen.
+
+## Admin collections
+
+- **Delete is disabled, with "Not available in the API yet".** Lightning
+  lets a superuser delete any collection (`collection_live/index.ex:48-62`);
+  the API's delete needs a project owner or admin, with no superuser scope
+  planned (docs/api-gaps.md, Admin collections).
+- **The name hint says names are unique within their project.** Lightning
+  says "across all projects within this instance"
+  (`collection_creation_modal.ex:135`), which has been false since names
+  became unique per project.
+- **The create form's project picker starts blank**, with "Select a
+  project", and Save with none chosen says it can't be blank. Lightning
+  preselects the first project alphabetically
+  (`collection_creation_modal.ex:146-152`), so it's easy to create a
+  collection in the wrong project.
+- **The picker labels sandboxes "parent/sandbox"**, from the API's
+  `display_name`, sorted by that label. Lightning shows bare names
+  (`collection_creation_modal.ex:30-32`), so projects with the same name
+  can't be told apart.
+- **The sort lives in the URL and survives a save.** Lightning keeps it in
+  the LiveView's assigns and every save or close remounts the page, so it
+  falls back to name (`index.ex:54`, `:62`).
+- **The name field keeps what was typed.** Lightning replaces it with the
+  URL-safe name once the field loses focus (`collection_creation_modal.ex:133`);
+  the replica shows the typed text, with "This collection will be named x"
+  under it, as the project and sandbox forms do.
+- **Modal words.** "Create collection" and "Edit collection" as titles, and
+  "Create collection" or "Save changes" on the button; Lightning has
+  "Create Collection", "Edit Collection" and "Save"
+  (`collection_creation_modal.ex:103-105`). Sentence case, and a button
+  says what it does (PRINCIPLES.md, Words).
+- **Brandon's words on the list.** A line under the title, "Every
+  collection on this instance, across all projects."; the storage column is
+  "Size", not "Used storage" (`collection_live/components.ex`); the empty
+  state is "No collections yet.", with the collections icon, not "No
+  collection found." (`index.ex:89-90`). His design has this screen
+  (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
+  its words win.
 
 ## Audit
 

@@ -11,6 +11,7 @@ export interface ApiProject {
   attributes: {
     name: string;
     description: string | null;
+    /** Yours, with `include=stats`; useRefusedForMfa reads it to tell a member. */
     role?: ProjectOverview["role"];
     workflows_count?: number;
     collaborators_count?: number;
@@ -20,6 +21,8 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    /** Planned: a sandbox's names from the root down, joined by "/" ("malaria-programme/staging"). */
+    display_name?: string;
     /** Planned (api/projects.md): whether members need MFA to open it. useRefusedForMfa depends on it. */
     requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
@@ -82,24 +85,44 @@ const treeQuery = queryOptions({
   queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
 });
 
-/** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
+/**
+ * Every project and sandbox you can open (the planned `depth=all`), for the
+ * project picker, and where loading them stands. A superuser gets every one on
+ * the instance (planned), including those they can't open.
+ */
 export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
   const query = useQuery({ ...treeQuery, select: toTree });
   return { status: statusOf(query), projects: query.data ?? [] };
 }
 
 /**
+ * The same projects as `[label, id]` options for a form's project picker,
+ * sorted by label: a sandbox by its planned `display_name` ("parent/sandbox"),
+ * so two with the same name can be told apart. A superuser gets every project
+ * on the instance (planned scope).
+ */
+export function useProjectOptions(): { status: ResourceStatus; options: [label: string, value: string][] } {
+  const query = useQuery({
+    ...treeQuery,
+    select: (rows) =>
+      rows.map((p): [string, string] => [p.attributes.display_name ?? p.attributes.name, p.id]).sort((a, b) => a[0].localeCompare(b[0])),
+  });
+  return { status: statusOf(query), options: query.data ?? [] };
+}
+
+/**
  * Whether a refused project is refused for its MFA requirement rather than
  * for no access, or "checking" while that loads. The API answers both 403
- * `forbidden` (docs/api-gaps.md), but the list holds every project you're a
- * member of, so a listed project that requires MFA and still refuses you is
- * the MFA requirement. The picker has usually loaded the list already.
+ * `forbidden` (docs/api-gaps.md), but the tree with stats says which projects
+ * and sandboxes you're a member of (your `role`), so one you're a member of
+ * that requires MFA and still refuses you is the MFA requirement.
  */
 export function useRefusedForMfa(id: string, refused: boolean): boolean | "checking" {
   const query = useQuery({
-    ...treeQuery,
+    queryKey: [...projectKeys.all, "tree", "stats"],
+    queryFn: () => listAll<ApiProject>("/api/projects?depth=all&include=stats", "data"),
     enabled: refused,
-    select: (rows) => rows.some((p) => p.id === id && p.attributes.requires_mfa),
+    select: (rows) => rows.some((p) => p.id === id && p.attributes.requires_mfa && !!p.attributes.role),
   });
   if (!refused) return false;
   // Wait for a fresh list: a cached one may be from before you joined or MFA was turned on.

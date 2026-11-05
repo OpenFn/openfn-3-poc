@@ -10,6 +10,7 @@ import credentials from "./recorded/credentials.json";
 import { json, noContent, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
+import { collectionRoutes, resetCollections } from "./collections";
 import { mfaRoutes, resetMfa } from "./mfa";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
@@ -55,6 +56,7 @@ const routes: Record<string, Handler> = {
 
   ...projectRoutes,
   ...auditRoutes,
+  ...collectionRoutes,
   ...mfaRoutes,
   ...userRoutes,
 };
@@ -100,6 +102,7 @@ export function failNext(route: string, failure: Problem) {
 export function resetFakeApi() {
   tokens = seed();
   resetProjects();
+  resetCollections();
   resetSession();
   resetMfa();
   failures.clear();

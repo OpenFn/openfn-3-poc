@@ -7,13 +7,19 @@ const collections = adminCollectionRows();
 const meta: Meta<typeof AdminCollectionsTable> = {
   title: "Admin/AdminCollectionsTable",
   component: AdminCollectionsTable,
-  args: { collections, onCreate: () => {}, onEdit: () => {}, onDelete: () => {} },
+  args: { collections, sort: { key: "name", direction: "asc" }, onSort: () => {}, onEdit: () => {} },
 };
 export default meta;
 type Story = StoryObj<typeof AdminCollectionsTable>;
 
 export const Default: Story = {};
-export const Empty: Story = { args: { collections: [] } };
+/** Sorted by size, largest first. */
+export const SortedByStorage: Story = {
+  args: {
+    collections: [...collections].sort((a, b) => b.byteSizeSum - a.byteSizeSum),
+    sort: { key: "byte_size_sum", direction: "desc" },
+  },
+};
 /** Long unspaced names, to check they wrap or truncate rather than overflow. */
 export const LongValues: Story = {
   args: {

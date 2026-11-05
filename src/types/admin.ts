@@ -123,16 +123,19 @@ export interface AdminCollectionRow {
   id: string;
   projectId: string;
   name: string;
-  /** Sum of the byte size of every item (shown as "Used storage"). */
+  /** Sum of the byte size of every item (shown as "Size"). */
   byteSizeSum: number;
   projectName: string;
 }
 
-/** What the create / edit collection form saves: the name as typed (the host derives the URL-safe name) and the project. */
+/** What the create / edit collection form saves, named as the API names them: the name (as typed until it's sent URL-safe) and the project it goes in. */
 export interface CollectionFormValues {
-  rawName: string;
-  projectId: string;
+  name: string;
+  project_id: string;
 }
+
+/** The fields the collections list sorts by (`?sort=`), as the API names them. */
+export type CollectionSortKey = "name" | "byte_size_sum";
 
 /** What Phoenix LiveDashboard's home page shows (a static approximation). */
 export interface LiveDashboardData {

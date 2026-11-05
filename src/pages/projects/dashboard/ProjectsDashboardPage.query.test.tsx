@@ -6,6 +6,7 @@ import { isApiError, request } from "@/api/client";
 import { failNext, resetFakeApi } from "@/api/testing";
 import { ToastProvider } from "@/components/primitives/Toast";
 import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
+import { projects } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
@@ -47,8 +48,8 @@ describe("ProjectsDashboardPageQuery", () => {
     renderRoute();
     const expected = projectsOverviewFor(session.user.id);
     const table = await screen.findByRole("table", {}, wait);
-    // A header row, then one row per project.
-    expect(within(table).getAllByRole("row")).toHaveLength(expected.length + 1);
+    // A header row, then one row per project; the signed-in superuser gets every project and sandbox (planned scope).
+    expect(within(table).getAllByRole("row")).toHaveLength(projects.length + 1);
     const first = expected[0]!;
     expect(within(table).getByText(first.name).closest("tr")!.textContent).toContain(String(first.workflowsCount));
   });

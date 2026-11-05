@@ -9,7 +9,7 @@ import type { Project, ProjectAction } from "@/types/projects";
 import type { WorkflowSortKey } from "@/types/workflows";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
 import { currentUser } from "./session";
 
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
@@ -22,8 +22,12 @@ export const resetProjects = () => {
   projects = seedProjects();
 };
 
+/** A project as the fake holds it, for the routes of what lives inside one. */
+export const findProject = (id: string | undefined) => projects.find((p) => p.id === id);
+
 // A project as GET /api/projects/:id answers it; the list leaves out members. requires_mfa,
-// parent_id and color are planned on both; the list sends them with the planned depth=all.
+// parent_id, color and a sandbox's display_name are planned on both; the list sends parent_id
+// and color with the planned depth=all.
 const projectEntry = (p: Project, { members = true, stats = false, tree = true } = {}) => ({
   type: "projects",
   id: p.id,
@@ -31,6 +35,7 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
     name: p.name,
     description: p.description || null,
     requires_mfa: p.requiresMfa,
+    ...(p.parentId !== null && { display_name: displayName(p) }),
     ...(tree && { parent_id: openParentId(p), color: p.color, ...(p.parentId !== null && { root_id: rootOf(p).id }) }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
     ...(stats && projectStats(p)),
@@ -48,6 +53,10 @@ const canEnter = (p: Project) => canOpen(p) && (!p.requiresMfa || currentUser().
 const rootOf = (p: Project): Project => {
   const parent = projects.find((q) => q.id === p.parentId);
   return parent ? rootOf(parent) : p;
+};
+const displayName = (p: Project): string => {
+  const parent = projects.find((q) => q.id === p.parentId);
+  return parent ? `${displayName(parent)}/${p.name}` : p.name;
 };
 // The nearest project above that you can open, or null (api/projects.md, depth=all).
 const openParentId = (p: Project): string | null => {
@@ -98,10 +107,6 @@ const permissionsIn = (p: Project) => {
   return Object.fromEntries(Object.entries(PERMISSIONS).map(([name, flag]) => [name, can[flag]]));
 };
 
-/** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
-const badSort = (field: string) =>
-  problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });
-
 // The fields GET /api/projects/:id/workflows sorts by (planned); all but the first two need include=stats.
 type WorkflowStatsRow = ReturnType<typeof workflowStatsFor>[number];
 const workflowSorts: Record<WorkflowSortKey | "work_orders_count" | "failed_work_orders_count", (s: WorkflowStatsRow) => SortValue> = {
@@ -135,9 +140,11 @@ export const projectRoutes: Record<string, Handler> = {
     if (refused) return refused;
     const stats = query.get("include") === "stats";
     // Root projects you're a member of; with the planned depth=all, every sandbox you can open too.
+    // A superuser gets every project and sandbox on the instance (planned; the fixtures schedule none for deletion).
     const tree = query.get("depth") === "all";
+    const everything = currentUser().role === "superuser";
     const rows = projects
-      .filter((p) => canOpen(p) && (tree || p.parentId === null))
+      .filter((p) => everything || (canOpen(p) && (tree || p.parentId === null)))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((p) => projectEntry(p, { members: false, stats, tree }));
     return json(200, paged("/api/projects", rows, query));

@@ -49,6 +49,10 @@ export function paged<T>(path: string, rows: T[], query: URLSearchParams, key = 
   };
 }
 
+/** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
+export const badSort = (field: string) =>
+  problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });
+
 /** A 400 for an `include` the route doesn't know (api/conventions.md). */
 export function badInclude(query: URLSearchParams, known: string[]) {
   const unknown = (query.get("include") ?? "").split(",").filter((v) => v && !known.includes(v));

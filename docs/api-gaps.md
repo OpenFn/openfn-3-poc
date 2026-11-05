@@ -88,11 +88,33 @@ doesn't.
   it, the same answer as a non-member. Lightning sends that member to
   /mfa_required to set it up; the app can't tell the two apart from the
   answer. Would need a 403 `mfa_required` on project routes. Replica:
-  `useRefusedForMfa` (`src/api/projects.ts`) reads the project list, which
-  holds every project you're a member of: a listed project that requires
-  MFA and still refuses you is the requirement, so ProjectGate sends you to
-  /mfa_required. It leans on `requires_mfa` in the list, which is planned:
-  until Lightning sends it, everyone refused sees No Access. And it breaks
-  once the planned superuser scope lists every project: a superuser who
-  isn't a member of an MFA project would be sent to set up MFA, though that
-  wouldn't let them in.
+  `useRefusedForMfa` (`src/api/projects.ts`) reads the project tree with
+  your `role` (planned, `depth=all&include=stats`): a project you're a member of that
+  requires MFA and still refuses you is the requirement, so ProjectGate
+  sends you to /mfa_required. It reads membership from `role`, not from
+  being listed, because the planned superuser scope lists every project.
+  `role` comes only with `include=stats`, so the check loads the heaviest
+  form of the list; `role` without stats would do. It leans on
+  `requires_mfa` in the list, which is planned too: until Lightning sends
+  both, everyone refused sees No Access.
+- **No way for a superuser to list only their own projects.** The planned
+  superuser scope on `GET /api/projects` answers every project and sandbox
+  on the instance, which the admin pages need, but the Projects dashboard and
+  the project picker use the same route, and Lightning shows a superuser only
+  the projects they're a member of there. Would need a filter such as
+  `member=me`. Replica: a superuser's dashboard and picker list every
+  project, the dashboard shows a non-member's role as Viewer, and the picker
+  puts a sandbox whose parent they aren't a member of at the top level.
+
+## Admin collections (Lightning's `CollectionLive.Index`, /settings/collections)
+
+- **How many items each collection holds.** Brandon's table has an Items
+  column (`AdminCollectionTable.tsx`); `GET /api/collections` sends only
+  `byte_size_sum`. Would need an `items_count` (or similar) on each
+  collection. Replica: column left out.
+- **A superuser can't delete any project's collection.**
+  `DELETE /api/projects/:project_id/collections/:id` needs a project owner
+  or admin, with no planned superuser scope, though Lightning's page lets a
+  superuser delete any collection. Would need a superuser's token on that
+  route. Replica: Delete shows on each row, disabled, with "Not available in
+  the API yet".
