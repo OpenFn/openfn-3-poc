@@ -17,7 +17,7 @@ Look hard for:
 - Anything that makes the LiveView or standalone option harder.
 
 Then prove it, don't just read it. Try each swap in a scratch copy (a temporary git worktree you delete afterwards), and count the files you had to touch outside the part being swapped:
-- **Host:** feed the page from a second, hand-written feeder (the way a LiveView island would hand it props) instead of its `*.route.tsx` or `.replica.tsx`. Should touch: the new feeder only.
+- **Host:** feed the page from a second, hand-written feeder (the way a LiveView island would hand it props) instead of its `*.query.tsx` or `.replica.tsx`. Should touch: the new feeder only.
 - **Data:** point the route at a different fake answer shaped like api/ (an empty list, an error, a refusal). Should touch: the fake data only, and the page shows each state.
 - **Theme:** render the stories in Dark. Should touch: nothing.
 - **Look:** change one component's look. Should touch: that component only; no page changes.

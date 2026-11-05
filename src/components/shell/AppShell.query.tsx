@@ -1,6 +1,4 @@
-// eslint-disable-next-line no-restricted-imports -- wiring: the layout route reads the URL and renders the route Outlet.
 import { Outlet, useLocation, useParams } from "react-router-dom";
-// eslint-disable-next-line no-restricted-imports -- wiring: the shell reads the signed-in user, their permissions and instance info for the sidebar.
 import { useCurrentUser, useInstanceInfo, usePermissions } from "@/session/session";
 import { useProjectTree } from "@/api/projects";
 import Picker from "@/components/primitives/Picker";

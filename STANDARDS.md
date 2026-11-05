@@ -11,7 +11,7 @@ patterns are done and which pages still need them is tracked in the project
 tracker, not here.
 
 Worked example: `src/pages/profile/tokens/TokensPage.tsx` and its
-`TokensPage.route.tsx` route (patterns 1, 4, 6, 7, 11).
+`TokensPage.query.tsx` route (patterns 1, 4, 6, 7, 11).
 
 ## 1. Async action
 
@@ -187,7 +187,7 @@ screen for it (PRINCIPLES.md, When things go wrong).
 
 - Success is announced by the **page**, once its action resolves (tokens:
   "Token created successfully"). Older pages still toast from their
-  `.replica.tsx` wrapper, and move when they get a `.route.tsx` (pattern 11).
+  `.replica.tsx` wrapper, and move when they get a `.query.tsx` (pattern 11).
   Components report through callbacks. Wording is Lightning's flash text.
 - Failure that needs reading (a form rejected, a conflict) is an inline
   `Alert` next to what failed. Failure of a one-shot button is an error
@@ -225,11 +225,13 @@ Lightning does this in plugs and `on_mount`; mirror those rules in one
 `RouteGuard` component around the route groups in `App.tsx`. Whether you may
 open a project is not the guard's: `ProjectGate` (pattern 11) checks that.
 
-## 11. Page and route
+## 11. Page and query
 
-A page is two files in its own folder: the page draws and behaves, the route
-feeds it. `src/pages/profile/tokens/` (`TokensPage.tsx`,
-`TokensPage.route.tsx`) is the worked example; `src/pages/projects/dashboard/`
+A page is two files in its own folder: `XPage.tsx` draws and behaves,
+`XPage.query.tsx` feeds it from the API (Brandon's name for the same file in
+openfn-ia-demo). Only `.query` files, in `src/pages/` and the shell, may touch
+the URL, the API or the signed-in user; every data hook lives in `src/api/`. `src/pages/profile/tokens/` (`TokensPage.tsx`,
+`TokensPage.query.tsx`) is the worked example; `src/pages/projects/dashboard/`
 is the list example (a list on `ListPage`, with create).
 
 - **`XPage.tsx`** takes everything as props: the records, an optional
@@ -237,26 +239,26 @@ is the list example (a list on `ListPage`, with create).
   (pattern 1). It owns how it behaves: the modals, the banners, the success
   toasts (pattern 7). It imports nothing from `src/api/`, `src/mock-data/`,
   `src/session/` or `react-router-dom`. Lint enforces this on `src/pages/`,
-  `src/components/` and `src/utils/`; `*.route.*` files, `*.replica.*` files,
+  `src/components/` and `src/utils/`; `*.query.*` files, `*.replica.*` files,
   `*Replica.ts` helpers (such as `src/pages/profile/credentialsReplica.ts`),
   tests and stories are exempt, and a page not yet split carries a `-- debt:`
   disable.
   Its props type (`XPageProps`, a comment on each prop) is the contract
   between the two.
-- **`XPage.route.tsx`** is what `App.tsx` routes to. It calls the resource's
+- **`XPage.query.tsx`** is what `App.tsx` points at. It calls the resource's
   hooks from `src/api/<resource>.ts` (`useTokens()`, `useTokenSaves()`),
   reads URL params and the user, and passes data, `status` and actions down.
   Nothing else: no toasts, no state of its own. The hooks talk to the fake
   server in `src/fake-api/` until Lightning's API is there;
-  `.claude/rules/api.md` says how. Each route has a `XPage.route.test.tsx`.
+  `.claude/rules/api.md` says how. Each has a `XPage.query.test.tsx`.
 - **Under `/projects/:projectId`, the project is already there.**
-  `ProjectGate` loads it before the route renders and shows Not Found or No
-  Access itself; the route reads it with `useCurrentProject()` and never checks
-  whether it exists. A replica's `if (!project) <Navigate …>` goes when the
+  `ProjectGate` loads it before the page renders and shows Not Found or No
+  Access itself; the page's `.query` file reads it with
+  `useCurrentProject(projectId)` and never checks whether it exists. A replica's `if (!project) <Navigate …>` goes when the
   page moves.
 - **Older pages** still have a `XPage.replica.tsx` wrapper in place of the
-  route: it holds the fixtures in state, awaits `simulateRequest`, toasts and
-  navigates. Each moves to a route, in its own folder, when it's next worked
+  `.query` file: it holds the fixtures in state, awaits `simulateRequest`, toasts and
+  navigates. Each moves to a `.query` file, in its own folder, when it's next worked
   on.
 - **Shapes are Lightning's**, not the convenient ones: a token arrives
   `masked`.

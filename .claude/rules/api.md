@@ -2,9 +2,9 @@
 paths:
   - 'src/api/**'
   - 'src/fake-api/**'
-  - 'src/**/*.route.tsx'
+  - 'src/**/*.query.tsx'
   - 'src/**/*.replica.tsx'
-  - 'src/pages/**/*.route.tsx'
+  - 'src/pages/**/*.query.tsx'
   - 'src/**/*Replica.ts'
 ---
 
@@ -37,7 +37,7 @@ PRINCIPLES.md "How data flows" says what; this is how.
   as the API does (`name`, not `rawName`), so a 422 lands on its field with
   no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
   hook, the page's `on*` and the form's `useForm<…>` all use it, so a field
-  renamed in one place breaks the build. The route test makes the save fail
+  renamed in one place breaks the build. The .query test makes the save fail
   with a 422 on a field (`failNext`, pointer `#/name`) and checks the error
   shows under it; `CreateProjectModal` is the example.
 - One file per resource (`credentials.ts`, `projects.ts`, …), holding, in
@@ -52,11 +52,11 @@ PRINCIPLES.md "How data flows" says what; this is how.
   server's data back. The fake user's password and MFA code are
   `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
   steps the session up for five minutes.
-- `src/pages/profile/tokens/TokensPage.route.tsx` and
-  `src/pages/projects/dashboard/ProjectsDashboardPage.route.tsx` (a list on
-  `ListPage`, with create), each with its `.route.test.tsx`, are the worked examples.
+- `src/pages/profile/tokens/TokensPage.query.tsx` and
+  `src/pages/projects/dashboard/ProjectsDashboardPage.query.tsx` (a list on
+  `ListPage`, with create), each with its `.query.test.tsx`, are the worked examples.
 
-## The route
+## The .query file
 
 - Calls the resource's hooks (`useTokens()`, `useTokenSaves()` in
   `src/api/tokens.ts`) and passes the page what they return plus `status`.

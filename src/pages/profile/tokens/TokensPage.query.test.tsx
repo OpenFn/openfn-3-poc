@@ -8,7 +8,7 @@ import { ToastProvider } from "@/components/primitives/Toast";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
-import TokensPageRoute from "./TokensPage.route";
+import TokensPageQuery from "./TokensPage.query";
 
 const wait = { timeout: 3000 };
 
@@ -20,8 +20,8 @@ function renderRoute() {
           <MemoryRouter initialEntries={["/profile/tokens"]}>
             <ReactRouterAdapter>
               <Routes>
-                <Route path="/profile/tokens" element={<TokensPageRoute />} />
-                <Route path="/profile/tokens/:tokenId/delete" element={<TokensPageRoute />} />
+                <Route path="/profile/tokens" element={<TokensPageQuery />} />
+                <Route path="/profile/tokens/:tokenId/delete" element={<TokensPageQuery />} />
               </Routes>
             </ReactRouterAdapter>
           </MemoryRouter>
@@ -43,7 +43,7 @@ async function confirmPassword(password: string) {
   fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
 }
 
-describe("TokensPageRoute", () => {
+describe("TokensPageQuery", () => {
   beforeEach(() => {
     resetFakeApi();
     // The fake server waits 300ms before each answer. With fake timers and a `jest`

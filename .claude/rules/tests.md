@@ -8,7 +8,7 @@ paths:
 # Tests
 
 Vitest with Testing Library in jsdom (`npm test`). A test sits beside the file
-it covers: `X.test.tsx` for `X.tsx`, `X.route.test.tsx` (or older `X.replica.test.tsx`) for its route,
+it covers: `X.test.tsx` for `X.tsx`, `X.query.test.tsx` (or older `X.replica.test.tsx`) for its route,
 `x.test.ts` for a helper.
 
 ## Where each promise is tested

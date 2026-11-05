@@ -67,8 +67,8 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
-  it("no new page uses a .replica.tsx; new routes are XPage.route.tsx", () => {
-    // The route connects, the page behaves (STANDARDS.md pattern 11).
+  it("no new page uses a .replica.tsx; new pages are fed by XPage.query.tsx", () => {
+    // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
       "./pages/admin/AdminAuditPage.replica.tsx",

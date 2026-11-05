@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import AppShell from "./components/shell/AppShell.route";
-import ProjectGate from "./components/shell/ProjectGate.route";
+import AppShell from "./components/shell/AppShell.query";
+import ProjectGate from "./components/shell/ProjectGate.query";
 
 import AuthLoginPage from "./pages/auth/AuthLoginPage";
 import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
@@ -11,7 +11,7 @@ import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredP
 import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage.replica";
 import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
 
-import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.route";
+import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.query";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
 import WorkflowsIndexPage from "./pages/projects/workflows/WorkflowsIndexPage.route";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage.replica";
@@ -29,7 +29,7 @@ import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.re
 
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
 import ProfilePage from "./pages/profile/ProfilePage.replica";
-import TokensPage from "./pages/profile/tokens/TokensPage.route";
+import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
