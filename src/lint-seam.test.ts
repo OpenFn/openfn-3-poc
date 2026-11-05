@@ -66,6 +66,14 @@ describe("the data seam lint rule", () => {
     expect(await seamMessages("src/pages/SeamProbePage.tsx", code("@/api/credentials"))).toHaveLength(1);
     expect(await seamMessages("src/components/primitives/SeamProbe.tsx", code("@/api/credentials"))).toHaveLength(1);
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("@/api/credentials"))).toEqual([]);
+    expect(await seamMessages("src/pages/x/probe/SeamProbe.route.tsx", code("@/api/credentials"))).toEqual([]);
+  });
+
+  it("a .route file is only a route inside src/pages/; anywhere else the seam still applies", async () => {
+    const code = (from: string) => `import { apiTokens } from "${from}";\nexport const x = apiTokens;\n`;
+    expect(await seamMessages("src/pages/x/probe/SeamProbe.route.tsx", code("@/mock-data/tokens"))).toEqual([]);
+    expect(await seamMessages("src/components/profile/SeamProbe.route.tsx", code("@/mock-data/tokens"))).toHaveLength(1);
+    expect(await seamMessages("src/utils/seamProbe.route.ts", code("@/mock-data/tokens"))).toHaveLength(1);
   });
 
   it("pages and contract shapes may take CurrentProject from types/projects, but not the Project and User records", async () => {

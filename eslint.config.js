@@ -250,7 +250,7 @@ const apiImports = {
 
 const cacheWriteMessage = "Don't write into the query cache: invalidate the keys the save changed and return that from onSuccess (.claude/rules/api.md)."
 
-const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
+const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', 'src/pages/**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
 const seamImports = (extra = []) => [
   'error',
   { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, apiImports, relativeImports, ...extra] },
@@ -443,7 +443,7 @@ export default defineConfig([
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [pageImports, relativeImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the wrapper toasts success.' }] },
+        { patterns: [pageImports, relativeImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the page toasts success.' }] },
       ],
     },
   },
