@@ -139,10 +139,12 @@ export const projectRoutes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    // Root projects you're a member of; with the planned depth=all, every sandbox you can open too.
-    // A superuser gets every project and sandbox on the instance (planned; the fixtures schedule none for deletion).
+    // Root projects you're a member of, a superuser too; with the planned depth=all, every sandbox you can open too.
+    // scope=all is ahead of the API (docs/api-gaps.md, Superuser access): every project and sandbox on the
+    // instance, for the admin pages, and superusers only. The fixtures schedule none for deletion.
     const tree = query.get("depth") === "all";
-    const everything = currentUser().role === "superuser";
+    const everything = query.get("scope") === "all";
+    if (everything && currentUser().role !== "superuser") return forbidden();
     const rows = projects
       .filter((p) => everything || (canOpen(p) && (tree || p.parentId === null)))
       .sort((a, b) => a.name.localeCompare(b.name))

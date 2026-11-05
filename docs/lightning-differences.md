@@ -318,11 +318,6 @@ goes back to Lightning's way.
   hole as "Logged out successfully."). AdminGate shows the same words where
   the page would be. /dashboard, which has no sidebar, still redirects to
   /projects, but without the message.
-- **A superuser's Projects dashboard and project picker list every project
-  and sandbox on the instance.** Lightning shows them only the projects
-  they're a member of. The API's planned superuser scope on
-  `GET /api/projects` answers every project, which the admin pages need, and
-  has no filter for just your own (docs/api-gaps.md, Project access).
 
 ## Side menu
 
@@ -370,7 +365,7 @@ goes back to Lightning's way.
 - **Delete is disabled, with "Not available in the API yet".** Lightning
   lets a superuser delete any collection (`collection_live/index.ex:48-62`);
   the API's delete needs a project owner or admin, with no superuser scope
-  planned (docs/api-gaps.md, Admin collections).
+  planned (docs/api-gaps.md, Superuser access).
 - **The name hint says names are unique within their project.** Lightning
   says "across all projects within this instance"
   (`collection_creation_modal.ex:135`), which has been false since names

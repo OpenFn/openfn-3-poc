@@ -1,28 +1,30 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { projects } from "@/mock-data/projects";
 import ApiProvider from "./ApiProvider";
-import { listAll } from "./client";
-import { useRefusedForMfa, type ApiProject } from "./projects";
+import { useRefusedForMfa } from "./projects";
+import { resetFakeApi } from "./testing";
 
-vi.mock("./client", async (original) => ({ ...(await original<typeof import("./client")>()), listAll: vi.fn() }));
-
-const wrapper = ({ children }: { children: ReactNode }) => <ApiProvider retry={false}>{children}</ApiProvider>;
-const listed = (member: boolean): ApiProject => ({
-  id: "p1",
-  attributes: { name: "dhis2", description: null, requires_mfa: true, ...(member && { role: "admin" as const }) },
+// One more project that requires MFA, with Sizwe its only member: the signed-in superuser, Amy, isn't one.
+vi.mock("@/mock-data/projects", async (original) => {
+  const { projects } = await original<typeof import("@/mock-data/projects")>();
+  const dhis2 = projects.find((p) => p.name === "dhis2-project")!;
+  const notMine = { ...dhis2, id: "6e1f2a3b-4c5d-4e6f-8a7b-9c0d1e2f3a4b", name: "not-mine", members: dhis2.members.filter((m) => m.userId === "user-sizwe") };
+  return { projects: [...projects, notMine] };
 });
 
+const wrapper = ({ children }: { children: ReactNode }) => <ApiProvider retry={false}>{children}</ApiProvider>;
+const idOf = (name: string) => projects.find((p) => p.name === name)!.id;
+
 describe("useRefusedForMfa", () => {
+  beforeEach(resetFakeApi);
+
   it.each([
-    ["a member, sent to set up MFA", listed(true), true],
-    // A superuser's list holds every project, theirs or not.
-    ["a superuser listed but not a member, told No Access", listed(false), false],
-  ])("on a refused project that requires MFA: %s", async (_, project, expected) => {
-    vi.mocked(listAll).mockResolvedValue([project]);
-    const { result } = renderHook(() => useRefusedForMfa("p1", true), { wrapper });
-    await waitFor(() => expect(result.current).toBe(expected));
-    // Sandboxes too, each with your role.
-    expect(listAll).toHaveBeenCalledWith("/api/projects?depth=all&include=stats", "data");
+    ["a member, sent to set up MFA", idOf("dhis2-project"), true],
+    ["a superuser who isn't a member, told No Access", idOf("not-mine"), false],
+  ])("on a refused project that requires MFA: %s", async (_, id, expected) => {
+    const { result } = renderHook(() => useRefusedForMfa(id, true), { wrapper });
+    await waitFor(() => expect(result.current).toBe(expected), { timeout: 3000 });
   });
 });
