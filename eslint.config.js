@@ -303,7 +303,7 @@ const utilImports = {
 }
 const otherAreaImports = (area) => ({
   regex: `(^|/)components/(${areas.filter((other) => other !== area && other !== 'shell').join('|')})(/|$)`,
-  message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
+  message: `A feature component uses primitives, patterns/, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
 })
 
 // ListPage draws the header, the layout, loading, failure and the empty state, so a file that

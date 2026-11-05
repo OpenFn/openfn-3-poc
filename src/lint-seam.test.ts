@@ -127,7 +127,7 @@ describe("the tier lint rule", () => {
     }
   });
 
-  it("a domain component may import primitives and domain, not an area, the shell or a page", async () => {
+  it("a domain component may import primitives, patterns and domain, not an area, the shell or a page", async () => {
     const probe = "src/components/domain/TierProbe.tsx";
     for (const from of ["@/components/primitives/Pill", "@/components/patterns/ListPage", "./StatePill", "@/types/history"]) {
       expect(await seamMessages(probe, code(from))).toEqual([]);

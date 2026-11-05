@@ -12,7 +12,7 @@ Look hard for:
 - Configure instead of compose: boolean or string props that change what a component does, where children or slots would do.
 - Props or variants named for a look ("dark", "red", "large") instead of a job.
 - className used to restyle, outer margins, one-off styling in pages.
-- Two components doing one job, or a component in the wrong folder (primitives/, domain/, shell/, or the area folder; see docs/building.md).
+- Two components doing one job, or a component in the wrong folder (primitives/, patterns/, domain/, shell/, or the area folder; see docs/building.md).
 - Missing states: stories that skip empty, loading, error, disabled or long text.
 - Drift from Brandon's look, or from Lightning's behaviour, that isn't in docs/lightning-differences.md.
 
