@@ -18,7 +18,7 @@ export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChanne
 export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
-export { default as BackupCodesPage } from "./pages/profile/BackupCodesPage";
+export { default as BackupCodesPage } from "./pages/profile/backup-codes/BackupCodesPage";
 export { default as ProfilePage } from "./pages/profile/ProfilePage";
 export { default as CredentialsIndexPage } from "./pages/profile/CredentialsIndexPage";
 export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
@@ -47,7 +47,7 @@ export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannel
 export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrdersPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
-export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
+export type { BackupCodesPageProps } from "./pages/profile/backup-codes/BackupCodesPage";
 export type { ProfilePageProps } from "./pages/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";

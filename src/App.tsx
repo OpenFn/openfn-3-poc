@@ -32,7 +32,7 @@ import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.re
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
 import ProfilePage from "./pages/profile/ProfilePage.replica";
 import TokensPage from "./pages/profile/tokens/TokensPage.query";
-import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
+import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";

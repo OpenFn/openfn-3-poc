@@ -20,15 +20,8 @@ export const apiTokens: ApiToken[] = [
   },
 ];
 
-/** Ten placeholder recovery codes; one already used. */
+/** Ten placeholder recovery codes, nine characters like Lightning's; one already used. */
 export const backupCodes: BackupCode[] = [
-  "demo0001", "demo0002", "demo0003", "demo0004", "demo0005",
-  "demo0006", "demo0007", "demo0008", "demo0009", "demo0010",
+  "demo00001", "demo00002", "demo00003", "demo00004", "demo00005",
+  "demo00006", "demo00007", "demo00008", "demo00009", "demo00010",
 ].map((code, i) => ({ code, usedAt: i === 2 ? "2026-09-18T10:41:07Z" : null }));
-
-export function regenerateFakeBackupCodes(): BackupCode[] {
-  return Array.from({ length: 10 }, () => ({
-    code: "demo" + Math.random().toString(36).slice(2, 6),
-    usedAt: null,
-  }));
-}

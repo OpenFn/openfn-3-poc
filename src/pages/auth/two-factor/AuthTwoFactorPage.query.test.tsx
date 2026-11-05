@@ -60,6 +60,15 @@ describe("AuthTwoFactorPageQuery", () => {
     expect(await screen.findByText("At /profile", {}, wait)).toBeTruthy();
   });
 
+  it("takes each backup code only once", async () => {
+    await request("POST", "/api/session", { backup_code: FAKE_BACKUP_CODE });
+    await request("DELETE", "/api/session");
+    await request("POST", "/api/session", { email: "super@openfn.org", password: FAKE_PASSWORD }).catch(() => undefined);
+    renderAt("/users/two-factor?authentication_type=backup_code");
+    await verify(/Backup Code/, FAKE_BACKUP_CODE);
+    expect(await screen.findByText("Invalid two-factor authentication code", {}, wait)).toBeTruthy();
+  });
+
   it("keeps return_to on the link to the other method", async () => {
     renderAt("/users/two-factor?return_to=%2Fprofile");
     const link = await screen.findByRole("link", { name: "Use your backup code" }, wait);
