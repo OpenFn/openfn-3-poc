@@ -8,7 +8,7 @@ paths:
 # Pages
 
 Before adding or changing a page, read STANDARDS.md pattern 11 (page and
-wrapper) and the pattern for what you're adding: 1 for a mutation, 2 for a
+route) and the pattern for what you're adding: 1 for a mutation, 2 for a
 form, 3 for a server-driven list, 6 to confirm, 7 for feedback, 9 for
 permissions.
 

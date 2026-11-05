@@ -198,8 +198,8 @@ and passes the results down. Never in the page itself.
   Query. The route never calls TanStack Query itself; the page never fetches,
   and never imports `src/api/`.
 - **Saving.** After a save, the resource's hook marks the affected queries
-  stale, and the page's `on*` promise resolves once they've reloaded, the way
-  LiveView re-renders after an event. Never write a response into the cache.
+  stale, and the page's `on*` promise resolves once they've reloaded.
+  Never write a response into the cache.
   Show a change before the server confirms it only where the page already
   does (`useChosenValue`).
 - **Waiting and refusals.** While data loads, or when the server
