@@ -9,7 +9,7 @@ import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
-import ProjectsDashboardPageRoute from "./ProjectsDashboardPage.query";
+import ProjectsDashboardPageQuery from "./ProjectsDashboardPage.query";
 
 const wait = { timeout: 3000 };
 
@@ -21,7 +21,7 @@ function renderRoute() {
           <MemoryRouter initialEntries={["/projects"]}>
             <ReactRouterAdapter>
               <Routes>
-                <Route path="/projects" element={<ProjectsDashboardPageRoute />} />
+                <Route path="/projects" element={<ProjectsDashboardPageQuery />} />
               </Routes>
             </ReactRouterAdapter>
           </MemoryRouter>
@@ -31,7 +31,7 @@ function renderRoute() {
   );
 }
 
-describe("ProjectsDashboardPageRoute", () => {
+describe("ProjectsDashboardPageQuery", () => {
   beforeEach(() => {
     resetFakeApi();
     // The fake server waits 300ms before each answer; Testing Library moves the fake clock on while it waits.
@@ -75,6 +75,16 @@ describe("ProjectsDashboardPageRoute", () => {
     expect(screen.getByText("malaria-programme").closest("tr")!.textContent).toContain("Owner");
   });
 
+  it("refuses a name Lightning can't take: the server's error shows under Name and nothing is created", async () => {
+    renderRoute();
+    const before = within(await screen.findByRole("table", {}, wait)).getAllByRole("row").length;
+    await createProject("my_project");
+    expect(await screen.findByText("has invalid format", {}, wait)).toBeTruthy();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+    expect(screen.queryByText(/will be named/)).toBeNull();
+    expect(within(screen.getByRole("table", { hidden: true })).getAllByRole("row", { hidden: true })).toHaveLength(before);
+  });
+
   it("shows the server's field error on the Name field and keeps the modal open", async () => {
     failNext("PUT /api/projects/:id", {
       status: 422,
@@ -84,6 +94,7 @@ describe("ProjectsDashboardPageRoute", () => {
     renderRoute();
     await createProject("Malaria Programme");
     expect(await screen.findByText("has invalid format", {}, wait)).toBeTruthy();
+    expect(screen.queryByText(/will be named/)).toBeNull();
     expect(screen.getByRole("dialog")).toBeTruthy();
   });
 });

@@ -1,10 +1,9 @@
-/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
+/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CredentialProjectRef } from "@/types/credentials";
 import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { listAll, request, statusOf } from "./client";
+import { isApiError, listAll, request, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -19,17 +18,12 @@ export interface ApiProject {
     /** Planned: on `GET /api/projects/:id`, and on the list with `depth=all`. */
     parent_id?: string | null;
     color?: string | null;
+    /** Planned: a sandbox's project at the top of its tree. */
+    root_id?: string;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
   };
 }
-
-export function projectRef(p: ApiProject): CredentialProjectRef {
-  return { id: p.id, name: p.attributes.name };
-}
-
-/** `GET /api/projects`: the projects the caller is a member of, every page. */
-export const listProjects = () => listAll<ApiProject>("/api/projects", "data");
 
 /** A row of the projects dashboard, from an entry listed with `include=stats`. */
 export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverview {
@@ -46,22 +40,26 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
 export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
 
 function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
-  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
+  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null, isSandbox: a.root_id !== undefined };
 }
 
 // `GET /api/projects/:id`, one cache entry for useProject and useProjectPermissions.
-const projectQuery = (id: string) =>
+const projectQuery = (id: string | undefined) =>
   queryOptions({
-    queryKey: projectKeys.one(id),
+    queryKey: projectKeys.one(id ?? ""),
+    // No id (a page outside any project): nothing to load.
+    enabled: id !== undefined,
     queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
-    // The gate and the page under it ask in turn; without this the page fetches it again.
+    // The gate and the page's .query file ask in turn; without this the page fetches it again.
     staleTime: 60_000,
   });
 
 /** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
-export function useProject(id: string): { status: ResourceStatus; project: ProjectNode | undefined } {
+export function useProject(id: string | undefined): { status: ResourceStatus; project: ProjectNode | undefined } {
   const query = useQuery({ ...projectQuery(id), select: projectNode });
-  return { status: statusOf(query), project: query.data };
+  // A malformed id is a 400 for a superuser (api/projects.md); to the person it's a project that isn't there.
+  const status = isApiError(query.error, "invalid_parameter") ? ({ state: "notFound" } as const) : statusOf(query);
+  return { status, project: query.data };
 }
 
 /**

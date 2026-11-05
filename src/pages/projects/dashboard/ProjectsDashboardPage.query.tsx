@@ -7,7 +7,7 @@ import ProjectsDashboardPage from "./ProjectsDashboardPage";
  * planned include=stats for their counts, and creates them. It only passes data and actions;
  * the modal and the toast are the page's.
  */
-export default function ProjectsDashboardPageRoute() {
+export default function ProjectsDashboardPageQuery() {
   const { status, projects } = useProjectOverviews();
   const { create } = useProjectSaves();
   const user = useCurrentUser();

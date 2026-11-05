@@ -1,4 +1,4 @@
-/** Personal access tokens on Lightning's API (api/account.md): the API's shape, its mapper, its keys, and the hooks a route calls. */
+/** Personal access tokens on Lightning's API (api/account.md): the API's shape, its mapper, its keys, and the hooks a .query file calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ResourceStatus } from "@/types/resource";
 import type { ApiToken } from "@/types/tokens";

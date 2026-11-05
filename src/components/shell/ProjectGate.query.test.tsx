@@ -11,7 +11,7 @@ import ProjectGate from "./ProjectGate.query";
 const wait = { timeout: 3000 };
 const member = projects.find((p) => p.members.some((m) => m.userId === session.user.id))!;
 
-/** A route under the gate, reading the project the way the sweep's routes will. */
+/** A page under the gate, reading the project the way the sweep's .query files will. */
 function Child() {
   const { projectId = "" } = useParams();
   return <p>Inside {useCurrentProject(projectId).name}</p>;

@@ -62,6 +62,11 @@ describe("the data seam lint rule", () => {
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("@/mock-data/models/workflows"))).toEqual([]);
   });
 
+  it("a hook in src/api/ takes the URL and the user as arguments, never reads them", async () => {
+    expect(await seamMessages("src/api/probe.ts", `import { useParams } from "react-router-dom";\nexport const x = useParams;\n`)).toHaveLength(1);
+    expect(await seamMessages("src/api/probe.ts", `import { useCurrentUser } from "@/session/session";\nexport const x = useCurrentUser;\n`)).toHaveLength(1);
+  });
+
   it("a .query file feeds a page only in src/pages/ and the shell; anywhere else the seam still applies", async () => {
     const code = (from: string) => `import { apiTokens } from "${from}";\nexport const x = apiTokens;\n`;
     expect(await seamMessages("src/pages/x/probe/SeamProbe.query.tsx", code("@/mock-data/tokens"))).toEqual([]);

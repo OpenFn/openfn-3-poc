@@ -15,9 +15,9 @@ export default function Layout({ sidebar, children }: { sidebar: (frame: Sidebar
   const [collapsed, setCollapsed] = useState(false);
   const onToggle = useCallback(() => setCollapsed((c) => !c), []);
   return (
-    <div className="flex h-screen">
+    <div data-ui="layout" className="flex h-screen">
       {sidebar({ collapsed, onToggle })}
-      {/* tabIndex -1: ProjectGate moves focus here when the page it swapped in took the focused element with it. */}
+      {/* tabIndex -1: so focus can be moved to the page when what had focus is swapped out. */}
       <main tabIndex={-1} className="min-w-0 flex-auto focus:outline-none">
         {children}
       </main>

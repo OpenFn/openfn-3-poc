@@ -39,7 +39,7 @@ export function buildProjectPickerItems(currentPath: string, all: ProjectNode[])
           href,
           sameSection,
           // A sandbox keeps the beaker even when it's the root of the user's access.
-          icon: p.parentId !== null ? "hero-beaker" : "hero-folder",
+          icon: (p.isSandbox ?? p.parentId !== null) ? "hero-beaker" : "hero-folder",
         });
         walk(p.id, depth + 1, label);
       });

@@ -56,7 +56,7 @@ its stories; read the component before using it.
 | Nothing to show yet: an empty list, panel or viewer | `EmptyState` (`fill` to centre in its box, `loading` to pulse) |
 | Sorting and filtering a small table in the browser | `useTableSort` |
 | A status message | `Alert` |
-| The page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
+| The app frame and the page frame | `Layout` (sidebar beside `<main>`, once around the app), `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
 
 Tests pick from a `Select` with `pickOption` (`src/test/select.ts`).
 
@@ -70,7 +70,7 @@ enforces it (`eslint.config.js`, tested in `src/lint-seam.test.ts`).
 | `src/pages/` | One Lightning view each | anything |
 | `templates/` | A whole page's layout (`ListPage`); a page fills it | primitives, `domain/`, `templates/` |
 | `<area>/` (`history/`, `credentials/`, …) | What only that area uses | primitives, `domain/`, `shell/`, its own area |
-| `shell/` | The chrome around every page, and the parent routes (`AppShell.query.tsx`, `ProjectGate.query.tsx`), which draw nothing of their own | primitives, `domain/`, `shell/` |
+| `shell/` | The chrome around every page (the frame itself is the `Layout` primitive), and the `.query` files that feed it (`AppShell.query.tsx`, `ProjectGate.query.tsx`) | primitives, `domain/`, `shell/` |
 | `domain/` | Lightning pieces two or more areas use | primitives, `domain/` |
 | `primitives/` | General pieces | primitives |
 
