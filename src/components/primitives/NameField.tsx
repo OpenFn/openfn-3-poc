@@ -16,8 +16,6 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "o
   badgeLabel: ReactNode;
   hint?: ReactNode;
   errors?: string[];
-  /** Hide the badge while there are errors (Lightning's sandbox form does). */
-  hideBadgeOnError?: boolean;
   /** While the name is empty, show this in grey instead ("... will be named `my-sandbox`."). */
   exampleName?: string;
   /** Classes for the wrapper, e.g. a width. */
@@ -27,7 +25,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "o
 /**
  * A name input with the URL-safe name it will get underneath (Lightning's
  * derived name field: `derive_name_param` plus `name_badge`). Used for projects,
- * sandboxes and collections.
+ * sandboxes and collections. The badge hides while the name has an error.
  */
 export default function NameField({
   id,
@@ -37,12 +35,12 @@ export default function NameField({
   badgeLabel,
   hint,
   errors = [],
-  hideBadgeOnError = false,
   exampleName,
   fieldClassName,
   ...rest
 }: Props) {
   const name = urlSafeName(value);
+  const showBadge = errors.length === 0;
   return (
     <div data-ui="name-field" className={cn("space-y-2", fieldClassName)}>
       <TextInput
@@ -54,12 +52,12 @@ export default function NameField({
         onChange={(e) => onChange(e.target.value, urlSafeName(e.target.value))}
         {...rest}
       />
-      {!(hideBadgeOnError && errors.length > 0) && name !== "" && (
+      {showBadge && name !== "" && (
         <Text as="p" variant="body-sm" className="text-muted">
           <NameBadge name={name}>{badgeLabel}</NameBadge>
         </Text>
       )}
-      {!(hideBadgeOnError && errors.length > 0) && name === "" && exampleName && (
+      {showBadge && name === "" && exampleName && (
         <Text as="p" variant="body-sm" className="text-faint">
           {badgeLabel}
           <Text variant="code-sm" className="ml-1 rounded-md border border-subtle bg-subtle p-1">{exampleName}</Text>.

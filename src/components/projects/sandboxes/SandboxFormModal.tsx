@@ -52,7 +52,6 @@ export default function SandboxFormModal({
         required
         placeholder="My Sandbox"
         {...f.fieldProps("rawName")}
-        hideBadgeOnError
         exampleName="my-sandbox"
         badgeLabel={isNew ? "Your sandbox will be named" : "The sandbox will be named"}
       />

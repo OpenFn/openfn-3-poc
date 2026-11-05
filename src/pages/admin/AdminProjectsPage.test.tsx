@@ -165,6 +165,15 @@ describe("AdminProjectsPage form", () => {
     expect(await screen.findByText("Every project must have exactly one owner. Please specify one below.")).toBeTruthy();
   });
 
+  it("says a name Lightning can't take has invalid format, and doesn't save it", () => {
+    const { onSave } = renderPage({ form: { project: { id: "p1", name: "alpha-project", members: [{ userId: "u1", role: "owner" }] }, users } });
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "my_project" } });
+    expect(screen.getByText("has invalid format")).toBeTruthy();
+    expect(screen.queryByText(/will be named/)).toBeNull();
+    fireEvent.click(save());
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it("filters and sorts the member rows without losing anyone's role", async () => {
     const { onSave } = renderPage({ form: { project: { id: "p1", name: "alpha-project", members: [{ userId: "u1", role: "owner" }] }, users } });
     expect(memberNames()).toEqual(["Alice Alpha", "Bob Beta", "Charlie Gamma"]);

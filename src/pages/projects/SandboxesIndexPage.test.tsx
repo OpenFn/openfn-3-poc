@@ -565,6 +565,15 @@ describe("SandboxesIndexPage", () => {
       expect(onCreateSandbox).not.toHaveBeenCalled();
     });
 
+    it("says a name Lightning can't take has invalid format, hides the name it would get, and doesn't send it", async () => {
+      const { onCreateSandbox } = renderPage({ form: newForm });
+      fireEvent.change(screen.getByLabelText(/Name/), { target: { value: "my_test" } });
+      fireEvent.submit(document.getElementById("sandbox-form")!);
+      await waitFor(() => expect(nameField()).toContain("has invalid format"));
+      expect(screen.getByRole("dialog").textContent).not.toContain("will be named");
+      expect(onCreateSandbox).not.toHaveBeenCalled();
+    });
+
     it("leaves a sandbox with no colour without one, unless a swatch is picked", () => {
       const { onUpdateSandbox } = renderPage({ form: { ...editForm, initial: { rawName: "fhir-mapping", color: null } } });
       expect(screen.getAllByRole("radio").some((r) => (r as HTMLInputElement).checked)).toBe(false);
