@@ -158,7 +158,12 @@ export default function SearchList<T>({
                     {section.heading}
                   </Heading>
                 )}
-                {section.items.length === 0 && <EmptyState variant="plain" message={section.empty} />}
+                {/* Read from the status below: a listbox may hold only options and groups. */}
+                {section.items.length === 0 && (
+                  <div aria-hidden>
+                    <EmptyState variant="plain" message={section.empty} />
+                  </div>
+                )}
                 {section.items.map((item) => {
                   const selected = isSelected(item);
                   return (
@@ -176,6 +181,12 @@ export default function SearchList<T>({
             );
           })}
         </ComboboxOptions>
+        {/* Always on the page, so a change to it is announced: loading, failed or nothing found. */}
+        <div role="status" className="sr-only">
+          {shown.filter((section) => section.items.length === 0).map((section) => (
+            <span key={section.key}>{section.empty}</span>
+          ))}
+        </div>
       </div>
     </Combobox>
   );

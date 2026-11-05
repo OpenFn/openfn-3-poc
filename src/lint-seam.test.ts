@@ -62,11 +62,17 @@ describe("the data seam lint rule", () => {
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("@/mock-data/models/workflows"))).toEqual([]);
   });
 
-  it("a .route file is only a route inside src/pages/; anywhere else the seam still applies", async () => {
+  it("a hook in src/api/ takes the URL and the user as arguments, never reads them", async () => {
+    expect(await seamMessages("src/api/probe.ts", `import { useParams } from "react-router-dom";\nexport const x = useParams;\n`)).toHaveLength(1);
+    expect(await seamMessages("src/api/probe.ts", `import { useCurrentUser } from "@/session/session";\nexport const x = useCurrentUser;\n`)).toHaveLength(1);
+  });
+
+  it("a .query file feeds a page only in src/pages/ and the shell; anywhere else the seam still applies", async () => {
     const code = (from: string) => `import { apiTokens } from "${from}";\nexport const x = apiTokens;\n`;
-    expect(await seamMessages("src/pages/x/probe/SeamProbe.route.tsx", code("@/mock-data/tokens"))).toEqual([]);
-    expect(await seamMessages("src/components/profile/SeamProbe.route.tsx", code("@/mock-data/tokens"))).toHaveLength(1);
-    expect(await seamMessages("src/utils/seamProbe.route.ts", code("@/mock-data/tokens"))).toHaveLength(1);
+    expect(await seamMessages("src/pages/x/probe/SeamProbe.query.tsx", code("@/mock-data/tokens"))).toEqual([]);
+    expect(await seamMessages("src/components/shell/SeamProbe.query.tsx", code("@/mock-data/tokens"))).toEqual([]);
+    expect(await seamMessages("src/components/profile/SeamProbe.query.tsx", code("@/mock-data/tokens"))).toHaveLength(1);
+    expect(await seamMessages("src/utils/seamProbe.query.ts", code("@/mock-data/tokens"))).toHaveLength(1);
   });
 
   it("pages and contract shapes may take CurrentProject from types/projects, but not the Project and User records", async () => {
@@ -272,13 +278,13 @@ describe("the API boundary lint rules", () => {
     for (const probe of ["src/pages/x/SeamProbePage.tsx", "src/components/primitives/SeamProbe.tsx", "src/session/seamProbe.ts", "src/App.tsx"]) {
       expect(await apiMessages(probe, code("@/api/tokens")), probe).toHaveLength(1);
     }
-    for (const probe of ["src/pages/x/SeamProbePage.route.tsx", "src/pages/x/SeamProbe.replica.tsx", "src/main.tsx", "src/pages/x/SeamProbe.stories.tsx", "src/x/seamProbe.test.ts"]) {
+    for (const probe of ["src/pages/x/SeamProbePage.query.tsx", "src/pages/x/SeamProbe.replica.tsx", "src/main.tsx", "src/pages/x/SeamProbe.stories.tsx", "src/x/seamProbe.test.ts"]) {
       expect(await apiMessages(probe, code("@/api/tokens")), probe).toEqual([]);
     }
   });
 
   it("only src/api/ uses TanStack Query", async () => {
-    expect(await apiMessages("src/pages/x/SeamProbePage.route.tsx", code("@tanstack/react-query"))).toHaveLength(1);
+    expect(await apiMessages("src/pages/x/SeamProbePage.query.tsx", code("@tanstack/react-query"))).toHaveLength(1);
     expect(await apiMessages("src/main.tsx", code("@tanstack/react-query"))).toHaveLength(1);
     expect(await apiMessages("src/api/seamProbe.ts", code("@tanstack/react-query"))).toEqual([]);
   });
@@ -286,7 +292,7 @@ describe("the API boundary lint rules", () => {
   it("only src/api/client.ts reaches the fake server", async () => {
     for (const [probe, from] of [
       ["src/api/tokens.ts", "@/fake-api"],
-      ["src/pages/x/SeamProbePage.route.tsx", "@/fake-api"],
+      ["src/pages/x/SeamProbePage.query.tsx", "@/fake-api"],
       ["src/pages/x/SeamProbe.stories.tsx", "@/fake-api/index"],
       ["src/x/seamProbe.test.ts", "@/fake-api"],
     ] as const) {

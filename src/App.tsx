@@ -1,5 +1,6 @@
-import { Navigate, Route, Routes, useParams } from "react-router-dom";
-import AppShell from "./components/shell/AppShell";
+import { Navigate, Route, Routes } from "react-router-dom";
+import AppShell from "./components/shell/AppShell.query";
+import ProjectGate from "./components/shell/ProjectGate.query";
 
 import AuthLoginPage from "./pages/auth/AuthLoginPage";
 import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
@@ -10,7 +11,7 @@ import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredP
 import AuthConfirmAccessPage from "./pages/auth/AuthConfirmAccessPage.replica";
 import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
 
-import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.route";
+import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.query";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
 import WorkflowsIndexPage from "./pages/projects/WorkflowsIndexPage.replica";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage.replica";
@@ -28,7 +29,7 @@ import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.re
 
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
 import ProfilePage from "./pages/profile/ProfilePage.replica";
-import TokensPage from "./pages/profile/tokens/TokensPage.route";
+import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
@@ -39,11 +40,6 @@ import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
 import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage.replica";
 import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage.replica";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
-
-function ProjectRoot() {
-  const { projectId } = useParams();
-  return <Navigate to={`/projects/${projectId}/w`} replace />;
-}
 
 /**
  * Every route mirrors a Lightning URL (lib/lightning_web/router.ex) so the
@@ -74,28 +70,31 @@ export default function App() {
         <Route path="/projects" element={<ProjectsDashboardPage />} /> {/* projects-dashboard */}
         <Route path="/mfa_required" element={<MfaRequiredPage />} /> {/* mfa-required */}
 
-        <Route path="/projects/:projectId" element={<ProjectRoot />} />
-        <Route path="/projects/:projectId/w" element={<WorkflowsIndexPage />} /> {/* workflows-index */}
-        {/* workflow-editor-*: canvas, new, inspectors, IDE, manual run, run viewer, AI, versions */}
-        <Route path="/projects/:projectId/w/new" element={<WorkflowEditorPage />} />
-        <Route path="/projects/:projectId/w/:workflowId" element={<WorkflowEditorPage />} />
-        <Route path="/projects/:projectId/w/:workflowId/health" element={<WorkflowHealthPage />} /> {/* workflow-health */}
-        <Route path="/projects/:projectId/sandboxes" element={<SandboxesIndexPage />} /> {/* sandboxes-index */}
-        <Route path="/projects/:projectId/sandboxes/new" element={<SandboxesIndexPage />} />
-        <Route path="/projects/:projectId/sandboxes/:sandboxId/edit" element={<SandboxesIndexPage />} />
-        <Route path="/projects/:projectId/channels" element={<ChannelsIndexPage />} /> {/* channels-index */}
-        <Route path="/projects/:projectId/channels/new" element={<ChannelsIndexPage />} />
-        <Route path="/projects/:projectId/channels/:channelId/edit" element={<ChannelsIndexPage />} />
+        {/* shared-project-scope: ProjectGate loads the project once, then the page renders. */}
+        <Route path="/projects/:projectId" element={<ProjectGate />}>
+          <Route index element={<Navigate to="w" replace />} />
+          <Route path="w" element={<WorkflowsIndexPage />} /> {/* workflows-index */}
+          {/* workflow-editor-*: canvas, new, inspectors, IDE, manual run, run viewer, AI, versions */}
+          <Route path="w/new" element={<WorkflowEditorPage />} />
+          <Route path="w/:workflowId" element={<WorkflowEditorPage />} />
+          <Route path="w/:workflowId/health" element={<WorkflowHealthPage />} /> {/* workflow-health */}
+          <Route path="sandboxes" element={<SandboxesIndexPage />} /> {/* sandboxes-index */}
+          <Route path="sandboxes/new" element={<SandboxesIndexPage />} />
+          <Route path="sandboxes/:sandboxId/edit" element={<SandboxesIndexPage />} />
+          <Route path="channels" element={<ChannelsIndexPage />} /> {/* channels-index */}
+          <Route path="channels/new" element={<ChannelsIndexPage />} />
+          <Route path="channels/:channelId/edit" element={<ChannelsIndexPage />} />
 
-        <Route path="/projects/:projectId/history" element={<HistoryWorkOrdersPage />} /> {/* history-work-orders */}
-        <Route path="/projects/:projectId/history/channels" element={<HistoryChannelLogsPage />} /> {/* history-channel-logs */}
-        <Route path="/projects/:projectId/history/channels/:requestId" element={<ChannelRequestShowPage />} /> {/* channel-request-show */}
-        <Route path="/projects/:projectId/runs/:runId" element={<RunShowPage />} /> {/* run-show */}
-        <Route path="/projects/:projectId/dataclips/:dataclipId/show" element={<DataclipShowPage />} /> {/* dataclip-show */}
+          <Route path="history" element={<HistoryWorkOrdersPage />} /> {/* history-work-orders */}
+          <Route path="history/channels" element={<HistoryChannelLogsPage />} /> {/* history-channel-logs */}
+          <Route path="history/channels/:requestId" element={<ChannelRequestShowPage />} /> {/* channel-request-show */}
+          <Route path="runs/:runId" element={<RunShowPage />} /> {/* run-show */}
+          <Route path="dataclips/:dataclipId/show" element={<DataclipShowPage />} /> {/* dataclip-show */}
 
-        {/* project-settings-*: one page, panels picked by the URL hash. */}
-        <Route path="/projects/:projectId/settings" element={<ProjectSettingsPage />} />
-        <Route path="/projects/:projectId/settings/delete" element={<ProjectSettingsPage />} />
+          {/* project-settings-*: one page, panels picked by the URL hash. */}
+          <Route path="settings" element={<ProjectSettingsPage />} />
+          <Route path="settings/delete" element={<ProjectSettingsPage />} />
+        </Route>
 
         <Route path="/credentials" element={<CredentialsIndexPage />} /> {/* credentials-index */}
         <Route path="/profile" element={<ProfilePage />} /> {/* profile-* */}

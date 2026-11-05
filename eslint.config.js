@@ -238,6 +238,7 @@ const mockDataImports = {
   regex: '(^|/)mock-data(/(?!models(/|$)).*)?$',
   message: 'Take data as props; the replica loads it. Types live in src/types/, helpers in src/utils/.',
 }
+const apiHookArgs = "A hook in src/api/ takes what it needs as arguments (useCurrentProject(projectId)); the page's .query file reads the URL and the user and passes them in."
 const sessionImports = {
   group: ['**/session', '**/session/**'],
   message: 'Take the user and permissions as props; the replica reads the session.',
@@ -257,12 +258,12 @@ const fakeApiImports = {
   regex: '(^|/)fake-api(/.*)?$',
   message: 'Only src/api/client.ts (and src/api/testing.ts, for stories and tests) knows the fake server. Stories and tests get failNext and resetFakeApi from @/api/testing.',
 }
-const apiCallers = ['**/*.route.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
+const apiCallers = ['src/pages/**/*.query.{ts,tsx}', 'src/components/shell/**/*.query.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
 const apiBoundary = (patterns, paths = []) => ({ '@typescript-eslint/no-restricted-imports': ['error', { paths, patterns }] })
 
 const cacheWriteMessage = "Don't write into the query cache: invalidate the keys the save changed and return that from onSuccess (.claude/rules/api.md)."
 
-const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', 'src/pages/**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
+const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', 'src/pages/**/*.query.{ts,tsx}', 'src/components/shell/**/*.query.{ts,tsx}', '**/*.test.{ts,tsx}']
 const seamImports = (extra = []) => [
   'error',
   { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, relativeImports, ...extra] },
@@ -411,7 +412,7 @@ export default defineConfig([
   {
     // The data seam: components, pages and utils get records and permission
     // booleans as props (the wiring loads them), so wiring the backend only
-    // touches `*.replica.*` and `*.route.*` files and `*Replica.ts` helpers. Stories may use
+    // touches `*.replica.*` and `*.query.*` files and `*Replica.ts` helpers. Stories may use
     // fixtures. An import that still crosses the seam says why, with
     // `-- wiring: …` (it stays) or `-- debt: …` (page not yet split).
     files: ['src/components/**/*.{ts,tsx}', 'src/pages/**/*.{ts,tsx}', 'src/utils/**/*.{ts,tsx}'],
@@ -468,12 +469,22 @@ export default defineConfig([
   },
   {
     // The API client has no UI: a failed save stays in its form, and success
-    // toasts are the wrapper's.
+    // toasts are the wrapper's. Its hooks take what they need as arguments:
+    // the .query file reads the URL and the user and passes them in.
     files: ['src/api/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [pageImports, relativeImports, { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the page toasts success.' }] },
+        {
+          paths: routerImports.map((r) => ({ ...r, message: apiHookArgs })),
+          patterns: [
+            pageImports,
+            relativeImports,
+            // src/session/ (who's signed in), not src/api/session.ts, the API's own session resource.
+            { group: ['@/session', '@/session/**'], message: apiHookArgs },
+            { regex: '(^|/)components(/.*)?$', message: 'src/api/ has no UI: no toasts or components. A failed save stays in its form; the page toasts success.' },
+          ],
+        },
       ],
     },
   },

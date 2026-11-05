@@ -242,6 +242,18 @@ goes back to Lightning's way.
 - **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)
   and its other empty states use 32px; the replica uses 24px in every one.
 
+## Project access
+
+- **A project you can't open shows Not Found or No Access in place**, with
+  the sidebar still there. Lightning redirects to /projects and shows Not
+  Found there. ProjectGate shows the API's answer where the page would be:
+  the API says No Access (403) to a non-member whether or not the project
+  exists, and only a superuser hears Not Found.
+- **A member who hasn't set up MFA on a project that requires it sees No
+  Access**, not Lightning's redirect to /mfa_required, because the API
+  answers both with the same 403 `forbidden`. Needs its own error code in
+  the API to tell them apart.
+
 ## Confirm access
 
 - **Confirming access is a pop-up on the page, not a trip to a page.**

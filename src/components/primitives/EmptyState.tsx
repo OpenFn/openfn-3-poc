@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/utils/cn";
+import Heading from "./Heading";
 import Text from "./Text";
 
 /**
@@ -14,6 +15,7 @@ export default function EmptyState({
   variant = "dashed",
   icon = variant === "dashed" ? "hero-plus-circle" : undefined,
   title,
+  titleAs,
   message,
   buttonText,
   onClick,
@@ -29,6 +31,8 @@ export default function EmptyState({
   /** A Heroicon class; `null` for none on a dashed box. */
   icon?: string | null;
   title?: ReactNode;
+  /** Make the title a heading at this level, for an empty state that stands in for a page or section. Looks the same. */
+  titleAs?: "h1" | "h2" | "h3";
   message?: ReactNode;
   buttonText?: string;
   onClick?: (() => void) | undefined;
@@ -49,11 +53,16 @@ export default function EmptyState({
           {buttonText}
         </Text>
       )}
-      {title && (
-        <Text variant="label-md" className="block text-strong">
-          {title}
-        </Text>
-      )}
+      {title &&
+        (titleAs ? (
+          <Heading as={titleAs} size="sm">
+            {title}
+          </Heading>
+        ) : (
+          <Text variant="label-md" className="block text-strong">
+            {title}
+          </Text>
+        ))}
       {message && (
         <Text as="div" className={cn("text-muted", (title || buttonText) && "mt-1")}>
           {message}

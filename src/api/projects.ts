@@ -1,10 +1,9 @@
-/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
+/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CredentialProjectRef } from "@/types/credentials";
-import type { ProjectInput } from "@/types/projects";
+import type { ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { listAll, request, statusOf } from "./client";
+import { isApiError, listAll, request, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -16,15 +15,13 @@ export interface ApiProject {
     workflows_count?: number;
     collaborators_count?: number;
     last_activity?: string | null;
+    /** Planned: on `GET /api/projects/:id`, and on the list with `depth=all`. */
+    parent_id?: string | null;
+    color?: string | null;
+    /** Planned: a sandbox's project at the top of its tree. */
+    root_id?: string;
   };
 }
-
-export function projectRef(p: ApiProject): CredentialProjectRef {
-  return { id: p.id, name: p.attributes.name };
-}
-
-/** `GET /api/projects`: the projects the caller is a member of, every page. */
-export const listProjects = () => listAll<ApiProject>("/api/projects", "data");
 
 /** A row of the projects dashboard, from an entry listed with `include=stats`. */
 export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverview {
@@ -38,7 +35,50 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
   };
 }
 
-export const projectKeys = { all: ["projects"] as const };
+export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
+
+function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
+  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null, isSandbox: a.root_id !== undefined };
+}
+
+/** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
+export function useProject(id: string | undefined): { status: ResourceStatus; project: ProjectNode | undefined } {
+  const query = useQuery({
+    queryKey: projectKeys.one(id ?? ""),
+    // No id (a page outside any project): nothing to load.
+    enabled: id !== undefined,
+    queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
+    select: projectNode,
+    // The gate and the page's .query file ask in turn; without this the page fetches it again.
+    staleTime: 60_000,
+  });
+  // A malformed id is a 400 for a superuser (api/projects.md); to the person it's a project that isn't there.
+  const status = isApiError(query.error, "invalid_parameter") ? ({ state: "notFound" } as const) : statusOf(query);
+  return { status, project: query.data };
+}
+
+/**
+ * The project a page under ProjectGate is in. The gate has already loaded it
+ * and shown Not Found or No Access instead of the page, so it's always there:
+ * never check. The page's .query file passes the :projectId from the URL.
+ */
+export function useCurrentProject(projectId: string): ProjectNode {
+  const { project } = useProject(projectId);
+  if (!project) throw new Error("useCurrentProject is for pages under ProjectGate, which loads the project first");
+  return project;
+}
+
+const toTree = (rows: ApiProject[]) => rows.map(projectNode);
+
+/** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
+export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "tree"],
+    queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
+    select: toTree,
+  });
+  return { status: statusOf(query), projects: query.data ?? [] };
+}
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */
 export function useProjectOverviews(): { status: ResourceStatus; projects: ProjectOverview[] } {

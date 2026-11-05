@@ -2,9 +2,9 @@
 paths:
   - 'src/api/**'
   - 'src/fake-api/**'
-  - 'src/**/*.route.tsx'
+  - 'src/**/*.query.tsx'
   - 'src/**/*.replica.tsx'
-  - 'src/pages/**/*.route.tsx'
+  - 'src/pages/**/*.query.tsx'
   - 'src/**/*Replica.ts'
 ---
 
@@ -27,17 +27,21 @@ PRINCIPLES.md "How data flows" says what; this is how.
   app is built for the new API. A list answers through `paged()`, so it pages
   like api/conventions.md; a write checks the body and answers one 422
   `invalid` listing every problem, as api/errors.md says.
-- `isApiError(error, "step_up_required")` is how a route spots a refusal.
+- A hook takes what it needs as arguments (`useCurrentProject(projectId)`).
+  It never reads the URL or the signed-in user (lint): the page's `.query`
+  file reads those and passes them in. So every data hook lives here, in its
+  resource's file, and nowhere else.
+- `isApiError(error, "step_up_required")` is how a .query file spots a refusal.
   `ApiProvider` holds TanStack Query: a failed load is retried, a 4xx never.
-  Only `src/api/` imports TanStack Query, and only routes, replicas,
+  Only `src/api/` imports TanStack Query, and only .query files, replicas,
   `main.tsx`, stories and tests import `src/api/` (lint).
 - A refused request throws `ApiError`. Show its `message` (the server's
   `detail`); branch on `code`, never on the words. Body errors arrive
-  as `fieldErrors`, ready for the form. A form a route feeds names its fields
+  as `fieldErrors`, ready for the form. A form a .query file feeds names its fields
   as the API does (`name`, not `rawName`), so a 422 lands on its field with
   no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
   hook, the page's `on*` and the form's `useForm<…>` all use it, so a field
-  renamed in one place breaks the build. The route test makes the save fail
+  renamed in one place breaks the build. The .query test makes the save fail
   with a 422 on a field (`failNext`, pointer `#/name`) and checks the error
   shows under it; `CreateProjectModal` is the example.
 - One file per resource (`credentials.ts`, `projects.ts`, …), holding, in
@@ -52,11 +56,11 @@ PRINCIPLES.md "How data flows" says what; this is how.
   server's data back. The fake user's password and MFA code are
   `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
   steps the session up for five minutes.
-- `src/pages/profile/tokens/TokensPage.route.tsx` and
-  `src/pages/projects/dashboard/ProjectsDashboardPage.route.tsx` (a list on
-  `ListPage`, with create), each with its `.route.test.tsx`, are the worked examples.
+- `src/pages/profile/tokens/TokensPage.query.tsx` and
+  `src/pages/projects/dashboard/ProjectsDashboardPage.query.tsx` (a list on
+  `ListPage`, with create), each with its `.query.test.tsx`, are the worked examples.
 
-## The route
+## The .query file
 
 - Calls the resource's hooks (`useTokens()`, `useTokenSaves()` in
   `src/api/tokens.ts`) and passes the page what they return plus `status`.
@@ -80,7 +84,7 @@ PRINCIPLES.md "How data flows" says what; this is how.
   (`useAction(handler, { onError: "toast" })`, STANDARDS pattern 1); it
   stays until dismissed. Nothing in `src/api/` toasts.
 - The page's props and action types don't change to suit the API. A new
-  prop may be required, so the build catches a route that forgets it.
+  prop may be required, so the build catches a .query file that forgets it.
   If a page needs an existing prop changed, stop and ask.
 - What the API can't give a page yet, not even as planned scope, is mapped to the answer for "none" and
   tracked as a finding, not faked in the page.

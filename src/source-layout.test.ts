@@ -67,8 +67,8 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
-  it("no new page uses a .replica.tsx; new routes are XPage.route.tsx", () => {
-    // The route connects, the page behaves (STANDARDS.md pattern 11).
+  it("no new page uses a .replica.tsx; new pages are fed by XPage.query.tsx", () => {
+    // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
       "./pages/admin/AdminAuditPage.replica.tsx",
@@ -199,7 +199,8 @@ describe("every page and component can be seen and checked", () => {
     const routes = [...sources["./App.tsx"]!.matchAll(/<Route path="([^"]+)" element={<\w+Page /g)];
     expect(routes.length).toBeGreaterThan(30);
     const missing = routes
-      .map(([, path]) => path!)
+      // A relative path sits under ProjectGate, the one parent route.
+      .map(([, path]) => (path!.startsWith("/") ? path! : `/projects/:projectId/${path}`))
       .filter((path) => !viewIdForLocation(path.replace(/:\w+/g, "x"), "", ""));
     expect(missing).toEqual([]);
   });

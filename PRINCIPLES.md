@@ -190,12 +190,12 @@ out labels, errors or buttons itself.
 ## How data flows
 
 A page only shows what it's given (props). Fetching and saving happen in
-hooks in `src/api/`, one file per kind of data; the page's route calls them
+hooks in `src/api/`, one file per kind of data; the page's .query file calls them
 and passes the results down. Never in the page itself.
 
-- **Loading.** The route calls one hook per kind of data, from
+- **Loading.** The .query file calls one hook per kind of data, from
   `src/api/<resource>.ts` (`useTokens()`), and those hooks hold TanStack
-  Query. The route never calls TanStack Query itself; the page never fetches,
+  Query. The .query file never calls TanStack Query itself; the page never fetches,
   and never imports `src/api/`.
 - **Saving.** After a save, the resource's hook marks the affected queries
   stale, and the page's `on*` promise resolves once they've reloaded.

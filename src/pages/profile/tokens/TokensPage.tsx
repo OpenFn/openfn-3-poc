@@ -14,7 +14,7 @@ import { useAction } from "@/utils/useAction";
 import { useStepUp } from "@/components/domain/useStepUp";
 import type { StepUpCredentials } from "@/components/domain/StepUpDialog";
 
-/** What the route passes in: data, the actions that change it, and where you are. */
+/** What its .query file passes in: data, the actions that change it, and where you are. */
 export interface TokensPageProps {
   /** Where loading the tokens stands, when the host loads them after the page renders. Left out, they are ready. */
   status?: ResourceStatus;
@@ -39,8 +39,8 @@ export interface TokensPageProps {
 /**
  * Inventory view `profile-tokens` (tokens_live/index.html.heex): "Generate
  * New Token" shows the new token once in a banner; the table masks the rest.
- * The page owns how it behaves (the banner, the toasts); its route,
- * TokensPage.route.tsx, only passes data and actions.
+ * The page owns how it behaves (the banner, the toasts); its .query file,
+ * TokensPage.query.tsx, only passes data and actions.
  */
 export default function TokensPage({ status = { state: "ready" }, tokens, tokenId, onGenerate, onDelete, onClose, isStepUpRequired, onStepUp, hasMfa }: TokensPageProps) {
   const toast = useToast();

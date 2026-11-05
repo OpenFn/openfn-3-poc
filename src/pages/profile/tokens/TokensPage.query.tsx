@@ -6,11 +6,11 @@ import { useCurrentUser } from "@/session/session";
 import TokensPage from "./TokensPage";
 
 /**
- * TokensPage's route: loads the tokens from the API and reads the delete
+ * TokensPage's .query file: loads the tokens from the API and reads the delete
  * modal's token from the URL. It only passes data and actions; the banner, the
  * toasts and the password popup are the page's.
  */
-export default function TokensPageRoute() {
+export default function TokensPageQuery() {
   const { tokenId } = useParams();
   const navigate = useNavigate();
   const { status, tokens } = useTokens();
