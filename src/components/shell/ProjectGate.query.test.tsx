@@ -74,6 +74,14 @@ describe("ProjectGate", () => {
     expect(screen.queryByText("No Access")).toBeNull();
   });
 
+  it("a non-member of a project that requires MFA still gets No Access, not sent to set it up", async () => {
+    await request("POST", "/api/session", { email: "viewer@openfn.org", password: FAKE_PASSWORD });
+    expect(mfaProject.members.some((m) => m.userId === "user-vikram")).toBe(false);
+    renderAt(mfaProject.id);
+    expect(await screen.findByRole("heading", { level: 1, name: "No Access" }, wait)).toBeTruthy();
+    expect(screen.queryByText("Set up MFA")).toBeNull();
+  });
+
   it("a member with MFA opens a project that requires it", async () => {
     await request("POST", "/api/session", { email: "super@openfn.org", password: FAKE_PASSWORD }).catch(() => undefined);
     await request("POST", "/api/session", { mfa_code: FAKE_MFA_CODE });

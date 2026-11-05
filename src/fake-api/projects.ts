@@ -22,8 +22,8 @@ export const resetProjects = () => {
   projects = seedProjects();
 };
 
-// A project as GET /api/projects/:id answers it; the list leaves out members. parent_id and
-// color are planned on both; the list sends them with the planned depth=all.
+// A project as GET /api/projects/:id answers it; the list leaves out members. requires_mfa,
+// parent_id and color are planned on both; the list sends them with the planned depth=all.
 const projectEntry = (p: Project, { members = true, stats = false, tree = true } = {}) => ({
   type: "projects",
   id: p.id,

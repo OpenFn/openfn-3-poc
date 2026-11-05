@@ -309,7 +309,8 @@ goes back to Lightning's way.
   the sidebar still there. Lightning redirects to /projects and shows "No
   Access" there, which needs a message that survives a redirect (the same
   hole as "Logged out successfully."). AdminGate shows the same words where
-  the page would be.
+  the page would be. /dashboard, which has no sidebar, still redirects to
+  /projects, but without the message.
 
 ## Side menu
 

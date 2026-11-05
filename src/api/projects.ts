@@ -20,6 +20,7 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    /** Planned (api/projects.md): whether members need MFA to open it. useRefusedForMfa depends on it. */
     requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
@@ -100,8 +101,10 @@ export function useRefusedForMfa(id: string, refused: boolean): boolean | "check
     enabled: refused,
     select: (rows) => rows.some((p) => p.id === id && p.attributes.requires_mfa),
   });
-  if (!refused || query.isError) return false;
-  return query.isSuccess ? query.data : "checking";
+  if (!refused) return false;
+  // Wait for a fresh list: a cached one may be from before you joined or MFA was turned on.
+  if (query.isFetching) return "checking";
+  return query.data ?? false;
 }
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */

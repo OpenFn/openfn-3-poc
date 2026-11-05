@@ -67,7 +67,7 @@ export default function App() {
       {/* Everything below needs someone signed in: SessionGate loads them, or sends the person to log in. */}
       <Route element={<SessionGate />}>
         {/* Phoenix LiveDashboard is a full page of its own, outside Lightning's layout. */}
-        <Route element={<AdminGate />}>
+        <Route element={<AdminGate redirect />}>
           <Route path="/dashboard" element={<AdminLiveDashboardPage />} /> {/* admin-live-dashboard */}
         </Route>
 

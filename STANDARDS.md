@@ -226,8 +226,9 @@ Two more gates sit under it, one guard each in the route tree, never a
 check in a page:
 
 - `AdminGate` (`AdminGate.query.tsx`) is the parent of every `/settings/*`
-  admin route and `/dashboard`. Anyone but a superuser (`role` from
-  `/api/me`) gets Lightning's No Access in place of the page. The API
+  admin route and `/dashboard`. Anyone without `canAccessAdmin`
+  (`usePermissions`) gets Lightning's No Access in place of the page;
+  `/dashboard`, outside the shell, sends them to `/projects` instead. The API
   refuses them too; the fake's admin routes check `currentUser().role`.
 - `ProjectGate` (pattern 11) loads the project and shows Not Found or No
   Access. A member without MFA on a project that requires it goes to

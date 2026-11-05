@@ -30,8 +30,8 @@ The app uses hash routing, so a page's address looks like
 
 ## Signing in
 
-The app opens signed in as Amy (demo@openfn.org, a superuser), so any link
-works straight away. To see the login page, go to `/#/users/log_out`.
+The app opens signed in as Amy (demo@openfn.org, a superuser), so almost any
+link works straight away: dhis2-project requires MFA, which Amy hasn't set up. To see the login page, go to `/#/users/log_out`.
 
 | Email | Who | Password | MFA code |
 | --- | --- | --- | --- |

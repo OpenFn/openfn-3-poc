@@ -72,4 +72,8 @@ doesn't.
   `useRefusedForMfa` (`src/api/projects.ts`) reads the project list, which
   holds every project you're a member of: a listed project that requires
   MFA and still refuses you is the requirement, so ProjectGate sends you to
-  /mfa_required.
+  /mfa_required. It leans on `requires_mfa` in the list, which is planned:
+  until Lightning sends it, everyone refused sees No Access. And it breaks
+  once the planned superuser scope lists every project: a superuser who
+  isn't a member of an MFA project would be sent to set up MFA, though that
+  wouldn't let them in.
