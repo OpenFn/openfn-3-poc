@@ -1,7 +1,7 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
-import type { ProjectInput } from "@/types/projects";
+import type { CurrentProject, ProjectInput } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { listAll, request, statusOf } from "./client";
@@ -16,6 +16,9 @@ export interface ApiProject {
     workflows_count?: number;
     collaborators_count?: number;
     last_activity?: string | null;
+    /** Planned: on `GET /api/projects/:id`, and on the list with `depth=all`. */
+    parent_id?: string | null;
+    color?: string | null;
   };
 }
 
@@ -38,7 +41,41 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
   };
 }
 
-export const projectKeys = { all: ["projects"] as const };
+export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
+
+/** A project as the shell and the project routes use it: its name and where it sits in the tree. */
+export type ProjectNode = CurrentProject & { name: string };
+
+function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
+  return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
+}
+
+/** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
+export function useProject(id: string): { status: ResourceStatus; project: ProjectNode | undefined } {
+  const query = useQuery({
+    queryKey: projectKeys.one(id),
+    queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
+    select: projectNode,
+  });
+  return { status: statusOf(query), project: query.data };
+}
+
+/** The project ProjectGate loaded, from the same cache. Only for routes under the gate. */
+export function useLoadedProject(id: string): ProjectNode {
+  const { project } = useProject(id);
+  if (!project) throw new Error("useLoadedProject is for routes under ProjectGate, which loads the project first");
+  return project;
+}
+
+/** Every project and sandbox you can open (the planned `depth=all`), for the project picker. Empty until loaded. */
+export function useProjectTree(): ProjectNode[] {
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "tree"],
+    queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
+    select: (rows) => rows.map(projectNode),
+  });
+  return query.data ?? [];
+}
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */
 export function useProjectOverviews(): { status: ResourceStatus; projects: ProjectOverview[] } {

@@ -163,7 +163,8 @@ describe("every page and component can be seen and checked", () => {
     const routes = [...sources["./App.tsx"]!.matchAll(/<Route path="([^"]+)" element={<\w+Page /g)];
     expect(routes.length).toBeGreaterThan(30);
     const missing = routes
-      .map(([, path]) => path!)
+      // A relative path sits under ProjectGate, the one parent route.
+      .map(([, path]) => (path!.startsWith("/") ? path! : `/projects/:projectId/${path}`))
       .filter((path) => !viewIdForLocation(path.replace(/:\w+/g, "x"), "", ""));
     expect(missing).toEqual([]);
   });

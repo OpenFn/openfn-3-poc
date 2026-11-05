@@ -89,13 +89,15 @@ function paged<T>(path: string, rows: T[], query: URLSearchParams) {
   };
 }
 
-// A project as GET /api/projects/:id answers it; the list leaves out members.
-const projectEntry = (p: Project, { members = true, stats = false } = {}) => ({
+// A project as GET /api/projects/:id answers it; the list leaves out members. parent_id and
+// color are planned on both; the list sends them with the planned depth=all.
+const projectEntry = (p: Project, { members = true, stats = false, tree = true } = {}) => ({
   type: "projects",
   id: p.id,
   attributes: {
     name: p.name,
     description: p.description || null,
+    ...(tree && { parent_id: p.parentId, color: p.color }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
     ...(stats && projectStats(p)),
   },
@@ -113,6 +115,8 @@ function badInclude(query: URLSearchParams, known: string[]) {
 
 const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === session.user.id)?.role;
+// A sandbox opens for members of it or of any project above it.
+const canOpen = (p: Project | undefined): boolean => !!p && (!!roleOf(p) || canOpen(projects.find((q) => q.id === p.parentId)));
 const projectStats = (p: Project) => {
   const workflows = workflowsIn(p.id);
   return {
@@ -182,12 +186,20 @@ const routes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    // Root projects you're a member of: no sandboxes.
+    // Root projects you're a member of; with the planned depth=all, every sandbox you can open too.
+    const tree = query.get("depth") === "all";
     const rows = projects
-      .filter((p) => p.parentId === null && roleOf(p))
+      .filter((p) => (tree ? canOpen(p) : p.parentId === null && roleOf(p)))
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((p) => projectEntry(p, { members: false, stats }));
+      .map((p) => projectEntry(p, { members: false, stats, tree }));
     return json(200, paged("/api/projects", rows, query));
+  },
+  // A non-member hears 403 whether or not the project exists; only a superuser hears 404.
+  "GET /api/projects/:id": ({ id }) => {
+    const project = projects.find((p) => p.id === id);
+    if (project && canOpen(project)) return json(200, { data: projectEntry(project), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
+    if (!project && session.user.role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
+    return forbidden();
   },
   // Creates the project under :id, the caller its owner, or replaces the name and description.
   "PUT /api/projects/:id": ({ id }, body) => {

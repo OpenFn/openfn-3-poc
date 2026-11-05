@@ -70,9 +70,13 @@ data, comments, lint) and loads by itself when you touch one.
 - `src/App.tsx`: the routes. Each is a Lightning URL, commented with its
   INVENTORY.md id.
 - `src/pages/<area>/`: one file per Lightning view, named for its inventory
-  id (`history-work-orders` → `HistoryWorkOrdersPage.tsx`), with a
-  `.replica.tsx` wrapper beside it once split into page and wrapper
-  (STANDARDS.md pattern 11; pages not yet split carry a `debt:` import).
+  id (`history-work-orders` → `HistoryWorkOrdersPage.tsx`). A page moved to
+  the API sits in its own folder with a `.route.tsx` beside it (STANDARDS.md
+  pattern 11); older pages still have a `.replica.tsx` wrapper.
+- `src/components/shell/`: the app shell. `AppShell.route.tsx` fills
+  `Layout` (sidebar and page slots); `ProjectGate.route.tsx` is the parent
+  of every `/projects/:projectId` route: it loads the project once, so a
+  route under it reads it with `useLoadedProject`.
 - `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
   area.
 - `src/types/`: the hand-written shapes pages take. `src/constants.ts`:
