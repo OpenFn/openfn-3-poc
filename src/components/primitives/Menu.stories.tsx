@@ -67,7 +67,7 @@ export const WithSectionsAndHeader: Story = {
         <MenuDivider />
         <MenuSection heading="Account">
           <MenuItem icon="hero-user-circle" to="/profile">
-            User Profile
+            User settings
           </MenuItem>
           <MenuItem icon="hero-key" to="/credentials">
             Credentials
@@ -93,7 +93,7 @@ export const WithInlineLink: Story = {
         </div>
         <MenuDivider />
         <MenuItem icon="hero-user-circle" to="/profile">
-          User Profile
+          User settings
         </MenuItem>
       </>
     ),

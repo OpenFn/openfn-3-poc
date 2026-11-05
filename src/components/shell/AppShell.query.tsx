@@ -24,7 +24,7 @@ export default function AppShell() {
 
   const pickerEmpty =
     projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found";
-  const menu: SidebarMenu = pathname.startsWith("/settings") ? "admin" : project ? "project" : "profile";
+  const menu: SidebarMenu = pathname.startsWith("/settings") ? "admin" : project ? "project" : "home";
 
   return (
     <>

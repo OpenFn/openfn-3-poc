@@ -7,9 +7,9 @@ import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
 import Tooltip from "@/components/primitives/Tooltip";
 import Text from "@/components/primitives/Text";
-
-/** Which menu the side bar shows: the project's, your own pages, or the admin menu. */
-export type SidebarMenu = "project" | "profile" | "admin";
+/** Which menu the side bar shows: the project's, the admin menu, or, anywhere else, just Projects. */
+/** Which menu the side bar shows: the project's, the admin menu, or, anywhere else, the way home to Projects. */
+export type SidebarMenu = "project" | "home" | "admin";
 
 export interface SidebarProps {
   menu: SidebarMenu;
@@ -53,7 +53,7 @@ function ProjectItems({ project, user }: { project: { id: string }; user: Pick<M
 }
 
 // The user's own pages aren't listed here: their settings menu and the account menu reach them (Brandon's sidebar).
-function ProfileItems() {
+function HomeItems() {
   const { pathname } = useRouter().useLocation();
   return <NavItem to="/projects" icon="hero-folder" label="Projects" active={pathname === "/projects"} />;
 }
@@ -185,7 +185,7 @@ export default function Sidebar({
               <AdminItems />
             ) : (
               <>
-                {menu === "project" && project ? <ProjectItems project={project} user={user} /> : <ProfileItems />}
+                {menu === "project" && project ? <ProjectItems project={project} user={user} /> : <HomeItems />}
                 <div className="grow" />
                 <FooterItems canAccessAdmin={canAccessAdmin} adminEmail={adminEmail} />
               </>
