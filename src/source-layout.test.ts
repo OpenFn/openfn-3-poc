@@ -43,7 +43,7 @@ describe("source file layout", () => {
 // nothing new joins.
 const paths = Object.keys(sources);
 const isSource = (path: string) => !/\.(stories|test)\.tsx?$/.test(path);
-const pages = paths.filter((path) => /^\.\/pages\/[^/]+\/[A-Z]\w*\.tsx$/.test(path));
+const pages = paths.filter((path) => /^\.\/pages\/(?:[^/]+\/)+[A-Z]\w*\.tsx$/.test(path));
 const components = paths.filter((path) => /^\.\/components\/.+\/[A-Z]\w*\.tsx$/.test(path) && isSource(path));
 
 function expectOnlyKnown(missing: string[], known: string[]) {
@@ -63,8 +63,39 @@ describe("every page and component can be seen and checked", () => {
       "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/auth/AuthResetPasswordPage.tsx",
       "./pages/auth/AuthTwoFactorPage.tsx",
-      "./pages/profile/TokensPage.tsx",
+      "./pages/profile/tokens/TokensPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
+    ]);
+  });
+
+  it("a page's route is XPage.route.tsx in the page's own folder, not a .replica.tsx", () => {
+    // The route connects, the page behaves (STANDARDS.md pattern 11).
+    const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
+    expectOnlyKnown(replicas, [
+      "./pages/admin/AdminAuditPage.replica.tsx",
+      "./pages/admin/AdminAuthProvidersPage.replica.tsx",
+      "./pages/admin/AdminCollectionsPage.replica.tsx",
+      "./pages/admin/AdminMaintenancePage.replica.tsx",
+      "./pages/admin/AdminProjectsPage.replica.tsx",
+      "./pages/admin/AdminUserEditPage.replica.tsx",
+      "./pages/admin/AdminUsersPage.replica.tsx",
+      "./pages/auth/AuthConfirmAccessPage.replica.tsx",
+      "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
+      "./pages/auth/FirstSetupPage.replica.tsx",
+      "./pages/history/ChannelRequestShowPage.replica.tsx",
+      "./pages/history/DataclipShowPage.replica.tsx",
+      "./pages/history/HistoryChannelLogsPage.replica.tsx",
+      "./pages/history/HistoryWorkOrdersPage.replica.tsx",
+      "./pages/history/RunShowPage.replica.tsx",
+      "./pages/profile/BackupCodesPage.replica.tsx",
+      "./pages/profile/CredentialsIndexPage.replica.tsx",
+      "./pages/profile/ProfilePage.replica.tsx",
+      "./pages/project-settings/ProjectSettingsPage.replica.tsx",
+      "./pages/projects/ChannelsIndexPage.replica.tsx",
+      "./pages/projects/ProjectsDashboardPage.replica.tsx",
+      "./pages/projects/SandboxesIndexPage.replica.tsx",
+      "./pages/projects/WorkflowHealthPage.replica.tsx",
+      "./pages/projects/WorkflowsIndexPage.replica.tsx",
     ]);
   });
 

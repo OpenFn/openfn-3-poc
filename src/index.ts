@@ -19,7 +19,7 @@ export { default as ProjectSettingsPage } from "./pages/project-settings/Project
 export { default as BackupCodesPage } from "./pages/profile/BackupCodesPage";
 export { default as ProfilePage } from "./pages/profile/ProfilePage";
 export { default as CredentialsIndexPage } from "./pages/profile/CredentialsIndexPage";
-export { default as TokensPage } from "./pages/profile/TokensPage";
+export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/ProjectsDashboardPage";
@@ -46,7 +46,7 @@ export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectS
 export type { BackupCodesPageProps } from "./pages/profile/BackupCodesPage";
 export type { ProfilePageProps } from "./pages/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndexPage";
-export type { TokensPageProps } from "./pages/profile/TokensPage";
+export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
 export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";

@@ -100,7 +100,7 @@ data, comments, lint) and loads by itself when you touch one.
 
 ## The data seam
 
-Only `*.replica.*` wrappers, `*Replica.ts` helpers and `main.tsx` may import
+Only `*.replica.*` wrappers, `*.route.*` routes, `*Replica.ts` helpers and `main.tsx` may import
 `src/mock-data/`, `src/session/` or the router. There, the user comes from
 `useCurrentUser()` (never a fixture import) and permissions from
 `usePermissions(project)` / `permissionsFor`, passed down as `can*`
@@ -108,5 +108,5 @@ booleans; no inline role checks. Lint can't see inside replicas, so this
 one is on you. Any other file that imports them says why on the import: `-- wiring: …` for one that stays (the app shell),
 `-- debt: …` for a page not yet split. List them with
 `grep -rnE "no-restricted-imports -- (wiring|debt):" src`.
-`src/pages/profile/TokensPage.tsx` and `TokensPage.replica.tsx` are the
+`src/pages/profile/tokens/TokensPage.tsx` and `TokensPage.route.tsx` are the
 worked example (STANDARDS.md pattern 11).

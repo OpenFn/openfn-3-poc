@@ -250,7 +250,7 @@ const apiImports = {
 
 const cacheWriteMessage = "Don't write into the query cache: invalidate the keys the save changed and return that from onSuccess (.claude/rules/api.md)."
 
-const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.test.{ts,tsx}']
+const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', '**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
 const seamImports = (extra = []) => [
   'error',
   { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, apiImports, ...extra] },
@@ -380,7 +380,7 @@ export default defineConfig([
   {
     // The data seam: components, pages and utils get records and permission
     // booleans as props (the wiring loads them), so wiring the backend only
-    // touches `*.replica.*` files and `*Replica.ts` helpers. Stories may use
+    // touches `*.replica.*` and `*.route.*` files and `*Replica.ts` helpers. Stories may use
     // fixtures. An import that still crosses the seam says why, with
     // `-- wiring: …` (it stays) or `-- debt: …` (page not yet split).
     files: ['src/components/**/*.{ts,tsx}', 'src/pages/**/*.{ts,tsx}', 'src/utils/**/*.{ts,tsx}'],

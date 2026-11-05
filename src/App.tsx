@@ -28,7 +28,7 @@ import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.re
 
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
 import ProfilePage from "./pages/profile/ProfilePage.replica";
-import TokensPage from "./pages/profile/TokensPage.replica";
+import TokensPage from "./pages/profile/tokens/TokensPage.route";
 import BackupCodesPage from "./pages/profile/BackupCodesPage.replica";
 
 import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";

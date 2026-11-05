@@ -10,8 +10,8 @@ Pattern numbers are cited across the repo; they never change. Which
 patterns are done and which pages still need them is tracked in the project
 tracker, not here.
 
-Worked example: `src/pages/profile/TokensPage.tsx` and its
-`TokensPage.replica.tsx` wrapper (patterns 1, 4, 6, 7, 11).
+Worked example: `src/pages/profile/tokens/TokensPage.tsx` and its
+`TokensPage.route.tsx` route (patterns 1, 4, 6, 7, 11).
 
 ## 1. Async action
 
@@ -239,6 +239,12 @@ is rewritten.
 - **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
   in state as the server would, reads URL params, awaits `simulateRequest`,
   fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
+- **Moving to: the route connects, the page behaves.** Tokens is the first
+  page in the new shape, in its own folder (`src/pages/profile/tokens/`) with
+  `TokensPage.route.tsx` in place of the replica. The route only passes data,
+  actions and URL params; the page owns how it behaves (the new-token banner,
+  the success toasts). The other pages move once a second page (Projects)
+  proves the shape.
 - **In Lightning**, an island wrapper feeds the same `XPage.tsx` from the
   LiveView's `data-*` attributes and turns each `on*` call into a
   `pushEvent`. After an action the LiveView re-renders with new attributes,
