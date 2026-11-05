@@ -20,6 +20,7 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
   };
@@ -75,14 +76,32 @@ export function useCurrentProject(projectId: string): ProjectNode {
 
 const toTree = (rows: ApiProject[]) => rows.map(projectNode);
 
+const treeQuery = queryOptions({
+  queryKey: [...projectKeys.all, "tree"],
+  queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
+});
+
 /** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
 export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
-  const query = useQuery({
-    queryKey: [...projectKeys.all, "tree"],
-    queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
-    select: toTree,
-  });
+  const query = useQuery({ ...treeQuery, select: toTree });
   return { status: statusOf(query), projects: query.data ?? [] };
+}
+
+/**
+ * Whether a refused project is refused for its MFA requirement rather than
+ * for no access, or "checking" while that loads. The API answers both 403
+ * `forbidden` (docs/api-gaps.md), but the list holds every project you're a
+ * member of, so a listed project that requires MFA and still refuses you is
+ * the MFA requirement. The picker has usually loaded the list already.
+ */
+export function useRefusedForMfa(id: string, refused: boolean): boolean | "checking" {
+  const query = useQuery({
+    ...treeQuery,
+    enabled: refused,
+    select: (rows) => rows.some((p) => p.id === id && p.attributes.requires_mfa),
+  });
+  if (!refused || query.isError) return false;
+  return query.isSuccess ? query.data : "checking";
 }
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */

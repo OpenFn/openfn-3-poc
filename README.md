@@ -41,6 +41,8 @@ works straight away. To see the login page, go to `/#/users/log_out`.
 | super@openfn.org | Sizwe, superuser | `welcome12345` | `123456`, or the backup code `fakebackup01` |
 
 Signing in as someone else shows their projects and what they may do there.
+dhis2-project requires MFA, so only Sizwe opens it; Amy and Esther are sent
+to set up MFA.
 You stay signed in across reloads: the pretend server (`src/fake-api/`) keeps
 the session in the browser's localStorage. Clear it to start again as Amy.
 

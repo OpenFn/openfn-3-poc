@@ -100,10 +100,8 @@ describe("every page and component can be seen and checked", () => {
     expectOnlyKnown(direct, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
       "./pages/auth/AuthConfirmAccountPage.tsx",
-      "./pages/auth/AuthLoginPage.tsx",
       "./pages/auth/AuthRegisterPage.tsx",
       "./pages/auth/AuthResetPasswordPage.tsx",
-      "./pages/auth/AuthTwoFactorPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/workflow-editor/WorkflowEditorPage.tsx",
     ]);

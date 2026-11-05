@@ -36,10 +36,12 @@ export const projects: Project[] = [
     retentionPolicy: "retain_with_errors",
     historyRetentionPeriod: 30,
     dataclipRetentionPeriod: 7,
-    requiresMfa: false,
+    // So the MFA gate shows: Sizwe has MFA and gets in, Amy and Esther are sent to set it up.
+    requiresMfa: true,
     members: [
       { userId: "user-amy", role: "admin", failureAlert: true, digest: "daily" },
       { userId: "user-esther", role: "owner", failureAlert: true, digest: "never" },
+      { userId: "user-sizwe", role: "admin", failureAlert: false, digest: "never" },
     ],
     lastUpdatedAt: "2026-10-11T16:40:00Z",
     insertedAt: "2024-03-12T10:05:00Z",

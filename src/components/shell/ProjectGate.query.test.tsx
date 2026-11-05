@@ -3,13 +3,16 @@ import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { useCurrentProject } from "@/api/projects";
-import { failNext, resetFakeApi } from "@/api/testing";
+import { request } from "@/api/client";
+import { FAKE_MFA_CODE, FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/testing";
 import { projects } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import ProjectGate from "./ProjectGate.query";
 
 const wait = { timeout: 3000 };
-const member = projects.find((p) => p.members.some((m) => m.userId === session.user.id))!;
+const member = projects.find((p) => !p.requiresMfa && p.members.some((m) => m.userId === session.user.id))!;
+// A project that requires MFA, with the first fixture user (no MFA) as a member.
+const mfaProject = projects.find((p) => p.requiresMfa && p.members.some((m) => m.userId === session.user.id))!;
 
 /** A page under the gate, reading the project the way the sweep's .query files will. */
 function Child() {
@@ -25,6 +28,7 @@ function renderAt(projectId: string) {
           <Route path="/projects/:projectId" element={<ProjectGate />}>
             <Route path="w" element={<Child />} />
           </Route>
+          <Route path="/mfa_required" element={<p>Set up MFA</p>} />
         </Routes>
       </MemoryRouter>
     </ApiProvider>
@@ -62,5 +66,18 @@ describe("ProjectGate", () => {
     failNext("GET /api/projects/:id", { status: 500, code: "internal", detail: "Lightning fell over." });
     renderAt(member.id);
     expect(await screen.findByText("Lightning fell over.", {}, wait)).toBeTruthy();
+  });
+
+  it("a member without MFA on a project that requires it is sent to set it up, not told No Access", async () => {
+    renderAt(mfaProject.id);
+    expect(await screen.findByText("Set up MFA", {}, wait)).toBeTruthy();
+    expect(screen.queryByText("No Access")).toBeNull();
+  });
+
+  it("a member with MFA opens a project that requires it", async () => {
+    await request("POST", "/api/session", { email: "super@openfn.org", password: FAKE_PASSWORD }).catch(() => undefined);
+    await request("POST", "/api/session", { mfa_code: FAKE_MFA_CODE });
+    renderAt(mfaProject.id);
+    expect(await screen.findByText(`Inside ${mfaProject.name}`, {}, wait)).toBeTruthy();
   });
 });

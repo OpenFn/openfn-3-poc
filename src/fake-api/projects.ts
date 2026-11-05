@@ -30,6 +30,7 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
   attributes: {
     name: p.name,
     description: p.description || null,
+    requires_mfa: p.requiresMfa,
     ...(tree && { parent_id: openParentId(p), color: p.color, ...(p.parentId !== null && { root_id: rootOf(p).id }) }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
     ...(stats && projectStats(p)),
@@ -42,6 +43,8 @@ const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === currentUser().id)?.role;
 // Membership is per project: a sandbox copies its parent's members when it's made.
 const canOpen = (p: Project) => !!roleOf(p);
+// A member without MFA is refused every route on a project that requires it; the list still shows it.
+const canEnter = (p: Project) => canOpen(p) && (!p.requiresMfa || currentUser().mfaEnabled);
 const rootOf = (p: Project): Project => {
   const parent = projects.find((q) => q.id === p.parentId);
   return parent ? rootOf(parent) : p;
@@ -143,7 +146,7 @@ export const projectRoutes: Record<string, Handler> = {
   "GET /api/projects/:id/workflows": ({ id }, _body, query) => {
     const project = projects.find((p) => p.id === id);
     // 403 whether or not the project exists.
-    if (!project || !canOpen(project)) return forbidden();
+    if (!project || !canEnter(project)) return forbidden();
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
@@ -163,7 +166,7 @@ export const projectRoutes: Record<string, Handler> = {
       return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
     }
     const project = projects.find((p) => p.id === id);
-    if (project && canOpen(project)) {
+    if (project && canEnter(project)) {
       const entry = projectEntry(project);
       return json(200, { data: { ...entry, attributes: { ...entry.attributes, permissions: permissionsIn(project) } }, included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
     }
@@ -174,7 +177,7 @@ export const projectRoutes: Record<string, Handler> = {
   "PUT /api/projects/:id": ({ id }, body) => {
     if (!isUuid(id!)) return forbidden();
     const existing = projects.find((p) => p.id === id);
-    if (existing && !["owner", "admin"].includes(roleOf(existing) ?? "")) return forbidden();
+    if (existing && (!canEnter(existing) || !["owner", "admin"].includes(roleOf(existing) ?? ""))) return forbidden();
     const errors: NonNullable<Problem["errors"]> = Object.keys(body)
       .filter((key) => !PROJECT_KEYS.includes(key))
       .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));

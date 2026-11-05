@@ -222,10 +222,18 @@ confirm-required when unconfirmed. Otherwise it supplies the user and
 instance through `SessionProvider`. Any request answered 401 reloads the
 session (`ApiProvider`), so a session that ends mid-use lands on login.
 
-Still to build, in the same place: the MFA-required page for projects that
-require it, and keeping non-superusers away from `/settings/*`. Lightning
-does these in plugs and `on_mount`. Whether you may open a project is not
-the gate's: `ProjectGate` (pattern 11) checks that.
+Two more gates sit under it, one guard each in the route tree, never a
+check in a page:
+
+- `AdminGate` (`AdminGate.query.tsx`) is the parent of every `/settings/*`
+  admin route and `/dashboard`. Anyone but a superuser (`role` from
+  `/api/me`) gets Lightning's No Access in place of the page. The API
+  refuses them too; the fake's admin routes check `currentUser().role`.
+- `ProjectGate` (pattern 11) loads the project and shows Not Found or No
+  Access. A member without MFA on a project that requires it goes to
+  `/mfa_required` instead: the API answers both with 403 `forbidden`, so
+  `useRefusedForMfa` tells them apart from the project list
+  (docs/api-gaps.md, Project access).
 
 ## 11. Page and query
 
