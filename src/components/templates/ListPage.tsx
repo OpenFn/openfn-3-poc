@@ -39,7 +39,7 @@ export default function ListPage({
   breadcrumbs?: ReactNode;
   /** Show "(3)" after the title, while the list has rows. */
   showCount?: boolean;
-  /** One line under the title, saying what the list is. Shown with breadcrumbs (Header). */
+  /** One line under the title, in the header, saying what the list is. */
   description?: ReactNode;
   /** The header's buttons (and a search box), main action first. Shown in every state. */
   actions?: ReactNode;
