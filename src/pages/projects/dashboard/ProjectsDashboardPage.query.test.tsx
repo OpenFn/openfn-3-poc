@@ -9,7 +9,7 @@ import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
-import ProjectsDashboardPageRoute from "./ProjectsDashboardPage.route";
+import ProjectsDashboardPageRoute from "./ProjectsDashboardPage.query";
 
 const wait = { timeout: 3000 };
 

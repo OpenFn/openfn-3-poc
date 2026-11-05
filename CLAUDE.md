@@ -71,9 +71,9 @@ data, comments, lint) and loads by itself when you touch one.
   INVENTORY.md id.
 - `src/pages/<area>/`: one file per Lightning view, named for its inventory
   id (`history-work-orders` → `HistoryWorkOrdersPage.tsx`). A page moved to
-  the API sits in its own folder with a `.route.tsx` beside it (STANDARDS.md
+  the API sits in its own folder with a `.query.tsx` beside it (STANDARDS.md
   pattern 11); older pages still have a `.replica.tsx` wrapper.
-- `src/components/shell/`: the app shell; `ProjectGate.route.tsx` is the
+- `src/components/shell/`: the app shell; `ProjectGate.query.tsx` is the
   parent of every `/projects/:projectId` route (STANDARDS pattern 11).
 - `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
   area.
@@ -116,7 +116,7 @@ data, comments, lint) and loads by itself when you touch one.
 
 ## The data seam
 
-Only `*.replica.*` wrappers, `*.route.*` routes, `*Replica.ts` helpers and `main.tsx` may import
+Only `*.replica.*` wrappers, `*.query.*` routes, `*Replica.ts` helpers and `main.tsx` may import
 `src/mock-data/`, `src/session/` or the router. There, the user comes from
 `useCurrentUser()` (never a fixture import) and permissions from
 `usePermissions(project)` / `permissionsFor`, passed down as `can*`
@@ -124,5 +124,5 @@ booleans; no inline role checks. Lint can't see inside replicas, so this
 one is on you. Any other file that imports them says why on the import: `-- wiring: …` for one that stays (the app shell),
 `-- debt: …` for a page not yet split. List them with
 `grep -rnE "no-restricted-imports -- (wiring|debt):" src`.
-`src/pages/profile/tokens/TokensPage.tsx` and `TokensPage.route.tsx` are the
+`src/pages/profile/tokens/TokensPage.tsx` and `TokensPage.query.tsx` are the
 worked example (STANDARDS.md pattern 11).

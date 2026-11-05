@@ -3,7 +3,7 @@ import { useCurrentUser } from "@/session/session";
 import ProjectsDashboardPage from "./ProjectsDashboardPage";
 
 /**
- * ProjectsDashboardPage's route: loads the projects from the API, with the
+ * ProjectsDashboardPage's .query file: loads the projects from the API, with the
  * planned include=stats for their counts, and creates them. It only passes data and actions;
  * the modal and the toast are the page's.
  */

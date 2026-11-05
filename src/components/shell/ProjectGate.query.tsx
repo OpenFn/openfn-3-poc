@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports -- wiring: the gate reads the project id from the URL and renders the route Outlet.
 import { Outlet, useParams } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useProject } from "@/api/projects";
@@ -8,7 +7,7 @@ import AsyncBoundary from "@/components/primitives/AsyncBoundary";
  * The parent of every /projects/:projectId route (Lightning's :project_scope,
  * annotations/shared/shared-project-scope.md). Loads the project once and
  * shows loading, Not Found or No Access itself; the page under it renders
- * only once the project is there, and reads it with useCurrentProject, never
+ * only once the project is there, and reads it with useCurrentProject (src/api/projects.ts), never
  * checking that it exists.
  */
 export default function ProjectGate() {

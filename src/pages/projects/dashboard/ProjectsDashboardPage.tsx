@@ -27,7 +27,7 @@ export interface ProjectsDashboardPageProps {
 /**
  * Inventory view `projects-dashboard` (DashboardLive.Index): the greeting,
  * the user's projects, and the Create project modal. The page owns how it
- * behaves (the modal, the toast); its route, ProjectsDashboardPage.route.tsx,
+ * behaves (the modal, the toast); its route, ProjectsDashboardPage.query.tsx,
  * only passes data and actions.
  */
 export default function ProjectsDashboardPage({ status, firstName, projects, onCreate }: ProjectsDashboardPageProps) {

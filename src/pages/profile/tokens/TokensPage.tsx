@@ -40,7 +40,7 @@ export interface TokensPageProps {
  * Inventory view `profile-tokens` (tokens_live/index.html.heex): "Generate
  * New Token" shows the new token once in a banner; the table masks the rest.
  * The page owns how it behaves (the banner, the toasts); its route,
- * TokensPage.route.tsx, only passes data and actions.
+ * TokensPage.query.tsx, only passes data and actions.
  */
 export default function TokensPage({ status = { state: "ready" }, tokens, tokenId, onGenerate, onDelete, onClose, isStepUpRequired, onStepUp, hasMfa }: TokensPageProps) {
   const toast = useToast();

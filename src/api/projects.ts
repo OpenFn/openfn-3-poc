@@ -59,6 +59,17 @@ export function useProject(id: string): { status: ResourceStatus; project: Proje
   return { status: statusOf(query), project: query.data };
 }
 
+/**
+ * The project a page under ProjectGate is in. The gate has already loaded it
+ * and shown Not Found or No Access instead of the page, so it's always there:
+ * never check. The page's .query file passes the :projectId from the URL.
+ */
+export function useCurrentProject(projectId: string): ProjectNode {
+  const { project } = useProject(projectId);
+  if (!project) throw new Error("useCurrentProject is for pages under ProjectGate, which loads the project first");
+  return project;
+}
+
 const toTree = (rows: ApiProject[]) => rows.map(projectNode);
 
 /** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
