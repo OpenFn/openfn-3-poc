@@ -68,11 +68,15 @@ enforces it (`eslint.config.js`, tested in `src/lint-seam.test.ts`).
 | Folder | Holds | May import |
 |---|---|---|
 | `src/pages/` | One Lightning view each | anything |
-| `templates/` | A whole page's layout (`ListPage`); a page fills it | primitives, `domain/`, `templates/` |
-| `<area>/` (`history/`, `credentials/`, …) | What only that area uses | primitives, `domain/`, `shell/`, its own area |
-| `shell/` | The chrome around every page (the frame itself is the `Layout` primitive), and the `.query` files that feed it (`AppShell.query.tsx`, `ProjectGate.query.tsx`) | primitives, `domain/`, `shell/` |
-| `domain/` | Lightning pieces two or more areas use | primitives, `domain/` |
+| `<area>/` (`history/`, `credentials/`, …) | What only that area uses | primitives, `patterns/`, `domain/`, `shell/`, its own area |
+| `shell/` | The chrome around every page (the frame itself is the `Layout` pattern), and the `.query` files that feed it (`AppShell.query.tsx`, `ProjectGate.query.tsx`) | primitives, `patterns/`, `domain/`, `shell/` |
+| `domain/` | Lightning pieces two or more areas use | primitives, `patterns/`, `domain/` |
+| `patterns/` | The shape of a page or a region of one, with none of Lightning's words (`ListPage`, `Layout`). Lightning's content comes in through slots: `children` or `ReactNode` props | primitives, `patterns/` |
 | `primitives/` | General pieces | primitives |
+
+The order is Brandon's (openfn-ia-demo `docs/architecture.md`): patterns
+sit below domain, so a pattern never learns what a run or a credential is.
+A page hands it `<WorkflowsTable>`; `ListPage` only decides where it goes.
 
 Every tier may import `src/utils/`, `src/types/`, `src/theme/`,
 `src/routing/` and `src/constants.ts`. Utils may import primitives
@@ -88,12 +92,14 @@ Ask in order and stop at the first yes:
    A Lightning flavour of a general piece still counts (`UuidChip`: a short
    id with a copy tooltip). A piece named for a Lightning thing, or built to
    show one (a run, an adaptor, a credential), fails this step even if all
-   it takes is a string. Layouts and charts are judged the same way.
-2. **Is it the chrome around every page?** `shell/`.
-3. **Do two or more areas use it?** `domain/`. A dialog opened by the admin
+   it takes is a string. Charts are judged the same way.
+2. **Is it the shape of a page or a region, which would fit another product
+   unchanged?** `patterns/`. Lightning's content goes in through slots.
+3. **Is it the chrome around every page?** `shell/`.
+4. **Do two or more areas use it?** `domain/`. A dialog opened by the admin
    and project settings pages counts. It takes a Lightning record or
    carries Lightning's wording.
-4. **Otherwise** the folder of the one area that uses it.
+5. **Otherwise** the folder of the one area that uses it.
 
 An area's whole panel (a page section with its own tables and dialogs)
 shown on another area's page stays in its area (`CredentialIndex` stays in

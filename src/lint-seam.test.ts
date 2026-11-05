@@ -116,7 +116,7 @@ describe("the type size lint rule", () => {
 
 describe("the tier lint rule", () => {
   const code = (from: string) => `import X from "${from}";\nexport default X;\n`;
-  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|template|feature component|util) |Nothing outside src\/pages\/)/;
+  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|pattern|domain component|feature component|util) |Nothing outside src\/pages\/)/;
 
   it("a primitive may import primitives and utils, not domain, a feature component, the shell or a page", async () => {
     const probe = "src/components/primitives/TierProbe.tsx";
@@ -129,7 +129,7 @@ describe("the tier lint rule", () => {
 
   it("a domain component may import primitives and domain, not an area, the shell or a page", async () => {
     const probe = "src/components/domain/TierProbe.tsx";
-    for (const from of ["@/components/primitives/Pill", "./StatePill", "@/types/history"]) {
+    for (const from of ["@/components/primitives/Pill", "@/components/patterns/ListPage", "./StatePill", "@/types/history"]) {
       expect(await seamMessages(probe, code(from))).toEqual([]);
     }
     for (const from of ["@/components/history/RunStepList", "@/components/shell/Sidebar", "@/pages/history/RunShowPage"]) {
@@ -137,12 +137,12 @@ describe("the tier lint rule", () => {
     }
   });
 
-  it("a template may import primitives, domain and templates, not an area, the shell or a page", async () => {
-    const probe = "src/components/templates/TierProbe.tsx";
-    for (const from of ["@/components/primitives/Header", "@/components/domain/StatePill", "./ListPage"]) {
+  it("a pattern may import primitives and patterns, not domain, an area, the shell or a page", async () => {
+    const probe = "src/components/patterns/TierProbe.tsx";
+    for (const from of ["@/components/primitives/Header", "./ListPage"]) {
       expect(await seamMessages(probe, code(from))).toEqual([]);
     }
-    for (const from of ["@/components/profile/TokensTable", "@/components/shell/Sidebar", "@/pages/history/RunShowPage"]) {
+    for (const from of ["@/components/domain/StatePill", "@/components/profile/TokensTable", "@/components/shell/Sidebar", "@/pages/history/RunShowPage"]) {
       expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
     }
   });
@@ -213,7 +213,7 @@ describe("the ListPage lint rule", () => {
   const listPageMessages = async (filePath: string, code: string) =>
     (await ruleMessages("no-restricted-syntax", filePath, code)).filter((m) => owns.test(m));
   const page = (from: string) =>
-    `import ListPage from "@/components/templates/ListPage";\nimport X from "${from}";\nexport default [ListPage, X];\n`;
+    `import ListPage from "@/components/patterns/ListPage";\nimport X from "${from}";\nexport default [ListPage, X];\n`;
 
   it.each(["Header", "PageContent", "EmptyState", "AsyncBoundary"])("a page on ListPage may not import %s", async (name) => {
     for (const probe of ["src/pages/x/ProbePage.tsx", "src/components/projects/Probe.tsx"]) {
