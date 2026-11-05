@@ -251,7 +251,7 @@ is the list example (a list on `ListPage`, with create).
   `.claude/rules/api.md` says how. Each route has a `XPage.route.test.tsx`.
 - **Under `/projects/:projectId`, the project is already there.**
   `ProjectGate` loads it before the route renders and shows Not Found or No
-  Access itself; the route reads it with `useGatedProject()` and never checks
+  Access itself; the route reads it with `useCurrentProject()` and never checks
   whether it exists. A replica's `if (!project) <Navigate …>` goes when the
   page moves.
 - **Older pages** still have a `XPage.replica.tsx` wrapper in place of the
