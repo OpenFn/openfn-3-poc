@@ -53,6 +53,8 @@ export function useProject(id: string): { status: ResourceStatus; project: Proje
     queryKey: projectKeys.one(id),
     queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
     select: projectNode,
+    // The gate and the route under it ask in turn; without this the route fetches it again.
+    staleTime: 60_000,
   });
   return { status: statusOf(query), project: query.data };
 }

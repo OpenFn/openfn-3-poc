@@ -97,7 +97,7 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
   attributes: {
     name: p.name,
     description: p.description || null,
-    ...(tree && { parent_id: p.parentId, color: p.color }),
+    ...(tree && { parent_id: openParentId(p), color: p.color }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
     ...(stats && projectStats(p)),
   },
@@ -115,8 +115,13 @@ function badInclude(query: URLSearchParams, known: string[]) {
 
 const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === session.user.id)?.role;
-// A sandbox opens for members of it or of any project above it.
-const canOpen = (p: Project | undefined): boolean => !!p && (!!roleOf(p) || canOpen(projects.find((q) => q.id === p.parentId)));
+// Membership is per project: a sandbox copies its parent's members when it's made.
+const canOpen = (p: Project) => !!roleOf(p);
+// The nearest project above that you can open, or null (api/projects.md, depth=all).
+const openParentId = (p: Project): string | null => {
+  const parent = projects.find((q) => q.id === p.parentId);
+  return !parent ? null : canOpen(parent) ? parent.id : openParentId(parent);
+};
 const projectStats = (p: Project) => {
   const workflows = workflowsIn(p.id);
   return {
@@ -196,6 +201,9 @@ const routes: Record<string, Handler> = {
   },
   // A non-member hears 403 whether or not the project exists; only a superuser hears 404.
   "GET /api/projects/:id": ({ id }) => {
+    if (!isUuid(id!) && session.user.role === "superuser") {
+      return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
+    }
     const project = projects.find((p) => p.id === id);
     if (project && canOpen(project)) return json(200, { data: projectEntry(project), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
     if (!project && session.user.role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });

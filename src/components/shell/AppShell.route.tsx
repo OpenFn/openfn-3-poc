@@ -50,7 +50,7 @@ export default function AppShell() {
         currentId={projectId}
         placeholder="Search projects..."
         emptyMessage={
-          projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "ready" ? "No projects found" : "Couldn't load your projects"
+          projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found"
         }
         viewAllLabel="View all projects"
         viewAllHref="/projects"
