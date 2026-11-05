@@ -45,6 +45,7 @@ its stories; read the component before using it.
 | A value people copy (an external id, a path) | `CopyChip` |
 | Children in a column, or in a line, with a gap between them (4, 8, 16 or 24px) | `Stack`, `Row`; the parent owns the space, not the children's margins |
 | Why the plan locks a setting, under the control it locks | `PlanLimitNote` (domain) |
+| An action the server refuses until the person re-enters their password or code | `useStepUp` (domain), which opens `StepUpDialog` and runs the action again |
 | An on/off switch | `Toggle` |
 | An inline link | `TextLink` |
 | Read-only code, a log or a dataclip | `CodeViewer` |
