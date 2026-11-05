@@ -99,11 +99,12 @@ describe("CredentialsIndexPage", () => {
     expect(items).toEqual(["Cancel deletion", "Delete now"]);
   });
 
-  it("keeps Edit on an OAuth credential, disabled, saying why", async () => {
-    render();
-    const edit = within(await menu("Sheets")).getByRole("menuitem", { name: /^Edit/ });
-    expect(edit.getAttribute("aria-disabled")).toBe("true");
-    expect(edit.textContent).toContain("OAuth credentials can't be edited here yet.");
+  it("says why an OAuth credential can't be edited, and opens no form", async () => {
+    const host = render();
+    await choose("Sheets", "Edit");
+    expect(screen.getByText(/OAuth credentials can't be edited here yet/)).toBeTruthy();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(host.calls("onLoadCredentialSchema")).toEqual([]);
   });
 
   it("loads an adaptor's fields before editing, and shows none of the saved values", async () => {
@@ -124,7 +125,21 @@ describe("CredentialsIndexPage", () => {
     const form = screen.getByRole("dialog");
     await userEvent.click(within(form).getByRole("button", { name: "Add new environment" }));
     await userEvent.click(within(form).getByRole("button", { name: /Save/ }));
-    expect(await within(form).findByText(/Environments can't be added, renamed or removed here yet/)).toBeTruthy();
+    expect(await within(form).findByText(/Only main can be changed here yet/)).toBeTruthy();
+    expect(host.calls("onUpdateCredential")).toEqual([]);
+  });
+
+  it("refuses, without saving, new values for an environment other than main", async () => {
+    const host = render();
+    await choose("DHIS2 play", "Edit");
+    await host.resolve("onLoadCredentialSchema", {
+      fields: [{ key: "password", label: "Password", kind: "password", required: false, placeholder: null, unrecognizedType: null }],
+    });
+    const form = screen.getByRole("dialog");
+    await userEvent.click(within(form).getByRole("tab", { name: /staging/ }));
+    await userEvent.type(within(form).getByLabelText("Password"), "new-secret");
+    await userEvent.click(within(form).getByRole("button", { name: /Save/ }));
+    expect(await within(form).findByText(/Only main can be changed here yet/)).toBeTruthy();
     expect(host.calls("onUpdateCredential")).toEqual([]);
   });
 
@@ -139,7 +154,7 @@ describe("CredentialsIndexPage", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("cancels a deletion from the menu, and toasts a refusal", async () => {
+  it("cancels a deletion from the menu, and shows a refusal above the table", async () => {
     const host = render();
     await choose("Old warehouse", "Cancel deletion");
     await host.reject("onCancelCredentialDeletion", new RequestError("This credential isn't scheduled for deletion."));

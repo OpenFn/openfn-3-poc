@@ -158,7 +158,9 @@ goes back to Lightning's way.
   the API refuses while the deletion is scheduled (409
   `scheduled_for_deletion`, api/credentials.md).
 - **A result shows above the table it changed.** Lightning flashes a toast.
-  A failed Cancel deletion shows there too, and stays until the next result. The words are his where he has them: "OAuth client
+  Success fades after five seconds, as a toast does; a failed Cancel
+  deletion shows there too and stays until the next result. The words are
+  his where he has them: "OAuth client
   created successfully", "OAuth client updated successfully", and
   `"<name>" deleted` for a credential deleted now or an OAuth client
   (Lightning: "Credential deleted successfully", "Oauth client created
@@ -170,17 +172,20 @@ goes back to Lightning's way.
   starts blank, none is required, and a blank one keeps what's saved; the
   client secret says "Saved. Leave blank to keep it." The API never sends
   them (api/credentials.md).
-- **The credential form can't change environments or take a project away
-  yet.** Saving refuses it, saying so, until the form moves to the API's
-  environment and project routes. Lightning's form does both.
+- **The credential form can change only `main`, and can't take a project
+  away, yet.** Saving refuses anything else, saying so, until the form moves
+  to the API's environment and project routes. Lightning's form does both.
 - **OAuth credentials can't be added or edited here yet.** "New credential"
-  offers no OAuth client as a type, and Edit on an OAuth credential is
-  greyed out, saying why. The API has no route for signing in to the
-  provider yet (docs/api-gaps.md). Transfer and delete still work.
-- **Removing a project from a credential doesn't warn about the workflows
-  using it.** Lightning names them and asks first (`components/credentials.ex:194`).
-  The credential list doesn't say which workflows use a credential
-  (docs/api-gaps.md).
+  offers no OAuth client as a type, and Edit on an OAuth credential says so
+  above the table. The API has no route for signing in to the provider yet
+  (docs/api-gaps.md). Transfer and delete still work.
+- **A refused transfer doesn't say whether the email has an account.**
+  Lightning answers "User does not exist" or names the projects the person
+  isn't in (`transfer_credential_modal.ex`), which tells the owner who has
+  an account. Here both are "They need an account and a role in every
+  project this credential is shared with".
+- **Sharing offers only the projects you edit or own.** Lightning offers
+  every project you're a member of; the API needs editor or above to link.
 - **Layout.** Profile's two columns start when its section is wide enough,
   not at a screen size, so they fit beside the menu. Backup codes stays a
   page of its own, as in Lightning: it is a step after setting up MFA, not a

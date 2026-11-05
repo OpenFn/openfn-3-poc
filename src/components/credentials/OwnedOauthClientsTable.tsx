@@ -31,7 +31,7 @@ export default function OwnedOauthClientsTable({ clients, onEdit, onDelete }: Pr
       {clients.map((c) => (
         <Tr key={c.id}>
           <Td truncate maxWidth={60}>
-            {c.name}
+            <Text tone="strong">{c.name}</Text>
           </Td>
           <Td wrap maxWidth={80}>
             {c.global ? (

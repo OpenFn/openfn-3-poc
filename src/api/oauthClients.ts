@@ -64,8 +64,8 @@ export function useOauthClients(viewer: { id: string; email: string }): { status
     queryFn: () => listAll<ApiOauthClient>("/api/oauth_clients", "oauth_clients"),
     select: (rows) => rows.map((c) => oauthClientRow(c, viewer, tree.projects)),
   });
-  // Until the projects load, there are no names for the clients' projects.
-  return { status: tree.status.state === "loading" ? tree.status : statusOf(query), oauthClients: query.data ?? [] };
+  // The clients' projects are named from the project list, so it loads, or fails, first.
+  return { status: tree.status.state === "ready" ? statusOf(query) : tree.status, oauthClients: query.data ?? [] };
 }
 
 // The form's names for the API's fields, so a 422 lands on its field.

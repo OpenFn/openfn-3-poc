@@ -31,7 +31,8 @@ const seed = (): StoredClient[] =>
   clientFixtures.map((c) => ({
     id: c.id,
     name: c.name,
-    ...(({ clientId, clientSecret }) => ({ client_id: clientId, client_secret: clientSecret }))(clientSecretsFor(credentialsFixture(), c.id)),
+    client_id: clientSecretsFor(credentialsFixture(), c.id).clientId,
+    client_secret: clientSecretsFor(credentialsFixture(), c.id).clientSecret,
     authorization_endpoint: c.authorizationEndpoint,
     token_endpoint: c.tokenEndpoint,
     revocation_endpoint: c.revocationEndpoint || null,
@@ -53,7 +54,7 @@ export const resetOauthClients = () => {
   clients = seed();
 };
 
-/** The clients as the fake holds them now, for the credentials' `oauth`. */
+/** The clients as the fake holds them now. */
 export const fakeOauthClients = () => clients;
 
 // JSON leaves out an undefined field.
@@ -105,7 +106,7 @@ export const oauthClientRoutes: Record<string, Handler> = {
       ...text,
       ...Object.fromEntries(ENDPOINTS.map((key) => [key, (body[key] as string | undefined) || null])),
       global,
-      project_ids: global ? [] : ((body["project_ids"] ?? []) as string[]),
+      project_ids: (body["project_ids"] ?? []) as string[],
       updated_at: now(),
     };
     if (existing) {

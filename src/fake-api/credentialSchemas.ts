@@ -31,7 +31,6 @@ export const credentialSchemaRoutes: Record<string, Handler> = {
     json(200, { data: [...credentialTypes.map((t) => ({ name: schemaPackage(t.key), title: t.name })), { name: "raw", title: "Raw JSON" }] }),
   "GET /api/credential_schemas/:name": ({ name }) => {
     const short = adaptorShortName(name!);
-    if (name === "raw") return json(200, { data: { name: "raw", title: "Raw JSON", schema: {} } });
     if (!credentialTypes.some((t) => t.key === short)) return problem({ status: 404, code: "not_found", detail: "Not found." });
     return json(200, { data: { name: schemaPackage(short), title: short, schema: jsonSchema(fieldsForSchema(short)) } });
   },

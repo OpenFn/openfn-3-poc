@@ -116,7 +116,7 @@ describe("credentialReplicaActions", () => {
   it("won't transfer a credential to someone outside a project that uses it", async () => {
     const refused = actions().onTransferCredential("cred-hapi-fhir", "super@openfn.org").catch((e: unknown) => e);
     await vi.runAllTimersAsync();
-    expect(((await refused) as RequestError).fieldErrors).toEqual({ recipient: ["User doesn't have access to these projects: openhie-project"] });
+    expect(((await refused) as RequestError).fieldErrors).toEqual({ receiverEmail: ["User doesn't have access to these projects: openhie-project"] });
     await settle(actions().onTransferCredential("cred-hapi-fhir", "editor@openfn.org"));
     expect(fixture.credentials.find((c) => c.id === "cred-hapi-fhir")!.transferStatus).toBe("pending");
   });
@@ -127,8 +127,8 @@ describe("credentialReplicaActions", () => {
       await vi.runAllTimersAsync();
       return ((await refused) as RequestError).fieldErrors;
     };
-    expect(await refusal("nobody@example.org")).toEqual({ recipient: ["User does not exist"] });
-    expect(await refusal(viewer.email)).toEqual({ recipient: ["You cannot transfer a credential to yourself"] });
+    expect(await refusal("nobody@example.org")).toEqual({ receiverEmail: ["User does not exist"] });
+    expect(await refusal(viewer.email)).toEqual({ receiverEmail: ["You cannot transfer a credential to yourself"] });
     expect(fixture.credentials.find((c) => c.id === "cred-hapi-fhir")!.transferStatus).toBeNull();
   });
 

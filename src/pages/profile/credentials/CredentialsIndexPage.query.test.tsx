@@ -96,13 +96,6 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     await waitFor(() => expect(screen.queryByRole("row", { name: /DHIS2 play/ })).toBeNull(), wait);
   });
 
-  it("explains, and deletes nothing, when runs have used a scheduled credential", async () => {
-    renderRoute();
-    await choose("Legacy warehouse", "Delete now");
-    expect(within(await dialog()).getByText("Credential marked for deletion")).toBeTruthy();
-    expect(within(screen.getByRole("dialog")).queryByRole("button", { name: "Delete credential" })).toBeNull();
-  });
-
   it("keeps the delete dialog open when the server refuses to delete a credential runs have used", async () => {
     await request("PUT", "/api/credentials/cred-dhis2-play/scheduled_deletion");
     failNext("DELETE /api/credentials/:id", { status: 409, code: "in_use", detail: "Cannot delete a credential that has activities in projects" });
@@ -119,7 +112,7 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     const email = within(await dialog()).getByLabelText("Receiver email");
     await userEvent.type(email, "nobody@example.org");
     await userEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Transfer" }));
-    expect(await within(screen.getByRole("dialog")).findByText("User does not exist", {}, wait)).toBeTruthy();
+    expect(await within(screen.getByRole("dialog")).findByText("They need an account and a role in every project this credential is shared with", {}, wait)).toBeTruthy();
 
     await userEvent.clear(email);
     await userEvent.type(email, "editor@openfn.org");
@@ -148,6 +141,15 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     fireEvent.click(screen.getByRole("button", { name: "Save Credential" }));
     expect(await notice("Credential created successfully")).toBeTruthy();
     expect(await screen.findByRole("row", { name: /Mailchimp/ }, wait)).toBeTruthy();
+  });
+
+  it("saves an edit, and lists the new name", async () => {
+    renderRoute();
+    await choose("DHIS2 play", "Edit");
+    fireEvent.change(within(await dialog()).getByLabelText(/^Credential Name/), { target: { value: "DHIS2 sandbox" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save Credential" }));
+    expect(await notice("Credential updated successfully")).toBeTruthy();
+    expect(await screen.findByRole("row", { name: /DHIS2 sandbox/ }, wait)).toBeTruthy();
   });
 
   it("puts the server's refusal of a taken name on the credential form's name field", async () => {

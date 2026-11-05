@@ -19,7 +19,6 @@ let projects = seedProjects();
 
 /** The projects as the fake holds them now. */
 export const fakeProjects = () => projects;
-/** Whether a user is a member of a project. */
 export const isMemberOf = (projectId: string, userId: string) => !!projects.find((p) => p.id === projectId)?.members.some((m) => m.userId === userId);
 /** Whether the signed-in user is an editor or above in a project, as sharing a credential or client there needs. */
 export const isEditorIn = (projectId: string) =>

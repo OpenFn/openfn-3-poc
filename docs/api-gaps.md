@@ -93,7 +93,7 @@ apart.
 - **Credentials: no way to set an external ID** (api/credentials.md). The
   credential object has `external_id`, but `POST` and `PUT
   /api/credentials` don't take it (`unknown_key`). Would need
-  `external_id` on both. Replica: sends it when the form has one, and the
+  `external_id` on both. Replica: sends it, `null` for none, and the
   fake accepts it.
 - **Credentials: no route for signing in to an OAuth provider**
   (api/credentials.md). An `oauth` credential gets its token through
@@ -101,6 +101,12 @@ apart.
   how it ended. Would need a route that starts a sign-in and answers the
   provider's URL, with the result as data. Replica: the Credentials page
   doesn't add or edit OAuth credentials yet.
+- **Credentials: a transfer's refusal tells who has an account**
+  (api/credentials.md, Start a transfer). `not_found` at `#/recipient`
+  says the email has no account; `no_access` says it has one. Would need
+  one answer for both, such as `no_access` "They need an account and a role
+  in every project this credential is shared with". Replica: the fake
+  answers that.
 
 ## Changed, and that's fine
 

@@ -15,7 +15,7 @@ interface Props {
   onCancelDeletion: (credential: CredentialRow) => void;
   /** Schedules the deletion, or for a scheduled one deletes it now. */
   onDelete: (credential: CredentialRow) => void;
-  /** The credential whose cancel is waiting on the server; its menu spins and the others wait. */
+  /** The credential whose action is waiting on the server; its menu spins. */
   pendingId: string | null;
 }
 
@@ -40,7 +40,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
     >
       {credentials.map((c) => (
         <Tr key={c.id}>
-          {/* A block, as in his design: the name wraps beside its badges. */}
+          {/* The name wraps beside its badges. */}
           <Td wrap maxWidth={80}>
             <Stack gap="xs">
               <Row gap="sm" wrap>
@@ -81,7 +81,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
           </Td>
           <Td actions>
             <Menu
-              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={pendingId === c.id} disabled={pendingId !== null && pendingId !== c.id} />}
+              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={pendingId === c.id} />}
             >
               {c.scheduledDeletion ? (
                 <MenuItem icon="hero-arrow-uturn-left" onClick={() => onCancelDeletion(c)}>
@@ -89,12 +89,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
                 </MenuItem>
               ) : (
                 <>
-                  <MenuItem
-                    icon="hero-pencil"
-                    onClick={() => onEdit(c)}
-                    disabled={c.schema === "oauth"}
-                    description={c.schema === "oauth" ? "OAuth credentials can't be edited here yet." : undefined}
-                  >
+                  <MenuItem icon="hero-pencil" onClick={() => onEdit(c)}>
                     Edit
                   </MenuItem>
                   <MenuItem icon="hero-arrows-right-left" onClick={() => onTransfer(c)}>

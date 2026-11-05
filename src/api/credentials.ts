@@ -84,43 +84,7 @@ export function schemaFields(schema: { properties?: Record<string, ApiSchemaProp
   });
 }
 
-export const credentialKeys = {
-  all: ["credentials"] as const,
-  schemas: ["credential_schemas"] as const,
-  schema: (name: string) => ["credential_schemas", name] as const,
-};
-
-/** The signed-in person's own credentials, by name, and where loading them stands. */
-export function useCredentials(viewerEmail: string): { status: ResourceStatus; credentials: CredentialRow[] } {
-  const query = useQuery({
-    queryKey: credentialKeys.all,
-    queryFn: () => listAll<ApiCredential>("/api/credentials", "credentials"),
-    select: (rows) => rows.map((c) => credentialRow(c, viewerEmail)),
-  });
-  return { status: statusOf(query), credentials: query.data ?? [] };
-}
-
-/** The adaptor types a credential can be, and a loader for one type's fields. */
-export function useCredentialSchemas(): { credentialTypes: CredentialTypeOption[]; loadSchema: (key: string) => Promise<{ fields: SchemaField[] }> } {
-  const queryClient = useQueryClient();
-  const query = useQuery({
-    queryKey: credentialKeys.schemas,
-    queryFn: () => request<{ data: ApiCredentialSchema[] }>("GET", "/api/credential_schemas").then((answer) => answer.data),
-    // Raw JSON is left out: the form offers it itself.
-    select: (rows) => rows.filter((s) => s.name !== "raw").map((s) => ({ key: adaptorShortName(s.name), name: s.title })),
-  });
-  const loadSchema = (key: string) =>
-    queryClient
-      .query({
-        queryKey: credentialKeys.schema(key),
-        queryFn: () =>
-          request<{ data: { schema: Parameters<typeof schemaFields>[0] } }>("GET", `/api/credential_schemas/${encodeURIComponent(key)}`),
-      })
-      .then((answer) => ({ fields: schemaFields(answer.data.schema) }));
-  return { credentialTypes: query.data ?? [], loadSchema };
-}
-
-// Saving.
+// What the saves send.
 
 /**
  * A refusal with each pointer's field renamed (`#/external_id` → `#/externalId`),
@@ -159,10 +123,46 @@ function credentialBody(values: CredentialValues) {
   return {
     name: values.name,
     schema: values.schema,
-    ...(values.externalId && { external_id: values.externalId }),
+    external_id: values.externalId || null,
     ...(body && { credential_bodies: [{ name: "main", body }] }),
     project_credentials: values.projectIds.map((project_id) => ({ project_id })),
   };
+}
+
+export const credentialKeys = {
+  all: ["credentials"] as const,
+  schemas: ["credential_schemas"] as const,
+  schema: (name: string) => ["credential_schemas", name] as const,
+};
+
+/** The signed-in person's own credentials, by name, and where loading them stands. */
+export function useCredentials(viewerEmail: string): { status: ResourceStatus; credentials: CredentialRow[] } {
+  const query = useQuery({
+    queryKey: credentialKeys.all,
+    queryFn: () => listAll<ApiCredential>("/api/credentials", "credentials"),
+    select: (rows) => rows.map((c) => credentialRow(c, viewerEmail)),
+  });
+  return { status: statusOf(query), credentials: query.data ?? [] };
+}
+
+/** The adaptor types a credential can be, and a loader for one type's fields. */
+export function useCredentialSchemas(): { credentialTypes: CredentialTypeOption[]; loadSchema: (key: string) => Promise<{ fields: SchemaField[] }> } {
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: credentialKeys.schemas,
+    queryFn: () => request<{ data: ApiCredentialSchema[] }>("GET", "/api/credential_schemas").then((answer) => answer.data),
+    // Raw JSON is left out: the form offers it itself.
+    select: (rows) => rows.filter((s) => s.name !== "raw").map((s) => ({ key: adaptorShortName(s.name), name: s.title })),
+  });
+  const loadSchema = (key: string) =>
+    queryClient
+      .query({
+        queryKey: credentialKeys.schema(key),
+        queryFn: () =>
+          request<{ data: { schema: Parameters<typeof schemaFields>[0] } }>("GET", `/api/credential_schemas/${encodeURIComponent(key)}`),
+      })
+      .then((answer) => ({ fields: schemaFields(answer.data.schema) }));
+  return { credentialTypes: query.data ?? [], loadSchema };
 }
 
 /**
@@ -192,7 +192,8 @@ export function useCredentialSaves() {
   });
   const cancelDeletion = useMutation({ mutationFn: (id: string) => request("DELETE", path(id, "/scheduled_deletion")), onSuccess: reload });
   const transfer = useMutation({
-    mutationFn: ({ id, recipient }: { id: string; recipient: string }) => request("PUT", path(id, "/transfer"), { recipient }),
+    mutationFn: ({ id, recipient }: { id: string; recipient: string }) =>
+      request("PUT", path(id, "/transfer"), { recipient }).catch((error: unknown) => Promise.reject(renameFields(error, { recipient: "receiverEmail" }))),
     onSuccess: reload,
   });
   const revokeTransfer = useMutation({ mutationFn: (id: string) => request("DELETE", path(id, "/transfer")), onSuccess: reload });

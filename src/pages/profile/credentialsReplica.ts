@@ -126,11 +126,11 @@ export function credentialReplicaActions(
       patch(id, { scheduledDeletion: null });
       toast("Credential deletion canceled");
     },
-    onTransferCredential: async (id, recipient) => {
+    onTransferCredential: async (id, receiverEmail) => {
       await simulateRequest();
       // Lightning.Credentials' transfer checks, in its wording.
-      const receiver = users.find((u) => u.email.toLowerCase() === recipient.toLowerCase());
-      const refuse = (message: string) => new RequestError(message, { fieldErrors: { recipient: [message] } });
+      const receiver = users.find((u) => u.email.toLowerCase() === receiverEmail.toLowerCase());
+      const refuse = (message: string) => new RequestError(message, { fieldErrors: { receiverEmail: [message] } });
       if (!receiver) throw refuse("User does not exist");
       if (receiver.id === viewer.id) throw refuse("You cannot transfer a credential to yourself");
       const blocking = projects.filter((p) => find(id)?.projectIds.includes(p.id) && !p.members.some((m) => m.userId === receiver.id));

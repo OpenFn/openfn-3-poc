@@ -1,4 +1,4 @@
-/** Credentials and credential schemas on the pretend server (api/credentials.md). */
+/** Credentials on the pretend server (api/credentials.md). */
 import {
   credentials as credentialFixtures,
   credentialsFixture,
@@ -58,7 +58,6 @@ export const resetCredentials = () => {
   credentials = seed();
   resetOauthClients();
 };
-
 
 // The planned fields (api/credentials.md, "Planned additional scope") are sent too.
 const credentialJson = (c: StoredCredential) => {
@@ -225,12 +224,12 @@ export const credentialRoutes: Record<string, Handler> = {
     if (found instanceof Response) return found;
     const email = typeof body["recipient"] === "string" ? body["recipient"].toLowerCase() : "";
     const recipient = people.find((u) => u.email.toLowerCase() === email);
-    if (!recipient) return invalid([{ code: "not_found", detail: "User does not exist", pointer: "#/recipient" }]);
     // Lightning refuses it (`validate_credential_transfer/3`); api/ names no code for it.
-    if (recipient.id === currentUser().id) return invalid([{ code: "invalid", detail: "You cannot transfer a credential to yourself", pointer: "#/recipient" }]);
-    const missing = fakeProjects().filter((p) => found.project_ids.includes(p.id) && !isMemberOf(p.id, recipient.id));
-    if (missing.length) {
-      return invalid([{ code: "no_access", detail: `User doesn't have access to these projects: ${missing.map((p) => p.name).join(", ")}`, pointer: "#/recipient" }]);
+    if (recipient?.id === currentUser().id) return invalid([{ code: "invalid", detail: "You cannot transfer a credential to yourself", pointer: "#/recipient" }]);
+    // One answer whether or not the email has an account, so the form doesn't tell who has one:
+    // a planned change to api/'s `not_found` and `no_access` (docs/api-gaps.md).
+    if (!recipient || found.project_ids.some((id) => !isMemberOf(id, recipient.id))) {
+      return invalid([{ code: "no_access", detail: "They need an account and a role in every project this credential is shared with", pointer: "#/recipient" }]);
     }
     found.transfer_status = "pending";
     return answer(200, found);
