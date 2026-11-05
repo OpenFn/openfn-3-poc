@@ -14,13 +14,50 @@ const send: (path: string, init?: RequestInit) => Promise<Response> =
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
+// The session's CSRF token, which every write sends (api/authentication.md,
+// session tokens). Asked for once, on the first write; null when signed out.
+let csrfToken: Promise<string | null> | null = null;
+const csrf = () =>
+  (csrfToken ??= request<{ data: { csrf_token: string } }>("GET", "/api/session").then(
+    (answer) => answer.data.csrf_token,
+    (error: unknown) => {
+      csrfToken = null;
+      if (isSignedOut(error)) return null;
+      throw error;
+    }
+  ));
+
+/** Forget the CSRF token, so the next write asks for the session's. For tests that change the session behind the client's back. */
+export function forgetCsrfToken() {
+  csrfToken = null;
+}
+
 export async function request<T>(method: Method, path: string, body?: unknown): Promise<T> {
+  if (method === "GET") return call<T>(method, path, body, null);
+  try {
+    return await call<T>(method, path, body, await csrf());
+  } catch (error) {
+    // The token may be from a session that changed elsewhere: the next write asks again. Never resent
+    // here: the new session may be someone else's.
+    if (isApiError(error, "forbidden")) csrfToken = null;
+    throw error;
+  } finally {
+    // Signing in or out starts a new session, with a new token.
+    if (path === "/api/session") csrfToken = null;
+  }
+}
+
+async function call<T>(method: Method, path: string, body: unknown, token: string | null): Promise<T> {
   let response: Response;
   try {
     response = await send(path, {
       method,
       credentials: "same-origin",
-      headers: { Accept: "application/json", ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
+      headers: {
+        Accept: "application/json",
+        ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+        ...(token ? { "x-csrf-token": token } : {}),
+      },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
   } catch {
@@ -100,6 +137,14 @@ export function toApiError(status: number, body: unknown): ApiError {
 /** Lightning refused it, with this `code` if one is given (`isApiError(error, "step_up_required")`). */
 export const isApiError = (error: unknown, code?: string): error is ApiError =>
   error instanceof ApiError && (code === undefined || error.code === code);
+
+/**
+ * The session has ended, or never began: any 401 but a refused sign-in
+ * (`invalid_credentials`, `mfa_required`). Lightning answers
+ * `unauthenticated`, `invalid_token`, or a bare 401 for a locked-out account.
+ */
+export const isSignedOut = (error: unknown) =>
+  error instanceof ApiError && error.status === 401 && error.code !== "invalid_credentials" && error.code !== "mfa_required";
 
 /** Whether asking again might help: not for a refusal (4xx), which won't change. */
 export const canRetry = (error: unknown) => !(error instanceof ApiError && error.status !== undefined && error.status >= 400 && error.status < 500);

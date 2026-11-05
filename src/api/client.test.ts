@@ -82,4 +82,33 @@ describe("request, on the fake server", () => {
     expect(await refusal(list())).toMatchObject({ status: 500, code: "internal", message: "Something went wrong in Lightning." });
     expect((await list()).map((t) => t.id)).not.toContain(first!.id);
   });
+
+  it("sends the session's CSRF token on writes, and a new session's after signing in again", async () => {
+    await stepUp({ password: FAKE_PASSWORD });
+    await expect(generate()).resolves.toBeTruthy();
+    await request("DELETE", "/api/session");
+    await request("POST", "/api/session", { email: "demo@openfn.org", password: FAKE_PASSWORD });
+    await expect(stepUp({ password: FAKE_PASSWORD })).resolves.toMatchObject({ state: "signed_in" });
+  });
+
+  it("refuses a write with a token from before the session changed elsewhere, and asks again for the next", async () => {
+    await stepUp({ password: FAKE_PASSWORD });
+    await generate();
+    // Another tab signed in again: the stored session has a new token the client hasn't seen.
+    localStorage.setItem("fake-api:session", JSON.stringify({ userId: "user-amy", mfaPendingId: null, csrf: "from-another-tab" }));
+    expect(await refusal(generate())).toMatchObject({ status: 403, code: "forbidden" });
+    await expect(generate()).resolves.toBeTruthy();
+  });
+
+  it("signs in as someone else when already signed in", async () => {
+    await request("POST", "/api/session", { email: "viewer@openfn.org", password: FAKE_PASSWORD });
+    await expect(request("GET", "/api/me")).resolves.toMatchObject({ data: { id: "user-vikram" } });
+  });
+
+  it("answers 401 unauthenticated to every route but signing in once signed out", async () => {
+    await request("DELETE", "/api/session");
+    expect(await refusal(list())).toMatchObject({ status: 401, code: "unauthenticated" });
+    expect(await refusal(request("GET", "/api/me"))).toMatchObject({ status: 401, code: "unauthenticated" });
+    await expect(request("GET", "/api/instance")).resolves.toBeTruthy();
+  });
 });

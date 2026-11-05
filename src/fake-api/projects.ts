@@ -1,5 +1,5 @@
 /** Projects on the pretend server (api/projects.md). */
-import { findUser, session } from "@/mock-data/users";
+import { findUser } from "@/mock-data/users";
 import { projects as projectFixtures } from "@/mock-data/projects";
 import { workflowsIn } from "@/mock-data/workflows";
 import { workOrdersIn } from "@/mock-data/history";
@@ -10,6 +10,7 @@ import type { WorkflowSortKey } from "@/types/workflows";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
 import { badInclude, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { currentUser } from "./session";
 
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
 // on pages that load from the API.
@@ -38,7 +39,7 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
 });
 
 const DAY_MS = 86_400_000;
-const roleOf = (p: Project) => p.members.find((m) => m.userId === session.user.id)?.role;
+const roleOf = (p: Project) => p.members.find((m) => m.userId === currentUser().id)?.role;
 // Membership is per project: a sandbox copies its parent's members when it's made.
 const canOpen = (p: Project) => !!roleOf(p);
 const rootOf = (p: Project): Project => {
@@ -90,7 +91,7 @@ const PERMISSIONS: Record<ProjectAction, keyof Permissions> = {
   provision_sandbox: "canCreateSandbox",
 };
 const permissionsIn = (p: Project) => {
-  const can = permissionsFor(p, session.user);
+  const can = permissionsFor(p, currentUser());
   return Object.fromEntries(Object.entries(PERMISSIONS).map(([name, flag]) => [name, can[flag]]));
 };
 
@@ -158,7 +159,7 @@ export const projectRoutes: Record<string, Handler> = {
   },
   // A non-member hears 403 whether or not the project exists; only a superuser hears 404.
   "GET /api/projects/:id": ({ id }) => {
-    if (!isUuid(id!) && session.user.role === "superuser") {
+    if (!isUuid(id!) && currentUser().role === "superuser") {
       return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
     }
     const project = projects.find((p) => p.id === id);
@@ -166,7 +167,7 @@ export const projectRoutes: Record<string, Handler> = {
       const entry = projectEntry(project);
       return json(200, { data: { ...entry, attributes: { ...entry.attributes, permissions: permissionsIn(project) } }, included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
     }
-    if (!project && session.user.role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!project && currentUser().role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
     return forbidden();
   },
   // Creates the project under :id, the caller its owner, or replaces the name and description.
@@ -203,7 +204,7 @@ export const projectRoutes: Record<string, Handler> = {
       historyRetentionPeriod: null,
       dataclipRetentionPeriod: null,
       requiresMfa: false,
-      members: [{ userId: session.user.id, role: "owner", failureAlert: true, digest: "never" }],
+      members: [{ userId: currentUser().id, role: "owner", failureAlert: true, digest: "never" }],
       lastUpdatedAt: at,
       insertedAt: at,
     };

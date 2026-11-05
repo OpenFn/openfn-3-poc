@@ -1,21 +1,7 @@
 import { createContext, useContext } from "react";
 import { permissionsFor, type Permissions } from "@/permissions";
 import type { Project } from "@/types/projects";
-import type { User } from "@/types/users";
-
-/** Instance details the layout shows (Lightning.Config). */
-export interface InstanceInfo {
-  /** Address the sidebar's "Support" link mails (`instance_admin_email`). */
-  adminEmail: string;
-  /** Release label in the sidebar footer's version chip. */
-  releaseLabel: string;
-}
-
-/** Who is signed in, and where. Lightning's `@current_user` plus instance config. */
-export interface Session {
-  user: User;
-  instance: InstanceInfo;
-}
+import type { InstanceInfo, Session, User } from "@/types/users";
 
 export const SessionContext = createContext<Session | null>(null);
 

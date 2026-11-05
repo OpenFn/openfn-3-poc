@@ -7,7 +7,9 @@ export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenanceP
 export { default as AdminProjectsPage } from "./pages/admin/AdminProjectsPage";
 export { default as AdminUserEditPage } from "./pages/admin/AdminUserEditPage";
 export { default as AdminUsersPage } from "./pages/admin/AdminUsersPage";
-export { default as AuthConfirmAccessPage } from "./pages/auth/AuthConfirmAccessPage";
+export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
+export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
+export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export { default as AuthConfirmationRequiredPage } from "./pages/auth/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
 export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
@@ -34,7 +36,9 @@ export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePa
 export type { AdminProjectsPageProps } from "./pages/admin/AdminProjectsPage";
 export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
 export type { AdminUsersPageProps } from "./pages/admin/AdminUsersPage";
-export type { AuthConfirmAccessPageProps } from "./pages/auth/AuthConfirmAccessPage";
+export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
+export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
+export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
@@ -54,7 +58,7 @@ export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPag
 export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { ChangeEmailResult, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
-export type { ConfirmAccessValues } from "./pages/auth/AuthConfirmAccessPage";
+export type { ConfirmAccessValues } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
 export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";
 
@@ -169,6 +173,7 @@ export type {
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";
+export type { SsoProvider, TwoFactorMethod } from "./types/auth";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 

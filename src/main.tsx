@@ -11,8 +11,6 @@ import { AnnotationsProvider } from "./annotations/AnnotationsContext";
 import SettingsMenu from "./components/devtools/SettingsMenu";
 import AnnotationsPanel from "./components/devtools/AnnotationsPanel";
 import AnnotationsFrame from "./components/devtools/AnnotationsFrame";
-import SessionProvider from "./session/SessionProvider";
-import { session } from "./mock-data/users";
 import { setAssetBase } from "./utils/assets";
 import ApiProvider from "./api/ApiProvider";
 
@@ -26,13 +24,11 @@ createRoot(document.getElementById("root")!).render(
         <HashRouter>
           <ReactRouterAdapter>
             <AnnotationsProvider>
-              <SessionProvider session={session}>
-                <ToastProvider>
-                  <AnnotationsFrame>
-                    <App />
-                  </AnnotationsFrame>
-                </ToastProvider>
-              </SessionProvider>
+              <ToastProvider>
+                <AnnotationsFrame>
+                  <App />
+                </AnnotationsFrame>
+              </ToastProvider>
               {/* Demo tooling, outside the Lightning UI: annotations and themes. */}
               <AnnotationsPanel />
               <SettingsMenu />

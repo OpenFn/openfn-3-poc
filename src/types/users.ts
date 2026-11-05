@@ -24,3 +24,17 @@ export interface User {
   scheduledDeletion: string | null;
   contactPreference: "critical" | "any";
 }
+
+/** Instance details the layout shows (Lightning.Config). */
+export interface InstanceInfo {
+  /** Address the sidebar's "Support" link mails (`instance_admin_email`). */
+  adminEmail: string;
+  /** Release label in the sidebar footer's version chip. */
+  releaseLabel: string;
+}
+
+/** Who is signed in, and where. Lightning's `@current_user` plus instance config. */
+export interface Session {
+  user: User;
+  instance: InstanceInfo;
+}

@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { isApiError } from "@/api/client";
-import { stepUp } from "@/api/session";
+import { useSessionSaves } from "@/api/session";
 import { useTokens, useTokenSaves } from "@/api/tokens";
 import { useCurrentUser } from "@/session/session";
 import TokensPage from "./TokensPage";
@@ -15,6 +15,7 @@ export default function TokensPageQuery() {
   const navigate = useNavigate();
   const { status, tokens } = useTokens();
   const { generate, remove } = useTokenSaves();
+  const { stepUp } = useSessionSaves();
   const user = useCurrentUser();
 
   return (

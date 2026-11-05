@@ -1,25 +1,46 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import ApiProvider from "./api/ApiProvider";
+import { resetFakeApi } from "./api/testing";
 import App from "./App";
 import { ToastProvider } from "./components/primitives/Toast";
-import { session } from "./mock-data/users";
 import { ReactRouterAdapter } from "./routing/ReactRouterAdapter";
-import SessionProvider from "./session/SessionProvider";
 
-describe("App", () => {
-  it("logs out to the log in page", async () => {
-    render(
-      <MemoryRouter initialEntries={["/users/log_out"]}>
+const wait = { timeout: 3000 };
+
+function renderAt(path: string) {
+  render(
+    <ApiProvider retry={false}>
+      <MemoryRouter initialEntries={[path]}>
         <ReactRouterAdapter>
-          <SessionProvider session={session}>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </SessionProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </ReactRouterAdapter>
       </MemoryRouter>
-    );
-    expect(await screen.findByRole("button", { name: "Log in" })).toBeTruthy();
+    </ApiProvider>
+  );
+}
+
+describe("App", () => {
+  beforeEach(() => {
+    resetFakeApi();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.stubGlobal("jest", { advanceTimersByTime: vi.advanceTimersByTime.bind(vi) });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("logs out to the log in page", async () => {
+    renderAt("/users/log_out");
+    expect(await screen.findByRole("button", { name: "Log in" }, wait)).toBeTruthy();
+  });
+
+  it("opens the projects list for the signed-in user", async () => {
+    renderAt("/projects");
+    expect(await screen.findByRole("heading", { name: "Projects" }, wait)).toBeTruthy();
   });
 });

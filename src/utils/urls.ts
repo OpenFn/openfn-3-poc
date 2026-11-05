@@ -24,3 +24,14 @@ export function authRedirectUri(provider: Pick<AuthProvider, "redirectHost" | "n
 export function isAt(pathname: string, path: string) {
   return pathname === path || pathname.startsWith(path + "/");
 }
+
+/**
+ * Where to go next: the `return_to` path if it's one in this app, otherwise
+ * `fallback`. A full URL, `//host` or `/\host` could send the person off the
+ * site, so it's ignored.
+ */
+export function returnTo(params: URLSearchParams, fallback = "/projects"): string {
+  const to = params.get("return_to");
+  // Browsers read "/\host" as "//host" too.
+  return to && /^\/(?![/\\])/.test(to) ? to : fallback;
+}

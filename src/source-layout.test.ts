@@ -62,7 +62,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/admin/AdminLiveDashboardPage.tsx",
       "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/auth/AuthResetPasswordPage.tsx",
-      "./pages/auth/AuthTwoFactorPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
     ]);
   });
@@ -77,7 +76,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/admin/AdminProjectsPage.replica.tsx",
       "./pages/admin/AdminUserEditPage.replica.tsx",
       "./pages/admin/AdminUsersPage.replica.tsx",
-      "./pages/auth/AuthConfirmAccessPage.replica.tsx",
       "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
       "./pages/auth/FirstSetupPage.replica.tsx",
       "./pages/history/ChannelRequestShowPage.replica.tsx",

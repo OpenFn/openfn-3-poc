@@ -50,7 +50,7 @@ const withTheme: Decorator = (Story, context) => {
   return <Story />;
 };
 
-/** Signs every story in as the session fixture's user, as main.tsx does for the app. */
+/** Signs every story in as the session fixture's user, as SessionGate does for the app from the API. */
 const withSession: Decorator = (Story) => (
   <SessionProvider session={session}>
     <Story />

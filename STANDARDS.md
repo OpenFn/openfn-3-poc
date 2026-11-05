@@ -193,8 +193,7 @@ screen for it (PRINCIPLES.md, When things go wrong).
   `Alert` next to what failed. Failure of a one-shot button is an error
   toast.
 - A server flash that survives a redirect (login errors, "Project created"
-  after navigation) needs a small flash store read once by the shell. The
-  `?error=1` simulation on auth pages is a placeholder for it.
+  after navigation) needs a small flash store read once by the shell.
 
 ## 8. Live updates
 
@@ -215,15 +214,18 @@ No inline role checks in components.
 
 ## 10. Session and route guards
 
-**Not built yet. Don't build it without asking.**
+`SessionGate` (`src/components/shell/SessionGate.query.tsx`) is the parent
+of every signed-in route in `App.tsx`. It loads `GET /api/session`, `/api/me`
+and `/api/instance`, and sends the person to log in when signed out (with
+`return_to`), to `/users/two-factor` while an MFA code is owed, and to
+confirm-required when unconfirmed. Otherwise it supplies the user and
+instance through `SessionProvider`. Any request answered 401 reloads the
+session (`ApiProvider`), so a session that ends mid-use lands on login.
 
-`SessionProvider` supplies the user and instance. Still needed, once at the
-router: redirect to login when signed out, to `/users/two-factor` when 2FA is
-pending, to confirm-required when unconfirmed, to the MFA-required page for
-projects that require it, and away from `/settings/*` for non-superusers.
-Lightning does this in plugs and `on_mount`; mirror those rules in one
-`RouteGuard` component around the route groups in `App.tsx`. Whether you may
-open a project is not the guard's: `ProjectGate` (pattern 11) checks that.
+Still to build, in the same place: the MFA-required page for projects that
+require it, and keeping non-superusers away from `/settings/*`. Lightning
+does these in plugs and `on_mount`. Whether you may open a project is not
+the gate's: `ProjectGate` (pattern 11) checks that.
 
 ## 11. Page and query
 

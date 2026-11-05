@@ -5,74 +5,39 @@
  * (api/errors.md), after a short wait. The fixtures in src/mock-data/ are its
  * database. Only src/api/client.ts imports this folder; going real deletes it.
  */
-import { session } from "@/mock-data/users";
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
 import { json, noContent, now, problem, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
+import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 
 export type { Problem } from "./answers";
-
-
-/**
- * The fake user's password and MFA code, for signing in and stepping up. The
- * fake user is the session fixture's (demo@openfn.org). Not real secrets.
- */
-export const FAKE_PASSWORD = "fake-password-not-real";
-export const FAKE_MFA_CODE = "123456";
+export { FAKE_BACKUP_CODE, FAKE_MFA_CODE, FAKE_PASSWORD } from "./session";
 
 const WAIT_MS = 300;
-/** How long a step-up lasts (api/authentication.md, session tokens). */
-const STEP_UP_MS = 5 * 60_000;
 
 type StoredToken = { id: string; token: string; inserted_at: string; last_used_at: string | null };
 
-// The database, and the session's step-up.
+// The database.
 
 const seed = (): StoredToken[] =>
   apiTokens.map((t) => ({ id: t.id, token: t.masked, inserted_at: t.insertedAt, last_used_at: t.lastUsedAt }));
 
 let tokens = seed();
-let steppedUpUntil = 0;
 const failures = new Map<string, Problem>();
 
 // Lightning's `mask_token`: "..." and the last ten characters.
 const mask = (token: string) => "..." + token.slice(-10);
 
-const sessionData = () => ({
-  data: {
-    state: "signed_in",
-    user_id: session.user.id,
-    stepped_up_until: steppedUpUntil > Date.now() ? new Date(steppedUpUntil).toISOString() : null,
-    csrf_token: "fake-csrf-token",
-    pending_signup: null,
-  },
-});
-
-// Every refused sign-in or step-up is the same 401, whatever was wrong.
-const invalidCredentials = () =>
-  problem({ status: 401, code: "invalid_credentials", detail: "The email, password or code is not valid." });
-
 const routes: Record<string, Handler> = {
-  "GET /api/session": () => json(200, sessionData()),
-  "POST /api/session": (_params, body) => {
-    // Signing in: the fake is always signed in as the session fixture's user, so this only checks the details.
-    if (body["email"] !== undefined) {
-      return body["email"] === session.user.email && body["password"] === FAKE_PASSWORD ? json(201, sessionData()) : invalidCredentials();
-    }
-    // Signed in, the password or an MFA code again steps the session up for five minutes. A backup code doesn't.
-    const ok = body["password"] !== undefined ? body["password"] === FAKE_PASSWORD : body["mfa_code"] === FAKE_MFA_CODE;
-    if (!ok) return invalidCredentials();
-    steppedUpUntil = Date.now() + STEP_UP_MS;
-    return json(201, sessionData());
-  },
+  ...sessionRoutes,
 
   // Newest first, masked, not paged.
   "GET /api/me/tokens": () => json(200, { data: tokens }),
   // Needs a stepped-up session. The whole token, this once; the list keeps only its mask.
   "POST /api/me/tokens": () => {
-    if (steppedUpUntil <= Date.now()) {
+    if (!isSteppedUp()) {
       return problem({ status: 403, code: "step_up_required", detail: "Enter your password or an MFA code again to do this." });
     }
     const created = { id: crypto.randomUUID(), token: `demo.fake-token-not-real.${crypto.randomUUID()}`, inserted_at: now(), last_used_at: null };
@@ -113,6 +78,8 @@ export async function fakeFetch(input: string, init: RequestInit = {}): Promise<
   // Unknown routes are a 404 problem document (api/errors.md).
   if (!found) return problem({ status: 404, code: "not_found", detail: `The fake server has no route for ${init.method ?? "GET"} ${path}.` });
   const [key, params] = found;
+  const refused = refuse(key, new Headers(init.headers));
+  if (refused) return refused;
   const failure = failures.get(key);
   if (failure) {
     failures.delete(key);
@@ -127,10 +94,10 @@ export function failNext(route: string, failure: Problem) {
   failures.set(route, failure);
 }
 
-/** For stories and tests: the starting data, not stepped up, nothing set to fail. */
+/** For stories and tests: the starting data, signed in as the first fixture user, not stepped up, nothing set to fail. */
 export function resetFakeApi() {
   tokens = seed();
   resetProjects();
-  steppedUpUntil = 0;
+  resetSession();
   failures.clear();
 }

@@ -36,7 +36,9 @@ PRINCIPLES.md "How data flows" says what; this is how.
   Only `src/api/` imports TanStack Query, and only .query files, replicas,
   `main.tsx`, stories and tests import `src/api/` (lint).
 - A refused request throws `ApiError`. Show its `message` (the server's
-  `detail`); branch on `code`, never on the words. Body errors arrive
+  `detail`); branch on `code`, never on the words. The exception is a page
+  where Lightning has its own words for a code: login and two-factor show
+  `authMessages` for `invalid_credentials`, mapped in the .query file. Body errors arrive
   as `fieldErrors`, ready for the form. A form a .query file feeds names its fields
   as the API does (`name`, not `rawName`), so a 422 lands on its field with
   no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
@@ -53,9 +55,14 @@ PRINCIPLES.md "How data flows" says what; this is how.
 - No UI here: no components, no toasts (lint).
 - In tests and stories, `failNext("POST /api/me/tokens", { status, code, detail })`
   makes that route's next request fail, and `resetFakeApi()` puts the fake
-  server's data back. The fake user's password and MFA code are
-  `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
-  steps the session up for five minutes.
+  server's data back, signed in as the first fixture user. Every fixture
+  user signs in with `FAKE_PASSWORD`; one with MFA then needs
+  `FAKE_MFA_CODE` or `FAKE_BACKUP_CODE`. `stepUp` (session.ts) with the
+  password or the MFA code steps the session up for five minutes.
+- The fake server keeps who's signed in in localStorage, like a cookie, and
+  answers 401 `unauthenticated` without a session, so a .query test that
+  needs someone signed out sends `DELETE /api/session` first. Writes carry
+  the session's `x-csrf-token`, which `client.ts` fetches and keeps.
 - `src/pages/profile/tokens/TokensPage.query.tsx` and
   `src/pages/projects/dashboard/ProjectsDashboardPage.query.tsx` (a list on
   `ListPage`, with create), each with its `.query.test.tsx`, are the worked examples.
