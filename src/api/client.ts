@@ -35,7 +35,7 @@ export async function request<T>(method: Method, path: string, body?: unknown): 
 /** Every page of a paged list (api/conventions.md), following `links.next`. */
 export async function listAll<T>(path: string, key: string): Promise<T[]> {
   const rows: T[] = [];
-  let next: string | null = `${path}?page_size=100`;
+  let next: string | null = `${path}${path.includes("?") ? "&" : "?"}page_size=100`;
   while (next) {
     const page: Record<string, unknown> & { links?: { next: string | null } } = await request("GET", next);
     rows.push(...(page[key] as T[]));

@@ -30,7 +30,7 @@ export default function EmptyState({
   icon?: string | null;
   title?: ReactNode;
   message?: ReactNode;
-  buttonText?: string;
+  buttonText?: string | undefined;
   onClick?: (() => void) | undefined;
   disabled?: boolean;
   /** Fill the panel or card it sits in and centre in it. */

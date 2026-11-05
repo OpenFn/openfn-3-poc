@@ -110,7 +110,7 @@ describe("the type size lint rule", () => {
 
 describe("the tier lint rule", () => {
   const code = (from: string) => `import X from "${from}";\nexport default X;\n`;
-  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|feature component|util) |Nothing outside src\/pages\/)/;
+  const tier = /^'.*' import is restricted from being used by a pattern\. (A (primitive|domain component|template|feature component|util) |Nothing outside src\/pages\/)/;
 
   it("a primitive may import primitives and utils, not domain, a feature component, the shell or a page", async () => {
     const probe = "src/components/primitives/TierProbe.tsx";
@@ -127,6 +127,16 @@ describe("the tier lint rule", () => {
       expect(await seamMessages(probe, code(from))).toEqual([]);
     }
     for (const from of ["@/components/history/RunStepList", "@/components/shell/Sidebar", "@/pages/history/RunShowPage"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
+    }
+  });
+
+  it("a template may import primitives, domain and templates, not an area, the shell or a page", async () => {
+    const probe = "src/components/templates/TierProbe.tsx";
+    for (const from of ["@/components/primitives/Header", "@/components/domain/StatePill", "./ListPage"]) {
+      expect(await seamMessages(probe, code(from))).toEqual([]);
+    }
+    for (const from of ["@/components/profile/TokensTable", "@/components/shell/Sidebar", "@/pages/history/RunShowPage"]) {
       expect(await seamMessages(probe, code(from))).toEqual([expect.stringMatching(tier)]);
     }
   });

@@ -68,6 +68,7 @@ enforces it (`eslint.config.js`, tested in `src/lint-seam.test.ts`).
 | Folder | Holds | May import |
 |---|---|---|
 | `src/pages/` | One Lightning view each | anything |
+| `templates/` | A whole page's layout (`ListPage`); a page fills it | primitives, `domain/`, `templates/` |
 | `<area>/` (`history/`, `credentials/`, …) | What only that area uses | primitives, `domain/`, `shell/`, its own area |
 | `shell/` | The chrome around every page | primitives, `domain/`, `shell/` |
 | `domain/` | Lightning pieces two or more areas use | primitives, `domain/` |

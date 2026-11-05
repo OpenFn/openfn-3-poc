@@ -8,7 +8,8 @@
 import { session } from "@/mock-data/users";
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
-import projects from "./recorded/projects.json";
+import { projects } from "@/mock-data/projects";
+import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
 
 /**
  * The fake user's password and MFA code, for signing in and stepping up. The
@@ -29,7 +30,7 @@ export interface Problem {
 }
 
 type Body = Record<string, unknown>;
-type Handler = (params: Record<string, string>, body: Body) => Response;
+type Handler = (params: Record<string, string>, body: Body, query: URLSearchParams) => Response;
 type StoredToken = { id: string; token: string; inserted_at: string; last_used_at: string | null };
 
 // The database, and the session's step-up.
@@ -101,7 +102,31 @@ const routes: Record<string, Handler> = {
 
   // Answers recorded from a real Lightning, replayed as they are.
   "GET /api/credentials": () => json(200, credentials),
-  "GET /api/projects": () => json(200, projects),
+
+  // The caller's projects, no sandboxes, sorted by name, one page. include=stats is planned, not in
+  // Lightning yet (api/projects.md, "List projects"); it's here so the dashboard has its columns.
+  // ponytail: no failed_work_orders_count, which no page reads yet.
+  "GET /api/projects": (_params, _body, query) => {
+    const stats = query.get("include") === "stats";
+    const data = projectsOverviewFor(session.user.id)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((p) => ({
+        type: "projects",
+        id: p.id,
+        attributes: {
+          name: p.name,
+          description: projects.find((f) => f.id === p.id)?.description ?? null,
+          ...(stats && {
+            role: p.role,
+            workflows_count: p.workflowsCount,
+            collaborators_count: p.collaboratorsCount,
+            last_activity: p.lastUpdatedAt,
+          }),
+        },
+        relationships: {},
+      }));
+    return json(200, { data, links: { next: null } });
+  },
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */
@@ -120,7 +145,7 @@ function match(method: string, path: string): [string, Record<string, string>] |
 /** Answers a request as Lightning would. Same arguments as `fetch`, for paths under /api. */
 export async function fakeFetch(input: string, init: RequestInit = {}): Promise<Response> {
   await new Promise((resolve) => setTimeout(resolve, WAIT_MS));
-  const path = input.split("?")[0]!;
+  const [path, search = ""] = input.split("?") as [string, string?];
   const found = match(init.method ?? "GET", path);
   // Unknown routes are a 404 problem document (api/errors.md).
   if (!found) return problem({ status: 404, code: "not_found", detail: `The fake server has no route for ${init.method ?? "GET"} ${path}.` });
@@ -131,7 +156,7 @@ export async function fakeFetch(input: string, init: RequestInit = {}): Promise<
     return problem(failure);
   }
   const body = typeof init.body === "string" ? (JSON.parse(init.body) as Body) : {};
-  return routes[key]!(params, body);
+  return routes[key]!(params, body, new URLSearchParams(search));
 }
 
 /** For stories and tests: the next request to this route (`"POST /api/me/tokens"`) is refused with this problem. */

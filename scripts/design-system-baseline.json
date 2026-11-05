@@ -1,8 +1,8 @@
 {
-  "className= in features + pages": 762,
-  "Class-list literals in features + pages": 334,
+  "className= in features + pages": 761,
+  "Class-list literals in features + pages": 333,
   "  duplicated (same list used 2+ times)": 44,
-  "Distinct Tailwind tokens in features + pages": 416,
+  "Distinct Tailwind tokens in features + pages": 415,
   "Arbitrary values (`-[…]`) in features + pages": 11,
   "Raw <button> in features + pages": 10,
   "Raw <input>/<select>/<textarea> in features + pages": 3,

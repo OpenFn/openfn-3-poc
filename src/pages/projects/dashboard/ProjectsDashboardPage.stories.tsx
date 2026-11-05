@@ -21,3 +21,5 @@ type Story = StoryObj<typeof ProjectsDashboardPage>;
 
 export const WithProjects: Story = {};
 export const Empty: Story = { args: { projects: [] } };
+export const Loading: Story = { args: { status: { state: "loading" }, projects: [] } };
+export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, projects: [] } };

@@ -46,13 +46,13 @@ export default function WelcomeBanner({
   const typingHeading = typed < heading.length;
 
   return (
-    <div className="mb-2 min-h-25 pt-6" id="welcome-banner-typewriter">
+    <div className="min-h-19" id="welcome-banner-typewriter">
       {/* eslint-disable-next-line no-restricted-syntax -- debt: 24px medium title has no Heading size */}
       <h2 className="text-2xl font-medium">
         {h1}
         {typingHeading && <span className="typewriter-cursor animate-pulse text-muted">|</span>}
       </h2>
-      <p id="welcome-banner-content" className="mb-6 mt-4">
+      <p id="welcome-banner-content" className="mb-2 mt-4">
         {done ? (
           <>
             Click on a project to get started. If you need some help, head to{" "}
