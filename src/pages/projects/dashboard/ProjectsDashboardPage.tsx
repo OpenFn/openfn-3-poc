@@ -16,8 +16,8 @@ export interface ProjectsDashboardPageProps {
   /** The user's projects with their counts, as the server lists them; the table sorts them. */
   projects: ProjectOverview[];
   /**
-   * Creates a project. Rejects on failure; field errors keyed `rawName` and
-   * `description` show on the form. The page announces success.
+   * Creates a project. Rejects on failure; field errors keyed `name` and
+   * `description`, as the API keys them, show on the form. The page announces success.
    */
   onCreate: (project: { name: string; description: string }) => Promise<void>;
 }

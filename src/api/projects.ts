@@ -1,9 +1,9 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { listAll, statusOf } from "./client";
+import { listAll, request, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -47,4 +47,19 @@ export function useProjectOverviews(): { status: ResourceStatus; projects: Proje
     select: (rows) => rows.map(projectOverview),
   });
   return { status: statusOf(query), projects: query.data ?? [] };
+}
+
+/**
+ * Create. Resolves once the list has reloaded with the new project; rejects
+ * with the `ApiError`, whose field errors are keyed `name` and `description`.
+ * Creating as any user, who becomes the owner, is planned (api/projects.md).
+ */
+export function useProjectSaves() {
+  const queryClient = useQueryClient();
+  const create = useMutation({
+    mutationFn: (project: { name: string; description: string }) =>
+      request<{ data: ApiProject }>("PUT", `/api/projects/${crypto.randomUUID()}`, project),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
+  });
+  return { create: async (project: { name: string; description: string }) => void (await create.mutateAsync(project)) };
 }

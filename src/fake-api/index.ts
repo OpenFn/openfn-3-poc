@@ -8,8 +8,9 @@
 import { session } from "@/mock-data/users";
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
-import { projects } from "@/mock-data/projects";
+import { projects as projectFixtures } from "@/mock-data/projects";
 import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
+import { workOrdersIn } from "@/mock-data/history";
 
 /**
  * The fake user's password and MFA code, for signing in and stepping up. The
@@ -32,13 +33,42 @@ export interface Problem {
 type Body = Record<string, unknown>;
 type Handler = (params: Record<string, string>, body: Body, query: URLSearchParams) => Response;
 type StoredToken = { id: string; token: string; inserted_at: string; last_used_at: string | null };
+type StoredProject = {
+  id: string;
+  name: string;
+  description: string | null;
+  members: { email: string; role: string }[];
+  // The planned include=stats, as the caller sees them.
+  stats: { role: string; workflows_count: number; collaborators_count: number; last_activity: string | null; failed_work_orders_count: number };
+};
 
 // The database, and the session's step-up.
 
 const seed = (): StoredToken[] =>
   apiTokens.map((t) => ({ id: t.id, token: t.masked, inserted_at: t.insertedAt, last_used_at: t.lastUsedAt }));
 
+const FAILED = ["failed", "crashed", "killed", "exception"];
+const DAY_MS = 86_400_000;
+// The session user's root projects (GET /api/projects never lists sandboxes).
+const seedProjects = (): StoredProject[] =>
+  projectsOverviewFor(session.user.id).map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: projectFixtures.find((f) => f.id === p.id)?.description ?? null,
+    members: [{ email: session.user.email, role: p.role }],
+    stats: {
+      role: p.role,
+      workflows_count: p.workflowsCount,
+      collaborators_count: p.collaboratorsCount,
+      last_activity: p.lastUpdatedAt,
+      failed_work_orders_count: workOrdersIn(p.id).filter(
+        (w) => FAILED.includes(w.state) && Date.now() - Date.parse(w.insertedAt) < 30 * DAY_MS
+      ).length,
+    },
+  }));
+
 let tokens = seed();
+let projects = seedProjects();
 let steppedUpUntil = 0;
 const failures = new Map<string, Problem>();
 
@@ -54,6 +84,50 @@ const json = (status: number, body: unknown) =>
 const problem = ({ status, code, detail = "The server could not complete that request.", errors }: Problem) =>
   json(status, { type: "about:blank", status, title: titles[status] ?? "Error", code, detail, ...(errors ? { errors } : {}) });
 const noContent = () => new Response(null, { status: 204 });
+const forbidden = () => problem({ status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+// One 422 for every problem with a body (api/errors.md).
+const invalid = (errors: NonNullable<Problem["errors"]>) =>
+  problem({ status: 422, code: "invalid", detail: "The request body is not valid.", errors });
+const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+// Links are absolute, like Lightning's; the client keeps only the path.
+const ORIGIN = "http://localhost:4000";
+/**
+ * One page of a list (api/conventions.md): `page` from 1, `page_size` 10 by
+ * default and at most 100, and links that carry the query as sent.
+ */
+function paged<T>(path: string, rows: T[], query: URLSearchParams) {
+  const size = Math.min(Math.max(Number(query.get("page_size")) || 10, 1), 100);
+  const last = Math.max(Math.ceil(rows.length / size), 1);
+  const page = Math.min(Math.max(Number(query.get("page")) || 1, 1), last);
+  const link = (n: number) => {
+    const q = new URLSearchParams(query);
+    q.set("page", String(n));
+    q.set("page_size", String(size));
+    return `${ORIGIN}${path}?${q}`;
+  };
+  return {
+    data: rows.slice((page - 1) * size, page * size),
+    links: { self: link(page), first: link(1), last: link(last), next: page < last ? link(page + 1) : null, prev: page > 1 ? link(page - 1) : null },
+  };
+}
+
+// A project as GET /api/projects/:id answers it; the list leaves out members.
+const projectEntry = (p: StoredProject, { members = true, stats = false } = {}) => ({
+  type: "projects",
+  id: p.id,
+  attributes: {
+    name: p.name,
+    description: p.description,
+    ...(members && { members: p.members }),
+    ...(stats && p.stats),
+  },
+  relationships: {},
+  links: { self: `${ORIGIN}/api/projects/${p.id}` },
+});
+
+const PROJECT_KEYS = ["id", "name", "description", "members", "notify"];
+const PROJECT_NAME = /^[a-z0-9-]+$/;
 
 const sessionData = () => ({
   data: {
@@ -103,29 +177,42 @@ const routes: Record<string, Handler> = {
   // Answers recorded from a real Lightning, replayed as they are.
   "GET /api/credentials": () => json(200, credentials),
 
-  // The caller's projects, no sandboxes, sorted by name, one page. include=stats is planned, not in
-  // Lightning yet (api/projects.md, "List projects"); it's here so the dashboard has its columns.
-  // ponytail: no failed_work_orders_count, which no page reads yet.
+  // api/projects.md. include=stats, and creating as any user, are planned: not in Lightning yet.
   "GET /api/projects": (_params, _body, query) => {
     const stats = query.get("include") === "stats";
-    const data = projectsOverviewFor(session.user.id)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((p) => ({
-        type: "projects",
-        id: p.id,
-        attributes: {
-          name: p.name,
-          description: projects.find((f) => f.id === p.id)?.description ?? null,
-          ...(stats && {
-            role: p.role,
-            workflows_count: p.workflowsCount,
-            collaborators_count: p.collaboratorsCount,
-            last_activity: p.lastUpdatedAt,
-          }),
-        },
-        relationships: {},
-      }));
-    return json(200, { data, links: { next: null } });
+    const rows = [...projects].sort((a, b) => a.name.localeCompare(b.name)).map((p) => projectEntry(p, { members: false, stats }));
+    return json(200, paged("/api/projects", rows, query));
+  },
+  // Creates the project under :id, the caller its owner, or replaces the name and description.
+  "PUT /api/projects/:id": ({ id }, body) => {
+    if (!isUuid(id!)) return forbidden();
+    const existing = projects.find((p) => p.id === id);
+    if (existing && !["owner", "admin"].includes(existing.stats.role)) return forbidden();
+    const errors: NonNullable<Problem["errors"]> = Object.keys(body)
+      .filter((key) => !PROJECT_KEYS.includes(key))
+      .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
+    const name = body["name"];
+    const description = body["description"] ?? null;
+    if (typeof name !== "string" || name === "") errors.push({ code: "required", detail: "can't be blank", pointer: "#/name" });
+    else if (!PROJECT_NAME.test(name)) errors.push({ code: "format", detail: "has invalid format", pointer: "#/name" });
+    if (description !== null && (typeof description !== "string" || description.length > 240)) {
+      errors.push({ code: "too_long", detail: "should be at most 240 character(s)", pointer: "#/description" });
+    }
+    if (body["id"] !== undefined && body["id"] !== id) errors.push({ code: "mismatch", detail: "does not match the path", pointer: "#/id" });
+    if (errors.length) return invalid(errors);
+    const fields = { name: name as string, description: (description as string | null) || null };
+    if (existing) {
+      Object.assign(existing, fields);
+      return json(200, { data: projectEntry(existing), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
+    }
+    const created: StoredProject = {
+      id: id!,
+      ...fields,
+      members: [{ email: session.user.email, role: "owner" }],
+      stats: { role: "owner", workflows_count: 0, collaborators_count: 1, last_activity: null, failed_work_orders_count: 0 },
+    };
+    projects = [...projects, created];
+    return json(201, { data: projectEntry(created), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
   },
 };
 
@@ -167,6 +254,7 @@ export function failNext(route: string, failure: Problem) {
 /** For stories and tests: the starting data, not stepped up, nothing set to fail. */
 export function resetFakeApi() {
   tokens = seed();
+  projects = seedProjects();
   steppedUpUntil = 0;
   failures.clear();
 }

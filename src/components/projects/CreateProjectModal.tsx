@@ -10,8 +10,9 @@ import { Stack } from "@/components/primitives/Stack";
 /**
  * "Create a new project" (DashboardLive.ProjectCreationModal): Name, with
  * the URL-safe name it will get, and an optional Description. Create with
- * an invalid name shows its error instead of submitting. Server field errors
- * (keyed `rawName`, `description`) show on their fields.
+ * an invalid name shows its error instead of submitting. The fields are named
+ * as the API names them, so server field errors (`name`, `description`)
+ * show on their fields. `name` holds the name as typed until it's sent.
  */
 export default function CreateProjectModal({
   open,
@@ -23,9 +24,9 @@ export default function CreateProjectModal({
   onCreate?: (project: { name: string; description: string }) => Promise<void>;
 }) {
   const form = useForm({
-    initial: { rawName: "", description: "" },
-    validate: ({ rawName, description }) => ({
-      rawName: blank(urlSafeName(rawName)),
+    initial: { name: "", description: "" },
+    validate: ({ name, description }) => ({
+      name: blank(urlSafeName(name)),
       description: description.length > 240 ? ["should be at most 240 character(s)"] : [],
     }),
   });
@@ -42,8 +43,8 @@ export default function CreateProjectModal({
       title="Create a new project"
       size="md"
       formId="project-form"
-      onSubmit={form.modalSubmit(async ({ rawName, description }) => {
-        await onCreate?.({ name: urlSafeName(rawName), description });
+      onSubmit={form.modalSubmit(async ({ name, description }) => {
+        await onCreate?.({ name: urlSafeName(name), description });
         close();
       })}
       submitLabel="Create project"
@@ -52,7 +53,7 @@ export default function CreateProjectModal({
       <NameField
         id="project_raw_name"
         required
-        {...form.fieldProps("rawName")}
+        {...form.fieldProps("name")}
         badgeLabel="Your project will be named"
       />
       <Stack gap="sm">
