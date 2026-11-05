@@ -332,6 +332,11 @@ goes back to Lightning's way.
   to Confirm access first. Here the server holds the codes back, so the page
   opens the same pop-up over itself. Closing it leaves "Confirm it's you to
   see your backup codes." and a "Confirm access" button where the codes go.
+- **The replica has no `/auth/confirm_access` route.** Nothing sends anyone
+  there, and on the API confirming is one `POST /api/session` the dialog
+  already sends. The page itself (`src/pages/auth/confirm-access/`) stays,
+  with its stories, because Lightning's design-system port renders it on its
+  own confirm-access screen.
 
 ## Audit
 

@@ -25,7 +25,6 @@ const ROUTES: [RegExp, string][] = [
   [/^\/users\/two-factor$/, "auth-two-factor"],
   [/^\/users\/confirm(\/[^/]+)?$/, "auth-confirm-account"],
   [/^\/users\/confirm-required$/, "auth-confirmation-required"],
-  [/^\/auth\/confirm_access$/, "auth-confirm-access"],
   [/^\/first_setup$/, "first-setup"],
   [/^\/projects$/, "projects-dashboard"],
   [/^\/mfa_required$/, "mfa-required"],
