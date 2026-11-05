@@ -1,8 +1,8 @@
 import { useRef, type ComponentProps, type ReactNode } from "react";
 import { flushSync } from "react-dom";
-import { cn } from "../../utils/cn";
-import { errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
+import { cn } from "@/utils/cn";
+import { errorMessage } from "@/utils/errors";
+import { useAction } from "@/utils/useAction";
 import Alert from "./Alert";
 import Button from "./Button";
 import { useFocusFirstError } from "./focusFirstError";

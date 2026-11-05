@@ -1,6 +1,6 @@
 import { Label as HeadlessLabel, Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
 import { useContext, useId, useLayoutEffect, useRef, useState, type RefObject, type FocusEvent, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import { controlClasses } from "./controlClasses";
 import { checkNamed, FieldContext, useFieldControl } from "./fieldControl";
 import { floatingPanelClasses } from "./floating";

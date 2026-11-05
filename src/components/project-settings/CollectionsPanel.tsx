@@ -1,14 +1,14 @@
 import { useState } from "react";
-import Button from "../primitives/Button";
-import SectionHeader from "../primitives/SectionHeader";
-import CollectionDeleteModal from "../domain/CollectionDeleteModal";
+import Button from "@/components/primitives/Button";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import CollectionDeleteModal from "@/components/domain/CollectionDeleteModal";
 import CollectionFormModal from "./CollectionFormModal";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 import CollectionsTable from "./CollectionsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { CollectionRow, CollectionsSettings } from "../../types/project-settings";
-import { useActions } from "../../utils/useAction";
-import { Stack } from "../primitives/Stack";
+import type { CollectionRow, CollectionsSettings } from "@/types/project-settings";
+import { useActions } from "@/utils/useAction";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   collections: CollectionsSettings;

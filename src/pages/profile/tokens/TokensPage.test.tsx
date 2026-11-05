@@ -1,8 +1,8 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { apiTokens } from "../../../mock-data/tokens";
-import { renderPage } from "../../../test/renderPage";
-import { RequestError } from "../../../utils/errors";
+import { apiTokens } from "@/mock-data/tokens";
+import { renderPage } from "@/test/renderPage";
+import { RequestError } from "@/utils/errors";
 import TokensPage from "./TokensPage";
 
 const render = (tokenId: string | null = null) => renderPage(TokensPage, { tokens: apiTokens, tokenId }, ["onGenerate", "onDelete", "onClose"]);

@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import FormModal from "./FormModal";
 import { TextInput } from "./Inputs";
-import { useForm } from "../../utils/useForm";
+import { useForm } from "@/utils/useForm";
 
 /** An "Add collaborator" modal whose email can't be blank. */
 function AddModal() {

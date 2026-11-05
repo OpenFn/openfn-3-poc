@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SsoLogin from "./SsoLogin";
-import { exampleSsoProvider } from "../../mock-data/auth";
+import { exampleSsoProvider } from "@/mock-data/auth";
 
 const meta: Meta<typeof SsoLogin> = {
   title: "Auth/SsoLogin",

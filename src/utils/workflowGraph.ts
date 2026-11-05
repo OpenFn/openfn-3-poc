@@ -10,7 +10,7 @@ import type {
   EditorTrigger,
   WorkflowGraph,
   WorkflowTemplate,
-} from "../types/workflow-graph";
+} from "@/types/workflow-graph";
 
 export const SEED_BODY = "fn(state => state);\n";
 

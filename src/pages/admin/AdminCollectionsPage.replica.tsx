@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useToast } from "../../components/primitives/Toast";
-import { adminCollectionRows, collectionProjectOptions } from "../../mock-data/admin";
-import { simulateRequest } from "../../mock-data/request";
-import type { AdminCollectionRow } from "../../types/admin";
-import { urlSafeName } from "../../utils/format";
+import { useToast } from "@/components/primitives/Toast";
+import { adminCollectionRows, collectionProjectOptions } from "@/mock-data/admin";
+import { simulateRequest } from "@/mock-data/request";
+import type { AdminCollectionRow } from "@/types/admin";
+import { urlSafeName } from "@/utils/format";
 import AdminCollectionsPage from "./AdminCollectionsPage";
 
 /**

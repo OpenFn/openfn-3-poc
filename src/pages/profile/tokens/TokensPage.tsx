@@ -1,14 +1,14 @@
-import Header from "../../../components/primitives/Header";
-import Button from "../../../components/primitives/Button";
-import { Centered, PageContent } from "../../../components/primitives/PageContent";
-import NewTokenBanner from "../../../components/profile/NewTokenBanner";
-import TokensTable from "../../../components/profile/TokensTable";
-import { Stack } from "../../../components/primitives/Stack";
-import TokenDeletionModal from "../../../components/profile/TokenDeletionModal";
+import Header from "@/components/primitives/Header";
+import Button from "@/components/primitives/Button";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import NewTokenBanner from "@/components/profile/NewTokenBanner";
+import TokensTable from "@/components/profile/TokensTable";
+import { Stack } from "@/components/primitives/Stack";
+import TokenDeletionModal from "@/components/profile/TokenDeletionModal";
 import { useState } from "react";
-import { useToast } from "../../../components/primitives/Toast";
-import type { ApiToken } from "../../../types/tokens";
-import { useAction } from "../../../utils/useAction";
+import { useToast } from "@/components/primitives/Toast";
+import type { ApiToken } from "@/types/tokens";
+import { useAction } from "@/utils/useAction";
 
 /** What the route passes in: data, the actions that change it, and where you are. */
 export interface TokensPageProps {

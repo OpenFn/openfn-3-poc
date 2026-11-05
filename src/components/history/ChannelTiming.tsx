@@ -1,10 +1,10 @@
-import type { ChannelEvent } from "../../types/channels";
-import Disclosure from "../primitives/Disclosure";
-import { cn } from "../../utils/cn";
-import Pill from "../primitives/Pill";
-import { formatUs } from "../../utils/format";
-import Text from "../primitives/Text";
-import Tooltip from "../primitives/Tooltip";
+import type { ChannelEvent } from "@/types/channels";
+import Disclosure from "@/components/primitives/Disclosure";
+import { cn } from "@/utils/cn";
+import Pill from "@/components/primitives/Pill";
+import { formatUs } from "@/utils/format";
+import Text from "@/components/primitives/Text";
+import Tooltip from "@/components/primitives/Tooltip";
 
 interface Segment {
   label: string;

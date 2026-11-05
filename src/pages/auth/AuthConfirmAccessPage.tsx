@@ -2,16 +2,16 @@ import { useState } from "react";
 import AuthPanelLayout, {
   AuthPanel,
   HavingProblems,
-} from "../../components/auth/AuthPanelLayout";
-import Alert from "../../components/primitives/Alert";
-import Form from "../../components/primitives/Form";
-import { blank } from "../../utils/validate";
-import TextLink from "../../components/primitives/TextLink";
-import Button from "../../components/primitives/Button";
-import UserAvatar from "../../components/primitives/UserAvatar";
-import { PasswordInput, TextInput } from "../../components/primitives/Inputs";
-import { errorMessage } from "../../utils/errors";
-import { useForm } from "../../utils/useForm";
+} from "@/components/auth/AuthPanelLayout";
+import Alert from "@/components/primitives/Alert";
+import Form from "@/components/primitives/Form";
+import { blank } from "@/utils/validate";
+import TextLink from "@/components/primitives/TextLink";
+import Button from "@/components/primitives/Button";
+import UserAvatar from "@/components/primitives/UserAvatar";
+import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import { errorMessage } from "@/utils/errors";
+import { useForm } from "@/utils/useForm";
 
 /** What the user confirms with: one or the other. */
 export type ConfirmAccessValues = { password: string } | { code: string };

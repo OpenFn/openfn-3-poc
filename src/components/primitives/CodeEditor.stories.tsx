@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import CodeEditor from "./CodeEditor";
-import { withCanvas } from "../../stories/decorators";
+import { withCanvas } from "@/stories/decorators";
 
 const meta: Meta<typeof CodeEditor> = {
   title: "Primitives/CodeEditor",

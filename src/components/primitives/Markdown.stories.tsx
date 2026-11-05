@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Markdown from "./Markdown";
-import { withWhitePanel } from "../../stories/decorators";
+import { withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof Markdown> = {
   title: "Primitives/Markdown",

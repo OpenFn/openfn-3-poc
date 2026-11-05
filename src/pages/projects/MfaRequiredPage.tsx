@@ -1,6 +1,6 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import MfaRequiredCard from "../../components/projects/MfaRequiredCard";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import MfaRequiredCard from "@/components/projects/MfaRequiredCard";
 
 /**
  * Inventory view `mfa-required` (ProjectLive.MFARequired): where a user

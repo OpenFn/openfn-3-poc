@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminCollectionsPage from "./AdminCollectionsPage";
-import { adminCollectionRows, collectionProjectOptions } from "../../mock-data/admin";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { adminCollectionRows, collectionProjectOptions } from "@/mock-data/admin";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 

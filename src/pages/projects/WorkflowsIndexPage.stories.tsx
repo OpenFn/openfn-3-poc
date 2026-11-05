@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
-import { workflowStatsFor } from "../../mock-data/dashboard-stats";
-import { projects } from "../../mock-data/projects";
-import { projectMetricsFor } from "../../utils/history";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { workflowStatsFor } from "@/mock-data/dashboard-stats";
+import { projects } from "@/mock-data/projects";
+import { projectMetricsFor } from "@/utils/history";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const stats = workflowStatsFor(project.id);

@@ -1,8 +1,8 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { renderPage } from "../../test/renderPage";
-import type { AuthProvider } from "../../types/admin";
-import { RequestError } from "../../utils/errors";
+import { renderPage } from "@/test/renderPage";
+import type { AuthProvider } from "@/types/admin";
+import { RequestError } from "@/utils/errors";
 import AdminAuthProvidersPage from "./AdminAuthProvidersPage";
 
 const blank: AuthProvider = {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SandboxActions from "./SandboxActions";
-import { sandboxRowsUnder } from "../../../mock-data/sandboxes";
-import { projects } from "../../../mock-data/projects";
+import { sandboxRowsUnder } from "@/mock-data/sandboxes";
+import { projects } from "@/mock-data/projects";
 
 const rows = sandboxRowsUnder(projects[0]!.id);
 

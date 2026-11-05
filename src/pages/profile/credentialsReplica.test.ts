@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { credentialsFixture, type CredentialsFixture } from "../../mock-data/credentials";
-import { findUser } from "../../mock-data/users";
-import type { CredentialValues } from "../../types/credentials";
-import { RequestError } from "../../utils/errors";
+import { credentialsFixture, type CredentialsFixture } from "@/mock-data/credentials";
+import { findUser } from "@/mock-data/users";
+import type { CredentialValues } from "@/types/credentials";
+import { RequestError } from "@/utils/errors";
 import { credentialReplicaActions } from "./credentialsReplica";
 
 // The replica stands in for Lightning, so it must keep the contract's OAuth promises too.

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import StepFailureBars from "./StepFailureBars";
-import { healthFor } from "../../../mock-data/workflow-health";
-import { withWhitePanel } from "../../../stories/decorators";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof StepFailureBars> = {
   title: "Projects/Health/StepFailureBars",

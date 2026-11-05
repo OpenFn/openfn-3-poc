@@ -3,7 +3,7 @@
  * (/profile/tokens, /profile/auth/backup_codes). Static fixtures only:
  * every value is an obviously fake placeholder, never a real secret.
  */
-import type { ApiToken, BackupCode } from "../types/tokens";
+import type { ApiToken, BackupCode } from "@/types/tokens";
 
 export const apiTokens: ApiToken[] = [
   {

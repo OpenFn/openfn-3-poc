@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { Link } from "../../routing/router";
-import type { PageInfo } from "../../types/lists";
-import { cn } from "../../utils/cn";
-import { useUrlParams } from "../../utils/useUrlParams";
+import { Link } from "@/routing/router";
+import type { PageInfo } from "@/types/lists";
+import { cn } from "@/utils/cn";
+import { useUrlParams } from "@/utils/useUrlParams";
 import Text from "./Text";
 
 interface Props {

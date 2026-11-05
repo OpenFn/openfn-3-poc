@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import Heading from "./Heading";
 import Text from "./Text";
 

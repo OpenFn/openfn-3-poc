@@ -4,7 +4,7 @@
  * Static data only.
  */
 import { dataclips, findDataclip, runLogs, runs, steps, stepsOf, workOrders } from "./history";
-import type { HistoryWorkOrderState, LogLine, RunRow, WorkOrderRow, WorkOrderState } from "../types/history";
+import type { HistoryWorkOrderState, LogLine, RunRow, WorkOrderRow, WorkOrderState } from "@/types/history";
 import type { Run, Step, WorkOrder } from "./models/history";
 
 /**

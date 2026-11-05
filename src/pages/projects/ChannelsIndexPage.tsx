@@ -1,15 +1,15 @@
-import Button from "../../components/primitives/Button";
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import ProjectBreadcrumbs from "../../components/shell/ProjectBreadcrumbs";
-import ChannelFormModal from "../../components/projects/channels/ChannelFormModal";
-import ChannelMetrics from "../../components/projects/channels/ChannelMetrics";
-import ChannelsTable from "../../components/projects/channels/ChannelsTable";
-import { useToast } from "../../components/primitives/Toast";
-import { useRouter } from "../../routing/router";
-import type { ChannelForm, ChannelFormValues, ChannelRow } from "../../types/channels";
-import type { CurrentProject } from "../../types/projects";
-import { errorMessage } from "../../utils/errors";
+import Button from "@/components/primitives/Button";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
+import ChannelFormModal from "@/components/projects/channels/ChannelFormModal";
+import ChannelMetrics from "@/components/projects/channels/ChannelMetrics";
+import ChannelsTable from "@/components/projects/channels/ChannelsTable";
+import { useToast } from "@/components/primitives/Toast";
+import { useRouter } from "@/routing/router";
+import type { ChannelForm, ChannelFormValues, ChannelRow } from "@/types/channels";
+import type { CurrentProject } from "@/types/projects";
+import { errorMessage } from "@/utils/errors";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface ChannelsIndexPageProps {

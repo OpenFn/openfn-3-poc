@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Row } from "../primitives/Stack";
-import Text from "../primitives/Text";
+import { Row } from "@/components/primitives/Stack";
+import Text from "@/components/primitives/Text";
 
 /**
  * Why a setting is locked by the plan, under the control it locks: a lock and

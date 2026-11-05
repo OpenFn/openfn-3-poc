@@ -1,11 +1,11 @@
-import type { ProjectOverview } from "../../types/workflows";
-import EmptyState from "../primitives/EmptyState";
-import { RowLink, Table, Td, Th, Tr } from "../primitives/Table";
-import DateTime from "../primitives/DateTime";
-import Button from "../primitives/Button";
-import TextLink from "../primitives/TextLink";
-import { useTableSort, type SortValue } from "../../utils/useTableSort";
-import { capitalize } from "../../utils/format";
+import type { ProjectOverview } from "@/types/workflows";
+import EmptyState from "@/components/primitives/EmptyState";
+import { RowLink, Table, Td, Th, Tr } from "@/components/primitives/Table";
+import DateTime from "@/components/primitives/DateTime";
+import Button from "@/components/primitives/Button";
+import TextLink from "@/components/primitives/TextLink";
+import { useTableSort, type SortValue } from "@/utils/useTableSort";
+import { capitalize } from "@/utils/format";
 
 const sortMap: Record<"name" | "last_updated_at", (p: ProjectOverview) => SortValue> = {
   name: (p) => p.name,

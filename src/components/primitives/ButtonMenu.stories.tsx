@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ButtonMenu from "./ButtonMenu";
 import { MenuDivider, MenuItem } from "./Menu";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof ButtonMenu> = {
   title: "Primitives/ButtonMenu",

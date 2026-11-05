@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SettingsMenu from "./SettingsMenu";
-import { ThemeProvider } from "../../theme/ThemeProvider";
-import { AnnotationsProvider } from "../../annotations/AnnotationsContext";
-import { withRouter } from "../../stories/decorators";
+import { ThemeProvider } from "@/theme/ThemeProvider";
+import { AnnotationsProvider } from "@/annotations/AnnotationsContext";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof SettingsMenu> = {
   title: "Devtools/SettingsMenu",

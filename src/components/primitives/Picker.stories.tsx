@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Picker from "./Picker";
-import { buildProjectPickerItems } from "../shell/projectPickerItems";
-import { projects } from "../../mock-data/projects";
-import { withRouter } from "../../stories/decorators";
+import { buildProjectPickerItems } from "@/components/shell/projectPickerItems";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof Picker> = {
   title: "Primitives/Picker",

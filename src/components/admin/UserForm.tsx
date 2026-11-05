@@ -1,12 +1,12 @@
-import type { AdminUserRow, UserFormValues } from "../../types/admin";
-import type { UserRole } from "../../types/users";
-import { userRoleOptions } from "../../constants";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
-import Form from "../primitives/Form";
-import { Checkbox, PasswordInput, Select, TextInput } from "../primitives/Inputs";
+import type { AdminUserRow, UserFormValues } from "@/types/admin";
+import type { UserRole } from "@/types/users";
+import { userRoleOptions } from "@/constants";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
+import Form from "@/components/primitives/Form";
+import { Checkbox, PasswordInput, Select, TextInput } from "@/components/primitives/Inputs";
 
 interface Props {
   /** The account being edited; omit for /settings/users/new. */

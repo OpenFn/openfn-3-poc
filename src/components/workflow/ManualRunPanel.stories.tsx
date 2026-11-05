@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { dataclips } from "../../mock-data/history";
+import { dataclips } from "@/mock-data/history";
 import ManualRunPanel from "./ManualRunPanel";
-import { withSidePanel, withWhitePanel } from "../../stories/decorators";
+import { withSidePanel, withWhitePanel } from "@/stories/decorators";
 
 const meta: Meta<typeof ManualRunPanel> = {
   title: "Workflow/ManualRunPanel",

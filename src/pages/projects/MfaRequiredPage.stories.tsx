@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import MfaRequiredPage from "./MfaRequiredPage";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof MfaRequiredPage> = {
   title: "Pages/Projects/MfaRequiredPage",

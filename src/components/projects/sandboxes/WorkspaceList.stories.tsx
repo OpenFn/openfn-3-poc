@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkspaceList from "./WorkspaceList";
-import { findSandboxRow, sandboxRowsUnder } from "../../../mock-data/sandboxes";
-import { projects } from "../../../mock-data/projects";
-import { withRouter } from "../../../stories/decorators";
+import { findSandboxRow, sandboxRowsUnder } from "@/mock-data/sandboxes";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
 
 const root = findSandboxRow(projects[0]!.id)!;
 

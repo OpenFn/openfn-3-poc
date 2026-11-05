@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AdminCollectionModal from "./AdminCollectionModal";
-import { collectionProjectOptions } from "../../mock-data/admin";
-import { collections } from "../../mock-data/project-settings";
-import { RequestError } from "../../utils/errors";
+import { collectionProjectOptions } from "@/mock-data/admin";
+import { collections } from "@/mock-data/project-settings";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta<typeof AdminCollectionModal> = {
   title: "Admin/AdminCollectionModal",

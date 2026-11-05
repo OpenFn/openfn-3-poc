@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthConfirmationRequiredPage from "./AuthConfirmationRequiredPage";
-import { unconfirmedUser } from "../../mock-data/auth";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { unconfirmedUser } from "@/mock-data/auth";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AuthConfirmationRequiredPage> = {
   title: "Pages/Auth/AuthConfirmationRequiredPage",

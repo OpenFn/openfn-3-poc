@@ -1,11 +1,11 @@
-import Card from "../primitives/Card";
-import SectionHeader from "../primitives/SectionHeader";
-import { useToast } from "../primitives/Toast";
-import Toggle from "../primitives/Toggle";
+import Card from "@/components/primitives/Card";
+import SectionHeader from "@/components/primitives/SectionHeader";
+import { useToast } from "@/components/primitives/Toast";
+import Toggle from "@/components/primitives/Toggle";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { ParentProjectRef, SecuritySettings } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
-import { useChosenValue } from "../../utils/useChosenValue";
+import type { ParentProjectRef, SecuritySettings } from "@/types/project-settings";
+import { errorMessage } from "@/utils/errors";
+import { useChosenValue } from "@/utils/useChosenValue";
 
 interface Props {
   security: SecuritySettings;

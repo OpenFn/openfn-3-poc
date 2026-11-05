@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
-import { withRouter, withSidePanel } from "../../stories/decorators";
+import { findWorkflowGraph } from "@/mock-data/workflow";
+import { withRouter, withSidePanel } from "@/stories/decorators";
 import WorkflowSettings from "./WorkflowSettings";
 
 const noop = () => {};

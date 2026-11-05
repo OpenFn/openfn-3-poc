@@ -1,5 +1,5 @@
-import { formatRelative, formatRelativeDetailed, formatTimeOnly, formatUtc } from "../../utils/format";
-import { cn } from "../../utils/cn";
+import { formatRelative, formatRelativeDetailed, formatTimeOnly, formatUtc } from "@/utils/format";
+import { cn } from "@/utils/cn";
 import Tooltip from "./Tooltip";
 import Text from "./Text";
 

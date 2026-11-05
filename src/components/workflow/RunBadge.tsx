@@ -1,5 +1,5 @@
-import Pill from "../primitives/Pill";
-import { shortUuid, uuidOf } from "../../utils/format";
+import Pill from "@/components/primitives/Pill";
+import { shortUuid, uuidOf } from "@/utils/format";
 
 /**
  * "Run abc1234" chip with a dismiss X (collaborative-editor/components/common/

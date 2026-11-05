@@ -1,5 +1,5 @@
-import ConfirmModal from "../primitives/ConfirmModal";
-import type { CollaboratorRow } from "../../types/project-settings";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import type { CollaboratorRow } from "@/types/project-settings";
 
 interface Props {
   collaborator: CollaboratorRow;

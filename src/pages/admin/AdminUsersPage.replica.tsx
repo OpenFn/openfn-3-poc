@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/primitives/Toast";
-import { hasActivityInProjects } from "../../mock-data/profile";
-import { simulateRequest } from "../../mock-data/request";
-import { users } from "../../mock-data/users";
-import type { AdminUserRow } from "../../types/admin";
+import { useToast } from "@/components/primitives/Toast";
+import { hasActivityInProjects } from "@/mock-data/profile";
+import { simulateRequest } from "@/mock-data/request";
+import { users } from "@/mock-data/users";
+import type { AdminUserRow } from "@/types/admin";
 import AdminUsersPage from "./AdminUsersPage";
 
 /** Lightning schedules the purge seven days out (Lightning.Config.purge_deleted_after_days). */

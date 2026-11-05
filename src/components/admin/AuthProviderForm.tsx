@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { authRedirectUri } from "../../utils/urls";
-import type { AuthProvider, AuthProviderValues } from "../../types/admin";
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
-import Form from "../primitives/Form";
-import Card from "../primitives/Card";
-import Section from "../primitives/Section";
-import { Checkbox, PasswordInput, TextInput } from "../primitives/Inputs";
-import Text from "../primitives/Text";
-import TextLink from "../primitives/TextLink";
-import { cn } from "../../utils/cn";
-import { RequestError, errorMessage } from "../../utils/errors";
-import { useAction } from "../../utils/useAction";
-import { blank } from "../../utils/validate";
-import { Stack } from "../primitives/Stack";
+import { authRedirectUri } from "@/utils/urls";
+import type { AuthProvider, AuthProviderValues } from "@/types/admin";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
+import Form from "@/components/primitives/Form";
+import Card from "@/components/primitives/Card";
+import Section from "@/components/primitives/Section";
+import { Checkbox, PasswordInput, TextInput } from "@/components/primitives/Inputs";
+import Text from "@/components/primitives/Text";
+import TextLink from "@/components/primitives/TextLink";
+import { cn } from "@/utils/cn";
+import { RequestError, errorMessage } from "@/utils/errors";
+import { useAction } from "@/utils/useAction";
+import { blank } from "@/utils/validate";
+import { Stack } from "@/components/primitives/Stack";
 
 type TestState = "unknown" | "success" | "failed";
 

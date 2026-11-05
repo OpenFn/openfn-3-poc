@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { hover, openTooltips } from "../../../test/tooltip";
-import type { SandboxRow } from "../../../types/sandboxes";
+import { hover, openTooltips } from "@/test/tooltip";
+import type { SandboxRow } from "@/types/sandboxes";
 import WorkspaceCard from "./WorkspaceCard";
 
 const deleted: SandboxRow = {

@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import CredentialIndex from "./CredentialIndex";
 import NewCredentialMenuButton from "./NewCredentialMenuButton";
 import { projectCredentialMenuOptions } from "./credentialModalEvents";
-import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture, keychainRowsFor } from "../../mock-data/credentials";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withGrayPanel } from "../../stories/decorators";
+import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture, keychainRowsFor } from "@/mock-data/credentials";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withGrayPanel } from "@/stories/decorators";
 
 const project = projects[0]!;
 const fixture = credentialsFixture();

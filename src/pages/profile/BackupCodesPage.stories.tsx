@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import BackupCodesPage from "./BackupCodesPage";
-import { backupCodes } from "../../mock-data/tokens";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { backupCodes } from "@/mock-data/tokens";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof BackupCodesPage> = {
   title: "Pages/Profile/BackupCodesPage",

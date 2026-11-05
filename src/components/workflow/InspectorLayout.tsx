@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import CloseButton from "../primitives/CloseButton";
-import IconButton from "../primitives/IconButton";
-import Tooltip from "../primitives/Tooltip";
+import { cn } from "@/utils/cn";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import CloseButton from "@/components/primitives/CloseButton";
+import IconButton from "@/components/primitives/IconButton";
+import Tooltip from "@/components/primitives/Tooltip";
 
 interface Props {
   title: string;

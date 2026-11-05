@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { formatNumber } from "../../../utils/format";
+import { formatNumber } from "@/utils/format";
 import type {
   ErrorSignatures,
   HealthQuery,
@@ -7,19 +7,19 @@ import type {
   Outcomes,
   RunVolume,
   WorkOrderStateCounts,
-} from "../../../types/workflow-health";
+} from "@/types/workflow-health";
 import { FailureBreakdownDonut, OutcomesDonut } from "./HealthDonuts";
 import StepFailureBars from "./StepFailureBars";
 import TriageTable from "./TriageTable";
-import Alert from "../../primitives/Alert";
-import Card from "../../primitives/Card";
-import Section from "../../primitives/Section";
-import Spinner from "../../primitives/Spinner";
-import Tabs from "../../primitives/Tabs";
-import Text from "../../primitives/Text";
+import Alert from "@/components/primitives/Alert";
+import Card from "@/components/primitives/Card";
+import Section from "@/components/primitives/Section";
+import Spinner from "@/components/primitives/Spinner";
+import Tabs from "@/components/primitives/Tabs";
+import Text from "@/components/primitives/Text";
 import VolumeBars from "./VolumeBars";
 import { FRAME } from "./palette";
-import { Stack } from "../../primitives/Stack";
+import { Stack } from "@/components/primitives/Stack";
 
 type Tab = "Work orders" | "Runs";
 

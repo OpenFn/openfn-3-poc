@@ -1,7 +1,7 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import UserForm from "../../components/admin/UserForm";
-import type { AdminUserRow, UserFormValues } from "../../types/admin";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import UserForm from "@/components/admin/UserForm";
+import type { AdminUserRow, UserFormValues } from "@/types/admin";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface AdminUserEditPageProps {

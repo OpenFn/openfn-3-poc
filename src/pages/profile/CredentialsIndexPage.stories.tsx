@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CredentialsIndexPage from "./CredentialsIndexPage";
-import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture } from "../../mock-data/credentials";
-import { session } from "../../mock-data/users";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { clientSecretsFor, fieldsForSchema, credentialIndexDataFor, credentialSecretsFor, credentialsFixture } from "@/mock-data/credentials";
+import { session } from "@/mock-data/users";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const done = async () => {};
 const fixture = credentialsFixture();

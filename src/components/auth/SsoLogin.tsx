@@ -1,7 +1,7 @@
-import Button from "../primitives/Button";
-import Text from "../primitives/Text";
-import type { SsoProvider } from "../../types/auth";
-import { Row } from "../primitives/Stack";
+import Button from "@/components/primitives/Button";
+import Text from "@/components/primitives/Text";
+import type { SsoProvider } from "@/types/auth";
+import { Row } from "@/components/primitives/Stack";
 
 /**
  * The "or / via external provider" block under the login button, shown when

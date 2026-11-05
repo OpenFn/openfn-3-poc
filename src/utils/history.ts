@@ -3,14 +3,14 @@
  * failure counts, run state labels, work order selection, History's search in
  * words and as URL params, and the workflows-index metric cards. No fixture access.
  */
-import type { ChannelEvent } from "../types/channels";
-import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "../types/history";
-import type { SortState } from "../types/lists";
-import { historySearchFields, historyStatuses } from "../constants";
+import type { ChannelEvent } from "@/types/channels";
+import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
+import type { SortState } from "@/types/lists";
+import { historySearchFields, historyStatuses } from "@/constants";
 import type { ParamPatch } from "./useUrlParams";
 import { capitalize, formatQueryDate } from "./format";
-import type { ProjectMetrics } from "../types/workflows";
-import { FAILURE_STATES, type WorkOrderStateCounts } from "../types/workflow-health";
+import type { ProjectMetrics } from "@/types/workflows";
+import { FAILURE_STATES, type WorkOrderStateCounts } from "@/types/workflow-health";
 
 /** What the metric cards count of one workflow. */
 interface WorkflowCounts {

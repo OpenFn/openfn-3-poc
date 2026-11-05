@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { LogLine } from "../../types/history";
-import { editors } from "../../test/monaco";
+import type { LogLine } from "@/types/history";
+import { editors } from "@/test/monaco";
 import LogViewer from "./LogViewer";
 
 const line = (message: string, extra: Partial<LogLine> = {}): LogLine => ({

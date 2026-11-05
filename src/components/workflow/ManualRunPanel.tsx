@@ -1,26 +1,26 @@
 import { useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
-import type { Dataclip } from "../../mock-data/models/history";
-import { cn } from "../../utils/cn";
-import DataclipTypePill from "../domain/DataclipTypePill";
-import Button from "../primitives/Button";
-import Card from "../primitives/Card";
-import FileDropZone from "../primitives/FileDropZone";
-import Heading from "../primitives/Heading";
-import CloseButton from "../primitives/CloseButton";
-import IconButton from "../primitives/IconButton";
-import { Field } from "../primitives/Inputs";
-import CodeEditor from "../primitives/CodeEditor";
-import Tabs from "../primitives/Tabs";
+import type { Dataclip } from "@/mock-data/models/history";
+import { cn } from "@/utils/cn";
+import DataclipTypePill from "@/components/domain/DataclipTypePill";
+import Button from "@/components/primitives/Button";
+import Card from "@/components/primitives/Card";
+import FileDropZone from "@/components/primitives/FileDropZone";
+import Heading from "@/components/primitives/Heading";
+import CloseButton from "@/components/primitives/CloseButton";
+import IconButton from "@/components/primitives/IconButton";
+import { Field } from "@/components/primitives/Inputs";
+import CodeEditor from "@/components/primitives/CodeEditor";
+import Tabs from "@/components/primitives/Tabs";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import NewRunButton from "./NewRunButton";
-import SearchInput from "../primitives/SearchInput";
-import { matchesQuery } from "../../utils/search";
-import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "../../utils/format";
-import Tooltip from "../primitives/Tooltip";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import SearchInput from "@/components/primitives/SearchInput";
+import { matchesQuery } from "@/utils/search";
+import { formatLocalDate, formatShortLocalDateTime, prettyJson, shortUuid, uuidOf } from "@/utils/format";
+import Tooltip from "@/components/primitives/Tooltip";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 type Tab = "empty" | "custom" | "existing";
 

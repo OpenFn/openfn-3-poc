@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta<typeof InviteCollaboratorsModal> = {
   title: "Project settings/InviteCollaboratorsModal",

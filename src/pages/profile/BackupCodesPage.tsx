@@ -1,9 +1,9 @@
-import Header from "../../components/primitives/Header";
-import { Centered, PageContent } from "../../components/primitives/PageContent";
-import BackupCodesCard from "../../components/profile/BackupCodesCard";
-import MfaDisabledNotice from "../../components/profile/MfaDisabledNotice";
-import type { BackupCode } from "../../types/tokens";
-import { useAction } from "../../utils/useAction";
+import Header from "@/components/primitives/Header";
+import { Centered, PageContent } from "@/components/primitives/PageContent";
+import BackupCodesCard from "@/components/profile/BackupCodesCard";
+import MfaDisabledNotice from "@/components/profile/MfaDisabledNotice";
+import type { BackupCode } from "@/types/tokens";
+import { useAction } from "@/utils/useAction";
 
 /** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
 export interface BackupCodesPageProps {

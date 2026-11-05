@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthLayout, { AuthNav } from "./AuthLayout";
 import AuthCard from "./AuthCard";
-import { withRouter } from "../../stories/decorators";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof AuthLayout> = {
   title: "Auth/AuthLayout",

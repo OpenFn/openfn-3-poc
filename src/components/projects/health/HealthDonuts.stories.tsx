@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FailureBreakdownDonut, OutcomesDonut } from "./HealthDonuts";
-import { healthFor } from "../../../mock-data/workflow-health";
-import { withRouter, withWhitePanel } from "../../../stories/decorators";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withRouter, withWhitePanel } from "@/stories/decorators";
 
 const { outcomes } = healthFor("wf-openhie", "7");
 

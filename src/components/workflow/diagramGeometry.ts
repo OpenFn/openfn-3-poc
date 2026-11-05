@@ -1,5 +1,5 @@
-import type { EdgeConditionType, Position, WorkflowGraph } from "../../types/workflow-graph";
-import { NODE_RUN_BORDER, NODE_RUN_FILL } from "../../theme/runStateColours";
+import type { EdgeConditionType, Position, WorkflowGraph } from "@/types/workflow-graph";
+import { NODE_RUN_BORDER, NODE_RUN_FILL } from "@/theme/runStateColours";
 
 /**
  * Geometry shared by the hand-rolled diagram (Lightning draws it with

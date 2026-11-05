@@ -1,5 +1,5 @@
 /** Work orders, runs, steps and dataclips, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { DataclipType, RunState, StepExitReason, WorkOrderState } from "../../types/history";
+import type { DataclipType, RunState, StepExitReason, WorkOrderState } from "@/types/history";
 
 export interface Dataclip {
   id: string;

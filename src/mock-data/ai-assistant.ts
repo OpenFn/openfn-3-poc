@@ -2,7 +2,7 @@
  * AI Assistant conversations shown in the workflow editor's assistant panel.
  * Static fixtures only: the demo has no assistant behind it.
  */
-import type { AISession } from "../types/ai-assistant";
+import type { AISession } from "@/types/ai-assistant";
 
 export const aiSessions: AISession[] = [
   {

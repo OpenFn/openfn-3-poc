@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "../../components/primitives/Toast";
-import { simulateRequest } from "../../mock-data/request";
-import { findUser } from "../../mock-data/users";
+import { useToast } from "@/components/primitives/Toast";
+import { simulateRequest } from "@/mock-data/request";
+import { findUser } from "@/mock-data/users";
 import AdminUserEditPage from "./AdminUserEditPage";
 
 /**

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { channelRequests } from "../../mock-data/channel-requests";
+import { channelRequests } from "@/mock-data/channel-requests";
 import ChannelTiming from "./ChannelTiming";
 
 const meta = { title: "History/ChannelTiming", component: ChannelTiming } satisfies Meta<typeof ChannelTiming>;

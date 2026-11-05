@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CollectionsTable from "./CollectionsTable";
-import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
+import { projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
 
 const { collections } = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user).collections;
 const noop = () => {};

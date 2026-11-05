@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { AuditEvent } from "../../types/admin";
+import type { AuditEvent } from "@/types/admin";
 import AuditChanges from "./AuditChanges";
 
 // What AuditLive.Index.diff/1 showed, now this component's job.

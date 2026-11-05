@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ChannelsTable from "./ChannelsTable";
-import { channelsIn } from "../../../mock-data/channels";
-import { projects } from "../../../mock-data/projects";
-import { withRouter } from "../../../stories/decorators";
-import type { ChannelRow } from "../../../types/channels";
-import { channelProxyUrl } from "../../../utils/urls";
+import { channelsIn } from "@/mock-data/channels";
+import { projects } from "@/mock-data/projects";
+import { withRouter } from "@/stories/decorators";
+import type { ChannelRow } from "@/types/channels";
+import { channelProxyUrl } from "@/utils/urls";
 
 const project = projects[0]!;
 const rows: ChannelRow[] = channelsIn(project.id).map((c) => ({

@@ -49,7 +49,7 @@ for (const f of consumers)
 const dupes = [...seen.values()].filter((n) => n > 1).reduce((a, n) => a + n, 0)
 
 const primNames = prims.map((f) => f.path.replace(/^components\/primitives\/|\.tsx?$/g, ''))
-const primImports = count(consumers, /from ['"](?:\.\.\/)+(?:components\/)?primitives\/[A-Za-z]+['"]/g)
+const primImports = count(consumers, /from ['"]@\/components\/primitives\/[A-Za-z]+['"]/g)
 
 // Palette shades, not the named colours (src/theme/tokens.css) or the brand
 // and status scales. White and black with an alpha are allowed.

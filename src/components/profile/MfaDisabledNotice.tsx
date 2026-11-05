@@ -1,5 +1,5 @@
-import Alert from "../primitives/Alert";
-import Button from "../primitives/Button";
+import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
 
 /** Shown on the backup codes page when MFA is off (backup_codes_live/index.html.heex). */
 export default function MfaDisabledNotice({ profileHref }: { profileHref: string }) {

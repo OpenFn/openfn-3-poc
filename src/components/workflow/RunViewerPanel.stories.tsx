@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { dataclips, findRun, runLogs, stepsOf } from "../../mock-data/history";
-import { withRouter, withWhitePanel } from "../../stories/decorators";
+import { dataclips, findRun, runLogs, stepsOf } from "@/mock-data/history";
+import { withRouter, withWhitePanel } from "@/stories/decorators";
 import RunViewerPanel from "./RunViewerPanel";
 
 const run = findRun("run-1")!;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Link, useRouter } from "./router";
-import { withRouterAt } from "../stories/decorators";
+import { withRouterAt } from "@/stories/decorators";
 
 /** Shows where the router is, so you can see each click navigate. */
 function Here() {

@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from "react";
-import { Link } from "../../routing/router";
-import { cn } from "../../utils/cn";
-import { shortUuid } from "../../utils/format";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
+import { shortUuid } from "@/utils/format";
 import Tooltip from "./Tooltip";
 
 /**

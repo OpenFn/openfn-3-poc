@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import DataStoragePanel from "./DataStoragePanel";
-import { dataRetentionPeriods } from "../../mock-data/project-settings";
-import type { DataStorageSettings } from "../../types/project-settings";
-import { withGrayPanel } from "../../stories/decorators";
+import { dataRetentionPeriods } from "@/mock-data/project-settings";
+import type { DataStorageSettings } from "@/types/project-settings";
+import { withGrayPanel } from "@/stories/decorators";
 
 const unset: DataStorageSettings = {
   historyRetentionPeriod: null,

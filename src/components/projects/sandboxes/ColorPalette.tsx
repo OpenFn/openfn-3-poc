@@ -1,5 +1,5 @@
-import { sandboxColorPalette } from "../../../constants";
-import { Field } from "../../primitives/Inputs";
+import { sandboxColorPalette } from "@/constants";
+import { Field } from "@/components/primitives/Inputs";
 
 /**
  * The sandbox colour picker (SandboxLive.Components.color_palette): a grid

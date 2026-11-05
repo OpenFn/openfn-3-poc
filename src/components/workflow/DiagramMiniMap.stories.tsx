@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
+import { findWorkflowGraph } from "@/mock-data/workflow";
 import DiagramMiniMap from "./DiagramMiniMap";
-import { withCanvas } from "../../stories/decorators";
+import { withCanvas } from "@/stories/decorators";
 
 const meta: Meta<typeof DiagramMiniMap> = {
   title: "Workflow/DiagramMiniMap",

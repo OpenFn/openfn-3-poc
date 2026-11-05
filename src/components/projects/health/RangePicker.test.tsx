@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import RangePicker from "./RangePicker";
-import { tooltipOf } from "../../../test/tooltip";
+import { tooltipOf } from "@/test/tooltip";
 
 function renderPicker(retentionDays: number | null) {
   const onChange = vi.fn();

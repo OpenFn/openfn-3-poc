@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import DataclipShowPage from "./DataclipShowPage";
-import { dataclips } from "../../mock-data/history";
-import { projects } from "../../mock-data/projects";
-import type { DataclipDetail } from "../../types/history";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { dataclips } from "@/mock-data/history";
+import { projects } from "@/mock-data/projects";
+import type { DataclipDetail } from "@/types/history";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const dataclip: DataclipDetail = {

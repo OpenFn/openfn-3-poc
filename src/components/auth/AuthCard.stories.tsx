@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthCard, { AuthFooterLinks } from "./AuthCard";
-import Button from "../primitives/Button";
-import { TextInput } from "../primitives/Inputs";
-import { authMessages } from "../../constants";
-import { withRouter } from "../../stories/decorators";
-import TextLink from "../primitives/TextLink";
+import Button from "@/components/primitives/Button";
+import { TextInput } from "@/components/primitives/Inputs";
+import { authMessages } from "@/constants";
+import { withRouter } from "@/stories/decorators";
+import TextLink from "@/components/primitives/TextLink";
 
 const meta: Meta<typeof AuthCard> = { title: "Auth/AuthCard", component: AuthCard, decorators: [withRouter] };
 export default meta;

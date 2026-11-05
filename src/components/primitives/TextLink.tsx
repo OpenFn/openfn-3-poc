@@ -1,6 +1,6 @@
 import type { MouseEvent, ReactNode } from "react";
-import { Link } from "../../routing/router";
-import { cn } from "../../utils/cn";
+import { Link } from "@/routing/router";
+import { cn } from "@/utils/cn";
 import Tooltip from "./Tooltip";
 
 interface Props {

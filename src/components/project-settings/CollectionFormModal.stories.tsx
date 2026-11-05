@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CollectionFormModal from "./CollectionFormModal";
-import { RequestError } from "../../utils/errors";
+import { RequestError } from "@/utils/errors";
 
 const meta: Meta<typeof CollectionFormModal> = {
   title: "Project settings/CollectionFormModal",

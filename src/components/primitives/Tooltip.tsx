@@ -16,8 +16,8 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { cloneElement, useState, type ReactElement, type ReactNode, type Ref, type SyntheticEvent } from "react";
-import { cn } from "../../utils/cn";
-import { useCopy } from "../../utils/useCopy";
+import { cn } from "@/utils/cn";
+import { useCopy } from "@/utils/useCopy";
 
 // One tooltip at a time, like Radix: one open from keyboard focus closes when another opens on hover.
 let closeShown: (() => void) | undefined;

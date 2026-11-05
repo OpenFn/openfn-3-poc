@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import SectionHeader from "./SectionHeader";
 
 export type CardVariant = "default" | "muted" | "dashed";

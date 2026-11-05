@@ -1,5 +1,5 @@
-import { adaptorIconUrl } from "../../utils/adaptors";
-import type { WorkflowGraph } from "../../types/workflow-graph";
+import { adaptorIconUrl } from "@/utils/adaptors";
+import type { WorkflowGraph } from "@/types/workflow-graph";
 import { NODE_BOX, type Rect, type Viewport } from "./diagramGeometry";
 
 const WIDTH = 200;

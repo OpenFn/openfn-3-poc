@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ProjectSetupPanel from "./ProjectSetupPanel";
-import { projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withRouter, withGrayPanel } from "../../stories/decorators";
+import { projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
 
 const project = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user);
 const sandbox = projectSettingsPropsFor(settingsFixtureFor(projects[2]!), session.user);

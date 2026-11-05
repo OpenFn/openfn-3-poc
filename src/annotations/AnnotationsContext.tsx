@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useRouter } from "../routing/router";
+import { useRouter } from "@/routing/router";
 import { AnnotationsContext, type AnnotationsState } from "./annotations-context";
 import { viewIdForLocation } from "./viewIds";
 

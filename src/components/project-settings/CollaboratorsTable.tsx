@@ -1,14 +1,14 @@
-import Button from "../primitives/Button";
-import { Select } from "../primitives/Inputs";
-import EmptyState from "../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../primitives/Table";
-import Text from "../primitives/Text";
-import { useToast } from "../primitives/Toast";
-import { digestOptions } from "../../constants";
-import type { CollaboratorRow, Digest } from "../../types/project-settings";
-import { errorMessage } from "../../utils/errors";
-import { capitalize } from "../../utils/format";
-import { useChosenValue } from "../../utils/useChosenValue";
+import Button from "@/components/primitives/Button";
+import { Select } from "@/components/primitives/Inputs";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Text from "@/components/primitives/Text";
+import { useToast } from "@/components/primitives/Toast";
+import { digestOptions } from "@/constants";
+import type { CollaboratorRow, Digest } from "@/types/project-settings";
+import { errorMessage } from "@/utils/errors";
+import { capitalize } from "@/utils/format";
+import { useChosenValue } from "@/utils/useChosenValue";
 
 interface Props {
   collaborators: CollaboratorRow[];

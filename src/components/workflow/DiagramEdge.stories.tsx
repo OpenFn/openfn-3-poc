@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { diagramParameters } from "../../stories/decorators";
+import { diagramParameters } from "@/stories/decorators";
 import DiagramEdge from "./DiagramEdge";
 
 const meta: Meta<typeof DiagramEdge> = {

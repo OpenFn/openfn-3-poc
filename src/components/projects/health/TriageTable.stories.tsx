@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TriageTable from "./TriageTable";
-import { healthFor } from "../../../mock-data/workflow-health";
-import { withRouter } from "../../../stories/decorators";
+import { healthFor } from "@/mock-data/workflow-health";
+import { withRouter } from "@/stories/decorators";
 
 const { failures } = healthFor("wf-openhie", "7");
 

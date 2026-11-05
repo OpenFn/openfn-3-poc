@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { hover, openTooltips } from "../../test/tooltip";
+import { hover, openTooltips } from "@/test/tooltip";
 import IconButton from "./IconButton";
 import Modal from "./Modal";
 

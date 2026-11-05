@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 /**
  * A page's body (Lightning's `page_content`): an optional banner and header,

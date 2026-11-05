@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useCopy } from "../../utils/useCopy";
+import { useCopy } from "@/utils/useCopy";
 import Button, { type ButtonSize } from "./Button";
 import IconButton from "./IconButton";
 import Tooltip from "./Tooltip";

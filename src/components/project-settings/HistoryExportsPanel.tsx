@@ -1,7 +1,7 @@
-import SectionHeader from "../primitives/SectionHeader";
+import SectionHeader from "@/components/primitives/SectionHeader";
 import HistoryExportsTable from "./HistoryExportsTable";
 import SandboxSettingsBanner from "./SandboxSettingsBanner";
-import type { HistoryExportRow } from "../../types/project-settings";
+import type { HistoryExportRow } from "@/types/project-settings";
 
 /** The History Exports tab (`#history-exports`, settings.html.heex:1055-1103). */
 export default function HistoryExportsPanel({ exports, sandbox }: { exports: HistoryExportRow[]; sandbox: boolean }) {

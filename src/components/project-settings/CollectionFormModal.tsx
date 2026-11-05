@@ -1,8 +1,8 @@
-import FormModal from "../primitives/FormModal";
-import NameField from "../primitives/NameField";
-import { urlSafeName } from "../../utils/format";
-import { useForm } from "../../utils/useForm";
-import { blank } from "../../utils/validate";
+import FormModal from "@/components/primitives/FormModal";
+import NameField from "@/components/primitives/NameField";
+import { urlSafeName } from "@/utils/format";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
 
 interface Props {
   /** "Create Collection" or "Edit Collection". */

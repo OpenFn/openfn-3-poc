@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- wiring: the adaptor registry (catalogue, versions, docs).
-import { adaptors, resolvedAdaptorVersion } from "../../mock-data/adaptors";
-import type { Adaptor } from "../../types/adaptors";
-import Alert from "../primitives/Alert";
-import Modal from "../primitives/Modal";
+import { adaptors, resolvedAdaptorVersion } from "@/mock-data/adaptors";
+import type { Adaptor } from "@/types/adaptors";
+import Alert from "@/components/primitives/Alert";
+import Modal from "@/components/primitives/Modal";
 import AdaptorIcon from "./AdaptorIcon";
-import SearchList, { type SearchListSection } from "../primitives/SearchList";
-import { matchesQuery } from "../../utils/search";
-import Text from "../primitives/Text";
-import { Stack } from "../primitives/Stack";
+import SearchList, { type SearchListSection } from "@/components/primitives/SearchList";
+import { matchesQuery } from "@/utils/search";
+import Text from "@/components/primitives/Text";
+import { Stack } from "@/components/primitives/Stack";
 
 interface Props {
   isOpen: boolean;

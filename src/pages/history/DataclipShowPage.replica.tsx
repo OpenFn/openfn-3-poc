@@ -1,8 +1,8 @@
 import { Navigate, useParams } from "react-router-dom";
-import { findDataclip } from "../../mock-data/history";
-import { dataclipUpdatedAt } from "../../mock-data/history-extra";
-import { findProject } from "../../mock-data/projects";
-import { uuidOf } from "../../utils/format";
+import { findDataclip } from "@/mock-data/history";
+import { dataclipUpdatedAt } from "@/mock-data/history-extra";
+import { findProject } from "@/mock-data/projects";
+import { uuidOf } from "@/utils/format";
 import DataclipShowPage from "./DataclipShowPage";
 
 /**

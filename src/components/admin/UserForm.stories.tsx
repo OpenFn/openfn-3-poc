@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import UserForm from "./UserForm";
-import { users } from "../../mock-data/users";
-import { withRouter } from "../../stories/decorators";
+import { users } from "@/mock-data/users";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof UserForm> = {
   title: "Admin/UserForm",

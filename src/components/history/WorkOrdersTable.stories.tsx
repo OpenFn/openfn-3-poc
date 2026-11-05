@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState, type ComponentProps } from "react";
-import { withRouter } from "../../stories/decorators";
-import { workOrders } from "../../mock-data/history";
-import { workOrderRow } from "../../mock-data/history-extra";
+import { withRouter } from "@/stories/decorators";
+import { workOrders } from "@/mock-data/history";
+import { workOrderRow } from "@/mock-data/history-extra";
 import WorkOrdersTable from "./WorkOrdersTable";
 
 const meta = {

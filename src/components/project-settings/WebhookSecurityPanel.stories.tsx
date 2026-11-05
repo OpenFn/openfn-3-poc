@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WebhookSecurityPanel from "./WebhookSecurityPanel";
-import { generateApiKey, projectSettingsPropsFor, settingsFixtureFor } from "../../mock-data/project-settings";
-import { projects } from "../../mock-data/projects";
-import { session } from "../../mock-data/users";
-import { withRouter, withGrayPanel } from "../../stories/decorators";
+import { generateApiKey, projectSettingsPropsFor, settingsFixtureFor } from "@/mock-data/project-settings";
+import { projects } from "@/mock-data/projects";
+import { session } from "@/mock-data/users";
+import { withRouter, withGrayPanel } from "@/stories/decorators";
 
 const { webhookSecurity } = projectSettingsPropsFor(settingsFixtureFor(projects[0]!), session.user);
 const done = async () => {};

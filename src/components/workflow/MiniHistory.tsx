@@ -1,18 +1,18 @@
 import { useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- debt: the workflow editor takes the replica's models until it is split into page and .replica.tsx wrapper (STANDARDS §11).
-import type { Run, WorkOrder } from "../../mock-data/models/history";
-import { cn } from "../../utils/cn";
-import Card from "../primitives/Card";
-import Heading from "../primitives/Heading";
-import IconButton from "../primitives/IconButton";
-import UuidChip from "../primitives/UuidChip";
-import StatePill from "../domain/StatePill";
+import type { Run, WorkOrder } from "@/mock-data/models/history";
+import { cn } from "@/utils/cn";
+import Card from "@/components/primitives/Card";
+import Heading from "@/components/primitives/Heading";
+import IconButton from "@/components/primitives/IconButton";
+import UuidChip from "@/components/primitives/UuidChip";
+import StatePill from "@/components/domain/StatePill";
 import RunBadge from "./RunBadge";
-import { formatDuration, formatRelative, uuidOf } from "../../utils/format";
-import Tooltip from "../primitives/Tooltip";
-import EmptyState from "../primitives/EmptyState";
-import Text from "../primitives/Text";
-import { Row } from "../primitives/Stack";
+import { formatDuration, formatRelative, uuidOf } from "@/utils/format";
+import Tooltip from "@/components/primitives/Tooltip";
+import EmptyState from "@/components/primitives/EmptyState";
+import Text from "@/components/primitives/Text";
+import { Row } from "@/components/primitives/Stack";
 
 const Dot = () => <span className="text-strong">&bull;</span>;
 

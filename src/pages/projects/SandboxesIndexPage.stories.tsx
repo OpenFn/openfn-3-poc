@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import SandboxesIndexPage from "./SandboxesIndexPage";
-import { findSandboxRow, samplePreview, sandboxRowsUnder } from "../../mock-data/sandboxes";
-import { projects } from "../../mock-data/projects";
-import { RequestError } from "../../utils/errors";
-import { withCanvas, withRouter } from "../../stories/decorators";
+import { findSandboxRow, samplePreview, sandboxRowsUnder } from "@/mock-data/sandboxes";
+import { projects } from "@/mock-data/projects";
+import { RequestError } from "@/utils/errors";
+import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const root = findSandboxRow(project.id)!;

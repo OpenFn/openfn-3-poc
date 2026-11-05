@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { findWorkflowGraph } from "../../mock-data/workflow";
-import { newWorkflowGraph } from "../../utils/workflowGraph";
-import { diagramParameters } from "../../stories/decorators";
+import { findWorkflowGraph } from "@/mock-data/workflow";
+import { newWorkflowGraph } from "@/utils/workflowGraph";
+import { diagramParameters } from "@/stories/decorators";
 import WorkflowDiagram from "./WorkflowDiagram";
 
 const meta: Meta<typeof WorkflowDiagram> = {

@@ -1,5 +1,5 @@
 import type { ChangeEvent, ElementType, InputHTMLAttributes } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import IconButton from "./IconButton";
 import { controlClasses } from "./controlClasses";
 

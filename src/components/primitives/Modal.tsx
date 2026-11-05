@@ -1,6 +1,6 @@
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Fragment, type ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 import CloseButton from "./CloseButton";
 import Heading from "./Heading";
 import Text from "./Text";

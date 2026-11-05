@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import FirstSetupPage from "./FirstSetupPage";
-import FirstSetupShell from "../../components/auth/FirstSetupShell";
-import { withRouter } from "../../stories/decorators";
+import FirstSetupShell from "@/components/auth/FirstSetupShell";
+import { withRouter } from "@/stories/decorators";
 
 const meta: Meta<typeof FirstSetupPage> = {
   title: "Pages/Auth/FirstSetupPage",

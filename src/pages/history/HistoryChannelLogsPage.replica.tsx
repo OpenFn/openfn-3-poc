@@ -1,10 +1,10 @@
 import { Navigate, useParams } from "react-router-dom";
-import { channelRequestsIn } from "../../mock-data/channel-requests";
-import { channelsIn } from "../../mock-data/channels";
-import { historyChannelsEnabled } from "../../mock-data/history-extra";
-import { findProject } from "../../mock-data/projects";
-import type { ChannelLogRow } from "../../types/channels";
-import { useUrlParams } from "../../utils/useUrlParams";
+import { channelRequestsIn } from "@/mock-data/channel-requests";
+import { channelsIn } from "@/mock-data/channels";
+import { historyChannelsEnabled } from "@/mock-data/history-extra";
+import { findProject } from "@/mock-data/projects";
+import type { ChannelLogRow } from "@/types/channels";
+import { useUrlParams } from "@/utils/useUrlParams";
 import HistoryChannelLogsPage from "./HistoryChannelLogsPage";
 
 const PAGE_SIZE = 10;

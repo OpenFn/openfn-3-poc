@@ -1,9 +1,9 @@
-import type { WorkflowGraph } from "../../types/workflow-graph";
-import Button from "../primitives/Button";
-import CodeEditor from "../primitives/CodeEditor";
+import type { WorkflowGraph } from "@/types/workflow-graph";
+import Button from "@/components/primitives/Button";
+import CodeEditor from "@/components/primitives/CodeEditor";
 import InspectorLayout, { InspectorFooter } from "./InspectorLayout";
 import { workflowToYaml } from "./workflowYaml";
-import CopyButton from "../primitives/CopyButton";
+import CopyButton from "@/components/primitives/CopyButton";
 
 function download(filename: string, text: string) {
   const a = document.createElement("a");

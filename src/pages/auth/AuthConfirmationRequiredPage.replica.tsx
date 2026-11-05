@@ -1,5 +1,5 @@
-import { unconfirmedUser } from "../../mock-data/auth";
-import { simulateRequest } from "../../mock-data/request";
+import { unconfirmedUser } from "@/mock-data/auth";
+import { simulateRequest } from "@/mock-data/request";
 import AuthConfirmationRequiredPage from "./AuthConfirmationRequiredPage";
 
 /**

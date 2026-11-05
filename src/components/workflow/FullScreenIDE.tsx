@@ -1,20 +1,20 @@
 import { useState, type ReactNode } from "react";
-import type { EditorJob } from "../../types/workflow-graph";
-import { cn } from "../../utils/cn";
-import EmptyState from "../primitives/EmptyState";
-import Button from "../primitives/Button";
-import CloseButton from "../primitives/CloseButton";
-import IconButton from "../primitives/IconButton";
-import Tabs from "../primitives/Tabs";
+import type { EditorJob } from "@/types/workflow-graph";
+import { cn } from "@/utils/cn";
+import EmptyState from "@/components/primitives/EmptyState";
+import Button from "@/components/primitives/Button";
+import CloseButton from "@/components/primitives/CloseButton";
+import IconButton from "@/components/primitives/IconButton";
+import Tabs from "@/components/primitives/Tabs";
 import AdaptorDisplay from "./AdaptorDisplay";
 import AdaptorDocs, { AdaptorMetadata } from "./AdaptorDocs";
-import CodeEditor from "../primitives/CodeEditor";
+import CodeEditor from "@/components/primitives/CodeEditor";
 import JobSelector from "./JobSelector";
 import NewRunButton from "./NewRunButton";
 import RunBadge from "./RunBadge";
 import RunRetryButton from "./RunRetryButton";
 import type { RunViewerTab } from "./RunViewerPanel";
-import Tooltip from "../primitives/Tooltip";
+import Tooltip from "@/components/primitives/Tooltip";
 
 export type IDEPanelState = "run-viewer" | "history" | "create-run" | undefined;
 

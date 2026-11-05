@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useAnnotations } from "../../annotations/annotations-context";
+import { useAnnotations } from "@/annotations/annotations-context";
 import { ANNOTATIONS_PANEL_WIDTH } from "./AnnotationsPanel";
 
 /** Wraps the app and makes room on the right for the annotations panel when it's open. */

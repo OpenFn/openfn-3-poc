@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
 interface Props {
   /** The page title. With breadcrumbs it sits in a row under the bar, with the actions. */

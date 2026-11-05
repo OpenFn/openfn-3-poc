@@ -1,13 +1,13 @@
 import { useState } from "react";
-import type { ChannelRow } from "../../../types/channels";
-import { cn } from "../../../utils/cn";
-import Button from "../../primitives/Button";
-import ConfirmModal from "../../primitives/ConfirmModal";
-import EmptyState from "../../primitives/EmptyState";
-import { Table, Td, Th, Tr } from "../../primitives/Table";
-import Toggle from "../../primitives/Toggle";
-import DateTime from "../../primitives/DateTime";
-import TextLink from "../../primitives/TextLink";
+import type { ChannelRow } from "@/types/channels";
+import { cn } from "@/utils/cn";
+import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
+import EmptyState from "@/components/primitives/EmptyState";
+import { Table, Td, Th, Tr } from "@/components/primitives/Table";
+import Toggle from "@/components/primitives/Toggle";
+import DateTime from "@/components/primitives/DateTime";
+import TextLink from "@/components/primitives/TextLink";
 import ProxyUrlCopy from "./ProxyUrlCopy";
 
 /**
