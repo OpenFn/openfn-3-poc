@@ -20,6 +20,8 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    /** Planned: a sandbox's names from the root down, joined by "/" ("malaria-programme/staging"). */
+    display_name?: string;
     /** Planned (api/projects.md): whether members need MFA to open it. useRefusedForMfa depends on it. */
     requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
@@ -89,11 +91,28 @@ export function useProjectTree(): { status: ResourceStatus; projects: ProjectNod
 }
 
 /**
+ * Every project and sandbox on the instance (`scope=all`, superusers only,
+ * ahead of the API: docs/api-gaps.md) as `[label, id]` options for an admin
+ * form's project picker, sorted by label: a sandbox by its planned
+ * `display_name` ("parent/sandbox"), so two with the same name can be told apart.
+ */
+export function useAllProjectOptions(): { status: ResourceStatus; options: [label: string, value: string][] } {
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "all"],
+    queryFn: () => listAll<ApiProject>("/api/projects?scope=all", "data"),
+    select: (rows) =>
+      rows.map((p): [string, string] => [p.attributes.display_name ?? p.attributes.name, p.id]).sort((a, b) => a[0].localeCompare(b[0])),
+  });
+  return { status: statusOf(query), options: query.data ?? [] };
+}
+
+/**
  * Whether a refused project is refused for its MFA requirement rather than
  * for no access, or "checking" while that loads. The API answers both 403
  * `forbidden` (docs/api-gaps.md), but the list holds every project you're a
- * member of, so a listed project that requires MFA and still refuses you is
- * the MFA requirement. The picker has usually loaded the list already.
+ * member of, a superuser too (without `scope=all`), so a listed project that
+ * requires MFA and still refuses you is the MFA requirement. The picker has
+ * usually loaded the list already.
  */
 export function useRefusedForMfa(id: string, refused: boolean): boolean | "checking" {
   const query = useQuery({

@@ -149,6 +149,10 @@ export const isSignedOut = (error: unknown) =>
 /** Whether asking again might help: not for a refusal (4xx), which won't change. */
 export const canRetry = (error: unknown) => !(error instanceof ApiError && error.status !== undefined && error.status >= 400 && error.status < 500);
 
+/** One `status` for a page that waits on several loads: any failure shows; otherwise loading until all are in. */
+export const combinedStatus = (...statuses: ResourceStatus[]): ResourceStatus =>
+  statuses.find((s) => s.state !== "ready" && s.state !== "loading") ?? statuses.find((s) => s.state === "loading") ?? { state: "ready" };
+
 /**
  * A page's `status` from its query: loading while there's no data, Lightning's
  * not found and no access from the code, otherwise the server's message. A

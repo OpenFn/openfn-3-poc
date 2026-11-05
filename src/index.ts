@@ -2,7 +2,7 @@
 
 export { default as AdminAuditPage } from "./pages/admin/audit/AdminAuditPage";
 export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvidersPage";
-export { default as AdminCollectionsPage } from "./pages/admin/AdminCollectionsPage";
+export { default as AdminCollectionsPage } from "./pages/admin/collections/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
 export { default as AdminProjectsPage } from "./pages/admin/AdminProjectsPage";
 export { default as AdminUserEditPage } from "./pages/admin/AdminUserEditPage";
@@ -31,7 +31,7 @@ export { default as WorkflowsIndexPage } from "./pages/projects/workflows/Workfl
 
 export type { AdminAuditPageProps } from "./pages/admin/audit/AdminAuditPage";
 export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
-export type { AdminCollectionsPageProps } from "./pages/admin/AdminCollectionsPage";
+export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
 export type { AdminProjectsPageProps } from "./pages/admin/AdminProjectsPage";
 export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
@@ -75,6 +75,7 @@ export type {
   AuthProvider,
   AuthProviderValues,
   CollectionFormValues,
+  CollectionSortKey,
   UserFormValues,
 } from "./types/admin";
 export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";

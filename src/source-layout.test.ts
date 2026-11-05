@@ -71,7 +71,6 @@ describe("every page and component can be seen and checked", () => {
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
       "./pages/admin/AdminAuthProvidersPage.replica.tsx",
-      "./pages/admin/AdminCollectionsPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",
       "./pages/admin/AdminProjectsPage.replica.tsx",
       "./pages/admin/AdminUserEditPage.replica.tsx",
@@ -134,7 +133,6 @@ describe("every page and component can be seen and checked", () => {
     // A table is any component on the Table primitive, whatever its file is called.
     const drawers = components.filter((path) => imports(path, "components/primitives/Table") && drawsEmptyState(path));
     expectOnlyKnown(drawers, [
-      "./components/admin/AdminCollectionsTable.tsx",
       "./components/history/ChannelRequestsTable.tsx",
       "./components/profile/TokensTable.tsx",
       "./components/project-settings/CollaboratorsTable.tsx",
@@ -169,7 +167,6 @@ describe("every page and component can be seen and checked", () => {
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",
       "./pages/admin/AdminAuthProvidersPage.tsx",
-      "./pages/admin/AdminCollectionsPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
       "./pages/admin/AdminProjectsPage.tsx",
       "./pages/admin/AdminUserEditPage.tsx",

@@ -92,7 +92,30 @@ doesn't.
   holds every project you're a member of: a listed project that requires
   MFA and still refuses you is the requirement, so ProjectGate sends you to
   /mfa_required. It leans on `requires_mfa` in the list, which is planned:
-  until Lightning sends it, everyone refused sees No Access. And it breaks
-  once the planned superuser scope lists every project: a superuser who
-  isn't a member of an MFA project would be sent to set up MFA, though that
-  wouldn't let them in.
+  until Lightning sends it, everyone refused sees No Access. It holds only
+  while a superuser's list is their own projects (Superuser access).
+
+## Superuser access (api/projects.md, api/collections.md)
+
+- **Needed: the planned superuser scope on `GET /api/projects` must be
+  opt-in** (e.g. `scope=all`); as planned, every superuser's dashboard and
+  project picker would list the whole instance, where Lightning shows only
+  the admin page that. It would also break the MFA check above: a superuser
+  who isn't a member of a project that requires MFA would be sent to set it
+  up, though that wouldn't let them in. Replica: on Lucy's say-so, the fake
+  answers `scope=all` ahead of the API, with every project and sandbox for a
+  superuser and 403 for anyone else; this is the one place it answers ahead
+  of the API. Only the admin collections page's project picker asks for it.
+- **A superuser can't delete any project's collection.**
+  `DELETE /api/projects/:project_id/collections/:id` needs a project owner
+  or admin, with no planned superuser scope, though Lightning's page lets a
+  superuser delete any collection. Would need a superuser's token on that
+  route. Replica: Delete shows on each row, disabled, with "Not available in
+  the API yet".
+
+## Admin collections (Lightning's `CollectionLive.Index`, /settings/collections)
+
+- **How many items each collection holds.** Brandon's table has an Items
+  column (`AdminCollectionTable.tsx`); `GET /api/collections` sends only
+  `byte_size_sum`. Would need an `items_count` (or similar) on each
+  collection. Replica: column left out.
