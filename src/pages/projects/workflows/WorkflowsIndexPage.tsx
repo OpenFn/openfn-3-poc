@@ -1,7 +1,7 @@
 import Button from "@/components/primitives/Button";
 import ListPage from "@/components/templates/ListPage";
 import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
-import ProjectWorkflowsTable from "@/components/projects/ProjectWorkflowsTable";
+import WorkflowsTable from "@/components/projects/WorkflowsTable";
 import type { CurrentProject } from "@/types/projects";
 import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
@@ -57,7 +57,7 @@ export default function WorkflowsIndexPage({
       status={status}
       itemCount={workflows.length}
       empty={{ icon: "hero-square-3-stack-3d", message: "No workflows found. Create one to start automating." }}
-      list={<ProjectWorkflowsTable projectId={project.id} workflows={workflows} sort={sort} onSort={onSort} />}
+      list={<WorkflowsTable projectId={project.id} workflows={workflows} sort={sort} onSort={onSort} />}
     />
   );
 }

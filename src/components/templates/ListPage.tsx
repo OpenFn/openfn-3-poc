@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Header from "@/components/primitives/Header";
 import { Centered, PageContent } from "@/components/primitives/PageContent";
 import { Stack } from "@/components/primitives/Stack";
-import Text from "@/components/primitives/Text";
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
 import EmptyState from "@/components/primitives/EmptyState";
 import type { ResourceStatus } from "@/types/resource";
@@ -40,7 +39,7 @@ export default function ListPage({
   breadcrumbs?: ReactNode;
   /** Show "(3)" after the title, while the list has rows. */
   showCount?: boolean;
-  /** One line under the header, saying what the list is. */
+  /** One line under the title, saying what the list is. Shown with breadcrumbs (Header). */
   description?: ReactNode;
   /** The header's buttons (and a search box), main action first. Shown in every state. */
   actions?: ReactNode;
@@ -59,14 +58,13 @@ export default function ListPage({
   return (
     <PageContent
       header={
-        <Header title={title} breadcrumbs={breadcrumbs} count={showCount && itemCount > 0 ? itemCount : undefined}>
+        <Header title={title} breadcrumbs={breadcrumbs} description={description} count={showCount && itemCount > 0 ? itemCount : undefined}>
           {actions}
         </Header>
       }
     >
       <Centered>
         <Stack>
-          {description && <Text tone="muted">{description}</Text>}
           {notice}
           <AsyncBoundary status={status}>
             {itemCount === 0 ? <EmptyState icon={empty.icon} title={empty.title} message={empty.message} /> : list}

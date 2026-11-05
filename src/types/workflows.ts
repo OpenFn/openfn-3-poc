@@ -1,4 +1,4 @@
-/** The projects dashboard and workflows index: their rows and metric cards. Types only: no data, no behaviour. */
+/** The projects dashboard and the workflows list: their rows. Types only: no data, no behaviour. */
 import type { ProjectRole } from "./projects";
 
 export type TriggerType = "webhook" | "cron" | "kafka";
@@ -62,10 +62,4 @@ export interface WorkflowRow {
   toggleTooltip?: string | undefined;
   /** Whether any trigger is on (the name greys out when none is); defaults to the switch's state. */
   triggerEnabled?: boolean | undefined;
-}
-
-/** The four metric cards above the workflows table (`ProjectMetrics`). */
-export interface ProjectMetrics {
-  workOrders: { total: number; pending: number; failed: number; failedPercentage: number };
-  runs: { total: number; pending: number; success: number; successRate: number };
 }
