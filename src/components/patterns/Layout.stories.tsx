@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Text from "@/components/primitives/Text";
 import Layout, { type SidebarFrame } from "./Layout";
 
-const meta: Meta<typeof Layout> = { title: "Primitives/Layout", component: Layout, parameters: { layout: "fullscreen" } };
+const meta: Meta<typeof Layout> = { title: "Patterns/Layout", component: Layout, parameters: { layout: "fullscreen" } };
 export default meta;
 
 const sidebar = ({ collapsed }: SidebarFrame) => (

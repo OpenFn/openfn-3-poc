@@ -10,7 +10,7 @@ import { withCanvas, withRouter } from "@/stories/decorators";
 const projects = projectsOverviewFor(session.user.id);
 
 const meta: Meta<typeof ListPage> = {
-  title: "Templates/ListPage",
+  title: "Patterns/ListPage",
   component: ListPage,
   // PageContent fills its parent, so give it a screen to fill.
   decorators: [withRouter, withCanvas("h-screen")],

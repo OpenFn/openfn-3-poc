@@ -78,7 +78,7 @@ data, comments, lint) and loads by itself when you touch one.
   holds the page back until it's there. A page reads that project with
   `useCurrentProject` (`src/api/projects.ts`), never from the gate
   (STANDARDS pattern 11).
-- `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
+- `src/components/`: `primitives/`, `patterns/`, `domain/`, `shell/`, then one folder per
   area.
 - `src/types/`: the hand-written shapes pages take. `src/constants.ts`:
   Lightning's fixed option lists and copy.
