@@ -33,19 +33,18 @@ describe("ProjectsDashboardPage", () => {
     expect(screen.getByText("N/A")).toBeTruthy();
   });
 
-  it("with no projects, Create moves into the empty state: one button, no count", async () => {
+  it("with no projects, Create stays in the header and the empty state is words only", async () => {
     renderPage({ projects: [] });
     expect(screen.getByText("No projects found.")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Create project" })).toBeNull();
-    expect(screen.getByRole("heading", { name: "Projects" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /Create a new one/ }));
+    expect(screen.getAllByRole("button", { name: /Create/ })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "Create project" }));
     expect(await screen.findByRole("dialog")).toBeTruthy();
   });
 
-  it("shows no empty state and no Create button while the projects load", () => {
+  it("shows no empty state while the projects load, and Create is already there", () => {
     renderPage({ projects: [], status: { state: "loading" } });
     expect(screen.queryByText("No projects found.")).toBeNull();
-    expect(screen.queryByRole("button", { name: "Create project" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Create project" })).toBeTruthy();
   });
 
   it("creates a project with the url-safe name and closes the modal", async () => {

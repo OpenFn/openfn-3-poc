@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "@/components/primitives/Button";
 import ListPage from "@/components/templates/ListPage";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import ProjectsTable from "@/components/projects/ProjectsTable";
@@ -41,11 +42,15 @@ export default function ProjectsDashboardPage({ status, firstName, projects, onC
     <ListPage
       title="Projects"
       showCount
-      action={{ id: "open-create-project-modal-button", label: "Create project", onClick: () => setCreating(true) }}
+      actions={
+        <Button id="open-create-project-modal-button" onClick={() => setCreating(true)}>
+          Create project
+        </Button>
+      }
       notice={<WelcomeBanner firstName={firstName} />}
       status={status}
       itemCount={projects.length}
-      empty={{ icon: "hero-plus-circle", message: "No projects found.", actionLabel: "Create a new one." }}
+      empty={{ icon: "hero-folder", message: "No projects found." }}
       list={<ProjectsTable projects={projects} />}
     >
       <CreateProjectModal open={creating} onClose={() => setCreating(false)} onCreate={create} />

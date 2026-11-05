@@ -222,6 +222,13 @@ goes back to Lightning's way.
   shows the table's header, then the empty state with a second Generate New
   Token button (`tokens_live/index.html.heex`); the replica shows only the
   empty state, as every other list does, and the button stays in the header.
+- **A list page's create button stays in the header, and its empty state is
+  words only.** Lightning's projects dashboard and admin collections take
+  Create out of the header when the list is empty and put it in a dashed
+  "Create a new one." box (`DashboardLive.Components.user_projects_table`);
+  most of its other lists keep it in the header. The replica keeps it in the
+  header on every list page, while the list loads, fails or is empty, so
+  there's one rule and the button never moves (`ListPage`).
 - **14px text.** Lightning's dashed `empty_state` is 12px (`text-xs`); its
   other empty states are 14px. The replica uses 14px in every one.
 - **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)

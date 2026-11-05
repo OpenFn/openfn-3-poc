@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import ListPage from "./ListPage";
 import Alert from "@/components/primitives/Alert";
+import Button from "@/components/primitives/Button";
 import ProjectsTable from "@/components/projects/ProjectsTable";
 import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
 import { session } from "@/mock-data/users";
@@ -17,9 +18,9 @@ const meta: Meta<typeof ListPage> = {
   args: {
     title: "Projects",
     showCount: true,
-    action: { label: "Create project", onClick: () => {} },
+    actions: <Button>Create project</Button>,
     itemCount: projects.length,
-    empty: { icon: "hero-plus-circle", message: "No projects found.", actionLabel: "Create a new one." },
+    empty: { icon: "hero-folder", message: "No projects found." },
     list: <ProjectsTable projects={projects} />,
   },
 };
@@ -27,7 +28,7 @@ export default meta;
 type Story = StoryObj<typeof ListPage>;
 
 export const WithRows: Story = {};
-// The main action leaves the header for the empty state, and the count goes.
+// Create stays in the header; the empty state is words only, and the count goes.
 export const Empty: Story = { args: { itemCount: 0 } };
 export const Loading: Story = { args: { status: { state: "loading" }, itemCount: 0 } };
 export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, itemCount: 0 } };
