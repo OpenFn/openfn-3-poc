@@ -1,12 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useCurrentProject, useProjectPermissions, useProjectTree } from "@/api/projects";
-import { useWorkflows } from "@/api/workflows";
+import { isWorkflowSortKey, useWorkflows } from "@/api/workflows";
 import { projectLabel } from "@/components/shell/projectPickerItems";
 import { useUrlParams } from "@/utils/useUrlParams";
 import type { SortState } from "@/types/lists";
+import type { WorkflowSortKey } from "@/types/workflows";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
-
-const SORTS = ["name", "updated_at", "last_work_order_updated_at"];
 
 /**
  * WorkflowsIndexPage's query, under ProjectGate: the project's workflows from
@@ -20,8 +19,8 @@ export default function WorkflowsIndexPageQuery() {
   // The shell's picker already loads the tree, so the sandbox label costs no request.
   const { projects } = useProjectTree();
   const { params, update } = useUrlParams<"sort" | "dir">();
-  const sort: SortState = {
-    key: params.sort && SORTS.includes(params.sort) ? params.sort : "name",
+  const sort: SortState<WorkflowSortKey> = {
+    key: isWorkflowSortKey(params.sort) ? params.sort : "name",
     direction: params.dir === "desc" ? "desc" : "asc",
   };
   const { status, workflows } = useWorkflows(project.id, sort);

@@ -170,7 +170,7 @@ export type {
   SandboxValues,
 } from "./types/sandboxes";
 export type { ApiToken, BackupCode } from "./types/tokens";
-export type { ProjectOverview, WorkflowListItem, WorkflowRow } from "./types/workflows";
+export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 
 export { RouterProvider } from "./routing/router";
 export type { NavigateOptions, Router } from "./routing/router";

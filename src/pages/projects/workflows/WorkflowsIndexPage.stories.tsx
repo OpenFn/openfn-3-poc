@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkflowsIndexPage from "./WorkflowsIndexPage";
-import { workflowStatsFor } from "@/mock-data/dashboard-stats";
+import { workflowListItemsFor } from "@/mock-data/dashboard-stats";
 import { projects } from "@/mock-data/projects";
 import { withCanvas, withRouter } from "@/stories/decorators";
 
@@ -15,12 +15,7 @@ const meta: Meta<typeof WorkflowsIndexPage> = {
   args: {
     project,
     projectLabel: project.name,
-    workflows: workflowStatsFor(project.id).map((s) => ({
-      id: s.workflow.id,
-      name: s.workflow.name,
-      updatedAt: s.workflow.updatedAt,
-      lastWorkOrder: s.lastWorkOrder,
-    })),
+    workflows: workflowListItemsFor(project.id),
     sort: { key: "name", direction: "asc" },
     onSort: () => {},
     canCreateWorkflow: true,

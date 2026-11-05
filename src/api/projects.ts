@@ -1,7 +1,7 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
-import type { ProjectInput, ProjectNode } from "@/types/projects";
+import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { listAll, request, statusOf } from "./client";
@@ -20,7 +20,7 @@ export interface ApiProject {
     parent_id?: string | null;
     color?: string | null;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
-    permissions?: Partial<Record<string, boolean>>;
+    permissions?: Partial<Record<ProjectAction, boolean>>;
   };
 }
 
@@ -49,17 +49,18 @@ function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
   return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
 }
 
-const getProject = (id: string) => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data);
+// `GET /api/projects/:id`, one cache entry for useProject and useProjectPermissions.
+const projectQuery = (id: string) =>
+  queryOptions({
+    queryKey: projectKeys.one(id),
+    queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
+    // The gate and the page under it ask in turn; without this the page fetches it again.
+    staleTime: 60_000,
+  });
 
 /** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
 export function useProject(id: string): { status: ResourceStatus; project: ProjectNode | undefined } {
-  const query = useQuery({
-    queryKey: projectKeys.one(id),
-    queryFn: () => getProject(id),
-    select: projectNode,
-    // The gate and the route under it ask in turn; without this the route fetches it again.
-    staleTime: 60_000,
-  });
+  const query = useQuery({ ...projectQuery(id), select: projectNode });
   return { status: statusOf(query), project: query.data };
 }
 
@@ -117,12 +118,7 @@ export function useProjectSaves() {
  * `can("create_workflow")`. False until it has loaded, and for anything the
  * server doesn't say.
  */
-export function useProjectPermissions(id: string): (action: string) => boolean {
-  const { data } = useQuery({
-    queryKey: projectKeys.one(id),
-    queryFn: () => getProject(id),
-    select: (p) => p.attributes.permissions ?? {},
-    staleTime: 60_000,
-  });
+export function useProjectPermissions(id: string): (action: ProjectAction) => boolean {
+  const { data } = useQuery({ ...projectQuery(id), select: (p) => p.attributes.permissions ?? {} });
   return (action) => data?.[action] ?? false;
 }

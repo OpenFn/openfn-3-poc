@@ -5,7 +5,7 @@ import WorkflowsTable from "@/components/projects/WorkflowsTable";
 import type { CurrentProject } from "@/types/projects";
 import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
-import type { WorkflowListItem } from "@/types/workflows";
+import type { WorkflowListItem, WorkflowSortKey } from "@/types/workflows";
 
 /** What the query passes in: data, the actions that change it, and who's looking. */
 export interface WorkflowsIndexPageProps {
@@ -17,9 +17,9 @@ export interface WorkflowsIndexPageProps {
   /** The project's workflows, in the order the server sorted them. */
   workflows: WorkflowListItem[];
   /** The order `workflows` came in. */
-  sort: SortState;
+  sort: SortState<WorkflowSortKey>;
   /** Asks for another order; the query puts it in the URL and the server sorts. */
-  onSort: (sort: SortState) => void;
+  onSort: (sort: SortState<WorkflowSortKey>) => void;
   canCreateWorkflow: boolean;
 }
 

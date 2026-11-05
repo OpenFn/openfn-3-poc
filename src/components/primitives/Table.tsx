@@ -163,8 +163,9 @@ export function Th({
       <span
         className={cn(
           "ml-2 flex-none rounded-sm",
-          sortDirection ? "bg-sunken text-strong group-hover:bg-emphasis" : "invisible text-faint group-hover:visible"
+          sortDirection ? "bg-sunken text-strong group-hover:bg-emphasis" : "invisible text-faint group-hover:visible group-focus-visible:visible"
         )}
+        aria-hidden="true"
       >
         <span className={cn(sortDirection === "asc" ? "hero-chevron-up" : "hero-chevron-down", "h-5 w-5")} />
       </span>
@@ -174,6 +175,7 @@ export function Th({
     <th
       scope="col"
       colSpan={colSpan}
+      aria-sort={sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : undefined}
       className={cn(
         "text-sm font-semibold text-strong select-none whitespace-nowrap",
         alignClasses[align],

@@ -1,5 +1,5 @@
 import type { SortState } from "@/types/lists";
-import type { WorkflowListItem } from "@/types/workflows";
+import type { WorkflowListItem, WorkflowSortKey } from "@/types/workflows";
 import { RowLink, Table, Td, Th, Tr } from "@/components/primitives/Table";
 import DateTime from "@/components/primitives/DateTime";
 import WorkOrderStatus from "./WorkOrderStatus";
@@ -20,10 +20,10 @@ export default function WorkflowsTable({
   projectId: string;
   workflows: WorkflowListItem[];
   /** The order the server listed `workflows` in. */
-  sort: SortState;
-  onSort: (sort: SortState) => void;
+  sort: SortState<WorkflowSortKey>;
+  onSort: (sort: SortState<WorkflowSortKey>) => void;
 }) {
-  const thProps = (key: string) => {
+  const thProps = (key: WorkflowSortKey) => {
     const current = sort.key === key;
     return {
       sortDirection: current ? sort.direction : null,
@@ -44,7 +44,7 @@ export default function WorkflowsTable({
     >
       {workflows.map((w) => (
         <Tr key={w.id} id={`workflow-${w.id}`}>
-          <Td>
+          <Td maxWidth={60}>
             <RowLink to={`/projects/${projectId}/w/${w.id}`}>{w.name}</RowLink>
           </Td>
           <Td>

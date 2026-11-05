@@ -1,5 +1,5 @@
 /** Workflow summaries and the dashboard figures built on them, as the replica stores them. Its model, not the contract: pages take the hand-written shapes in src/types/ (STANDARDS §11). */
-import type { TriggerType, WorkflowRow } from "@/types/workflows";
+import type { TriggerType, WorkOrderDisplayState } from "@/types/workflows";
 
 export interface WorkflowSummary {
   id: string;
@@ -18,10 +18,15 @@ export interface WorkflowSummary {
   insertedAt: string;
 }
 
-/** A workflow's dashboard figures (`DashboardStats.WorkflowStats`): a workflows table row, plus what the metric cards count. */
-export interface WorkflowStats extends Omit<WorkflowRow, "workflow"> {
+/** A workflow's dashboard figures (`DashboardStats.WorkflowStats`), which the fake server answers `include=stats` from. */
+export interface WorkflowStats {
   workflow: WorkflowSummary;
-  /** Counted for the metric cards. */
+  lastWorkOrder: { state: WorkOrderDisplayState; updatedAt: string } | null;
+  lastFailedAt: string | null;
+  workordersCount: number;
+  failedWorkordersCount: number;
+  stepCount: number;
+  stepSuccessRate: number;
   pendingWorkorders: number;
   runs: { total: number; pending: number; success: number };
 }

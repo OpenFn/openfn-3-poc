@@ -47,3 +47,26 @@ export const LongBreadcrumbs: Story = {
     ),
   },
 };
+/** A line under the title saying what the page is; the actions stay level with the title. */
+export const WithDescription: Story = {
+  args: {
+    breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="Workflows" />,
+    title: "Workflows",
+    count: 3,
+    description: "Workflows move data between your connected systems.",
+    children: <Button>Create new workflow</Button>,
+  },
+};
+/** Without breadcrumbs the description sits under the title in the bar. */
+export const TitleWithDescription: Story = {
+  args: { title: "Projects", description: "Everything you're a member of.", children: <Button>Create project</Button> },
+};
+export const LongDescriptionWithAction: Story = {
+  args: {
+    breadcrumbs: <ProjectBreadcrumbs project={projects[0]!} label={projectLabel(projects[0]!, projects)} current="Workflows" />,
+    title: "Workflows",
+    description:
+      "Workflows move data between your connected systems: each one starts from a webhook, a schedule or a Kafka topic and runs its steps in order, passing the state along.",
+    children: <Button>Create new workflow</Button>,
+  },
+};

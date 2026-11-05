@@ -36,30 +36,6 @@ export interface WorkflowListItem {
   lastWorkOrder: { state: WorkOrderDisplayState; updatedAt: string } | null;
 }
 
-/** One row of the workflows index table (`DashboardStats.WorkflowStats`): the fields it shows, and nothing else. */
-export interface WorkflowRow {
-  workflow: {
-    id: string;
-    name: string;
-    updatedAt: string;
-    /** Whether the trigger is enabled ("Active" toggle on the index). */
-    enabled: boolean;
-    triggerType: TriggerType;
-  };
-  lastWorkOrder: { state: WorkOrderDisplayState; updatedAt: string } | null;
-  lastFailedAt: string | null;
-  workordersCount: number;
-  failedWorkordersCount: number;
-  stepCount: number;
-  stepSuccessRate: number;
-  /** History filtered to this workflow's work orders in the window; the host builds it. */
-  historyHref?: string | undefined;
-  /** History filtered to this workflow's failed work orders in the window. */
-  failedHistoryHref?: string | undefined;
-  /** The workflow's lifecycle state, shown instead of the switch when the lifecycle is on. */
-  state?: "live" | "draft" | undefined;
-  /** Hover text for the switch; defaults to Lightning's wording from the trigger. */
-  toggleTooltip?: string | undefined;
-  /** Whether any trigger is on (the name greys out when none is); defaults to the switch's state. */
-  triggerEnabled?: boolean | undefined;
-}
+
+/** The fields a project's workflows list sorts by, as the API names them (api/workflows.md, planned `sort`). */
+export type WorkflowSortKey = "name" | "updated_at" | "last_work_order_updated_at";

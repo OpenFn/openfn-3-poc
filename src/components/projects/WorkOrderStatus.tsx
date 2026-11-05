@@ -33,7 +33,7 @@ export default function WorkOrderStatus({
     <div>
       <div className="flex items-center gap-x-2">
         <span className="relative flex h-2 w-2">
-          {active && <span className={cn("absolute h-full w-full animate-ping rounded-full opacity-75", DOT[state])} />}
+          {active && <span className={cn("absolute h-full w-full motion-safe:animate-ping rounded-full opacity-75", DOT[state])} />}
           <span className={cn("relative h-2 w-2 rounded-full", DOT[state])} />
         </span>
         <span className={cn(TEXT[state], "font-medium")}>{text}</span>

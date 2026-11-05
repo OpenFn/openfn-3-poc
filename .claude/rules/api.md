@@ -63,6 +63,12 @@ PRINCIPLES.md "How data flows" says what; this is how.
   It never calls TanStack Query itself (lint). The hooks hold `useQuery`, the
   keys and the mapper, so two pages showing the same data load it the same
   way. Independent queries run side by side, never one after another.
+- A page under ProjectGate gets its `can*` flags from the server:
+  `useProjectPermissions(projectId)` reads the planned `permissions` from the
+  same `GET /api/projects/:id` the gate loaded, and the .query file passes
+  `canCreateWorkflow={can("create_workflow")}`. The names are typed
+  (`ProjectAction`). `usePermissions` / `permissionsFor` stay for pages not
+  yet on the API. `WorkflowsIndexPage.query.tsx` is the example.
 - `status` comes from the query: loading while there's no data, `notFound` /
   `forbidden` from the `ApiError` code, otherwise `error` with its message.
   The page draws it with `AsyncBoundary`. A refetch keeps the old rows on

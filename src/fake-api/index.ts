@@ -14,7 +14,8 @@ import { workOrdersIn } from "@/mock-data/history";
 import { workflowStatsFor } from "@/mock-data/dashboard-stats";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { permissionsFor, type Permissions } from "@/permissions";
-import type { Project } from "@/types/projects";
+import type { Project, ProjectAction } from "@/types/projects";
+import type { WorkflowSortKey } from "@/types/workflows";
 import { FAILURE_STATES } from "@/types/workflow-health";
 
 /**
@@ -109,7 +110,7 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
 });
 
 // Planned `permissions` on GET /api/projects/:id (api/projects.md), from the same rules as permissions.ts.
-const PERMISSIONS: Record<string, keyof Permissions> = {
+const PERMISSIONS: Record<ProjectAction, keyof Permissions> = {
   access_project: "canAccessProject",
   delete_project: "canDeleteProject",
   edit_project: "canEditProject",
@@ -143,13 +144,16 @@ const permissionsIn = (p: Project) => {
 const badSort = (field: string) =>
   problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });
 
-// The fields GET /api/projects/:id/workflows sorts by (planned); last_work_order_updated_at needs include=stats.
+// The fields GET /api/projects/:id/workflows sorts by (planned); all but the first two need include=stats.
 type WorkflowStatsRow = ReturnType<typeof workflowStatsFor>[number];
-const workflowSorts: Record<string, (s: WorkflowStatsRow) => SortValue> = {
+const workflowSorts: Record<WorkflowSortKey | "work_orders_count" | "failed_work_orders_count", (s: WorkflowStatsRow) => SortValue> = {
   name: (s) => s.workflow.name,
   updated_at: (s) => s.workflow.updatedAt,
   last_work_order_updated_at: (s) => s.lastWorkOrder?.updatedAt ?? null,
+  work_orders_count: (s) => s.workordersCount,
+  failed_work_orders_count: (s) => s.failedWorkordersCount,
 };
+const isWorkflowSort = (field: string): field is keyof typeof workflowSorts => field in workflowSorts;
 
 // A workflow as the list answers it. jobs, triggers and edges are left out: no page reads them from here yet.
 const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
@@ -267,10 +271,11 @@ const routes: Record<string, Handler> = {
     const stats = query.get("include") === "stats";
     const sort = query.get("sort") ?? "name";
     const field = sort.replace(/^-/, "");
-    const by = workflowSorts[field];
-    if (!by || (field === "last_work_order_updated_at" && !stats)) return badSort(field);
+    if (!isWorkflowSort(field) || (!stats && field !== "name" && field !== "updated_at")) return badSort(field);
+    const desc = sort.startsWith("-");
+    // Nulls last either way: compareBy reverses them along with everything else when descending.
     const rows = workflowStatsFor(project.id)
-      .sort(compareBy(by, sort.startsWith("-") ? "desc" : "asc", "last"))
+      .sort(compareBy(workflowSorts[field], desc ? "desc" : "asc", desc ? "first" : "last"))
       .map((s) => workflowEntry(s, stats));
     return json(200, paged(`/api/projects/${id}/workflows`, rows, query, "workflows"));
   },
