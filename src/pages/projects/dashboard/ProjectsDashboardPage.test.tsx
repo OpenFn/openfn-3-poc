@@ -33,9 +33,18 @@ describe("ProjectsDashboardPage", () => {
     expect(screen.getByText("N/A")).toBeTruthy();
   });
 
-  it("shows the empty state with no projects", () => {
+  it("with no projects, Create stays in the header and the empty state is words only", async () => {
     renderPage({ projects: [] });
     expect(screen.getByText("No projects found.")).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: /Create/ })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "Create project" }));
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+  });
+
+  it("shows no empty state while the projects load, and Create is already there", () => {
+    renderPage({ projects: [], status: { state: "loading" } });
+    expect(screen.queryByText("No projects found.")).toBeNull();
+    expect(screen.getByRole("button", { name: "Create project" })).toBeTruthy();
   });
 
   it("creates a project with the url-safe name and closes the modal", async () => {
@@ -46,6 +55,7 @@ describe("ProjectsDashboardPage", () => {
 
     await waitFor(() => expect(onCreate).toHaveBeenCalledWith({ name: "my-awesome-project", description: "" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(screen.getByText("Project created successfully")).toBeTruthy();
   });
 
   it("does not create a project when the modal is cancelled", async () => {

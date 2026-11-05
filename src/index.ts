@@ -22,7 +22,7 @@ export { default as CredentialsIndexPage } from "./pages/profile/CredentialsInde
 export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
-export { default as ProjectsDashboardPage } from "./pages/projects/ProjectsDashboardPage";
+export { default as ProjectsDashboardPage } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/WorkflowsIndexPage";
@@ -48,7 +48,7 @@ export type { ProfilePageProps } from "./pages/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
-export type { ProjectsDashboardPageProps } from "./pages/projects/ProjectsDashboardPage";
+export type { ProjectsDashboardPageProps } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/WorkflowsIndexPage";

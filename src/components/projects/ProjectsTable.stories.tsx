@@ -16,4 +16,3 @@ export default meta;
 type Story = StoryObj<typeof ProjectsTable>;
 
 export const Default: Story = {};
-export const Empty: Story = { args: { projects: [] } };

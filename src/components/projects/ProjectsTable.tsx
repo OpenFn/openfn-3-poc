@@ -1,5 +1,4 @@
 import type { ProjectOverview } from "@/types/workflows";
-import EmptyState from "@/components/primitives/EmptyState";
 import { RowLink, Table, Td, Th, Tr } from "@/components/primitives/Table";
 import DateTime from "@/components/primitives/DateTime";
 import Button from "@/components/primitives/Button";
@@ -15,28 +14,10 @@ const sortMap: Record<"name" | "last_updated_at", (p: ProjectOverview) => SortVa
 /**
  * The projects dashboard table (DashboardLive.Components.user_projects_table):
  * Name / Role / Workflows / Collaborators / Last Updated rows. Name and Last Updated sort. A row opens
- * the project's workflows. With no projects it's the dashed empty state.
+ * the project's workflows. ListPage shows the empty state, so this always draws the table.
  */
-export default function ProjectsTable({
-  projects,
-  onCreate,
-}: {
-  projects: ProjectOverview[];
-  /** Empty-state click. */
-  onCreate?: () => void;
-}) {
+export default function ProjectsTable({ projects }: { projects: ProjectOverview[] }) {
   const { rows, thProps } = useTableSort({ rows: projects, sortMap, initialKey: "name" });
-
-  if (projects.length === 0) {
-    return (
-      <EmptyState
-        icon="hero-plus-circle"
-        message="No projects found."
-        buttonText="Create a new one."
-        onClick={onCreate}
-      />
-    );
-  }
 
   return (
     <Table

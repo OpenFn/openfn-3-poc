@@ -23,14 +23,24 @@ At the moment the app supports us moving to Lightning as a single page React app
   each route as api/ says Lightning would (status, JSON body, problem
   document), with the fixtures as its database. Only `client.ts` imports it
   (lint), so resource files know nothing about it and going real is deleting
-  the folder and that import. A new route the app calls gets an answer there.
+  the folder and that import. A new route the app calls gets an answer there,
+  as api/ documents it, planned scope included (say so in a comment): the
+  app is built for the new API. A list answers through `paged()`, so it pages
+  like api/conventions.md; a write checks the body and answers one 422
+  `invalid` listing every problem, as api/errors.md says.
 - `isApiError(error, "step_up_required")` is how a route spots a refusal.
   `ApiProvider` holds TanStack Query: a failed load is retried, a 4xx never.
   Only `src/api/` imports TanStack Query, and only routes, replicas,
   `main.tsx`, stories and tests import `src/api/` (lint).
 - A refused request throws `ApiError`. Show its `message` (the server's
   `detail`); branch on `code`, never on the words. Body errors arrive
-  as `fieldErrors`, ready for the form.
+  as `fieldErrors`, ready for the form. A form a route feeds names its fields
+  as the API does (`name`, not `rawName`), so a 422 lands on its field with
+  no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
+  hook, the page's `on*` and the form's `useForm<…>` all use it, so a field
+  renamed in one place breaks the build. The route test makes the save fail
+  with a 422 on a field (`failNext`, pointer `#/name`) and checks the error
+  shows under it; `CreateProjectModal` is the example.
 - One file per resource (`credentials.ts`, `projects.ts`, …), holding, in
   this order: the API's type (`ApiCredential`, snake_case as sent), the mapper
   to the page's props type (a plain function), the query keys, the
@@ -43,8 +53,9 @@ At the moment the app supports us moving to Lightning as a single page React app
   server's data back. The fake user's password and MFA code are
   `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
   steps the session up for five minutes.
-- `src/pages/profile/tokens/TokensPage.route.tsx` and `TokensPage.route.test.tsx` are
-  the worked example.
+- `src/pages/profile/tokens/TokensPage.route.tsx` and
+  `src/pages/projects/dashboard/ProjectsDashboardPage.route.tsx` (a list on
+  `ListPage`, with create), each with its `.route.test.tsx`, are the worked examples.
 
 ## The route
 
@@ -72,5 +83,5 @@ At the moment the app supports us moving to Lightning as a single page React app
 - The page's props and action types don't change to suit the API. A new
   prop may be required, so the build catches a route that forgets it.
   If a page needs an existing prop changed, stop and ask.
-- What the API can't give a page yet is mapped to the answer for "none" and
+- What the API can't give a page yet, not even as planned scope, is mapped to the answer for "none" and
   tracked as a finding, not faked in the page.

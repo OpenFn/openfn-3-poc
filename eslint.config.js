@@ -268,11 +268,11 @@ const seamImports = (extra = []) => [
   { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, relativeImports, ...extra] },
 ]
 
-// Each folder in src/components/ other than primitives/ and domain/ is an
+// Each folder in src/components/ other than primitives/, domain/ and templates/ is an
 // area of feature components (history/, credentials/, …) or the app shell (shell/).
 const areas = fs
   .readdirSync(new URL('./src/components', import.meta.url), { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && !['primitives', 'domain'].includes(entry.name))
+  .filter((entry) => entry.isDirectory() && !['primitives', 'domain', 'templates'].includes(entry.name))
   .map((entry) => entry.name)
 const tiers = 'See docs/building.md, Where a new component goes.'
 // `@/x` is src/x. Every no-restricted-imports block below repeats this, because a later block replaces an earlier one's options.
@@ -291,6 +291,10 @@ const primitiveImports = {
 const domainImports = {
   regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain)(/|$))',
   message: `A domain component uses only primitives and other domain components. Pass the feature in as a prop or children. ${tiers}`,
+}
+const templateImports = {
+  regex: '(^|/)pages(/|$)|(^|/)components/(?!(primitives|domain|templates)(/|$))',
+  message: `A template uses only primitives, domain and other templates. The page passes its words and its list in as props. ${tiers}`,
 }
 const utilImports = {
   regex: '(^|/)components/(?!primitives(/|$))|(^|/)pages(/|$)',
@@ -405,7 +409,7 @@ export default defineConfig([
     ignores: seamIgnores,
     rules: { 'no-restricted-imports': seamImports() },
   },
-  // The tiers: imports only go down, pages → feature components → domain →
+  // The tiers: imports only go down, pages → templates and feature components → domain →
   // primitives. A primitive uses only other primitives; a domain component
   // uses primitives and domain; a feature component uses those, the shell and
   // its own area. These blocks repeat the seam's patterns, because a later
@@ -419,6 +423,11 @@ export default defineConfig([
     files: ['src/components/domain/**/*.{ts,tsx}'],
     ignores: seamIgnores,
     rules: { 'no-restricted-imports': seamImports([domainImports]) },
+  },
+  {
+    files: ['src/components/templates/**/*.{ts,tsx}'],
+    ignores: seamIgnores,
+    rules: { 'no-restricted-imports': seamImports([templateImports]) },
   },
   ...areas.map((area) => ({
     files: [`src/components/${area}/**/*.{ts,tsx}`],

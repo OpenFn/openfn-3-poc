@@ -91,10 +91,43 @@ describe("every page and component can be seen and checked", () => {
       "./pages/profile/ProfilePage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
       "./pages/projects/ChannelsIndexPage.replica.tsx",
-      "./pages/projects/ProjectsDashboardPage.replica.tsx",
       "./pages/projects/SandboxesIndexPage.replica.tsx",
       "./pages/projects/WorkflowHealthPage.replica.tsx",
       "./pages/projects/WorkflowsIndexPage.replica.tsx",
+    ]);
+  });
+
+  it("only a template builds a page from PageContent", () => {
+    // A page fills a template (src/components/templates/), so every page of a
+    // kind lays out its title, actions, loading and empty state the same way.
+    const builders = paths.filter(
+      (path) => isSource(path) && !path.startsWith("./components/templates/") && sources[path]!.includes('from "@/components/primitives/PageContent"')
+    );
+    expectOnlyKnown(builders, [
+      "./components/auth/AuthLayout.tsx",
+      "./pages/admin/AdminAuditPage.tsx",
+      "./pages/admin/AdminAuthProvidersPage.tsx",
+      "./pages/admin/AdminCollectionsPage.tsx",
+      "./pages/admin/AdminMaintenancePage.tsx",
+      "./pages/admin/AdminProjectsPage.tsx",
+      "./pages/admin/AdminUserEditPage.tsx",
+      "./pages/admin/AdminUsersPage.tsx",
+      "./pages/auth/FirstSetupPage.tsx",
+      "./pages/history/ChannelRequestShowPage.tsx",
+      "./pages/history/DataclipShowPage.tsx",
+      "./pages/history/HistoryChannelLogsPage.tsx",
+      "./pages/history/HistoryWorkOrdersPage.tsx",
+      "./pages/history/RunShowPage.tsx",
+      "./pages/profile/BackupCodesPage.tsx",
+      "./pages/profile/CredentialsIndexPage.tsx",
+      "./pages/profile/ProfilePage.tsx",
+      "./pages/profile/tokens/TokensPage.tsx",
+      "./pages/project-settings/ProjectSettingsPage.tsx",
+      "./pages/projects/ChannelsIndexPage.tsx",
+      "./pages/projects/MfaRequiredPage.tsx",
+      "./pages/projects/SandboxesIndexPage.tsx",
+      "./pages/projects/WorkflowHealthPage.tsx",
+      "./pages/projects/WorkflowsIndexPage.tsx",
     ]);
   });
 

@@ -15,7 +15,7 @@ export const Open: Story = {};
 /** The server rejects the name: the modal stays open and the message shows on the Name field. */
 export const ServerFieldError: Story = {
   args: {
-    onCreate: () => Promise.reject(new RequestError("Invalid project", { fieldErrors: { rawName: ["has already been taken"] } })),
+    onCreate: () => Promise.reject(new RequestError("Invalid project", { fieldErrors: { name: ["has already been taken"] } })),
   },
   play: async ({ canvasElement }) => {
     const doc = canvasElement.ownerDocument;

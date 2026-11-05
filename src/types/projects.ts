@@ -5,6 +5,16 @@ export type ProjectRole = "owner" | "admin" | "editor" | "viewer";
 export type RetentionPolicy = "retain_all" | "retain_with_errors" | "erase_all";
 
 /**
+ * What creating a project sends, `PUT /api/projects/:id`'s body. The Create
+ * project form's values are this type, so its fields carry the API's names
+ * and a 422's pointers (`#/name`) land on them; renaming one breaks the build.
+ */
+export interface ProjectInput {
+  name: string;
+  description: string;
+}
+
+/**
  * The project a page is in: enough to build its links and draw it in the
  * crumbs and the project picker. Part of the page contract hosts send,
  * written out rather than picked from the replica's `Project` model.
