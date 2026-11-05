@@ -15,3 +15,6 @@ The replica's pages map a gap to "none"; they never fake it.
 - **Service status (Live / Draft)** on a workflow that backs a service. There
   are no services in the API at all; in ia-demo it sits behind the
   `serviceCatalog` flag. Replica: left out.
+- **A description under each workflow's name.** The workflow object in
+  `api/workflows.md` has no `description`. Would need a `description` field on
+  the workflow, set through create and update. Replica: left out.
