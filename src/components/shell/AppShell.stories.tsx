@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, userEvent, within } from "storybook/test";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import AppShell from "./AppShell.query";
@@ -30,6 +31,15 @@ const at = (path: string) => () => (
   </MemoryRouter>
 );
 
-export const Project: StoryObj = { render: at(`/projects/${projects[0]!.id}/w`) };
+const inProject = at(`/projects/${projects[0]!.id}/w`);
+export const Project: StoryObj = { render: inProject };
+/** Toggled to icons only. */
+export const ProjectCollapsed: StoryObj = {
+  render: inProject,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(await within(canvasElement).findByRole("button", { name: "Toggle sidebar" }));
+    await expect(canvasElement.querySelector("#sidebar-panel")).toHaveAttribute("data-collapsed", "true");
+  },
+};
 export const Profile: StoryObj = { render: at("/profile") };
 export const Admin: StoryObj = { render: at("/settings/projects") };

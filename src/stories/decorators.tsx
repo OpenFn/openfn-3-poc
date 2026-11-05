@@ -21,6 +21,13 @@ export const withRouterAt =
 /** {@link withRouterAt} the root URL. */
 export const withRouter = withRouterAt("/");
 
+/** The admin menu's sidebar colours (Lightning's `sudo-variant`) around a sidebar that would show the primary ones. */
+export const withAdminSidebarColours: Decorator = (Story) => (
+  <div className="sudo-variant">
+    <Story />
+  </div>
+);
+
 /**
  * A gray page background with stacked spacing, for panels that render
  * several cards (often as a fragment), e.g. the project settings panels.
