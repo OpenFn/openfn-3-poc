@@ -61,3 +61,29 @@ export interface Project {
   lastUpdatedAt: string;
   insertedAt: string;
 }
+
+/** What a caller may do in a project, as `GET /api/projects/:id` names it in its planned `permissions` (api/projects.md). */
+export type ProjectAction =
+  | "access_project"
+  | "delete_project"
+  | "edit_project"
+  | "edit_data_retention"
+  | "edit_run_settings"
+  | "add_project_user"
+  | "remove_project_user"
+  | "write_webhook_auth_method"
+  | "write_github_connection"
+  | "create_workflow"
+  | "edit_workflow"
+  | "delete_workflow"
+  | "run_workflow"
+  | "create_project_credential"
+  | "initiate_github_sync"
+  | "create_channel"
+  | "update_channel"
+  | "delete_channel"
+  | "edit_failure_alerts"
+  | "edit_digest_alerts"
+  | "create_keychain_credential"
+  | "manage_collection"
+  | "provision_sandbox";

@@ -93,7 +93,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/projects/ChannelsIndexPage.replica.tsx",
       "./pages/projects/SandboxesIndexPage.replica.tsx",
       "./pages/projects/WorkflowHealthPage.replica.tsx",
-      "./pages/projects/WorkflowsIndexPage.replica.tsx",
     ]);
   });
 
@@ -114,7 +113,6 @@ describe("every page and component can be seen and checked", () => {
       "./components/project-settings/HistoryExportsTable.tsx",
       "./components/project-settings/WebhookAuthMethodsTable.tsx",
       "./components/projects/channels/ChannelsTable.tsx",
-      "./components/projects/WorkflowsTable.tsx",
     ]);
   });
 
@@ -163,7 +161,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/projects/SandboxesIndexPage.tsx",
       "./pages/projects/WorkflowHealthPage.tsx",
-      "./pages/projects/WorkflowsIndexPage.tsx",
     ]);
   });
 

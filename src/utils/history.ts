@@ -1,7 +1,7 @@
 /**
  * Pure helpers over history records: log filtering, channel request events,
  * failure counts, run state labels, work order selection, History's search in
- * words and as URL params, and the workflows-index metric cards. No fixture access.
+ * words and as URL params. No fixture access.
  */
 import type { ChannelEvent } from "@/types/channels";
 import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
@@ -9,16 +9,7 @@ import type { SortState } from "@/types/lists";
 import { historySearchFields, historyStatuses } from "@/constants";
 import type { ParamPatch } from "./useUrlParams";
 import { capitalize, formatQueryDate } from "./format";
-import type { ProjectMetrics } from "@/types/workflows";
 import { FAILURE_STATES, type WorkOrderStateCounts } from "@/types/workflow-health";
-
-/** What the metric cards count of one workflow. */
-interface WorkflowCounts {
-  workordersCount: number;
-  failedWorkordersCount: number;
-  pendingWorkorders: number;
-  runs: { total: number; pending: number; success: number };
-}
 
 const levelScore = (l: string) => ({ debug: 0, info: 1, warn: 2, error: 3 })[l] ?? 4;
 
@@ -56,30 +47,6 @@ export function historyUrl(
 /** The History link for the states a slice counts, from `from`: one flag per state. */
 export const stateUrl = (projectId: string, workflowId: string, from: string, ...states: (keyof WorkOrderStateCounts)[]) =>
   historyUrl(projectId, workflowId, { date_after: from, ...Object.fromEntries(states.map((state) => [state, "true"])) });
-
-const pct = (n: number, d: number) => (d === 0 ? 0 : Math.round((n / d) * 1000) / 10);
-
-export function projectMetricsFor(stats: WorkflowCounts[]): ProjectMetrics {
-  const sum = (f: (s: WorkflowCounts) => number) => stats.reduce((acc, s) => acc + f(s), 0);
-  const woTotal = sum((s) => s.workordersCount);
-  const woFailed = sum((s) => s.failedWorkordersCount);
-  const runTotal = sum((s) => s.runs.total);
-  const runSuccess = sum((s) => s.runs.success);
-  return {
-    workOrders: {
-      total: woTotal,
-      pending: sum((s) => s.pendingWorkorders),
-      failed: woFailed,
-      failedPercentage: pct(woFailed, woTotal),
-    },
-    runs: {
-      total: runTotal,
-      pending: sum((s) => s.runs.pending),
-      success: runSuccess,
-      successRate: pct(runSuccess, runTotal),
-    },
-  };
-}
 
 /** Whether every row that can be ticked is, so a row with a wiped input doesn't keep select-all part-ticked. */
 export const allTicked = (rows: WorkOrderRow[], ids: string[]) => {

@@ -1,6 +1,6 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ProjectInput, ProjectNode } from "@/types/projects";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { isApiError, listAll, request, statusOf } from "./client";
@@ -20,6 +20,8 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
+    permissions?: Partial<Record<ProjectAction, boolean>>;
   };
 }
 
@@ -41,17 +43,20 @@ function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
   return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null, isSandbox: a.root_id !== undefined };
 }
 
-/** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
-export function useProject(id: string | undefined): { status: ResourceStatus; project: ProjectNode | undefined } {
-  const query = useQuery({
+// `GET /api/projects/:id`, one cache entry for useProject and useProjectPermissions.
+const projectQuery = (id: string | undefined) =>
+  queryOptions({
     queryKey: projectKeys.one(id ?? ""),
     // No id (a page outside any project): nothing to load.
     enabled: id !== undefined,
     queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
-    select: projectNode,
     // The gate and the page's .query file ask in turn; without this the page fetches it again.
     staleTime: 60_000,
   });
+
+/** `GET /api/projects/:id`, and where loading it stands. A non-member gets `forbidden`. */
+export function useProject(id: string | undefined): { status: ResourceStatus; project: ProjectNode | undefined } {
+  const query = useQuery({ ...projectQuery(id), select: projectNode });
   // A malformed id is a 400 for a superuser (api/projects.md); to the person it's a project that isn't there.
   const status = isApiError(query.error, "invalid_parameter") ? ({ state: "notFound" } as const) : statusOf(query);
   return { status, project: query.data };
@@ -103,4 +108,15 @@ export function useProjectSaves() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
   });
   return { create: async (project: ProjectInput) => void (await create.mutateAsync(project)) };
+}
+
+/**
+ * What the caller may do in a project, from the same `GET /api/projects/:id`
+ * and cache as useProject (the planned `permissions`), by the API's names:
+ * `can("create_workflow")`. False until it has loaded, and for anything the
+ * server doesn't say.
+ */
+export function useProjectPermissions(id: string): (action: ProjectAction) => boolean {
+  const { data } = useQuery({ ...projectQuery(id), select: (p) => p.attributes.permissions ?? {} });
+  return (action) => data?.[action] ?? false;
 }

@@ -30,7 +30,7 @@ export const ORIGIN = "http://localhost:4000";
  * One page of a list (api/conventions.md): `page` from 1, `page_size` 10 by
  * default and at most 100, and links that carry the query as sent.
  */
-export function paged<T>(path: string, rows: T[], query: URLSearchParams) {
+export function paged<T>(path: string, rows: T[], query: URLSearchParams, key = "data") {
   const size = Math.min(Math.max(Number(query.get("page_size")) || 10, 1), 100);
   const last = Math.max(Math.ceil(rows.length / size), 1);
   const page = Math.min(Math.max(Number(query.get("page")) || 1, 1), last);
@@ -41,7 +41,7 @@ export function paged<T>(path: string, rows: T[], query: URLSearchParams) {
     return `${ORIGIN}${path}?${q}`;
   };
   return {
-    data: rows.slice((page - 1) * size, page * size),
+    [key]: rows.slice((page - 1) * size, page * size),
     links: { self: link(page), first: link(1), last: link(last), next: page < last ? link(page + 1) : null, prev: page > 1 ? link(page - 1) : null },
   };
 }

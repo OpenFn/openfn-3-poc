@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/utils/cn";
+import Text from "./Text";
 
 interface Props {
   /** The page title. With breadcrumbs it sits in a row under the bar, with the actions. */
@@ -7,6 +8,8 @@ interface Props {
   /** Shown after the title: "Workflows (3)". */
   count?: number | undefined;
   breadcrumbs?: ReactNode;
+  /** One line under the title saying what the page is. */
+  description?: ReactNode;
   /** Right-aligned content: buttons, the period picker, etc. */
   children?: ReactNode;
   /** Title size: `xl` for logged-out pages, `md` everywhere else. */
@@ -20,9 +23,9 @@ interface Props {
  * title: the bar holds the breadcrumbs, and the title and actions take a row
  * beneath it, so every page names itself the same way.
  */
-export default function Header({ title, count, breadcrumbs, children, size = "md" }: Props) {
+export default function Header({ title, count, breadcrumbs, description, children, size = "md" }: Props) {
   // One title for both places, so the two can't drift apart.
-  const heading = title && (
+  const h1 = title && (
     <h1 className={cn("min-w-0 text-strong", size === "xl" ? "text-3xl font-bold" : "text-xl font-semibold")}>
       {title}
       {count !== undefined && (
@@ -32,6 +35,16 @@ export default function Header({ title, count, breadcrumbs, children, size = "md
         </>
       )}
     </h1>
+  );
+  const heading = description ? (
+    <div className="min-w-0">
+      {h1}
+      <Text as="p" tone="muted">
+        {description}
+      </Text>
+    </div>
+  ) : (
+    h1
   );
 
   if (breadcrumbs && title) {
@@ -45,8 +58,9 @@ export default function Header({ title, count, breadcrumbs, children, size = "md
         <div className="bg-page overflow-x-auto [scrollbar-gutter:stable_both-edges]" data-ui="page-title-row">
           {/* One height whatever sits beside the title (nothing, a button, a search box), so the
               title and the content start at the same place on every page. Narrow, the actions
-              wrap under the title, and pb-1 keeps their focus rings inside the row. */}
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 pb-1 flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              wrap under the title, and pb-1 keeps their focus rings inside the row. With a description
+              the actions stay level with the title, not halfway down the two lines. */}
+          <div className={cn("max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 pb-1 flex min-h-16 flex-wrap justify-between gap-x-4 gap-y-2", description ? "items-start" : "items-center")}>
             {heading}
             {children && <div className="flex min-w-0 items-center gap-2">{children}</div>}
           </div>
@@ -56,7 +70,7 @@ export default function Header({ title, count, breadcrumbs, children, size = "md
   }
   return (
     <div className="flex-none bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">
+      <div className={cn("max-w-7xl mx-auto sm:px-6 lg:px-8 flex items-center", description ? "min-h-20 py-4" : "h-20 py-6")}>
         {breadcrumbs ?? heading}
         <div className="grow" />
         {children}

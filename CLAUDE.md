@@ -74,7 +74,10 @@ data, comments, lint) and loads by itself when you touch one.
   the API sits in its own folder with a `.query.tsx` beside it (STANDARDS.md
   pattern 11); older pages still have a `.replica.tsx` wrapper.
 - `src/components/shell/`: the app shell; `ProjectGate.query.tsx` is the
-  parent of every `/projects/:projectId` route (STANDARDS pattern 11).
+  parent of every `/projects/:projectId` route: it loads the project and
+  holds the page back until it's there. A page reads that project with
+  `useCurrentProject` (`src/api/projects.ts`), never from the gate
+  (STANDARDS pattern 11).
 - `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
   area.
 - `src/types/`: the hand-written shapes pages take. `src/constants.ts`:

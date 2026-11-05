@@ -7,7 +7,7 @@
 import { projects } from "./projects";
 import { roleIn } from "@/permissions";
 import { workflows, workflowsIn } from "./workflows";
-import type { ProjectOverview } from "@/types/workflows";
+import type { ProjectOverview, WorkflowListItem } from "@/types/workflows";
 import type { WorkflowStats } from "./models/workflows";
 
 /** Root projects the user belongs to (sandboxes never show on the dashboard). */
@@ -104,4 +104,14 @@ export function workflowStatsFor(projectId: string): WorkflowStats[] {
 export function findWorkflowStats(workflowId: string): WorkflowStats | undefined {
   const workflow = workflows.find((w) => w.id === workflowId);
   return workflow && { workflow, ...(extra[workflow.id] ?? NO_ACTIVITY) };
+}
+
+/** A project's workflows as its Workflows list shows them, for stories. */
+export function workflowListItemsFor(projectId: string): WorkflowListItem[] {
+  return workflowStatsFor(projectId).map(({ workflow, lastWorkOrder }) => ({
+    id: workflow.id,
+    name: workflow.name,
+    updatedAt: workflow.updatedAt,
+    lastWorkOrder,
+  }));
 }

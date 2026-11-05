@@ -7,7 +7,7 @@ export interface PageInfo {
 }
 
 /** How a server-sorted list is ordered; the page links each column to the URL that re-sorts it. */
-export interface SortState {
-  key: string;
+export interface SortState<K extends string = string> {
+  key: K;
   direction: "asc" | "desc";
 }

@@ -86,6 +86,13 @@ goes back to Lightning's way.
 - **"Create new workflow" is a link**, since it opens a page; disabled, it's a
   disabled button with the reason, as in Lightning, where it's always a
   button.
+- **Workflows is Brandon's list** (D40, D44, D45): a line under the title,
+  "Workflows move data between your connected systems.", then Name, Latest
+  run and Last updated, sorted by the server from the column headers. Search,
+  the four metric cards, the work order counts, the on/off switch, Health
+  and Delete are gone until his design or the API calls for them. The empty
+  state keeps Lightning's words without the "Create one" link, since Create
+  stays in the header.
 - **A workflow panel's title stays on one line.** A long node name ends
   in "…", with the full title on hover. Lightning wraps it
   (`collaborative-editor/components/inspector/InspectorLayout.tsx`), which

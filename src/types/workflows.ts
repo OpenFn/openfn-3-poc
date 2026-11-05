@@ -1,4 +1,4 @@
-/** The projects dashboard and workflows index: their rows and metric cards. Types only: no data, no behaviour. */
+/** The projects dashboard and the workflows list: their rows. Types only: no data, no behaviour. */
 import type { ProjectRole } from "./projects";
 
 export type TriggerType = "webhook" | "cron" | "kafka";
@@ -27,36 +27,15 @@ export type WorkOrderDisplayState =
   | "exception"
   | "lost";
 
-/** One row of the workflows index table (`DashboardStats.WorkflowStats`): the fields it shows, and nothing else. */
-export interface WorkflowRow {
-  workflow: {
-    id: string;
-    name: string;
-    updatedAt: string;
-    /** Whether the trigger is enabled ("Active" toggle on the index). */
-    enabled: boolean;
-    triggerType: TriggerType;
-  };
+/** A workflow on a project's Workflows list: what its row shows. */
+export interface WorkflowListItem {
+  id: string;
+  name: string;
+  updatedAt: string;
+  /** The latest work order in the last 30 days, or null. */
   lastWorkOrder: { state: WorkOrderDisplayState; updatedAt: string } | null;
-  lastFailedAt: string | null;
-  workordersCount: number;
-  failedWorkordersCount: number;
-  stepCount: number;
-  stepSuccessRate: number;
-  /** History filtered to this workflow's work orders in the window; the host builds it. */
-  historyHref?: string | undefined;
-  /** History filtered to this workflow's failed work orders in the window. */
-  failedHistoryHref?: string | undefined;
-  /** The workflow's lifecycle state, shown instead of the switch when the lifecycle is on. */
-  state?: "live" | "draft" | undefined;
-  /** Hover text for the switch; defaults to Lightning's wording from the trigger. */
-  toggleTooltip?: string | undefined;
-  /** Whether any trigger is on (the name greys out when none is); defaults to the switch's state. */
-  triggerEnabled?: boolean | undefined;
 }
 
-/** The four metric cards above the workflows table (`ProjectMetrics`). */
-export interface ProjectMetrics {
-  workOrders: { total: number; pending: number; failed: number; failedPercentage: number };
-  runs: { total: number; pending: number; success: number; successRate: number };
-}
+
+/** The fields a project's workflows list sorts by, as the API names them (api/workflows.md, planned `sort`). */
+export type WorkflowSortKey = "name" | "updated_at" | "last_work_order_updated_at";

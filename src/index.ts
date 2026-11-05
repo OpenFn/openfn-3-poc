@@ -25,7 +25,7 @@ export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
-export { default as WorkflowsIndexPage } from "./pages/projects/WorkflowsIndexPage";
+export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { AdminAuditPageProps } from "./pages/admin/AdminAuditPage";
 export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
@@ -51,7 +51,7 @@ export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage"
 export type { ProjectsDashboardPageProps } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
-export type { WorkflowsIndexPageProps } from "./pages/projects/WorkflowsIndexPage";
+export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { ChangeEmailResult, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
 export type { ConfirmAccessValues } from "./pages/auth/AuthConfirmAccessPage";
@@ -170,7 +170,7 @@ export type {
   SandboxValues,
 } from "./types/sandboxes";
 export type { ApiToken, BackupCode } from "./types/tokens";
-export type { ProjectMetrics, ProjectOverview, WorkflowRow } from "./types/workflows";
+export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 
 export { RouterProvider } from "./routing/router";
 export type { NavigateOptions, Router } from "./routing/router";
