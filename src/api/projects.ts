@@ -1,6 +1,5 @@
-/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
+/** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CredentialProjectRef } from "@/types/credentials";
 import type { ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
@@ -23,13 +22,6 @@ export interface ApiProject {
     root_id?: string;
   };
 }
-
-export function projectRef(p: ApiProject): CredentialProjectRef {
-  return { id: p.id, name: p.attributes.name };
-}
-
-/** `GET /api/projects`: the projects the caller is a member of, every page. */
-export const listProjects = () => listAll<ApiProject>("/api/projects", "data");
 
 /** A row of the projects dashboard, from an entry listed with `include=stats`. */
 export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverview {
@@ -57,7 +49,7 @@ export function useProject(id: string | undefined): { status: ResourceStatus; pr
     enabled: id !== undefined,
     queryFn: () => request<{ data: ApiProject }>("GET", `/api/projects/${id}`).then((answer) => answer.data),
     select: projectNode,
-    // The gate and the route under it ask in turn; without this the route fetches it again.
+    // The gate and the page's .query file ask in turn; without this the page fetches it again.
     staleTime: 60_000,
   });
   // A malformed id is a 400 for a superuser (api/projects.md); to the person it's a project that isn't there.

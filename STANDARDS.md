@@ -11,7 +11,7 @@ patterns are done and which pages still need them is tracked in the project
 tracker, not here.
 
 Worked example: `src/pages/profile/tokens/TokensPage.tsx` and its
-`TokensPage.query.tsx` route (patterns 1, 4, 6, 7, 11).
+`TokensPage.query.tsx` file (patterns 1, 4, 6, 7, 11).
 
 ## 1. Async action
 

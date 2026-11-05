@@ -31,13 +31,13 @@ PRINCIPLES.md "How data flows" says what; this is how.
   It never reads the URL or the signed-in user (lint): the page's `.query`
   file reads those and passes them in. So every data hook lives here, in its
   resource's file, and nowhere else.
-- `isApiError(error, "step_up_required")` is how a route spots a refusal.
+- `isApiError(error, "step_up_required")` is how a .query file spots a refusal.
   `ApiProvider` holds TanStack Query: a failed load is retried, a 4xx never.
-  Only `src/api/` imports TanStack Query, and only routes, replicas,
+  Only `src/api/` imports TanStack Query, and only .query files, replicas,
   `main.tsx`, stories and tests import `src/api/` (lint).
 - A refused request throws `ApiError`. Show its `message` (the server's
   `detail`); branch on `code`, never on the words. Body errors arrive
-  as `fieldErrors`, ready for the form. A form a route feeds names its fields
+  as `fieldErrors`, ready for the form. A form a .query file feeds names its fields
   as the API does (`name`, not `rawName`), so a 422 lands on its field with
   no mapping. The body's type lives in `src/types/` (`ProjectInput`), and the
   hook, the page's `on*` and the form's `useForm<…>` all use it, so a field
@@ -84,7 +84,7 @@ PRINCIPLES.md "How data flows" says what; this is how.
   (`useAction(handler, { onError: "toast" })`, STANDARDS pattern 1); it
   stays until dismissed. Nothing in `src/api/` toasts.
 - The page's props and action types don't change to suit the API. A new
-  prop may be required, so the build catches a route that forgets it.
+  prop may be required, so the build catches a .query file that forgets it.
   If a page needs an existing prop changed, stop and ask.
 - What the API can't give a page yet, not even as planned scope, is mapped to the answer for "none" and
   tracked as a finding, not faked in the page.

@@ -119,7 +119,7 @@ data, comments, lint) and loads by itself when you touch one.
 
 ## The data seam
 
-Only `*.replica.*` wrappers, `*.query.*` routes, `*Replica.ts` helpers and `main.tsx` may import
+Only `*.replica.*` wrappers, `*.query.*` files, `*Replica.ts` helpers and `main.tsx` may import
 `src/mock-data/`, `src/session/` or the router. There, the user comes from
 `useCurrentUser()` (never a fixture import) and permissions from
 `usePermissions(project)` / `permissionsFor`, passed down as `can*`

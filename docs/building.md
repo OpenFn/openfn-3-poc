@@ -56,7 +56,7 @@ its stories; read the component before using it.
 | Nothing to show yet: an empty list, panel or viewer | `EmptyState` (`fill` to centre in its box, `loading` to pulse) |
 | Sorting and filtering a small table in the browser | `useTableSort` |
 | A status message | `Alert` |
-| The page frame | `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
+| The app frame and the page frame | `Layout` (sidebar beside `<main>`, once around the app), `PageContent`, `Header`, `Centered`, `Breadcrumbs` |
 
 Tests pick from a `Select` with `pickOption` (`src/test/select.ts`).
 
