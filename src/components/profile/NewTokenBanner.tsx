@@ -4,7 +4,7 @@ import { TextInput } from "@/components/primitives/Inputs";
 import { Row } from "@/components/primitives/Stack";
 
 /**
- * The banner shown once after "Generate New Token"
+ * The banner shown once after "Generate new token"
  * (tokens_live/index.html.heex `data-entity="new_token"`).
  */
 export default function NewTokenBanner({ token }: { token: string }) {

@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppShell from "./components/shell/AppShell.query";
 import ProjectGate from "./components/shell/ProjectGate.query";
+import UserSettings from "./components/shell/UserSettings.query";
 
 import AuthLoginPage from "./pages/auth/AuthLoginPage";
 import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
@@ -96,11 +97,13 @@ export default function App() {
           <Route path="settings/delete" element={<ProjectSettingsPage />} />
         </Route>
 
-        <Route path="/credentials" element={<CredentialsIndexPage />} /> {/* credentials-index */}
-        <Route path="/profile" element={<ProfilePage />} /> {/* profile-* */}
-        <Route path="/profile/:userId/delete" element={<ProfilePage />} /> {/* profile-delete-account */}
-        <Route path="/profile/tokens" element={<TokensPage />} /> {/* profile-tokens */}
-        <Route path="/profile/tokens/:tokenId/delete" element={<TokensPage />} />
+        <Route element={<UserSettings />}>
+          <Route path="/credentials" element={<CredentialsIndexPage />} /> {/* credentials-index */}
+          <Route path="/profile" element={<ProfilePage />} /> {/* profile-* */}
+          <Route path="/profile/:userId/delete" element={<ProfilePage />} /> {/* profile-delete-account */}
+          <Route path="/profile/tokens" element={<TokensPage />} /> {/* profile-tokens */}
+          <Route path="/profile/tokens/:tokenId/delete" element={<TokensPage />} />
+        </Route>
         <Route path="/profile/auth/backup_codes" element={<BackupCodesPage />} /> {/* profile-backup-codes */}
 
         {/* Admin (superuser) */}

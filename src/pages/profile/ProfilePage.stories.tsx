@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import ProfilePage from "./ProfilePage";
 import { fakeMfaSetup, profilePropsFor } from "@/mock-data/profile";
 import { session } from "@/mock-data/users";
-import { withCanvas, withRouter } from "@/stories/decorators";
+import { withCanvas } from "@/stories/decorators";
+import { withUserSettingsAt } from "@/stories/withUserSettings";
 
 const done = async () => {};
 const sample = profilePropsFor(session.user);
@@ -10,8 +11,8 @@ const sample = profilePropsFor(session.user);
 const meta: Meta<typeof ProfilePage> = {
   title: "Pages/Profile/ProfilePage",
   component: ProfilePage,
-  // PageContent fills its parent, so give it a screen to fill.
-  decorators: [withRouter, withCanvas("h-screen")],
+  // In its settings layout, which fills its parent, so give it a screen to fill.
+  decorators: [withUserSettingsAt("/profile"), withCanvas("h-screen")],
   parameters: { layout: "fullscreen" },
   args: {
     ...sample,

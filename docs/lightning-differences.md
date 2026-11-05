@@ -98,6 +98,44 @@ goes back to Lightning's way.
   (`collaborative-editor/components/inspector/InspectorLayout.tsx`), which
   makes the header a different height for each node.
 
+## User settings
+
+- **Profile, Credentials and API tokens are one settings page, as in
+  Brandon's UserSettingsPage** (openfn-ia-demo `src/pages/UserSettingsPage.tsx`,
+  `components/patterns/SettingsLayout.tsx`). The header says "User
+  settings" with his line under it, a menu of the three sits on the left,
+  and each page's own title becomes its section's heading. Lightning gives
+  each its own page title ("User Profile", "Credentials", "Personal Access
+  Tokens") and reaches them only from the side menu (`menu.ex:105-108`).
+  Like his, the side menu no longer lists them and the account menu has one
+  "User settings" item (Lightning lists Projects, User Profile, Credentials
+  and API Tokens in both, `layout_components.ex:165-170`); the settings menu
+  lists the three. The URLs and everything each page does stay Lightning's.
+- **The sections use his words.** "API tokens" with "Personal access tokens
+  let the OpenFn CLI and API act as you.", a "Generate new token" button
+  and "No personal access tokens" when there are none (Lightning:
+  "Personal Access Tokens", "Generate New Token",
+  `tokens_live/index.html.heex:13-18`). Credentials gains his line
+  "Credentials you own. Share them with any project you collaborate on."
+  Profile's section is headed by the user's name, as in his design, with
+  its cards as subheadings under it.
+- **Parts of his screen we leave out, and why.**
+  - His breadcrumb ("User settings › API tokens"): Lightning has none here,
+    and the menu already marks the page.
+  - A "Generate new token" button in the empty state: one create button on
+    screen, as on every list page, and it stays in the section's header.
+  - His amber "Copy your token now" warning: the new-token banner keeps
+    Lightning's blue info alert and words until a second page needs a
+    warning tone.
+  - "New credential" and "New OAuth client" buttons: Credentials keeps
+    Lightning's one "Add new" menu, which covers both. His "Organization
+    credentials live in Systems" note: the API has no organisations or
+    systems yet.
+- **Layout.** Profile's two columns start when its section is wide enough,
+  not at a screen size, so they fit beside the menu. Backup codes stays a
+  page of its own, as in Lightning: it is a step after setting up MFA, not a
+  section.
+
 ## Tags
 
 - **A timed-out channel request is a warning (yellow).** Lightning draws the

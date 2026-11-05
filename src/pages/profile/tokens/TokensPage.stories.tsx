@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import TokensPage from "./TokensPage";
 import { apiTokens } from "@/mock-data/tokens";
-import { withCanvas, withRouter } from "@/stories/decorators";
+import { withCanvas } from "@/stories/decorators";
+import { withUserSettingsAt } from "@/stories/withUserSettings";
 
 const meta: Meta<typeof TokensPage> = {
   title: "Pages/Profile/TokensPage",
   component: TokensPage,
-  // PageContent fills its parent, so give it a screen to fill.
-  decorators: [withRouter, withCanvas("h-screen")],
+  // In its settings layout, which fills its parent, so give it a screen to fill.
+  decorators: [withUserSettingsAt("/profile/tokens"), withCanvas("h-screen")],
   parameters: { layout: "fullscreen" },
   args: {
     tokens: apiTokens,
@@ -28,7 +29,7 @@ export const Empty: Story = { args: { tokens: [] } };
 // The banner and toast are the page's own, so the story clicks Generate to show them.
 export const NewToken: Story = {
   play: async ({ canvasElement }) => {
-    [...canvasElement.querySelectorAll("button")].find((b) => b.textContent?.includes("Generate New Token"))?.click();
+    [...canvasElement.querySelectorAll("button")].find((b) => b.textContent?.includes("Generate new token"))?.click();
     await new Promise((r) => setTimeout(r));
   },
 };

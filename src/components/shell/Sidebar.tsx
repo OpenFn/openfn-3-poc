@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "@/routing/router";
+import { isAt } from "@/utils/urls";
 import { cn } from "@/utils/cn";
 import NavItem from "./NavItem";
 import UserMenu, { type MenuUser } from "./UserMenu";
@@ -23,10 +24,6 @@ export interface SidebarProps {
   releaseLabel: string;
   collapsed: boolean;
   onToggle: () => void;
-}
-
-function isAt(pathname: string, path: string) {
-  return pathname === path || pathname.startsWith(path + "/");
 }
 
 function ProjectItems({ project, user }: { project: { id: string }; user: Pick<MenuUser, "experimentalFeatures"> }) {
@@ -55,21 +52,10 @@ function ProjectItems({ project, user }: { project: { id: string }; user: Pick<M
   );
 }
 
+// The user's own pages aren't listed here: their settings menu and the account menu reach them (Brandon's sidebar).
 function ProfileItems() {
   const { pathname } = useRouter().useLocation();
-  return (
-    <>
-      <NavItem to="/projects" icon="hero-folder" label="Projects" active={pathname === "/projects"} />
-      <NavItem
-        to="/profile"
-        icon="hero-user-circle"
-        label="User Profile"
-        active={isAt(pathname, "/profile") && !isAt(pathname, "/profile/tokens")}
-      />
-      <NavItem to="/credentials" icon="hero-key" label="Credentials" active={isAt(pathname, "/credentials")} />
-      <NavItem to="/profile/tokens" icon="hero-command-line" label="API Tokens" active={isAt(pathname, "/profile/tokens")} />
-    </>
-  );
+  return <NavItem to="/projects" icon="hero-folder" label="Projects" active={pathname === "/projects"} />;
 }
 
 function AdminItems() {

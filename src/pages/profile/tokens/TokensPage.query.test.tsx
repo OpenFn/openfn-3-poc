@@ -35,7 +35,7 @@ const rows = async () => within(await screen.findByRole("table", {}, wait)).getA
 // The list reloads after a save; wait for the new row count.
 const rowsBecome = (count: number) =>
   waitFor(() => expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(count), wait);
-const generate = () => fireEvent.click(screen.getByRole("button", { name: "Generate New Token" }));
+const generate = () => fireEvent.click(screen.getByRole("button", { name: "Generate new token" }));
 const newToken = async () => (await screen.findByRole("textbox", { name: "New token" }, wait)) as HTMLInputElement;
 
 async function confirmPassword(password: string) {

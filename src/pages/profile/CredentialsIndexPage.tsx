@@ -1,6 +1,6 @@
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
-import Header from "@/components/primitives/Header";
-import { Centered, PageContent } from "@/components/primitives/PageContent";
+import Section from "@/components/primitives/Section";
+import { NestedSections } from "@/components/primitives/SectionHeader";
 import CredentialIndex from "@/components/credentials/CredentialIndex";
 import NewCredentialMenuButton from "@/components/credentials/NewCredentialMenuButton";
 import type { CredentialActions, CredentialIndexData } from "@/types/credentials";
@@ -18,25 +18,24 @@ export interface CredentialsIndexPageProps extends CredentialIndexData, Credenti
 
 /**
  * Inventory view `credentials-index` (credential_live/index.html.heex): the
- * user's own OAuth clients and credentials, with "Add new" in the header.
+ * user's own OAuth clients and credentials, with "Add new" as the section's action.
  * Props only, so it can run unchanged in Lightning; the replica's data lives
  * in CredentialsIndexPage.replica.tsx.
  */
 export default function CredentialsIndexPage({ status = { state: "ready" }, ...props }: CredentialsIndexPageProps) {
   return (
-    <PageContent
-      header={
-        <Header title="Credentials">
-          <NewCredentialMenuButton id="credential-options-menu-button" />
-        </Header>
-      }
+    <Section
+      size="lg"
+      title="Credentials"
+      description="Credentials you own. Share them with any project you collaborate on."
+      action={<NewCredentialMenuButton id="credential-options-menu-button" />}
     >
-      <Centered>
-        {/* Lightning hard-codes can_create_project_credential here (credential_live/index.html.heex:33). */}
-        <AsyncBoundary status={status}>
+      {/* Lightning hard-codes can_create_project_credential here (credential_live/index.html.heex:33). */}
+      <AsyncBoundary status={status}>
+        <NestedSections>
           <CredentialIndex {...props} project={null} canCreateProjectCredential />
-        </AsyncBoundary>
-      </Centered>
-    </PageContent>
+        </NestedSections>
+      </AsyncBoundary>
+    </Section>
   );
 }

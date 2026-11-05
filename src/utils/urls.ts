@@ -19,3 +19,8 @@ export function webhookUrl(triggerId: string): string {
 export function authRedirectUri(provider: Pick<AuthProvider, "redirectHost" | "name">): string {
   return `${provider.redirectHost.replace(/\/$/, "")}/authenticate/${provider.name}/callback`;
 }
+
+/** Whether a path is at `path` or below it: /profile/tokens/x is at /profile/tokens. */
+export function isAt(pathname: string, path: string) {
+  return pathname === path || pathname.startsWith(path + "/");
+}
