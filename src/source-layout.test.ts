@@ -97,9 +97,12 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
+  const drawsEmptyState = (path: string) => sources[path]!.includes('from "@/components/primitives/EmptyState"');
+
   it("a table leaves the empty state to ListPage", () => {
     // A page on ListPage passes its table as `list`, and ListPage draws the empty state.
-    const drawers = components.filter((path) => /Table\.tsx$/.test(path) && sources[path]!.includes('from "@/components/primitives/EmptyState"'));
+    // A table is any component on the Table primitive, whatever its file is called.
+    const drawers = components.filter((path) => sources[path]!.includes('from "@/components/primitives/Table"') && drawsEmptyState(path));
     expectOnlyKnown(drawers, [
       "./components/admin/AdminCollectionsTable.tsx",
       "./components/history/ChannelRequestsTable.tsx",
@@ -111,6 +114,21 @@ describe("every page and component can be seen and checked", () => {
       "./components/projects/channels/ChannelsTable.tsx",
       "./components/projects/WorkflowsTable.tsx",
     ]);
+  });
+
+  it("a page on ListPage doesn't draw an empty state through a component", () => {
+    // Lint stops the page importing EmptyState; this stops a component it imports doing it instead.
+    // ponytail: one level deep; follow imports further if a nested component ever slips through.
+    const onListPage = paths.filter(
+      (path) => isSource(path) && !path.startsWith("./components/templates/") && sources[path]!.includes('from "@/components/templates/ListPage"')
+    );
+    const drawers = onListPage.flatMap((page) =>
+      [...sources[page]!.matchAll(/from "@\/(components\/[^"]+)"/g)]
+        .map(([, from]) => `./${from}.tsx`)
+        .filter((child) => sources[child] && !/^\.\/components\/(primitives|templates)\//.test(child) && drawsEmptyState(child))
+        .map((child) => `${page} imports ${child}`)
+    );
+    expect(drawers).toEqual([]);
   });
 
   it("only a template builds a page from PageContent", () => {
