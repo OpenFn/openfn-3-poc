@@ -13,8 +13,9 @@ import { Stack } from "@/components/primitives/Stack";
 interface Props {
   open: boolean;
   onClose: () => void;
-  /** Set to edit an existing client, with its id and secret from the host. */
+  /** Set to edit an existing client. */
   client?: OauthClientRow | undefined;
+  /** Its saved secret, from a host that sends it. Without one, a blank secret keeps the saved one. */
   secrets?: OauthClientSecretsResult | undefined;
   projects: CredentialProjectRef[];
   defaultProjectIds?: string[];
@@ -29,6 +30,7 @@ interface Props {
  * endpoints, client id and secret, scopes, and project access.
  */
 export default function OauthClientFormModal({ open, onClose, client, secrets, projects, defaultProjectIds = [], allowGlobal, onSave }: Props) {
+  const keepsSecret = !!client && !secrets;
   const form = useForm<OauthClientValues>({
     initial: {
       name: client?.name ?? "",
@@ -37,7 +39,7 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
       revocationEndpoint: client?.revocationEndpoint ?? "",
       introspectionEndpoint: client?.introspectionEndpoint ?? "",
       userinfoEndpoint: client?.userinfoEndpoint ?? "",
-      clientId: secrets?.clientId ?? "",
+      clientId: secrets?.clientId ?? client?.clientId ?? "",
       clientSecret: secrets?.clientSecret ?? "",
       mandatoryScopes: client?.mandatoryScopes ?? [],
       optionalScopes: client?.optionalScopes ?? [],
@@ -50,7 +52,7 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
       authorizationEndpoint: blank(v.authorizationEndpoint),
       tokenEndpoint: blank(v.tokenEndpoint),
       clientId: blank(v.clientId),
-      clientSecret: blank(v.clientSecret),
+      clientSecret: keepsSecret ? [] : blank(v.clientSecret),
     }),
   });
   const { values } = form;
@@ -75,7 +77,13 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
       <TextInput label="Introspection Endpoint" {...form.fieldProps("introspectionEndpoint")} />
       <TextInput label="UserInfo Endpoint" {...form.fieldProps("userinfoEndpoint")} />
       <PasswordInput label="Client ID" required {...form.fieldProps("clientId")} />
-      <PasswordInput label="Client Secret" required autoComplete="new-password" {...form.fieldProps("clientSecret")} />
+      <PasswordInput
+        label="Client Secret"
+        required={!keepsSecret}
+        hint={keepsSecret ? "Saved. Leave blank to keep it." : undefined}
+        autoComplete="new-password"
+        {...form.fieldProps("clientSecret")}
+      />
 
       <Card as="section" title="Manage Scopes" description="Type the names of the scopes and separate them using comma">
         <ScopesInput

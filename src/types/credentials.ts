@@ -74,10 +74,12 @@ export interface CredentialRow {
   canEdit: boolean;
 }
 
-/** A row of the OAuth Clients table, with what its edit form shows. The client id and secret come from `onLoadOauthClientSecrets`. */
+/** A row of the OAuth Clients table, with what its edit form shows. The secret never comes with it. */
 export interface OauthClientRow {
   id: string;
   name: string;
+  /** The provider's id for the app, which the edit form shows. */
+  clientId: string;
   ownerEmail: string;
   /** Usable by every project on the instance; shown as GLOBAL. */
   global: boolean;

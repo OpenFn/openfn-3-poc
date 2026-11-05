@@ -53,16 +53,6 @@ const meta: Meta<typeof CredentialIndex> = {
 export default meta;
 type Story = StoryObj<typeof CredentialIndex>;
 
-/** /credentials: the signed-in user's own clients and credentials. */
-export const UserCredentials: Story = {
-  render: (args) => (
-    <div className="space-y-4">
-      <div className="flex justify-end"><NewCredentialMenuButton /></div>
-      <CredentialIndex {...args} />
-    </div>
-  ),
-};
-
 const projectArgs = {
   ...credentialIndexDataFor(fixture, project, session.user),
   project: projectScope,

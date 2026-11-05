@@ -3,11 +3,24 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "@/routing/router";
 import { ToastProvider } from "@/components/primitives/Toast";
-import type { CredentialRow, OauthClientRow } from "@/types/credentials";
+import type { CredentialActions, CredentialIndexData, CredentialRow, OauthClientRow } from "@/types/credentials";
 import { RequestError } from "@/utils/errors";
 import { pickOption } from "@/test/select";
-import CredentialsIndexPage, { type CredentialsIndexPageProps } from "./CredentialsIndexPage";
+import CredentialIndex from "./CredentialIndex";
+import NewCredentialMenuButton, { projectCredentialMenuOptions } from "./NewCredentialMenuButton";
 import { isDisabled } from "@/test/disabled";
+
+type Props = CredentialIndexData & CredentialActions;
+
+/** The index with its "Add new" menu, outside a project: no owner column, no keychains. */
+function IndexWithAddMenu(props: Props) {
+  return (
+    <>
+      <NewCredentialMenuButton options={projectCredentialMenuOptions(true, false)} />
+      <CredentialIndex {...props} project={null} canCreateProjectCredential />
+    </>
+  );
+}
 
 const dhis2: CredentialRow = {
   id: "cred1",
@@ -35,6 +48,7 @@ const sheets: CredentialRow = {
 const google: OauthClientRow = {
   id: "oc1",
   name: "Google Workspace",
+  clientId: "client-1",
   ownerEmail: "amy@example.org",
   global: false,
   projects: [{ id: "p1", name: "openhie" }],
@@ -49,7 +63,7 @@ const google: OauthClientRow = {
   canEdit: true,
 };
 
-const data = (): Omit<CredentialsIndexPageProps, `on${string}`> => ({
+const data = (): Omit<Props, `on${string}`> => ({
   credentials: [dhis2, sheets],
   oauthClients: [google],
   projects: [
@@ -61,7 +75,7 @@ const data = (): Omit<CredentialsIndexPageProps, `on${string}`> => ({
   canCreateGlobalOauthClient: false,
 });
 
-function renderPage(props: Partial<CredentialsIndexPageProps> = {}) {
+function renderPage(props: Partial<Props> = {}) {
   const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/credentials", search: "", hash: "" }) };
   const done = () => vi.fn().mockResolvedValue(undefined);
   const handlers = {
@@ -90,15 +104,15 @@ function renderPage(props: Partial<CredentialsIndexPageProps> = {}) {
     onLoadOauthClientSecrets: vi.fn().mockResolvedValue({ clientId: "client-1", clientSecret: "shh" }),
     onDeleteOauthClient: done(),
   };
-  const page = (next: Partial<CredentialsIndexPageProps>) => (
+  const page = (next: Partial<Props>) => (
     <RouterProvider value={router}>
       <ToastProvider>
-        <CredentialsIndexPage {...data()} {...handlers} {...next} />
+        <IndexWithAddMenu {...data()} {...handlers} {...next} />
       </ToastProvider>
     </RouterProvider>
   );
   const { rerender } = render(page(props));
-  return { ...handlers, rerender: (next: Partial<CredentialsIndexPageProps>) => rerender(page({ ...props, ...next })) };
+  return { ...handlers, rerender: (next: Partial<Props>) => rerender(page({ ...props, ...next })) };
 }
 
 const dialog = () => screen.getByRole("dialog");
@@ -123,7 +137,7 @@ const configure = async (type: string) => {
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("CredentialsIndexPage", () => {
+describe("CredentialIndex", () => {
   it("lists the viewer's credentials and clients as the host sends them, without an owner column", () => {
     renderPage({ credentials: [dhis2, { ...sheets, oauthClient: null }] });
     const cells = (id: string) => [...row(id).querySelectorAll("td")].map((td) => td.textContent);

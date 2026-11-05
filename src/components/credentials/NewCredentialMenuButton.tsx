@@ -1,19 +1,19 @@
 import ButtonMenu from "@/components/primitives/ButtonMenu";
 import { MenuItem } from "@/components/primitives/Menu";
 import Pill from "@/components/primitives/Pill";
-import { showCredentialModal, userCredentialMenuOptions, type NewCredentialOption } from "./credentialModalEvents";
+import { showCredentialModal, type NewCredentialOption } from "./credentialModalEvents";
 import { Row } from "@/components/primitives/Stack";
 
 interface Props {
   id?: string;
-  options?: NewCredentialOption[];
+  options: NewCredentialOption[];
 }
 
 /**
  * The "Add new" dropdown (Components.Credentials.new_credential_menu_button).
  * Each entry opens the matching modal in the CredentialIndex on the page.
  */
-export default function NewCredentialMenuButton({ id = "credential-options-menu-button", options = userCredentialMenuOptions }: Props) {
+export default function NewCredentialMenuButton({ id = "credential-options-menu-button", options }: Props) {
   return (
     <div id={id}>
       <ButtonMenu label="Add new" variant="primary">
@@ -30,4 +30,4 @@ export default function NewCredentialMenuButton({ id = "credential-options-menu-
   );
 }
 // eslint-disable-next-line react-refresh/only-export-components -- re-exported so pages import the menu and its option presets together
-export { projectCredentialMenuOptions, userCredentialMenuOptions } from "./credentialModalEvents";
+export { projectCredentialMenuOptions } from "./credentialModalEvents";

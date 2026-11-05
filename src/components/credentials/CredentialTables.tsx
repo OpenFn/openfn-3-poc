@@ -7,6 +7,7 @@ import { Row } from "@/components/primitives/Stack";
 import { Table, Td, Th, Tr, Truncated } from "@/components/primitives/Table";
 import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "@/types/credentials";
 import Tooltip from "@/components/primitives/Tooltip";
+import { formatCredentialType } from "@/utils/format";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):
@@ -23,13 +24,6 @@ function ProjectBadges({ names }: { names: string[] }) {
       ))}
     </div>
   );
-}
-
-
-/** The Type column (data_tables.ex `credential_type`): the client's name for OAuth. */
-function credentialType(credential: CredentialRow): string {
-  if (credential.schema === "oauth") return credential.oauthClient ? credential.oauthClient.name.toLowerCase() : "oauth";
-  return credential.schema;
 }
 
 interface TableProps<T> {
@@ -107,7 +101,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
                   )}
                 </Row>
               </Td>
-              <Td truncate maxWidth={40}>{credentialType(credential)}</Td>
+              <Td truncate maxWidth={40}>{formatCredentialType(credential)}</Td>
               {showOwner && <Td truncate maxWidth={60}>{credential.ownerEmail}</Td>}
               <Td wrap maxWidth={100}>
                 <ProjectBadges names={credential.projects.map((p) => p.name)} />

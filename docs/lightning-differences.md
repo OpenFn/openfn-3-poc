@@ -133,10 +133,50 @@ goes back to Lightning's way.
   - His amber "Copy your token now" warning: the new-token banner keeps
     Lightning's blue info alert and words until a second page needs a
     warning tone.
-  - "New credential" and "New OAuth client" buttons: Credentials keeps
-    Lightning's one "Add new" menu, which covers both. His "Organization
-    credentials live in Systems" note: the API has no organisations or
-    systems yet.
+  - His "Organization credentials live in Systems" note on Credentials:
+    the API has no organisations or systems yet.
+- **Credentials is two sections, each with its own create button, as in his
+  design.** "Credentials" with "New credential", and "OAuth clients" ("Apps
+  registered with external systems so credentials can sign in with OAuth.")
+  with "New OAuth client". Lightning has one "Add new" menu over both tables
+  (`credential_live/index.html.heex`). Empty, they say "No credentials yet"
+  ("Credentials hold the logins and keys your workflows use to reach other
+  systems.") and "No OAuth clients yet" (Lightning: "No credentials found."
+  and "No OAuth clients found.", each with a create button).
+- **His columns.** A credential's name has its external ID under it and a
+  "Transfer pending" or "Scheduled for deletion" badge beside it; projects
+  are plain text, "None" when there are none; each environment is named.
+  Lightning has an External ID column, project pills, the number of
+  environments with their names on hover, and no badges: the only sign of a
+  pending transfer or a scheduled deletion is the menu's wording
+  (`components/data_tables.ex`). A global OAuth client says "Global" (Lightning:
+  "GLOBAL").
+- **One ⋮ menu per row, Delete last in red.** Lightning's is an "Actions"
+  dropdown. A credential scheduled for deletion offers only "Cancel
+  deletion" and "Delete now": Lightning also offers Transfer and Edit, which
+  the API refuses while the deletion is scheduled (409
+  `scheduled_for_deletion`, api/credentials.md).
+- **A result shows above the table it changed, and is announced.** Lightning
+  flashes a toast. The words are his where he has them: "OAuth client
+  created successfully", "OAuth client updated successfully", and
+  `"<name>" deleted` for a credential deleted now or an OAuth client
+  (Lightning: "Credential deleted successfully", "Oauth client created
+  successfully", "Oauth client deleted"). The rest stay Lightning's. His
+  OAuth client delete dialog's words replace Lightning's, and its button
+  says "Delete OAuth client".
+- **Editing never shows a saved secret.** Lightning loads a credential's
+  values and an OAuth client's secret into the edit form. Here every field
+  starts blank, none is required, and a blank one keeps what's saved; the
+  client secret says "Saved. Leave blank to keep it." The API never sends
+  them (api/credentials.md), and his design works this way.
+- **OAuth credentials can't be added or edited here yet.** "New credential"
+  offers no OAuth client as a type, and Edit on an OAuth credential is
+  greyed out, saying why. The API has no route for signing in to the
+  provider yet (docs/api-gaps.md). Transfer and delete still work.
+- **Removing a project from a credential doesn't warn about the workflows
+  using it.** Lightning names them and asks first (`components/credentials.ex:194`).
+  The credential list doesn't say which workflows use a credential
+  (docs/api-gaps.md).
 - **Layout.** Profile's two columns start when its section is wide enough,
   not at a screen size, so they fit beside the menu. Backup codes stays a
   page of its own, as in Lightning: it is a step after setting up MFA, not a

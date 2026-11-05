@@ -96,3 +96,39 @@ doesn't.
   once the planned superuser scope lists every project: a superuser who
   isn't a member of an MFA project would be sent to set up MFA, though that
   wouldn't let them in.
+
+## Credentials (api/credentials.md)
+
+- **A body field left out keeps its saved value.** `PUT /api/credentials/:id`
+  replaces the `main` body whole, and setting an environment replaces its
+  body. The app never sees saved secrets, so an edit form can't send them
+  back: it sends only the fields that were filled in. Would need a replace
+  to keep any field the body leaves out, as `client_secret` already does for
+  OAuth clients and the planned `refresh_token` does for OAuth credentials.
+  Replica: the fake keeps them, for an adaptor's schema; a raw body is still
+  replaced whole.
+- **No way to set an external ID.** The credential object has
+  `external_id`, but `POST` and `PUT /api/credentials` don't take it
+  (`unknown_key`). Would need `external_id` on both. Replica: sends it, and
+  the fake accepts it.
+- **No route for signing in to an OAuth provider.** An `oauth` credential
+  gets its token through Lightning's sign-in callback, and the API has
+  nothing to start one or say how it ended. Would need a planned route that
+  starts a sign-in and answers the provider's URL, with the result as data.
+  Replica: the page doesn't add or edit OAuth credentials yet.
+- **Renaming an environment.** There's no rename, and a body can't be read
+  back to move it, so a renamed environment's values must be typed again.
+  Would need `PATCH /api/credentials/:id/environments/:name` with a new
+  `name`. Replica: the save refuses a rename without values, on that
+  environment.
+- **Which workflows use a credential.** Lightning warns before unsharing a
+  credential from a project whose workflows use it, naming them. The list
+  doesn't say; `GET /api/workflows?credential_id=…&project_id=…` does, one
+  request per project. Would need the names per project link, perhaps under
+  `include`. Replica: no warning.
+- **Who a transfer is waiting on.** Brandon's design shows "Waiting for
+  <email> to accept"; `transfer_status` says only `pending`. Would need the
+  recipient's email beside it. Replica: the badge without the name.
+- **The OAuth client list's key.** "List OAuth clients" says it's paged but
+  not what the list is under. Replica: `oauth_clients`, as credentials are
+  under `credentials`.

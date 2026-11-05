@@ -10,6 +10,5 @@ const meta: Meta<typeof NewCredentialMenuButton> = {
 export default meta;
 type Story = StoryObj<typeof NewCredentialMenuButton>;
 
-export const UserCredentials: Story = {};
 export const ProjectSettings: Story = { args: { options: projectCredentialMenuOptions(true, true) } };
 export const EditorCannotCreateKeychain: Story = { args: { options: projectCredentialMenuOptions(true, false) } };

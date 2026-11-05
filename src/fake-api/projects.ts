@@ -17,6 +17,9 @@ import { currentUser } from "./session";
 const seedProjects = (): Project[] => projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) }));
 let projects = seedProjects();
 
+/** The projects as the fake holds them now, for the other resources' routes. */
+export const fakeProjects = () => projects;
+
 /** For stories and tests: the starting projects. */
 export const resetProjects = () => {
   projects = seedProjects();

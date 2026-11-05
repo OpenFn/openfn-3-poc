@@ -32,9 +32,9 @@ interface ProjectScope extends KeychainCredentialActions {
 }
 
 interface Props extends CredentialIndexData, CredentialActions {
-  /** Project settings › Credentials; null on the user's /credentials page (no owner column, no keychains). */
+  /** Project settings › Credentials; null outside a project (no owner column, no keychains). */
   project: ProjectScope | null;
-  /** The host's `can_create_project_credential` (/credentials hard-codes it on). */
+  /** The host's `can_create_project_credential`. */
   canCreateProjectCredential: boolean;
 }
 
@@ -52,7 +52,8 @@ type ActiveModal =
  * The shared credential index (annotations/shared/shared-credential-index-component.md,
  * credential_live/credential_index_component.html.heex): OAuth clients,
  * credentials and, in a project, keychain credentials, with their row
- * actions and modals. Used on /credentials and in project settings.
+ * actions and modals. Project settings uses it; the user's Credentials page
+ * has its own two tables until project settings moves to the API.
  *
  * The page's "Add new" menu (NewCredentialMenuButton) opens this component's
  * create modals. Records come in as props and every change goes out through
