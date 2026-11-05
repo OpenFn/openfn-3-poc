@@ -98,3 +98,13 @@ export const DisableMfaNeedsStepUp: Story = {
 
 /** Someone else's delete URL: Lightning's words, and no dialog. */
 export const Refused: Story = { args: { refused: true } };
+export const LongValues: Story = {
+  args: {
+    user: {
+      ...sample.user,
+      firstName: "Maximiliana-Alessandra Konstantinopoulou",
+      lastName: "Wolfeschlegelsteinhausenbergerdorff",
+      email: "maximiliana.alessandra.konstantinopoulou.wolfeschlegelsteinhausenbergerdorff@example-organisation.org",
+    },
+  },
+};

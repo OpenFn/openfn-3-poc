@@ -37,7 +37,7 @@ export default function SectionHeader({ title, subtitle, size = "md", variant = 
   const eyebrow = variant === "eyebrow";
   return (
     <div data-ui="section-header" className={cn("flex items-start justify-between gap-8", eyebrow && "border-b border-subtle pb-1.5")}>
-      <div>
+      <div className="min-w-0 break-words">
         <Heading size={eyebrow ? "xs" : size} as={size === "lg" && !eyebrow ? "h2" : nestedLevel}>
           {title}
         </Heading>

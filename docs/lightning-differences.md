@@ -124,7 +124,15 @@ goes back to Lightning's way.
   authentication", "GitHub access" and "Delete account" ("Deleting your
   account is irreversible, and your credentials go with it.") (Lightning:
   "Change basic information", "Enable multi-factor authentication",
-  "GitHub Access", and no line under the forms). The two columns stay Lightning's for now.
+  "GitHub Access", and no line under the forms).
+- **Profile is one column, in Brandon's layout.** Lightning's left column
+  (the name, "Change name, email, password, and request deletion.", then
+  "Created:" and "Email:") is gone: the name heads the section, with
+  "<email> · Member since <date>" under it, and the cards stack below. The
+  line about what the page does is dropped; the card titles say it.
+  "Delete account" stays a card with his line rather than his red callout:
+  our danger alert is announced to screen readers as an alert, which suits a
+  message, not a standing section.
 - **Parts of his screen we leave out, and why.**
   - His breadcrumb ("User settings › API tokens"): Lightning has none here,
     and the menu already marks the page.
@@ -137,10 +145,8 @@ goes back to Lightning's way.
     Lightning's one "Add new" menu, which covers both. His "Organization
     credentials live in Systems" note: the API has no organisations or
     systems yet.
-- **Layout.** Profile's two columns start when its section is wide enough,
-  not at a screen size, so they fit beside the menu. Backup codes stays a
-  page of its own, as in Lightning: it is a step after setting up MFA, not a
-  section.
+- **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
+  step after setting up MFA, not a section.
 
 ## Tags
 
