@@ -1,4 +1,4 @@
-/** Workflows on Lightning's API (api/workflows.md): the API's shape, its mapper, its keys, and the hooks a route calls. */
+/** Workflows on Lightning's API (api/workflows.md): the API's shape, its mapper, its keys, and the hooks a query calls. */
 import { useQuery } from "@tanstack/react-query";
 import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";

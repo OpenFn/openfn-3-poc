@@ -7,7 +7,7 @@ import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import type { WorkflowListItem } from "@/types/workflows";
 
-/** What the route passes in: data, the actions that change it, and who's looking. */
+/** What the query passes in: data, the actions that change it, and who's looking. */
 export interface WorkflowsIndexPageProps {
   project: CurrentProject;
   /** The picker's label, "parent/child" for a sandbox. */
@@ -18,7 +18,7 @@ export interface WorkflowsIndexPageProps {
   workflows: WorkflowListItem[];
   /** The order `workflows` came in. */
   sort: SortState;
-  /** Asks for another order; the route puts it in the URL and the server sorts. */
+  /** Asks for another order; the query puts it in the URL and the server sorts. */
   onSort: (sort: SortState) => void;
   canCreateWorkflow: boolean;
 }

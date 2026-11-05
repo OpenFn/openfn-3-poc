@@ -8,8 +8,8 @@ import { projects } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
-import ProjectGate from "@/components/shell/ProjectGate.route";
-import WorkflowsIndexPageRoute from "./WorkflowsIndexPage.route";
+import ProjectGate from "@/components/shell/ProjectGate.query";
+import WorkflowsIndexPageQuery from "./WorkflowsIndexPage.query";
 
 const wait = { timeout: 3000 };
 const project = projects[0]!;
@@ -18,7 +18,7 @@ function Search() {
   return <output data-testid="search">{useLocation().search}</output>;
 }
 
-function renderRoute() {
+function renderQuery() {
   render(
     <SessionProvider session={session}>
       <ApiProvider retry={false}>
@@ -26,7 +26,7 @@ function renderRoute() {
           <ReactRouterAdapter>
             <Routes>
               <Route path="/projects/:projectId" element={<ProjectGate />}>
-                <Route path="w" element={<><WorkflowsIndexPageRoute /><Search /></>} />
+                <Route path="w" element={<><WorkflowsIndexPageQuery /><Search /></>} />
               </Route>
             </Routes>
           </ReactRouterAdapter>
@@ -38,7 +38,7 @@ function renderRoute() {
 
 const names = () => within(screen.getByRole("table")).getAllByRole("link").map((a) => a.textContent);
 
-describe("WorkflowsIndexPageRoute", () => {
+describe("WorkflowsIndexPageQuery", () => {
   beforeEach(() => {
     resetFakeApi();
     // The fake server waits 300ms before each answer; Testing Library moves the fake clock on while it waits.
@@ -51,7 +51,7 @@ describe("WorkflowsIndexPageRoute", () => {
   });
 
   it("loads the project's workflows by name, and re-sorts through the URL and the server", async () => {
-    renderRoute();
+    renderQuery();
     await screen.findByRole("table", {}, wait);
     const byName = workflowStatsFor(project.id).map((s) => s.workflow.name).sort((a, b) => a.localeCompare(b));
     expect(names()).toEqual(byName);
@@ -62,14 +62,14 @@ describe("WorkflowsIndexPageRoute", () => {
   });
 
   it("turns Create on from the project's permissions", async () => {
-    renderRoute();
+    renderQuery();
     const create = await screen.findByRole("link", { name: "Create new workflow" }, wait);
     expect(create.getAttribute("href")).toBe(`/projects/${project.id}/w/new`);
   });
 
   it("shows the server's message when the list fails to load", async () => {
     failNext(`GET /api/projects/:id/workflows`, { status: 500, code: "internal", detail: "Something went wrong in Lightning." });
-    renderRoute();
+    renderQuery();
     expect(await screen.findByText("Something went wrong in Lightning.", {}, wait)).toBeTruthy();
   });
 });
