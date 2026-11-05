@@ -310,6 +310,16 @@ goes back to Lightning's way.
   answers both with the same 403 `forbidden`. Needs its own error code in
   the API to tell them apart.
 
+## Side menu
+
+- **The project menu has Build and Maintain groups and an "All projects"
+  link.** Lightning lists the project's pages in one flat run
+  (`Menu.project_items`, from `layout_components.ex:221`). The replica
+  follows Brandon's design: "All projects" (to /projects), then Workflows,
+  Channels and Sandboxes under Build, and History and Settings under
+  Maintain. Collapsed, the group names are hidden and only screen readers
+  get them.
+
 ## Confirm access
 
 - **Confirming access is a pop-up on the page, not a trip to a page.**
