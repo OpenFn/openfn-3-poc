@@ -150,8 +150,7 @@ treatments: loading, not found, forbidden, error.
 - The page takes an optional `status?: ResourceStatus` prop and wraps the
   part that waits in `AsyncBoundary`, which draws `Spinner`, Lightning's
   "Not Found" / "No Access", or the server's message in an `Alert`, and
-  otherwise its children. Leaving `status` out means ready, so a host that
-  sends the data with the page (LiveView) changes nothing.
+  otherwise its children. Leaving `status` out means ready.
 - The header and anything else not waiting on data render straight away.
 - Pages don't invent their own "Project not found" text.
 - Not built yet: a routed `NotFoundPage` and an `ErrorPage` for render
@@ -225,34 +224,34 @@ projects that require it, and away from `/settings/*` for non-superusers.
 Lightning does this in plugs and `on_mount`; mirror those rules in one
 `RouteGuard` component around the route groups in `App.tsx`.
 
-## 11. Page and wrapper
+## 11. Page and route
 
-A page that will move to Lightning is two files: the page draws, the wrapper
-feeds it. The page file is copied into Lightning unchanged; only the wrapper
-is rewritten.
+A page is two files in its own folder: the page draws and behaves, the route
+feeds it. `src/pages/profile/tokens/` (`TokensPage.tsx`,
+`TokensPage.route.tsx`) is the worked example; `src/pages/projects/dashboard/`
+is the list example (a list on `ListPage`, with create).
 
-- **`XPage.tsx`** takes everything as props: the records, and an `on*`
-  function per action returning a promise (pattern 1). It imports nothing from
-  `src/mock-data/`, `src/session/` or `react-router-dom`. Lint enforces this on
-  `src/pages/`, `src/components/` and `src/utils/`; `*.replica.*` files,
+- **`XPage.tsx`** takes everything as props: the records, an optional
+  `status` (pattern 5), and an `on*` function per action returning a promise
+  (pattern 1). It owns how it behaves: the modals, the banners, the success
+  toasts (pattern 7). It imports nothing from `src/api/`, `src/mock-data/`,
+  `src/session/` or `react-router-dom`. Lint enforces this on `src/pages/`,
+  `src/components/` and `src/utils/`; `*.route.*` files, `*.replica.*` files,
   `*Replica.ts` helpers (such as `src/pages/profile/credentialsReplica.ts`),
   tests and stories are exempt, and a page not yet split carries a `-- debt:`
   disable.
   Its props type (`XPageProps`, a comment on each prop) is the contract
   between the two.
-- **`XPage.replica.tsx`** is what `App.tsx` routes to. It holds the fixtures
-  in state as the server would, reads URL params, awaits `simulateRequest`,
-  fires success toasts and navigates. It is the "page" patterns 4 and 7 mean.
-- **Moving to: the route connects, the page behaves.** Tokens is the first
-  page in the new shape, in its own folder (`src/pages/profile/tokens/`) with
-  `TokensPage.route.tsx` in place of the replica. The route only passes data,
-  actions and URL params; the page owns how it behaves (the new-token banner,
-  the success toasts). The other pages move once a second page (Projects)
-  proves the shape.
-- **In Lightning**, an island wrapper feeds the same `XPage.tsx` from the
-  LiveView's `data-*` attributes and turns each `on*` call into a
-  `pushEvent`. After an action the LiveView re-renders with new attributes,
-  so new props arrive the same way they do in the replica.
+- **`XPage.route.tsx`** is what `App.tsx` routes to. It calls the resource's
+  hooks from `src/api/<resource>.ts` (`useTokens()`, `useTokenSaves()`),
+  reads URL params and the user, and passes data, `status` and actions down.
+  Nothing else: no toasts, no state of its own. The hooks talk to the fake
+  server in `src/fake-api/` until Lightning's API is there;
+  `.claude/rules/api.md` says how. Each route has a `XPage.route.test.tsx`.
+- **Older pages** still have a `XPage.replica.tsx` wrapper in place of the
+  route: it holds the fixtures in state, awaits `simulateRequest`, toasts and
+  navigates. Each moves to a route, in its own folder, when it's next worked
+  on.
 - **Shapes are Lightning's**, not the convenient ones: a token arrives
   `masked`.
 - **Secrets come back only in an action's reply, never in props**:
