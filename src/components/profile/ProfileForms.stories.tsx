@@ -27,7 +27,7 @@ const fillAndSubmit =
     canvasElement.querySelector<HTMLButtonElement>(`#${formId} button[type="submit"]`)?.click();
   };
 
-const basicValues = { firstName: "Amy", lastName: "Admin", contactPreference: "critical" as const };
+const basicValues = { first_name: "Amy", last_name: "Admin", contact_preference: "critical" as const };
 const basic = (onSave: () => Promise<void>) => () => <BasicInfoForm values={basicValues} onSave={onSave} />;
 const renamed = fillAndSubmit("basic-info-form", ["Amelia"]);
 

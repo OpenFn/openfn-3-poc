@@ -31,7 +31,7 @@ import DataclipShowPage from "./pages/history/DataclipShowPage.replica";
 import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.replica";
 
 import CredentialsIndexPage from "./pages/profile/CredentialsIndexPage.replica";
-import ProfilePage from "./pages/profile/ProfilePage.replica";
+import ProfilePage from "./pages/profile/profile/ProfilePage.query";
 import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 

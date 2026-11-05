@@ -8,6 +8,8 @@ export interface StepUpOptions {
   stepUp: (credentials: StepUpCredentials) => Promise<void>;
   /** Whether the person has an authenticator, so the dialog offers the code. */
   hasMfa: boolean;
+  /** What confirming is for, under the dialog's title. */
+  description?: string | undefined;
 }
 
 /**
@@ -20,7 +22,7 @@ export interface StepUpOptions {
  */
 export function useStepUp<Args extends unknown[], R>(
   action: (...args: Args) => Promise<R>,
-  { isStepUpRequired, stepUp, hasMfa }: StepUpOptions
+  { isStepUpRequired, stepUp, hasMfa, description }: StepUpOptions
 ): [guarded: (...args: Args) => Promise<R>, dialog: ReactNode] {
   // The waiting run's way on: carry on after stepping up, or give up.
   const [waiting, setWaiting] = useState<{ retry: () => void; cancel: () => void } | null>(null);
@@ -39,6 +41,7 @@ export function useStepUp<Args extends unknown[], R>(
     <StepUpDialog
       open
       hasMfa={hasMfa}
+      description={description}
       onSubmit={async (credentials) => {
         await stepUp(credentials);
         setWaiting(null);

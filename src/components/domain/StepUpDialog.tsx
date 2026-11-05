@@ -15,6 +15,8 @@ interface Props {
   /** Steps up. A rejection's message shows on the field, and what was typed stays. */
   onSubmit: (credentials: StepUpCredentials) => Promise<void>;
   onClose: () => void;
+  /** What confirming is for, said under the title (e.g. "Confirm it's you to delete your account."). */
+  description?: string | undefined;
 }
 
 /**
@@ -22,7 +24,7 @@ interface Props {
  * refuses until the person has entered their password or a code in the last
  * five minutes. Mount it only while open; `useStepUp` does.
  */
-export default function StepUpDialog({ open, hasMfa, onSubmit, onClose }: Props) {
+export default function StepUpDialog({ open, hasMfa, onSubmit, onClose, description }: Props) {
   const [method, setMethod] = useState<ConfirmAccessMethod>("password");
   const form = useForm({ initial: { value: "" }, validate: ({ value }) => ({ value: blank(value) }) });
 
@@ -46,6 +48,7 @@ export default function StepUpDialog({ open, hasMfa, onSubmit, onClose }: Props)
       open={open}
       onClose={onClose}
       title="Confirm access"
+      description={description}
       size="sm"
       formId="reauthentication-form"
       onSubmit={submit}

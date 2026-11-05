@@ -25,6 +25,8 @@ a job, in `src/theme/tokens.css`; **everything else uses those**.
 - **Component tokens are the exception**: the `--ui-*` variables in
   `theme.css` and `lightning-shell.css`, for a part no role covers (the side
   menu, the workflow canvas). A new one gets a comment saying its job.
+- **One fixed colour**: `primitives/QrCode` draws black on white in every
+  theme, because a phone's scanner needs dark modules on a light ground.
 
 ## The roles
 

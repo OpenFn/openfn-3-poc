@@ -84,7 +84,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
       "./pages/profile/CredentialsIndexPage.replica.tsx",
-      "./pages/profile/ProfilePage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
       "./pages/projects/ChannelsIndexPage.replica.tsx",
       "./pages/projects/SandboxesIndexPage.replica.tsx",
@@ -122,7 +121,6 @@ describe("every page and component can be seen and checked", () => {
         .map((name) => `${page}: ${name}`)
     );
     expectOnlyKnown(missing, [
-      "./pages/profile/tokens/TokensPage.tsx: StepUpCredentials",
       "./pages/projects/dashboard/ProjectsDashboardPage.tsx: ProjectInput",
     ]);
   });

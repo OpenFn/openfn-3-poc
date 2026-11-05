@@ -21,6 +21,25 @@ they never fake it.
   `api/workflows.md` has no `description`. Would need a `description` field on
   the workflow, set through create and update. Replica: left out.
 
+## Profile (Lightning's `ProfileLive.Edit`, /profile)
+
+- **Whether a GitHub connection has lapsed.** Lightning shows "Reconnect"
+  when the token is there but no longer works. `github` on `GET /api/me` has
+  `connected` and `expires_at`, but doesn't say what a lapsed token looks
+  like. Would need a `status` (`connected`, `expired`, `none`) or a stated
+  rule. Replica: reads `connected: false` with an `expires_at` as lapsed.
+- **A superuser scheduling their own deletion.** Lightning refuses it
+  (`User.scheduled_deletion_changeset`), but the planned self-deletion in
+  `api/users.md` doesn't say how. Would need a stated refusal, such as 403
+  `forbidden`. Replica: the fake answers that, and the dialog shows its
+  `detail`.
+- **Whether your deletion can go ahead.** Lightning blocks deleting an
+  account that is already scheduled and still has project activity. The
+  browser works that out from `scheduled_deletion` and
+  `has_activity_in_projects` on `GET /api/me`, which re-does a server rule.
+  Would need a `deletion_blocked` (or the refusal as a stated 409). Replica:
+  the mapper in `src/api/session.ts` works it out.
+
 ## Audit trail (Lightning's `AuditLive.Index`, /settings/audit)
 
 - **The total.** Lightning's page says "Showing 11 to 20 of 24 total

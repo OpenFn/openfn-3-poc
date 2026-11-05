@@ -9,7 +9,7 @@ interface Props {
   onDisconnect: () => Promise<void>;
 }
 
-/** The GitHub Access card on /profile (profile_live/github_component.ex). */
+/** The GitHub access card on /profile (profile_live/github_component.ex). */
 export default function GithubCard({ github, onDisconnect }: Props) {
   const [confirming, setConfirming] = useState(false);
   const { connectHref, status } = github;
@@ -17,12 +17,8 @@ export default function GithubCard({ github, onDisconnect }: Props) {
     <Card
       padding="lg"
       annotation="profile-github"
-      title={<span id="github_section-label">GitHub Access</span>}
-      description={
-        <span id="github_section-description">
-          Linking your OpenFn account to your GitHub account allows you to manage version control across your projects.
-        </span>
-      }
+      title={<span id="github_section-label">GitHub access</span>}
+      description={<span id="github_section-description">Link your GitHub account to manage version control across your projects.</span>}
       action={
         connectHref === null ? (
           <Button id="github-oauth-not-enabled" disabled tooltip="GitHub OAuth has not been enabled for this instance.">

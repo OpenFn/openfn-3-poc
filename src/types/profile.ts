@@ -16,11 +16,11 @@ export interface ProfileDetail {
 /** How often OpenFn may email the user ("Critical" or "Anytime"). */
 export type ContactPreference = "critical" | "any";
 
-/** What "Change basic information" saves. */
+/** What "Basic information" saves, named as `PATCH /api/users/:id` takes them. */
 export interface BasicInfoValues {
-  firstName: string;
-  lastName: string;
-  contactPreference: ContactPreference;
+  first_name: string;
+  last_name: string;
+  contact_preference: ContactPreference;
 }
 
 /** What a change of email address sends: the new address and the current password. */
@@ -39,16 +39,14 @@ export interface ChangePasswordValues {
 export interface MfaSettings {
   /** The user has an authenticator app set up. */
   enabled: boolean;
-  /** "Recovery codes" → View. */
-  backupCodesHref: string;
 }
 
 /** The host's answer to starting MFA setup: a new secret, shown only while setting up. */
 export interface MfaSetupResult {
   /** The secret as the user types it into an app (base32, no padding). */
   secret: string;
-  /** An image of the otpauth QR code, as an image URL (a `data:image/svg+xml` URI from Lightning). */
-  qrCodeSrc: string;
+  /** The `otpauth://` URI an authenticator app scans, drawn as a QR code. */
+  otpauthUri: string;
 }
 
 export interface GithubAccessSettings {
@@ -59,8 +57,6 @@ export interface GithubAccessSettings {
 }
 
 export interface AccountDeletionSettings {
-  /** "Delete my account": the route that opens the deletion modal. */
-  href: string;
   /** The user still has activity in projects: the modal adds a note. */
   hasActivityInProjects: boolean;
   /** Already scheduled for deletion and still has project activity: the modal only explains why it can't go ahead. Only true when `hasActivityInProjects` is. */

@@ -7,6 +7,7 @@ export default function DeleteAccountCard({ to }: { to: string }) {
     <Card padding="lg"
       annotation="profile-delete-account"
       title="Delete account"
+      description="Deleting your account is irreversible, and your credentials go with it."
       action={
         <Button tone="danger" to={to}>
           Delete my account

@@ -19,7 +19,7 @@ export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrd
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
 export { default as BackupCodesPage } from "./pages/profile/backup-codes/BackupCodesPage";
-export { default as ProfilePage } from "./pages/profile/ProfilePage";
+export { default as ProfilePage } from "./pages/profile/profile/ProfilePage";
 export { default as CredentialsIndexPage } from "./pages/profile/CredentialsIndexPage";
 export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
@@ -48,7 +48,7 @@ export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrde
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
 export type { BackupCodesPageProps } from "./pages/profile/backup-codes/BackupCodesPage";
-export type { ProfilePageProps } from "./pages/profile/ProfilePage";
+export type { ProfilePageProps } from "./pages/profile/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
@@ -160,7 +160,9 @@ export type {
   MfaSettings,
   MfaSetupResult,
   ProfileDetail,
+  ProfilePageData,
 } from "./types/profile";
+export type { StepUpCredentials } from "./components/domain/StepUpDialog";
 export type { CurrentProject, ProjectRole, RetentionPolicy } from "./types/projects";
 export type { ResourceStatus } from "./types/resource";
 export type {

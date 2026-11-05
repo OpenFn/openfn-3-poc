@@ -17,6 +17,7 @@ import { blank, isValidEmail } from "@/utils/validate";
 function FormCard({
   id,
   title,
+  description,
   onSubmit,
   error,
   pending,
@@ -25,6 +26,7 @@ function FormCard({
 }: {
   id: string;
   title: string;
+  description: string;
   onSubmit: (e: SubmitEvent) => void;
   error: Error | null;
   pending: boolean;
@@ -32,7 +34,7 @@ function FormCard({
   button: ReactNode;
 }) {
   return (
-    <Card padding="lg" title={title} annotation="profile-account">
+    <Card padding="lg" title={title} description={description} annotation="profile-account">
       <Form id={id} onSubmit={onSubmit} error={error} pending={pending} actions={button}>
         {children}
       </Form>
@@ -43,12 +45,13 @@ function FormCard({
 export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onSave: (values: BasicInfoValues) => Promise<void> }) {
   const form = useForm<BasicInfoValues>({
     initial: values,
-    validate: ({ firstName, lastName }) => ({ firstName: blank(firstName), lastName: blank(lastName) }),
+    validate: ({ first_name, last_name }) => ({ first_name: blank(first_name), last_name: blank(last_name) }),
   });
   return (
     <FormCard
       id="basic-info-form"
-      title="Change basic information"
+      title="Basic information"
+      description="Change your name and how often we contact you."
       {...form.formProps(onSave)}
       button={
         <Button type="submit" disabled={!form.dirty} tooltip={form.dirty ? undefined : "No changes to save"}>
@@ -56,14 +59,14 @@ export function BasicInfoForm({ values, onSave }: { values: BasicInfoValues; onS
         </Button>
       }
     >
-      <TextInput label="First name" required autoComplete="given-name" {...form.fieldProps("firstName")} />
-      <TextInput label="Last name" required autoComplete="family-name" {...form.fieldProps("lastName")} />
+      <TextInput label="First name" required autoComplete="given-name" {...form.fieldProps("first_name")} />
+      <TextInput label="Last name" required autoComplete="family-name" {...form.fieldProps("last_name")} />
       <Select
         label="Contact preference"
         required
         hint={contactPreferenceHint}
         options={contactPreferenceOptions}
-        {...form.fieldProps("contactPreference")}
+        {...form.fieldProps("contact_preference")}
       />
     </FormCard>
   );
@@ -82,6 +85,7 @@ export function ChangeEmailForm({ onSubmit }: { onSubmit: (values: ChangeEmailVa
     <FormCard
       id="email-form"
       title="Change email"
+      description="We'll send a confirmation link to the new address."
       {...form.formProps(onSubmit)}
       button={
         <Button type="submit">
@@ -109,6 +113,7 @@ export function ChangePasswordForm({ onSubmit }: { onSubmit: (values: ChangePass
     <FormCard
       id="password-form"
       title="Change password"
+      description="Confirm your current password to set a new one."
       {...form.formProps(onSubmit)}
       button={
         <Button type="submit">

@@ -7,11 +7,12 @@
  */
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
-import { json, noContent, now, problem, type Body, type Handler, type Problem } from "./answers";
+import { json, noContent, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
 import { mfaRoutes, resetMfa } from "./mfa";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
+import { userRoutes } from "./users";
 
 export type { Problem } from "./answers";
 export { FAKE_BACKUP_CODE, FAKE_MFA_CODE, FAKE_PASSWORD } from "./session";
@@ -38,9 +39,7 @@ const routes: Record<string, Handler> = {
   "GET /api/me/tokens": () => json(200, { data: tokens }),
   // Needs a stepped-up session. The whole token, this once; the list keeps only its mask.
   "POST /api/me/tokens": () => {
-    if (!isSteppedUp()) {
-      return problem({ status: 403, code: "step_up_required", detail: "Enter your password or an MFA code again to do this." });
-    }
+    if (!isSteppedUp()) return stepUpRequired();
     const created = { id: crypto.randomUUID(), token: `demo.fake-token-not-real.${crypto.randomUUID()}`, inserted_at: now(), last_used_at: null };
     tokens = [{ ...created, token: mask(created.token) }, ...tokens];
     return json(201, { data: created });
@@ -57,6 +56,7 @@ const routes: Record<string, Handler> = {
   ...projectRoutes,
   ...auditRoutes,
   ...mfaRoutes,
+  ...userRoutes,
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */

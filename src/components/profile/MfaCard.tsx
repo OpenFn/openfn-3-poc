@@ -4,6 +4,7 @@ import ConfirmModal from "@/components/primitives/ConfirmModal";
 import Heading from "@/components/primitives/Heading";
 import { TextInput } from "@/components/primitives/Inputs";
 import Modal from "@/components/primitives/Modal";
+import QrCode from "@/components/primitives/QrCode";
 import SectionHeader from "@/components/primitives/SectionHeader";
 import TextLink from "@/components/primitives/TextLink";
 import Card from "@/components/primitives/Card";
@@ -16,10 +17,12 @@ import Text from "@/components/primitives/Text";
 
 interface Props {
   mfa: MfaSettings;
-  /** Starts setting up an authenticator app. The secret and QR code arrive only in this reply. */
+  /** "Recovery codes" → View. */
+  backupCodesHref: string;
+  /** Starts setting up an authenticator app. The secret and its otpauth URI arrive only in this reply. */
   onStartSetup: () => Promise<MfaSetupResult>;
-  /** Saves the setup with the code the app shows. Rejects with field errors (`code`) or a message. */
-  onConfirm: (code: string) => Promise<void>;
+  /** Saves the setup with the code the app shows and the secret it came from. Rejects with field errors (`code`) or a message. */
+  onConfirm: (code: string, secret: string) => Promise<void>;
   onDisable: () => Promise<void>;
 }
 
@@ -31,7 +34,7 @@ interface Props {
  * confirm. With MFA on it links to the recovery codes. The secret lives here
  * only while the setup form is open.
  */
-export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Props) {
+export default function MfaCard({ mfa, backupCodesHref, onStartSetup, onConfirm, onDisable }: Props) {
   const id = "mfa_section";
   const [setup, setSetup] = useState<MfaSetupResult | null>(null);
   const [confirmDisable, setConfirmDisable] = useState(false);
@@ -78,17 +81,12 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
     </Button>
   );
 
-
   return (
     <Card
       padding="lg"
       annotation="profile-mfa"
-      title={<span id={`${id}-label`}>Enable multi-factor authentication</span>}
-      description={
-        <span id={`${id}-description`}>
-          This adds an additional layer of security to your account by requiring more than just a password to sign in.
-        </span>
-      }
+      title={<span id={`${id}-label`}>Multi-factor authentication</span>}
+      description={<span id={`${id}-description`}>Add a second step to sign in with an authenticator app. Some projects require it.</span>}
       action={action}
     >
       {show && (
@@ -112,7 +110,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
               </p>
               <Heading>Scan the QR code</Heading>
               <p>Use an authenticator app or browser extension to scan.</p>
-              <img src={setup.qrCodeSrc} alt="QR code for your authenticator app" className="h-44 w-44" />
+              <QrCode value={setup.otpauthUri} label="QR code for your authenticator app" />
               <p>
                 Unable to scan? You can use <TextLink onClick={() => setShowSecret(true)}>this secret key</TextLink> to
                 manually configure your authenticator app.
@@ -131,7 +129,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                   </>
                 }
                 {...form.formProps(async ({ code }) => {
-                  await onConfirm(code);
+                  await onConfirm(code, setup.secret);
                   setConfirmed(true);
                   setSetup(null);
                 })}
@@ -140,6 +138,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
                   id="mfa-code"
                   label="Verify the code from the app"
                   autoComplete="one-time-code"
+                  inputMode="numeric"
                   placeholder="XXXXXX"
                   {...form.fieldProps("code")}
                 />
@@ -157,7 +156,7 @@ export default function MfaCard({ mfa, onStartSetup, onConfirm, onDisable }: Pro
               title="Recovery codes"
               subtitle="Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor authentication codes."
               action={
-                <Button variant="secondary" to={mfa.backupCodesHref}>
+                <Button variant="secondary" to={backupCodesHref}>
                   View
                 </Button>
               }

@@ -10,7 +10,8 @@ const meta: Meta<typeof MfaCard> = {
   component: MfaCard,
   decorators: [withRouter],
   args: {
-    mfa: { enabled: false, backupCodesHref: "/profile/auth/backup_codes" },
+    mfa: { enabled: false },
+    backupCodesHref: "/profile/auth/backup_codes",
     onStartSetup: async () => fakeMfaSetup,
     onConfirm: async () => {},
     onDisable: async () => {},
@@ -20,9 +21,9 @@ export default meta;
 type Story = StoryObj<typeof MfaCard>;
 
 export const Disabled: Story = {};
-export const Enabled: Story = { args: { mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } } };
+export const Enabled: Story = { args: { mfa: { enabled: true } } };
 
-const enabled = { mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } };
+const enabled = { mfa: { enabled: true } };
 const settle = () => new Promise((r) => setTimeout(r, 50));
 const pressAction: Story["play"] = async ({ canvasElement }) => {
   canvasElement.querySelector<HTMLButtonElement>("#mfa-action")?.click();

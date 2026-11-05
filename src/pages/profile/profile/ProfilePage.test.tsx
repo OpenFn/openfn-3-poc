@@ -18,11 +18,15 @@ const data = (): Omit<ProfilePageProps, `on${string}`> => ({
     contactPreference: "critical",
     insertedAt: "2024-03-12T09:00:00Z",
   },
-  mfa: { enabled: false, backupCodesHref: "/profile/auth/backup_codes" },
+  mfa: { enabled: false },
   github: { connectHref: "https://github.com/login/oauth/authorize?client_id=x", status: "none" },
   experimentalFeatures: false,
-  deletion: { href: "/profile/u1/delete", hasActivityInProjects: false, blocked: false },
+  deletion: { hasActivityInProjects: false, blocked: false },
   deleting: false,
+  refused: false,
+  backupCodesHref: "/profile/auth/backup_codes",
+  deleteHref: "/profile/u1/delete",
+  isStepUpRequired: () => false,
 });
 
 // No SessionContext: the page must not reach for the demo session.
@@ -37,13 +41,14 @@ function renderPage(props: Partial<ProfilePageProps> = {}) {
     onSaveBasicInfo: done(),
     onChangeEmail: done(),
     onChangePassword: done(),
-    onStartMfaSetup: vi.fn().mockResolvedValue({ secret: "JBSWY3DPEHPK3PXP", qrCodeSrc: "data:image/svg+xml,qr" }),
+    onStartMfaSetup: vi.fn().mockResolvedValue({ secret: "JBSWY3DPEHPK3PXP", otpauthUri: "otpauth://totp/OpenFn:amy@example.org?secret=JBSWY3DPEHPK3PXP&issuer=OpenFn" }),
     onConfirmMfa: done(),
     onDisableMfa: done(),
     onDisconnectGithub: done(),
     onSetExperimentalFeatures: done(),
     onDeleteAccount: done(),
     onCloseDelete: vi.fn(),
+    onStepUp: done(),
   };
   const page = (next: Partial<ProfilePageProps>) => (
     <RouterProvider value={router}>
@@ -73,13 +78,13 @@ describe("ProfilePage", () => {
 
   describe("forms", () => {
     it("saves basic information as typed, and shows the host's field error", async () => {
-      const onSaveBasicInfo = vi.fn().mockRejectedValue(new RequestError("invalid", { fieldErrors: { firstName: ["can't be blank"] } }));
+      const onSaveBasicInfo = vi.fn().mockRejectedValue(new RequestError("invalid", { fieldErrors: { first_name: ["can't be blank"] } }));
       renderPage({ onSaveBasicInfo });
       const basic = form("basic-info-form");
       type(basic.getByLabelText(/First name/), "Ann");
       await pickOption(basic.getByRole("button", { name: /^Contact preference/ }), "Anytime");
       fireEvent.submit(document.getElementById("basic-info-form")!);
-      await waitFor(() => expect(onSaveBasicInfo).toHaveBeenCalledWith({ firstName: "Ann", lastName: "Admin", contactPreference: "any" }));
+      await waitFor(() => expect(onSaveBasicInfo).toHaveBeenCalledWith({ first_name: "Ann", last_name: "Admin", contact_preference: "any" }));
       expect(await basic.findByText("can't be blank")).toBeTruthy();
       expect(input(basic.getByLabelText(/First name/)).value).toBe("Ann");
     });
@@ -211,7 +216,7 @@ describe("ProfilePage", () => {
       expect(document.getElementById("set_totp_form")).toBeNull();
       fireEvent.click(mfaAction()!);
       await waitFor(() => expect(onStartMfaSetup).toHaveBeenCalled());
-      expect((await screen.findByAltText(/QR code/)).getAttribute("src")).toBe("data:image/svg+xml,qr");
+      expect((await screen.findByAltText(/QR code/)).getAttribute("src")).toMatch(/^data:image\/svg\+xml,/);
       expect(screen.queryByText("JBSWY3DPEHPK3PXP")).toBeNull();
       fireEvent.click(screen.getByText("this secret key"));
       expect(within(dialog()).getByText("JBSWY3DPEHPK3PXP")).toBeTruthy();
@@ -219,7 +224,7 @@ describe("ProfilePage", () => {
       const totp = form("set_totp_form");
       type(totp.getByLabelText(/Verify the code from the app/), "123456");
       fireEvent.submit(document.getElementById("set_totp_form")!);
-      await waitFor(() => expect(onConfirmMfa).toHaveBeenCalledWith("123456"));
+      await waitFor(() => expect(onConfirmMfa).toHaveBeenCalledWith("123456", "JBSWY3DPEHPK3PXP"));
       await waitFor(() => expect(document.getElementById("set_totp_form")).toBeNull());
     });
 
@@ -274,7 +279,7 @@ describe("ProfilePage", () => {
     });
 
     it("asks for a new secret to set up another device", async () => {
-      const { onStartMfaSetup } = renderPage({ mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } });
+      const { onStartMfaSetup } = renderPage({ mfa: { enabled: true } });
       fireEvent.click(screen.getByText("Setup another device instead"));
       await screen.findByAltText(/QR code/);
       expect(onStartMfaSetup).toHaveBeenCalledTimes(1);
@@ -283,7 +288,7 @@ describe("ProfilePage", () => {
 
     it("keeps the disable dialog open with the host's error", async () => {
       renderPage({
-        mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" },
+        mfa: { enabled: true },
         onDisableMfa: vi.fn().mockRejectedValue(new RequestError("Oops! Could not disable 2FA from your account. Please try again later")),
       });
       fireEvent.click(mfaAction()!);
@@ -292,7 +297,7 @@ describe("ProfilePage", () => {
     });
 
     it("disables MFA after confirming, and links to the recovery codes", async () => {
-      const { onDisableMfa, onStartMfaSetup } = renderPage({ mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } });
+      const { onDisableMfa, onStartMfaSetup } = renderPage({ mfa: { enabled: true } });
       expect(screen.getByRole("link", { name: "View" }).getAttribute("href")).toBe("/profile/auth/backup_codes");
       fireEvent.click(mfaAction()!);
       expect(onStartMfaSetup).not.toHaveBeenCalled();
@@ -302,13 +307,13 @@ describe("ProfilePage", () => {
     });
 
     it("closes the setup and offers to set MFA up again when it's disabled while setting up another device", async () => {
-      const { rerender } = renderPage({ mfa: { enabled: true, backupCodesHref: "/profile/auth/backup_codes" } });
+      const { rerender } = renderPage({ mfa: { enabled: true } });
       fireEvent.click(screen.getByText("Setup another device instead"));
       await screen.findByAltText(/QR code/);
       fireEvent.click(mfaAction()!);
       fireEvent.click(within(dialog()).getByRole("button", { name: "Disable" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-      rerender({ mfa: { enabled: false, backupCodesHref: "/profile/auth/backup_codes" } });
+      rerender({ mfa: { enabled: false } });
       expect(document.getElementById("set_totp_form")).toBeNull();
       expect(mfaAction()?.textContent).toBe("Set up MFA");
     });
@@ -323,15 +328,15 @@ describe("ProfilePage", () => {
     });
 
     it("shows Set up MFA as working while setup starts, and holds Cancel while the code is being saved", async () => {
-      let started!: (v: { secret: string; qrCodeSrc: string }) => void;
+      let started!: (v: { secret: string; otpauthUri: string }) => void;
       let confirmed!: () => void;
       renderPage({
-        onStartMfaSetup: vi.fn(() => new Promise<{ secret: string; qrCodeSrc: string }>((resolve) => (started = resolve))),
+        onStartMfaSetup: vi.fn(() => new Promise<{ secret: string; otpauthUri: string }>((resolve) => (started = resolve))),
         onConfirmMfa: vi.fn(() => new Promise<void>((resolve) => (confirmed = resolve))),
       });
       fireEvent.click(mfaAction()!);
       await waitFor(() => expect(mfaAction()?.getAttribute("aria-busy")).toBe("true"));
-      started({ secret: "JBSWY3DPEHPK3PXP", qrCodeSrc: "data:image/svg+xml,qr" });
+      started({ secret: "JBSWY3DPEHPK3PXP", otpauthUri: "otpauth://totp/OpenFn:amy@example.org?secret=JBSWY3DPEHPK3PXP&issuer=OpenFn" });
       type(await screen.findByLabelText(/Verify the code from the app/), "123456");
       fireEvent.submit(document.getElementById("set_totp_form")!);
       const cancel = form("set_totp_form").getByRole("button", { name: "Cancel" }) as HTMLButtonElement;
@@ -413,7 +418,7 @@ describe("ProfilePage", () => {
       expect(isDisabled(confirm())).toBe(true);
       type(within(dialog()).getByLabelText(/User email/), "amy@example.org");
       fireEvent.click(confirm());
-      await waitFor(() => expect(onDeleteAccount).toHaveBeenCalledWith("amy@example.org"));
+      await waitFor(() => expect(onDeleteAccount).toHaveBeenCalled());
       fireEvent.click(within(dialog()).getByRole("button", { name: "Cancel" }));
       expect(onCloseDelete).toHaveBeenCalled();
     });
