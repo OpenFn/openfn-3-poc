@@ -1,8 +1,9 @@
 # API gaps: what a page shows that api/ doesn't have
 
 One entry per thing Brandon's ia-demo design, or Lightning's page where he
-has no screen, shows that no route in `api/` (planned scope included) can give. Each says where it shows, what it
-would need, and what the replica does until then (usually: leaves it out).
+has no screen, shows that no route in `api/` (planned scope included) can
+give. Each says where it shows, what it would need, and what the replica
+does until then (usually: leaves it out).
 The replica's pages map a gap to "none"; they never fake it.
 
 ## Workflows list (ia-demo `ProjectWorkflowsPage`, `WorkflowRow`)

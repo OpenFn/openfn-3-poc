@@ -13,7 +13,7 @@ const entry = (e: (typeof auditEvents)[number]) => ({
     item_id: e.itemId,
     actor_type: "user",
     actor_id: e.actorId,
-    actor_display: e.actorIdentifier ? `${e.actorLabel} (${e.actorIdentifier})` : e.actorLabel,
+    actor_display: e.actorLabel,
     changes: e.changes,
     metadata: {},
     inserted_at: e.insertedAt,

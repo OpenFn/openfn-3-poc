@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { renderPage } from "@/test/renderPage";
 import type { AuditEvent } from "@/types/admin";
 import AdminAuditPage from "./AdminAuditPage";
 
@@ -17,9 +18,16 @@ const event: AuditEvent = {
 
 describe("AdminAuditPage", () => {
   it("renders the events it is given and links to the next page", () => {
-    render(<AdminAuditPage events={[event]} page={{ number: 1, size: 10, totalPages: 2 }} status={{ state: "ready" }} />);
+    renderPage(AdminAuditPage, { events: [event], page: { number: 1, size: 10, totalPages: 2 }, status: { state: "ready" } }, []);
 
     expect(screen.getByText("Amy Admin")).toBeTruthy();
     expect(screen.getByRole("link", { name: "2" }).getAttribute("href")).toMatch(/\?page=2$/);
+  });
+
+  it("says No results found, with no table, when there are no events", () => {
+    renderPage(AdminAuditPage, { events: [], page: { number: 1, size: 10, totalPages: 1 }, status: { state: "ready" } }, []);
+
+    expect(screen.getByText("No results found")).toBeTruthy();
+    expect(screen.queryByRole("table")).toBeNull();
   });
 });

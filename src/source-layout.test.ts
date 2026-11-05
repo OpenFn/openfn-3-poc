@@ -95,6 +95,27 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
+  // A page moved to the API, with its XPage.query.tsx (STANDARDS.md pattern 11).
+  const queryPages = paths.filter((path) => /^\.\/pages\/.+\.query\.tsx$/.test(path)).map((path) => path.replace(".query", ""));
+
+  it("a page fed by a .query.tsx sits in its own folder", () => {
+    // ./pages/<area>/<page>/XPage.tsx splits into 5 parts; ./pages/<area>/XPage.tsx into 4.
+    expect(queryPages.filter((path) => path.split("/").length < 5)).toEqual([]);
+  });
+
+  it("index.ts exports every type a page fed by a .query.tsx imports", () => {
+    const missing = queryPages.flatMap((page) =>
+      [...sources[page]!.matchAll(/^import type \{([^}]+)\}/gm)]
+        .flatMap(([, names]) => names!.split(",").map((n) => n.trim()))
+        .filter((name) => name && !new RegExp(`\\b${name}\\b`).test(sources["./index.ts"]!))
+        .map((name) => `${page}: ${name}`)
+    );
+    expectOnlyKnown(missing, [
+      "./pages/profile/tokens/TokensPage.tsx: StepUpCredentials",
+      "./pages/projects/dashboard/ProjectsDashboardPage.tsx: ProjectInput",
+    ]);
+  });
+
   // Either quote style: nothing here enforces one.
   const imports = (path: string, from: string) => new RegExp(`from ["']@/${from}["']`).test(sources[path]!);
   const drawsEmptyState = (path: string) => imports(path, "components/primitives/EmptyState");

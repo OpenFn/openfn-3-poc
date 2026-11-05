@@ -41,7 +41,7 @@ const sizwe = users.find((u) => u.id === "user-sizwe")!;
 const esther = users.find((u) => u.id === "user-esther")!;
 
 function actor(user: User) {
-  return { actorId: user.id, actorLabel: fullName(user), actorIdentifier: user.email };
+  return { actorId: user.id, actorLabel: `${fullName(user)} (${user.email})`, actorIdentifier: null };
 }
 
 const WORKFLOW_A = "4935cd15-2b6f-4d0e-9d6c-0a1f2e3b4c5d";
@@ -71,9 +71,6 @@ export const auditEvents: AuditEvent[] = [
     itemId: CREDENTIAL,
     ...actor(esther),
     changes: { before: { name: "dhis2 play" }, after: { name: "DHIS2 play server" } },
-    credentialBodies: {
-      "body:main": "AQpBRVMuR0NNLlYxlG1Y0rJ2nqS8e5XGv3m2kUuA7k4dXxk1qWZp9t0=",
-    },
   },
   {
     id: "audit-04",
