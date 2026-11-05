@@ -31,7 +31,8 @@ export interface ListEmpty {
  * any notice, then the list. Loading, failure and the empty state are drawn
  * here, so every list page shows them the same way; the page passes the
  * words and the list. With an empty list the main action leaves the header
- * for the empty state, so one create button is on screen.
+ * for the empty state, so one create button is on screen; while the list
+ * loads or fails, neither shows.
  */
 export default function ListPage({
   title,
@@ -63,12 +64,14 @@ export default function ListPage({
   /** The page's modals. */
   children?: ReactNode;
 }) {
-  const isEmpty = status.state === "ready" && itemCount === 0;
+  const ready = status.state === "ready";
+  const isEmpty = ready && itemCount === 0;
   return (
     <PageContent
       header={
         <Header title={title} count={showCount && itemCount > 0 ? itemCount : undefined}>
-          {action && !isEmpty && (
+          {/* Only beside a loaded list: while it loads or fails, it may yet be the empty state's. */}
+          {action && ready && !isEmpty && (
             <Button id={action.id} onClick={action.onClick}>
               {action.label}
             </Button>

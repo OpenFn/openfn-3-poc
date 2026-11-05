@@ -2,10 +2,11 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
-import { request } from "@/api/client";
+import { isApiError, request } from "@/api/client";
 import { failNext, resetFakeApi } from "@/api/testing";
 import { ToastProvider } from "@/components/primitives/Toast";
 import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
+import { projects as projectFixtures } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
@@ -73,6 +74,8 @@ describe("ProjectsDashboardPageRoute", () => {
     expect(await screen.findByText("Project created successfully", {}, wait)).toBeTruthy();
     await waitFor(() => expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(before + 1), wait);
     expect(screen.getByText("malaria-programme").closest("tr")!.textContent).toContain("Owner");
+    // It's in the fixtures, so the pages still on them (the workflows list, the picker) open it.
+    expect(projectFixtures.some((p) => p.name === "malaria-programme")).toBe(true);
   });
 
   it("shows the server's field error on the Name field and keeps the modal open", async () => {
@@ -98,5 +101,10 @@ describe("the fake GET /api/projects", () => {
     const next = new URL(page.links["next"]!);
     expect(next.pathname).toBe("/api/projects");
     expect(Object.fromEntries(next.searchParams)).toEqual({ include: "stats", page: "2", page_size: "1" });
+  });
+
+  it("refuses an include it doesn't know with a 400, as api/conventions.md says", async () => {
+    const refusal = await request("GET", "/api/projects?include=owner").catch((e: unknown) => e);
+    expect(isApiError(refusal, "invalid_parameter")).toBe(true);
   });
 });

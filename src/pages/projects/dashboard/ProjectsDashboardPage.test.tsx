@@ -42,9 +42,10 @@ describe("ProjectsDashboardPage", () => {
     expect(await screen.findByRole("dialog")).toBeTruthy();
   });
 
-  it("shows no empty state while the projects load", () => {
+  it("shows no empty state and no Create button while the projects load", () => {
     renderPage({ projects: [], status: { state: "loading" } });
     expect(screen.queryByText("No projects found.")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Create project" })).toBeNull();
   });
 
   it("creates a project with the url-safe name and closes the modal", async () => {
