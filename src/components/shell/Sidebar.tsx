@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "@/routing/router";
 import { isAt } from "@/utils/urls";
 import { cn } from "@/utils/cn";
@@ -7,7 +7,8 @@ import UserMenu, { type MenuUser } from "./UserMenu";
 import { OpenFnLogo, OpenFnLogoCollapsed } from "./OpenFnLogo";
 import Tooltip from "@/components/primitives/Tooltip";
 import Text from "@/components/primitives/Text";
-/** Which menu the side bar shows: the project's, the admin menu, or, anywhere else, just Projects. */
+import { Stack } from "@/components/primitives/Stack";
+
 /** Which menu the side bar shows: the project's, the admin menu, or, anywhere else, the way home to Projects. */
 export type SidebarMenu = "project" | "home" | "admin";
 
@@ -26,29 +27,46 @@ export interface SidebarProps {
   onToggle: () => void;
 }
 
+/** A labelled group of menu items, after Brandon's SidebarSection. */
+function MenuGroup({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div role="group" aria-label={label} className="menu-group sidebar-rule">
+      <div aria-hidden="true" className="menu-group-label primary-light">
+        <Text variant="label-sm">{label}</Text>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function ProjectItems({ project, user }: { project: { id: string }; user: Pick<MenuUser, "experimentalFeatures"> }) {
   const { pathname } = useRouter().useLocation();
   const base = `/projects/${project.id}`;
   return (
-    <>
-      <NavItem to={`${base}/w`} icon="hero-square-3-stack-3d" label="Workflows" active={isAt(pathname, `${base}/w`)} />
-      {user.experimentalFeatures && (
+    <Stack>
+      <NavItem to="/projects" icon="hero-chevron-left" label="All projects" />
+      <MenuGroup label="Build">
+        <NavItem to={`${base}/w`} icon="hero-square-3-stack-3d" label="Workflows" active={isAt(pathname, `${base}/w`)} />
+        {user.experimentalFeatures && (
+          <NavItem
+            to={`${base}/channels`}
+            icon="hero-arrows-right-left"
+            label="Channels"
+            active={isAt(pathname, `${base}/channels`)}
+          />
+        )}
+        <NavItem to={`${base}/sandboxes`} icon="hero-beaker" label="Sandboxes" active={isAt(pathname, `${base}/sandboxes`)} />
+      </MenuGroup>
+      <MenuGroup label="Maintain">
         <NavItem
-          to={`${base}/channels`}
-          icon="hero-arrows-right-left"
-          label="Channels"
-          active={isAt(pathname, `${base}/channels`)}
+          to={`${base}/history`}
+          icon="hero-rectangle-stack"
+          label="History"
+          active={["history", "runs", "dataclips"].some((s) => isAt(pathname, `${base}/${s}`))}
         />
-      )}
-      <NavItem to={`${base}/sandboxes`} icon="hero-beaker" label="Sandboxes" active={isAt(pathname, `${base}/sandboxes`)} />
-      <NavItem
-        to={`${base}/history`}
-        icon="hero-rectangle-stack"
-        label="History"
-        active={["history", "runs", "dataclips"].some((s) => isAt(pathname, `${base}/${s}`))}
-      />
-      <NavItem to={`${base}/settings`} icon="hero-cog-8-tooth" label="Settings" active={isAt(pathname, `${base}/settings`)} />
-    </>
+        <NavItem to={`${base}/settings`} icon="hero-cog-8-tooth" label="Settings" active={isAt(pathname, `${base}/settings`)} />
+      </MenuGroup>
+    </Stack>
   );
 }
 
