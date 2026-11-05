@@ -222,7 +222,8 @@ router: redirect to login when signed out, to `/users/two-factor` when 2FA is
 pending, to confirm-required when unconfirmed, to the MFA-required page for
 projects that require it, and away from `/settings/*` for non-superusers.
 Lightning does this in plugs and `on_mount`; mirror those rules in one
-`RouteGuard` component around the route groups in `App.tsx`.
+`RouteGuard` component around the route groups in `App.tsx`. Whether you may
+open a project is not the guard's: `ProjectGate` (pattern 11) checks that.
 
 ## 11. Page and route
 

@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 // eslint-disable-next-line no-restricted-imports -- wiring: the layout route reads the URL and renders the route Outlet.
 import { Outlet, useLocation, useParams } from "react-router-dom";
 // eslint-disable-next-line no-restricted-imports -- wiring: the shell reads the signed-in user, their permissions and instance info for the sidebar.
@@ -22,8 +21,6 @@ export default function AppShell() {
   const { adminEmail, releaseLabel } = useInstanceInfo();
   const { canAccessAdmin } = usePermissions();
   const { status: projectsStatus, projects } = useProjectTree();
-  const [collapsed, setCollapsed] = useState(false);
-  const toggle = useCallback(() => setCollapsed((c) => !c), []);
 
   const pickerEmpty =
     projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "error" ? projectsStatus.message : "No projects found";
@@ -32,7 +29,7 @@ export default function AppShell() {
   return (
     <>
       <Layout
-        sidebar={
+        sidebar={({ collapsed, onToggle }) => (
           <Sidebar
             menu={menu}
             project={projectId ? { id: projectId } : undefined}
@@ -41,9 +38,9 @@ export default function AppShell() {
             adminEmail={adminEmail}
             releaseLabel={releaseLabel}
             collapsed={collapsed}
-            onToggle={toggle}
+            onToggle={onToggle}
           />
-        }
+        )}
       >
         <Outlet />
       </Layout>
