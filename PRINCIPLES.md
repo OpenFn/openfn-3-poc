@@ -133,7 +133,7 @@ A page only shows what it's given (props). That way the same page works inside t
   until dismissed. A crash shows an error page with "Try again". The API
   code never shows a toast; the page decides where a message goes.
 - **The API code.** One `src/api/` folder: `client.ts` talks to
-  Lightning (or the stand-in) and turns refusals into `ApiError`, and one file
+  Lightning (or the fake server in `src/fake-api/`) and turns refusals into `ApiError`, and one file
   per resource holds the API's shape, the mapper to page props, the query keys,
   the queries and the saves. Show the server's `detail`; branch on `code`.
 

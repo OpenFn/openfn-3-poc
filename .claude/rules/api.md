@@ -1,6 +1,8 @@
 ---
 paths:
   - 'src/api/**'
+  - 'src/fake-api/**'
+  - 'src/**/*.route.tsx'
   - 'src/**/*.replica.tsx'
   - 'src/**/*Replica.ts'
 ---
@@ -14,8 +16,17 @@ At the moment the app supports us moving to Lightning as a single page React app
 
 - `client.ts` is the only file that calls `fetch`. `request(method, path, body)`
   goes to Lightning through the Vite `/api` proxy with `VITE_API=lightning`,
-  or to the stand-in, which replays `recorded/` answers. `listAll(path, key)`
+  or otherwise to `fakeFetch` from `src/fake-api/`. `listAll(path, key)`
   follows `links.next` to the end.
+- `src/fake-api/` is a pretend server, not part of the data code: it answers
+  each route as api/ says Lightning would (status, JSON body, problem
+  document), with the fixtures as its database. Only `client.ts` imports it
+  (lint), so resource files know nothing about it and going real is deleting
+  the folder and that import. A new route the app calls gets an answer there.
+- `isApiError(error, "step_up_required")` is how a route spots a refusal.
+  `ApiProvider` holds TanStack Query: a failed load is retried, a 4xx never.
+  Only `src/api/` imports TanStack Query, and only routes, replicas,
+  `main.tsx`, stories and tests import `src/api/` (lint).
 - A refused request throws `ApiError`. Show its `message` (the server's
   `detail`); branch on `code`, never on the words. Body errors arrive
   as `fieldErrors`, ready for the form.
@@ -26,8 +37,13 @@ At the moment the app supports us moving to Lightning as a single page React app
 - Query keys go from general to specific, all from that file:
   `["credentials"]`, `["projects", id, "members"]`.
 - No UI here: no components, no toasts (lint).
-- In tests and stories, `failNext({ status, code, detail, errors })` makes
-  the stand-in's next request fail.
+- In tests and stories, `failNext("POST /api/me/tokens", { status, code, detail })`
+  makes that route's next request fail, and `resetFakeApi()` puts the fake
+  server's data back. The fake user's password and MFA code are
+  `FAKE_PASSWORD` and `FAKE_MFA_CODE`; `stepUp` (session.ts) with either
+  steps the session up for five minutes.
+- `src/pages/profile/tokens/TokensPage.route.tsx` and its route story are
+  the worked example.
 
 ## The wrapper
 

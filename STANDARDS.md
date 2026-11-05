@@ -51,9 +51,9 @@ does (`FormModal`, `ConfirmModal`).
   A load hands its result to `onSuccess`.
 - **Until wired,** page mutations `await simulateRequest(...)` from
   `src/mock-data/request.ts`, so the pending state is visible in the demo.
-  A page wired to the API client (`src/api/`) loads through its stand-in
-  instead, where `failNext({ status, code, errors })` makes the next request
-  fail, for stories and manual checks.
+  A page wired to the API client (`src/api/`) talks to the fake server in
+  `src/fake-api/` instead, where `failNext(route, { status, code, detail })`
+  makes that route's next request fail, for stories and manual checks.
 
 Rules: no `onClick={() => toast("Saved")}` without an awaited request in
 between. No `setTimeout` to fake latency inside a component. A sync handler
