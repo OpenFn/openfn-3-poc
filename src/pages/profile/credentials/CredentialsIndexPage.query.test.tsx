@@ -103,13 +103,14 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     expect(within(screen.getByRole("dialog")).queryByRole("button", { name: "Delete credential" })).toBeNull();
   });
 
-  it("keeps the delete dialog open with the server's refusal", async () => {
-    failNext("PUT /api/credentials/:id/scheduled_deletion", { status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+  it("keeps the delete dialog open when the server refuses to delete a credential runs have used", async () => {
+    await request("PUT", "/api/credentials/cred-dhis2-play/scheduled_deletion");
+    failNext("DELETE /api/credentials/:id", { status: 409, code: "in_use", detail: "Cannot delete a credential that has activities in projects" });
     renderRoute();
-    await choose("DHIS2 play", "Delete");
+    await choose("DHIS2 play", "Delete now");
     await userEvent.click(within(await dialog()).getByRole("button", { name: "Delete credential" }));
-    expect(await within(screen.getByRole("dialog")).findByText("You are not allowed to do that.", {}, wait)).toBeTruthy();
-    expect(screen.queryByText("Credential scheduled for deletion")).toBeNull();
+    expect(await within(screen.getByRole("dialog")).findByText("Cannot delete a credential that has activities in projects", {}, wait)).toBeTruthy();
+    expect(screen.getByRole("row", { name: /DHIS2 play/ })).toBeTruthy();
   });
 
   it("starts a transfer, which shows as pending, and puts a refusal on the email field", async () => {

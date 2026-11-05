@@ -117,6 +117,17 @@ describe("CredentialsIndexPage", () => {
     expect((within(form).getByLabelText("Password") as HTMLInputElement).value).toBe("");
   });
 
+  it("refuses, without saving, an environment added on edit", async () => {
+    const host = render();
+    await choose("DHIS2 play", "Edit");
+    await host.resolve("onLoadCredentialSchema", { fields: [] });
+    const form = screen.getByRole("dialog");
+    await userEvent.click(within(form).getByRole("button", { name: "Add new environment" }));
+    await userEvent.click(within(form).getByRole("button", { name: /Save/ }));
+    expect(await within(form).findByText(/Environments can't be added, renamed or removed here yet/)).toBeTruthy();
+    expect(host.calls("onUpdateCredential")).toEqual([]);
+  });
+
   it("shows the result above the table only once the server has scheduled the deletion", async () => {
     const host = render();
     await choose("DHIS2 play", "Delete");

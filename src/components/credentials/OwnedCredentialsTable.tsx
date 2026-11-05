@@ -81,7 +81,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
           </Td>
           <Td actions>
             <Menu
-              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={pendingId === c.id} disabled={pendingId !== null} />}
+              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={pendingId === c.id} disabled={pendingId !== null && pendingId !== c.id} />}
             >
               {c.scheduledDeletion ? (
                 <MenuItem icon="hero-arrow-uturn-left" onClick={() => onCancelDeletion(c)}>

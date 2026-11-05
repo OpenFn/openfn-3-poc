@@ -133,15 +133,6 @@ export function toApiError(status: number, body: unknown): ApiError {
   );
 }
 
-/** The same refusal, with each pointer's field renamed (`#/external_id` → `#/externalId`) so it lands on the form's field. */
-export function renameFields(error: unknown, names: Record<string, string>): unknown {
-  if (!isApiError(error)) return error;
-  const errors = error.errors.map((e) => {
-    const field = e.pointer?.replace(/^#\//, "").split("/")[0];
-    return field && names[field] ? { ...e, pointer: e.pointer!.replace(`#/${field}`, `#/${names[field]}`) } : e;
-  });
-  return new ApiError(error.status ?? 0, error.code, error.message, errors);
-}
 
 /** Lightning refused it, with this `code` if one is given (`isApiError(error, "step_up_required")`). */
 export const isApiError = (error: unknown, code?: string): error is ApiError =>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Alert from "@/components/primitives/Alert";
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
 import Button from "@/components/primitives/Button";
@@ -18,9 +18,11 @@ import type {
   CredentialRow,
   CredentialSchemaResult,
   CredentialTypeOption,
+  CredentialValues,
   OauthClientRow,
 } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
+import { RequestError } from "@/utils/errors";
 import { useActions } from "@/utils/useAction";
 
 /** What its .query file passes in: the viewer's credentials and OAuth clients, and the actions that change them. */
@@ -68,6 +70,22 @@ const withoutOauth = {
 };
 
 /**
+ * Refuses what today's form can change but this page can't save yet: an
+ * environment added, renamed or removed, or a project taken away.
+ */
+function refuseUnsaved(values: CredentialValues, saved: CredentialRow | undefined) {
+  const names = saved?.environments ?? ["main"];
+  const environmentsChanged =
+    values.environments.length !== names.length || values.environments.some((e) => !names.includes(e.name) || (e.previousName ?? e.name) !== e.name);
+  const projectRemoved = saved?.projects.some((p) => !values.projectIds.includes(p.id));
+  if (environmentsChanged || projectRemoved) {
+    throw new RequestError("Environments can't be added, renamed or removed here yet, and a project can't be taken away. Undo that and save again.");
+  }
+}
+
+type SectionKey = "credentials" | "oauth";
+
+/**
  * Inventory view `credentials-index`: the credentials you own and your OAuth
  * clients, each in its own table with a menu per row. A result shows above
  * the table it changed. Saved secrets never reach the page, so editing
@@ -84,27 +102,39 @@ export default function CredentialsIndexPage({
   ...on
 }: CredentialsIndexPageProps) {
   const [dialog, setDialog] = useState<Dialog | null>(null);
-  const [notice, setNotice] = useState<{ section: "credentials" | "oauth"; message: string } | null>(null);
+  const [notice, setNotice] = useState<{ section: SectionKey; tone: "success" | "danger"; message: string } | null>(null);
+  // Success fades; an error stays until the next result.
+  useEffect(() => {
+    if (notice?.tone !== "success") return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
+  // Where focus goes when the row it came from is gone.
+  const newCredentialButton = useRef<HTMLButtonElement>(null);
+  const newClientButton = useRef<HTMLButtonElement>(null);
   const close = () => setDialog(null);
-  const done = (section: "credentials" | "oauth", message: string) => {
+  const done = (section: SectionKey, message: string, { rowGone = false } = {}) => {
     setDialog(null);
-    setNotice({ section, message });
+    setNotice({ section, tone: "success", message });
+    if (rowGone) requestAnimationFrame(() => (section === "credentials" ? newCredentialButton : newClientButton).current?.focus());
   };
   // Edit (loading the adaptor's fields) and Cancel deletion wait on the server with the row's menu spinning.
-  const rowAction = useActions((_id: string, run: () => Promise<void>) => run(), { onError: "toast" });
+  const rowAction = useActions((_id: string, run: () => Promise<void>) => run(), {
+    onError: (error) => setNotice({ section: "credentials", tone: "danger", message: error.message }),
+  });
   const pendingId = credentials.find((c) => rowAction.pending(c.id))?.id ?? null;
 
   const editCredential = (c: CredentialRow) =>
     rowAction.run(c.id, async () => {
       const loaded = c.schema === "raw" ? undefined : await on.onLoadCredentialSchema(c.schema);
-      // Every field starts blank and a blank one keeps what's saved, so none is required here.
+      // So none is required here.
       const schema = loaded && { fields: loaded.fields.map((f) => ({ ...f, required: false })) };
       setDialog({ kind: "edit-credential", id: c.id, schema });
     });
   const cancelDeletion = (c: CredentialRow) =>
     rowAction.run(c.id, async () => {
       await on.onCancelCredentialDeletion(c.id);
-      setNotice({ section: "credentials", message: "Credential deletion canceled" });
+      setNotice({ section: "credentials", tone: "success", message: "Credential deletion canceled" });
     });
 
   const id = dialog && "id" in dialog ? dialog.id : null;
@@ -119,13 +149,13 @@ export default function CredentialsIndexPage({
         title="Credentials"
         description="Credentials you own. Share them with any project you collaborate on."
         action={
-          <Button icon="hero-plus" onClick={() => setDialog({ kind: "new-credential" })}>
+          <Button ref={newCredentialButton} icon="hero-plus" onClick={() => setDialog({ kind: "new-credential" })}>
             New credential
           </Button>
         }
       >
         <Stack gap="md">
-          {notice?.section === "credentials" && <Alert tone="success">{notice.message}</Alert>}
+          {notice?.section === "credentials" && <Alert tone={notice.tone}>{notice.message}</Alert>}
           <AsyncBoundary status={status}>
             {credentials.length ? (
               <OwnedCredentialsTable
@@ -148,13 +178,13 @@ export default function CredentialsIndexPage({
         title="OAuth clients"
         description="Apps registered with external systems so credentials can sign in with OAuth."
         action={
-          <Button variant="secondary" icon="hero-plus" onClick={() => setDialog({ kind: "new-oauth" })}>
+          <Button ref={newClientButton} variant="secondary" icon="hero-plus" onClick={() => setDialog({ kind: "new-oauth" })}>
             New OAuth client
           </Button>
         }
       >
         <Stack gap="md">
-          {notice?.section === "oauth" && <Alert tone="success">{notice.message}</Alert>}
+          {notice?.section === "oauth" && <Alert tone={notice.tone}>{notice.message}</Alert>}
           <AsyncBoundary status={oauthClientsStatus}>
             {oauthClients.length ? (
               <OwnedOauthClientsTable
@@ -174,6 +204,7 @@ export default function CredentialsIndexPage({
           open
           {...credentialForm}
           onSave={async (values) => {
+            refuseUnsaved(values, undefined);
             await on.onCreateCredential(values);
             done("credentials", "Credential created successfully");
           }}
@@ -184,10 +215,10 @@ export default function CredentialsIndexPage({
           open
           {...credentialForm}
           credential={credential}
-          // Blank, so nothing saved is shown; a blank body or field keeps what's saved.
           secrets={{ environments: credential.environments.map((name) => ({ name, body: "{}", oauth: null })) }}
           schema={dialog.schema}
           onSave={async (values) => {
+            refuseUnsaved(values, credential);
             await on.onUpdateCredential(credential.id, values);
             done("credentials", "Credential updated successfully");
           }}
@@ -215,7 +246,7 @@ export default function CredentialsIndexPage({
           credential={credential}
           onDelete={async (intent) => {
             await on.onDeleteCredential(credential.id, intent);
-            done("credentials", intent.now ? `"${credential.name}" deleted` : "Credential scheduled for deletion");
+            done("credentials", intent.now ? `"${credential.name}" deleted` : "Credential scheduled for deletion", { rowGone: intent.now });
           }}
         />
       )}
@@ -241,7 +272,7 @@ export default function CredentialsIndexPage({
           onClose={close}
           onConfirm={async () => {
             await on.onDeleteOauthClient(client.id);
-            done("oauth", `"${client.name}" deleted`);
+            done("oauth", `"${client.name}" deleted`, { rowGone: true });
           }}
         >
           <p>

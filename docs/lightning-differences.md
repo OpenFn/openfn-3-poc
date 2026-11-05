@@ -150,14 +150,15 @@ goes back to Lightning's way.
   environments with their names on hover, and no badges: the only sign of a
   pending transfer or a scheduled deletion is the menu's wording
   (`components/data_tables.ex`). A global OAuth client says "Global" (Lightning:
-  "GLOBAL").
+  "GLOBAL"). The Type column is the adaptor's name without his logo, and
+  the delete dialog keeps Lightning's words, which project settings shares.
 - **One ⋮ menu per row, Delete last in red.** Lightning's is an "Actions"
   dropdown. A credential scheduled for deletion offers only "Cancel
   deletion" and "Delete now": Lightning also offers Transfer and Edit, which
   the API refuses while the deletion is scheduled (409
   `scheduled_for_deletion`, api/credentials.md).
-- **A result shows above the table it changed, and is announced.** Lightning
-  flashes a toast. The words are his where he has them: "OAuth client
+- **A result shows above the table it changed.** Lightning flashes a toast.
+  A failed Cancel deletion shows there too, and stays until the next result. The words are his where he has them: "OAuth client
   created successfully", "OAuth client updated successfully", and
   `"<name>" deleted` for a credential deleted now or an OAuth client
   (Lightning: "Credential deleted successfully", "Oauth client created
@@ -168,7 +169,10 @@ goes back to Lightning's way.
   values and an OAuth client's secret into the edit form. Here every field
   starts blank, none is required, and a blank one keeps what's saved; the
   client secret says "Saved. Leave blank to keep it." The API never sends
-  them (api/credentials.md), and his design works this way.
+  them (api/credentials.md).
+- **The credential form can't change environments or take a project away
+  yet.** Saving refuses it, saying so, until the form moves to the API's
+  environment and project routes. Lightning's form does both.
 - **OAuth credentials can't be added or edited here yet.** "New credential"
   offers no OAuth client as a type, and Edit on an OAuth credential is
   greyed out, saying why. The API has no route for signing in to the

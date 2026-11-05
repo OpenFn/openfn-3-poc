@@ -308,10 +308,10 @@ export interface CredentialActions {
   onDeleteCredential: (id: string, intent: { now: boolean }) => Promise<void>;
   onCancelCredentialDeletion: (id: string) => Promise<void>;
   /**
-   * Rejects with field errors on `receiverEmail`: no such user, the viewer
+   * Rejects with field errors on `recipient`: no such user, the viewer
    * themself, or someone who isn't a member of every project using the credential.
    */
-  onTransferCredential: (id: string, receiverEmail: string) => Promise<void>;
+  onTransferCredential: (id: string, recipient: string) => Promise<void>;
   onRevokeCredentialTransfer: (id: string) => Promise<void>;
   /** Starts a sign-in; how it ended comes back in `oauthSignIns`. */
   onAuthorizeOauth: (values: OauthAuthorizeValues) => Promise<OauthAuthorizeResult>;

@@ -1,12 +1,13 @@
 /** OAuth clients on Lightning's API (api/credentials.md, OAuth clients): the API's shape, its mapper, its keys, and the hooks a .query file calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CredentialProjectRef, OauthClientRow, OauthClientValues } from "@/types/credentials";
+import type { OauthClientRow, OauthClientValues } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
-import { listAll, renameFields, request, statusOf } from "./client";
-import { credentialKeys } from "./credentials";
+import { listAll, request, statusOf } from "./client";
+import { credentialKeys, renameFields } from "./credentials";
+import { useProjectTree } from "./projects";
 
 /** An OAuth client as `GET /api/oauth_clients` lists it. `client_secret` is never sent. */
-export interface ApiOauthClient {
+interface ApiOauthClient {
   id: string;
   name: string;
   client_id: string;
@@ -27,11 +28,12 @@ export interface ApiOauthClient {
 const scopes = (list: string) => list.split(",").map((s) => s.trim()).filter(Boolean);
 
 /**
- * A row of the OAuth clients table. The API sends project ids, so they're
- * named from `projects`; one the viewer can't see is left out. A global
- * client someone else owns can't be edited, and the API doesn't say who owns it.
+ * A row of the OAuth clients table. The API sends project ids, named here
+ * from the projects you can open; any other is "unknown", and kept, since
+ * saving the client replaces its whole list. A global client someone else
+ * owns can't be edited, and the API doesn't say who owns it.
  */
-export function oauthClientRow(c: ApiOauthClient, viewer: { id: string; email: string }, projects: CredentialProjectRef[]): OauthClientRow {
+function oauthClientRow(c: ApiOauthClient, viewer: { id: string; email: string }, projects: { id: string; name: string }[]): OauthClientRow {
   const mine = c.user_id === viewer.id;
   return {
     id: c.id,
@@ -39,7 +41,7 @@ export function oauthClientRow(c: ApiOauthClient, viewer: { id: string; email: s
     clientId: c.client_id,
     ownerEmail: mine ? viewer.email : "",
     global: c.global,
-    projects: projects.filter((p) => c.project_ids.includes(p.id)),
+    projects: c.project_ids.map((id) => ({ id, name: projects.find((p) => p.id === id)?.name ?? "unknown" })),
     authorizationEndpoint: c.authorization_endpoint,
     tokenEndpoint: c.token_endpoint,
     revocationEndpoint: c.revocation_endpoint ?? "",
@@ -52,21 +54,22 @@ export function oauthClientRow(c: ApiOauthClient, viewer: { id: string; email: s
   };
 }
 
-export const oauthClientKeys = { all: ["oauth_clients"] as const };
+const oauthClientKeys = { all: ["oauth_clients"] as const };
 
 /** The signed-in person's own clients and the global ones, by name, and where loading them stands. */
-export function useOauthClients(viewer: { id: string; email: string }, projects: CredentialProjectRef[]): { status: ResourceStatus; oauthClients: OauthClientRow[] } {
+export function useOauthClients(viewer: { id: string; email: string }): { status: ResourceStatus; oauthClients: OauthClientRow[] } {
+  const tree = useProjectTree();
   const query = useQuery({
     queryKey: oauthClientKeys.all,
     queryFn: () => listAll<ApiOauthClient>("/api/oauth_clients", "oauth_clients"),
-    select: (rows) => rows.map((c) => oauthClientRow(c, viewer, projects)),
+    select: (rows) => rows.map((c) => oauthClientRow(c, viewer, tree.projects)),
   });
-  return { status: statusOf(query), oauthClients: query.data ?? [] };
+  // Until the projects load, there are no names for the clients' projects.
+  return { status: tree.status.state === "loading" ? tree.status : statusOf(query), oauthClients: query.data ?? [] };
 }
 
 // The form's names for the API's fields, so a 422 lands on its field.
 const FIELDS: Record<string, keyof OauthClientValues> = {
-  name: "name",
   client_id: "clientId",
   client_secret: "clientSecret",
   authorization_endpoint: "authorizationEndpoint",

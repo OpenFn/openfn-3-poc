@@ -52,8 +52,7 @@ type ActiveModal =
  * The shared credential index (annotations/shared/shared-credential-index-component.md,
  * credential_live/credential_index_component.html.heex): OAuth clients,
  * credentials and, in a project, keychain credentials, with their row
- * actions and modals. Project settings uses it; the user's Credentials page
- * has its own two tables until project settings moves to the API.
+ * actions and modals.
  *
  * The page's "Add new" menu (NewCredentialMenuButton) opens this component's
  * create modals. Records come in as props and every change goes out through

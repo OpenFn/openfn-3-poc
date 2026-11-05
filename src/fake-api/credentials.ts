@@ -7,9 +7,9 @@ import {
 } from "@/mock-data/credentials";
 import { purgeDeletedAfterDays } from "@/mock-data/project-settings";
 import { forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
-import { credentialSchemaRoutes, fullName } from "./credentialSchemas";
+import { credentialSchemaRoutes, schemaPackage } from "./credentialSchemas";
 import { fakeOauthClients, oauthClientRoutes, resetOauthClients } from "./oauthClients";
-import { fakeProjects } from "./projects";
+import { fakeProjects, isEditorIn, isMemberOf } from "./projects";
 import { currentUser, people } from "./session";
 
 type Errors = NonNullable<Problem["errors"]>;
@@ -38,7 +38,7 @@ const seed = (): StoredCredential[] => {
   return credentialFixtures.map((c) => ({
     id: c.id,
     name: c.name,
-    schema: fullName(c.schema),
+    schema: schemaPackage(c.schema),
     external_id: c.externalId,
     user_id: c.ownerId,
     project_ids: [...c.projectIds],
@@ -59,8 +59,6 @@ export const resetCredentials = () => {
   resetOauthClients();
 };
 
-const roleIn = (projectId: string, userId: string) => fakeProjects().find((p) => p.id === projectId)?.members.find((m) => m.userId === userId)?.role;
-const isEditorIn = (projectId: string) => ["owner", "admin", "editor"].includes(roleIn(projectId, currentUser().id) ?? "");
 
 // The planned fields (api/credentials.md, "Planned additional scope") are sent too.
 const credentialJson = (c: StoredCredential) => {
@@ -74,7 +72,7 @@ const credentialJson = (c: StoredCredential) => {
     project_credentials: c.project_ids.map((project_id) => ({ id: `${c.id}:${project_id}`, project_id, credential_id: c.id, inserted_at: c.inserted_at, updated_at: c.updated_at })),
     // Links to projects you can't see are left out.
     projects: fakeProjects()
-      .filter((p) => c.project_ids.includes(p.id) && roleIn(p.id, currentUser().id))
+      .filter((p) => c.project_ids.includes(p.id) && isMemberOf(p.id, currentUser().id))
       .map((p) => ({ id: p.id, name: p.name, description: p.description || null })),
     inserted_at: c.inserted_at,
     updated_at: c.updated_at,
@@ -97,8 +95,8 @@ const answer = (status: number, c: StoredCredential) => json(status, { credentia
  * form that never sees saved secrets can leave them blank: not in api/ yet
  * (docs/api-gaps.md). A raw body is replaced whole.
  */
-const withBody = (c: StoredCredential, name: string, body: Body) => {
-  c.bodies[name] = c.schema === "raw" ? body : { ...c.bodies[name], ...body };
+const withMainBody = (c: StoredCredential, body: Body) => {
+  c.bodies["main"] = c.schema === "raw" ? body : { ...c.bodies["main"], ...body };
 };
 
 // The fields POST and PUT take. external_id isn't in api/ yet (docs/api-gaps.md).
@@ -128,10 +126,10 @@ function check(body: Body, existing: StoredCredential | undefined): Errors {
 /** Applies a checked create or replace body. Links are only ever added. */
 function apply(c: StoredCredential, body: Body) {
   c.name = body["name"] as string;
-  if (typeof body["schema"] === "string") c.schema = fullName(body["schema"]);
+  if (typeof body["schema"] === "string") c.schema = schemaPackage(body["schema"]);
   if ("external_id" in body) c.external_id = (body["external_id"] as string | null) || null;
   const main = (body["credential_bodies"] as { body: Body }[] | undefined)?.[0];
-  if (main) withBody(c, "main", main.body);
+  if (main) withMainBody(c, main.body);
   const links = ((body["project_credentials"] ?? []) as { project_id: string }[]).map((l) => l.project_id);
   c.project_ids = [...new Set([...c.project_ids, ...links])];
   c.updated_at = now();
@@ -168,8 +166,6 @@ function create(id: string, body: Body) {
   credentials = [...credentials, created];
   return answer(201, created);
 }
-
-const ENVIRONMENT = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 
 /** Credentials, their schemas and OAuth clients (api/credentials.md). */
 export const credentialRoutes: Record<string, Handler> = {
@@ -230,7 +226,9 @@ export const credentialRoutes: Record<string, Handler> = {
     const email = typeof body["recipient"] === "string" ? body["recipient"].toLowerCase() : "";
     const recipient = people.find((u) => u.email.toLowerCase() === email);
     if (!recipient) return invalid([{ code: "not_found", detail: "User does not exist", pointer: "#/recipient" }]);
-    const missing = fakeProjects().filter((p) => found.project_ids.includes(p.id) && !roleIn(p.id, recipient.id));
+    // Lightning refuses it (`validate_credential_transfer/3`); api/ names no code for it.
+    if (recipient.id === currentUser().id) return invalid([{ code: "invalid", detail: "You cannot transfer a credential to yourself", pointer: "#/recipient" }]);
+    const missing = fakeProjects().filter((p) => found.project_ids.includes(p.id) && !isMemberOf(p.id, recipient.id));
     if (missing.length) {
       return invalid([{ code: "no_access", detail: `User doesn't have access to these projects: ${missing.map((p) => p.name).join(", ")}`, pointer: "#/recipient" }]);
     }
@@ -243,32 +241,5 @@ export const credentialRoutes: Record<string, Handler> = {
     if (found.transfer_status !== "pending") return problem({ status: 404, code: "not_found", detail: "No transfer is pending." });
     found.transfer_status = null;
     return answer(200, found);
-  },
-  // Private and planned, like the rest of the environment routes.
-  "PUT /api/credentials/:id/environments/:name": ({ id, name }, body) => {
-    const found = own(id!);
-    if (found instanceof Response) return found;
-    const exists = name! in found.bodies;
-    if (!ENVIRONMENT.test(name!)) return invalid([{ code: "format", detail: "has invalid format", path: "name" }]);
-    if (!exists && Object.keys(found.bodies).length >= 5) return invalid([{ code: "exceeds_limit", detail: "a credential has at most 5 environments", path: "name" }]);
-    withBody(found, name!, (body["body"] ?? {}) as Body);
-    return json(exists ? 200 : 201, { data: { name, inserted_at: found.inserted_at, updated_at: now() } });
-  },
-  "DELETE /api/credentials/:id/environments/:name": ({ id, name }) => {
-    const found = own(id!);
-    if (found instanceof Response) return found;
-    if (Object.keys(found.bodies).length === 1 && name! in found.bodies) {
-      return invalid([{ code: "required", detail: "a credential needs at least one environment", path: "name" }]);
-    }
-    delete found.bodies[name!];
-    return noContent();
-  },
-  // Only the owner here: a project owner or admin unlinking someone else's is in api/ but no page asks for it yet.
-  "DELETE /api/projects/:project_id/credentials/:id": ({ project_id, id }) => {
-    const found = own(id!);
-    if (found instanceof Response) return found;
-    if (!found.project_ids.includes(project_id!)) return problem({ status: 404, code: "not_found", detail: "This credential isn't shared with that project." });
-    found.project_ids = found.project_ids.filter((p) => p !== project_id);
-    return noContent();
   },
 };

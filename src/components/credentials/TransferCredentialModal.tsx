@@ -9,8 +9,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   credential: CredentialRow;
-  /** Called with the receiver's email. Rejects with field errors (`receiverEmail`) or a message; the modal stays open. */
-  onTransfer: (receiverEmail: string) => Promise<void>;
+  /** Called with the recipient's email. Rejects with field errors (`recipient`, as the API names it) or a message; the modal stays open. */
+  onTransfer: (recipient: string) => Promise<void>;
   onRevoke: () => Promise<void>;
 }
 
@@ -23,8 +23,8 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
   const revoke = credential.transferStatus === "pending";
   const modalId = `transfer-credential-${credential.id}-modal`;
   const form = useForm({
-    initial: { receiverEmail: "" },
-    validate: (v) => ({ receiverEmail: revoke || isValidEmail(v.receiverEmail.trim()) ? [] : ["must be a valid email address"] }),
+    initial: { recipient: "" },
+    validate: (v) => ({ recipient: revoke || isValidEmail(v.recipient.trim()) ? [] : ["must be a valid email address"] }),
   });
 
   return (
@@ -41,7 +41,7 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
       formId={`${modalId}-form`}
       formClassName=""
       onSubmit={form.modalSubmit(async (v) => {
-        await (revoke ? onRevoke() : onTransfer(v.receiverEmail.trim()));
+        await (revoke ? onRevoke() : onTransfer(v.recipient.trim()));
         onClose();
       })}
       submitLabel={revoke ? "Revoke" : "Transfer"}
@@ -53,7 +53,7 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
           You will need to initiate a new transfer request to transfer it in the future.
         </Text>
       ) : (
-        <TextInput id="receiver_email" aria-label="Receiver email" placeholder="email@example.com" required {...form.fieldProps("receiverEmail")} />
+        <TextInput id="receiver_email" aria-label="Receiver email" placeholder="email@example.com" required {...form.fieldProps("recipient")} />
       )}
     </FormModal>
   );

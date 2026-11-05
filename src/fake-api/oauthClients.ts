@@ -1,7 +1,7 @@
 /** OAuth clients on the pretend server (api/credentials.md, OAuth clients). */
-import { oauthClients as clientFixtures } from "@/mock-data/credentials";
+import { clientSecretsFor, credentialsFixture, oauthClients as clientFixtures } from "@/mock-data/credentials";
 import { forbidden, invalid, json, noContent, now, paged, type Body, type Handler, type Problem } from "./answers";
-import { fakeProjects } from "./projects";
+import { isEditorIn } from "./projects";
 import { currentUser } from "./session";
 
 interface StoredClient {
@@ -31,8 +31,7 @@ const seed = (): StoredClient[] =>
   clientFixtures.map((c) => ({
     id: c.id,
     name: c.name,
-    client_id: "fixture-client-id",
-    client_secret: "fixture-client-secret",
+    ...(({ clientId, clientSecret }) => ({ client_id: clientId, client_secret: clientSecret }))(clientSecretsFor(credentialsFixture(), c.id)),
     authorization_endpoint: c.authorizationEndpoint,
     token_endpoint: c.tokenEndpoint,
     revocation_endpoint: c.revocationEndpoint || null,
@@ -78,8 +77,7 @@ function check(body: Body, creating: boolean): NonNullable<Problem["errors"]> {
     if (typeof value === "string" && value !== "" && !isUrl(value)) errors.push({ code: "format", detail: "must be a valid URL", pointer: `#/${key}` });
   }
   ((body["project_ids"] ?? []) as string[]).forEach((projectId, i) => {
-    const role = fakeProjects().find((p) => p.id === projectId)?.members.find((m) => m.userId === currentUser().id)?.role;
-    if (!["owner", "admin", "editor"].includes(role ?? "")) {
+    if (!isEditorIn(projectId)) {
       errors.push({ code: "no_access", detail: "you can't share a client with this project", pointer: `#/project_ids/${i}` });
     }
   });
@@ -100,13 +98,14 @@ export const oauthClientRoutes: Record<string, Handler> = {
     if (existing && existing.user_id !== currentUser().id) return forbidden();
     const errors = check(body, !existing);
     if (errors.length) return invalid(errors);
+    // As Lightning, `global` is dropped, not refused, for anyone but a superuser.
+    const global = currentUser().role === "superuser" ? body["global"] === true : (existing?.global ?? false);
     const text = Object.fromEntries(TEXT.filter((key) => typeof body[key] === "string").map((key) => [key, body[key] as string]));
     const fields = {
       ...text,
       ...Object.fromEntries(ENDPOINTS.map((key) => [key, (body[key] as string | undefined) || null])),
-      // As Lightning, `global` is dropped, not refused, for anyone but a superuser.
-      global: currentUser().role === "superuser" ? body["global"] === true : (existing?.global ?? false),
-      project_ids: body["global"] === true ? [] : ((body["project_ids"] ?? []) as string[]),
+      global,
+      project_ids: global ? [] : ((body["project_ids"] ?? []) as string[]),
       updated_at: now(),
     };
     if (existing) {

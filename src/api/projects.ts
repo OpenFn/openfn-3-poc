@@ -88,6 +88,13 @@ export function useProjectTree(): { status: ResourceStatus; projects: ProjectNod
   return { status: statusOf(query), projects: query.data ?? [] };
 }
 
+const shareable = (rows: ApiProject[]) => rows.filter((p) => p.attributes.root_id === undefined).map((p) => ({ id: p.id, name: p.attributes.name }));
+
+/** The projects you can share a credential or OAuth client with: yours, never a sandbox, which gets a share through its parent (as Lightning). */
+export function useShareableProjects(): { id: string; name: string }[] {
+  return useQuery({ ...treeQuery, select: shareable }).data ?? [];
+}
+
 /**
  * Whether a refused project is refused for its MFA requirement rather than
  * for no access, or "checking" while that loads. The API answers both 403

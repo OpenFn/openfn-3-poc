@@ -1,10 +1,11 @@
 /** Credential schemas on the pretend server (api/credentials.md, Credential schemas). */
 import { credentialTypes, fieldsForSchema } from "@/mock-data/credentials";
 import type { SchemaField } from "@/types/credentials";
+import { adaptorShortName } from "@/utils/adaptors";
 import { json, problem, type Handler } from "./answers";
 
 /** `dhis2` → `@openfn/language-dhis2`: a schema is named for its adaptor's package. */
-export const fullName = (schema: string) => (schema === "raw" || schema === "oauth" || schema.startsWith("@") ? schema : `@openfn/language-${schema}`);
+export const schemaPackage = (schema: string) => (schema === "raw" || schema === "oauth" || schema.startsWith("@") ? schema : `@openfn/language-${schema}`);
 
 /** A JSON Schema for one of the fixture's adaptor schemas, as `Lightning.Adaptors.schema/2` would hold it. */
 const jsonSchema = (fields: SchemaField[]) => ({
@@ -27,11 +28,11 @@ const jsonSchema = (fields: SchemaField[]) => ({
 export const credentialSchemaRoutes: Record<string, Handler> = {
   // Adaptor schemas and raw; Lightning has no display title yet, so the title is the short name.
   "GET /api/credential_schemas": () =>
-    json(200, { data: [...credentialTypes.map((t) => ({ name: fullName(t.key), title: t.name })), { name: "raw", title: "Raw JSON" }] }),
+    json(200, { data: [...credentialTypes.map((t) => ({ name: schemaPackage(t.key), title: t.name })), { name: "raw", title: "Raw JSON" }] }),
   "GET /api/credential_schemas/:name": ({ name }) => {
-    const short = name!.replace(/^@openfn\/language-/, "");
+    const short = adaptorShortName(name!);
     if (name === "raw") return json(200, { data: { name: "raw", title: "Raw JSON", schema: {} } });
     if (!credentialTypes.some((t) => t.key === short)) return problem({ status: 404, code: "not_found", detail: "Not found." });
-    return json(200, { data: { name: fullName(short), title: short, schema: jsonSchema(fieldsForSchema(short)) } });
+    return json(200, { data: { name: schemaPackage(short), title: short, schema: jsonSchema(fieldsForSchema(short)) } });
   },
 };

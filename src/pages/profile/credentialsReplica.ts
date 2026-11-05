@@ -21,8 +21,7 @@ import { fullName } from "@/utils/format";
 type Change = (f: CredentialsFixture) => Partial<CredentialsFixture>;
 
 /**
- * The replica's side of the credential index, shared by the user's
- * Credentials page and project settings: each action changes the fixture as
+ * The replica's side of project settings' credential index: each action changes the fixture as
  * Lightning's credential_index_component.ex would, and toasts its flash.
  * `fixture` is the state as last rendered; `update` applies a change to the latest.
  */
@@ -127,11 +126,11 @@ export function credentialReplicaActions(
       patch(id, { scheduledDeletion: null });
       toast("Credential deletion canceled");
     },
-    onTransferCredential: async (id, receiverEmail) => {
+    onTransferCredential: async (id, recipient) => {
       await simulateRequest();
       // Lightning.Credentials' transfer checks, in its wording.
-      const receiver = users.find((u) => u.email.toLowerCase() === receiverEmail.toLowerCase());
-      const refuse = (message: string) => new RequestError(message, { fieldErrors: { receiverEmail: [message] } });
+      const receiver = users.find((u) => u.email.toLowerCase() === recipient.toLowerCase());
+      const refuse = (message: string) => new RequestError(message, { fieldErrors: { recipient: [message] } });
       if (!receiver) throw refuse("User does not exist");
       if (receiver.id === viewer.id) throw refuse("You cannot transfer a credential to yourself");
       const blocking = projects.filter((p) => find(id)?.projectIds.includes(p.id) && !p.members.some((m) => m.userId === receiver.id));

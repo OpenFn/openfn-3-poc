@@ -17,8 +17,13 @@ import { currentUser } from "./session";
 const seedProjects = (): Project[] => projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) }));
 let projects = seedProjects();
 
-/** The projects as the fake holds them now, for the other resources' routes. */
+/** The projects as the fake holds them now. */
 export const fakeProjects = () => projects;
+/** Whether a user is a member of a project. */
+export const isMemberOf = (projectId: string, userId: string) => !!projects.find((p) => p.id === projectId)?.members.some((m) => m.userId === userId);
+/** Whether the signed-in user is an editor or above in a project, as sharing a credential or client there needs. */
+export const isEditorIn = (projectId: string) =>
+  ["owner", "admin", "editor"].includes(projects.find((p) => p.id === projectId)?.members.find((m) => m.userId === currentUser().id)?.role ?? "");
 
 /** For stories and tests: the starting projects. */
 export const resetProjects = () => {

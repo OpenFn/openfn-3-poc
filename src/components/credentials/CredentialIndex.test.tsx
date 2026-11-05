@@ -394,7 +394,7 @@ describe("CredentialIndex", () => {
   it("shows the host's refusal of a transfer on the email field", async () => {
     const onTransferCredential = vi
       .fn()
-      .mockRejectedValue(new RequestError("User does not exist", { fieldErrors: { receiverEmail: ["User does not exist"] } }));
+      .mockRejectedValue(new RequestError("User does not exist", { fieldErrors: { recipient: ["User does not exist"] } }));
     renderPage({ onTransferCredential });
     await choose("credentials-cred1", "Transfer");
     fireEvent.change(document.getElementById("receiver_email")!, { target: { value: "nobody@example.org" } });

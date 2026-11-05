@@ -2,7 +2,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialRow, CredentialTypeOption, CredentialValues, SchemaField } from "@/types/credentials";
 import type { ResourceStatus } from "@/types/resource";
-import { ApiError, isApiError, listAll, renameFields, request, statusOf } from "./client";
+import { adaptorShortName } from "@/utils/adaptors";
+import { ApiError, isApiError, listAll, request, statusOf } from "./client";
 
 /** A credential as `GET /api/credentials` sends it. The optional fields are api/credentials.md's planned scope. */
 export interface ApiCredential {
@@ -24,7 +25,7 @@ export interface ApiCredential {
 }
 
 /** A credential schema as `GET /api/credential_schemas` lists it. */
-export interface ApiCredentialSchema {
+interface ApiCredentialSchema {
   name: string;
   title: string;
 }
@@ -38,8 +39,6 @@ interface ApiSchemaProperty {
   examples?: unknown[];
 }
 
-const shortName = (schema: string) => schema.replace(/^@openfn\/language-/, "");
-
 /**
  * One of the viewer's own credentials as a Credentials table row. Every
  * credential the list sends is the caller's, so the viewer may edit it.
@@ -47,11 +46,11 @@ const shortName = (schema: string) => schema.replace(/^@openfn\/language-/, "");
  * environment, nothing pending, no runs. The API says nothing about which
  * workflows use it (docs/api-gaps.md).
  */
-export function credentialRow(c: ApiCredential, viewerEmail: string): CredentialRow {
+function credentialRow(c: ApiCredential, viewerEmail: string): CredentialRow {
   return {
     id: c.id,
     name: c.name,
-    schema: shortName(c.schema),
+    schema: adaptorShortName(c.schema),
     // Only the client's name and id: an OAuth credential can't be edited here until sign-in is on the API.
     oauthClient: c.oauth ? { id: c.oauth.oauth_client_id, name: c.oauth.name, mandatoryScopes: [], optionalScopes: [], scopesDocUrl: "" } : null,
     ownerEmail: c.owner?.email ?? viewerEmail,
@@ -64,9 +63,6 @@ export function credentialRow(c: ApiCredential, viewerEmail: string): Credential
     canEdit: true,
   };
 }
-
-/** "Add a credential"'s adaptor types. Raw JSON is left out: the form offers it itself. */
-export const credentialType = (s: ApiCredentialSchema): CredentialTypeOption => ({ key: shortName(s.name), name: s.title });
 
 const KINDS: Record<string, SchemaField["kind"]> = { string: "text", integer: "integer", boolean: "boolean", object: "object" };
 // Types Lightning reads as text without a warning (`Credentials.Schema`).
@@ -110,7 +106,8 @@ export function useCredentialSchemas(): { credentialTypes: CredentialTypeOption[
   const query = useQuery({
     queryKey: credentialKeys.schemas,
     queryFn: () => request<{ data: ApiCredentialSchema[] }>("GET", "/api/credential_schemas").then((answer) => answer.data),
-    select: (rows) => rows.filter((s) => s.name !== "raw").map(credentialType),
+    // Raw JSON is left out: the form offers it itself.
+    select: (rows) => rows.filter((s) => s.name !== "raw").map((s) => ({ key: adaptorShortName(s.name), name: s.title })),
   });
   const loadSchema = (key: string) =>
     queryClient
@@ -123,97 +120,70 @@ export function useCredentialSchemas(): { credentialTypes: CredentialTypeOption[
   return { credentialTypes: query.data ?? [], loadSchema };
 }
 
-// Saving the credential form.
-
-const parseObject = (text: string): Record<string, unknown> => {
-  try {
-    const value: unknown = JSON.parse(text);
-    return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
-  } catch {
-    return {};
-  }
-};
+// Saving.
 
 /**
- * What to send for one environment, or undefined to keep what's saved. The
- * form never sees saved secrets, so a blank field keeps its saved value and
- * an untouched body sends nothing. A raw body is sent whole.
+ * A refusal with each pointer's field renamed (`#/external_id` → `#/externalId`),
+ * so it lands on the shared form's field. The forms keep their own names
+ * while project settings, which shares them, is still on its replica.
  */
-function bodyToSend(schema: string, text: string): Record<string, unknown> | undefined {
-  const body = parseObject(text);
+export function renameFields(error: unknown, names: Record<string, string>): unknown {
+  if (!isApiError(error)) return error;
+  const errors = error.errors.map((e) => {
+    const field = e.pointer?.replace(/^#\//, "").split("/")[0];
+    return field && names[field] ? { ...e, pointer: e.pointer!.replace(`#/${field}`, `#/${names[field]}`) } : e;
+  });
+  return new ApiError(error.status ?? 0, error.code, error.message, errors);
+}
+
+/**
+ * The `main` body to send, or undefined to keep what's saved. The form never
+ * sees saved secrets, so it sends only the fields that were filled in; a
+ * raw body is sent whole, unless it's empty.
+ */
+export function bodyToSend(schema: string, text: string): Record<string, unknown> | undefined {
+  let body: Record<string, unknown> = {};
+  try {
+    body = JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    // The form checks a raw body is JSON before saving; an adaptor's body is built from its fields.
+  }
   const filled = schema === "raw" ? body : Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ""));
   return Object.keys(filled).length ? filled : undefined;
 }
 
-const CREDENTIAL_FIELDS = { external_id: "externalId" };
-
-/**
- * Writes the environments other than what POST or PUT already sent, then
- * deletes the stored ones the form left out. A refusal lands on its
- * environment (`environments.<name>`).
- */
-async function writeEnvironments(id: string, values: CredentialValues, stored: string[]) {
-  const path = (name: string) => `/api/credentials/${encodeURIComponent(id)}/environments/${encodeURIComponent(name)}`;
-  const onEnvironment = (name: string) => (error: unknown) => {
-    if (!isApiError(error)) throw error;
-    throw new ApiError(error.status ?? 0, error.code, error.message, [{ code: error.code, detail: error.errors[0]?.detail ?? error.message, pointer: `#/environments/${name}` }]);
+/** POST and PUT's body: `main` and the projects to link. Links are only ever added. */
+function credentialBody(values: CredentialValues) {
+  const main = values.environments.find((e) => e.name === "main");
+  const body = main && bodyToSend(values.schema, main.body);
+  return {
+    name: values.name,
+    schema: values.schema,
+    ...(values.externalId && { external_id: values.externalId }),
+    ...(body && { credential_bodies: [{ name: "main", body }] }),
+    project_credentials: values.projectIds.map((project_id) => ({ project_id })),
   };
-  for (const e of values.environments) {
-    if (e.name === "main") continue;
-    const body = bodyToSend(values.schema, e.body);
-    // A renamed environment's saved values can't be read back to move them.
-    if (!body && e.previousName && e.previousName !== e.name) onEnvironment(e.name)(new ApiError(422, "invalid", "enter its values again to rename it"));
-    if (body || !stored.includes(e.name)) await request("PUT", path(e.name), { body: body ?? {} }).catch(onEnvironment(e.name));
-  }
-  for (const name of stored) {
-    if (!values.environments.some((e) => e.name === name)) await request("DELETE", path(name)).catch(onEnvironment(name));
-  }
 }
 
 /**
- * Create and update a credential from today's credential form, and every
- * row action. Each resolves once the list has reloaded and rejects with the
- * `ApiError`, whose field errors are keyed as the form names its fields.
+ * Create and update from today's credential form, and every row action. Each
+ * resolves once the list has reloaded and rejects with the `ApiError`, whose
+ * field errors are keyed as the forms name their fields.
  */
 export function useCredentialSaves() {
   const queryClient = useQueryClient();
   const reload = () => queryClient.invalidateQueries({ queryKey: credentialKeys.all });
   const path = (id: string, rest = "") => `/api/credentials/${encodeURIComponent(id)}${rest}`;
-  const mainBody = (values: CredentialValues) => {
-    const main = values.environments.find((e) => e.name === "main");
-    const body = main && bodyToSend(values.schema, main.body);
-    return body ? { credential_bodies: [{ name: "main", body }] } : {};
-  };
-  const fields = (values: CredentialValues) => ({ name: values.name, schema: values.schema, external_id: values.externalId || null });
+  const onFields = (error: unknown) => Promise.reject(renameFields(error, { external_id: "externalId" }));
 
   const create = useMutation({
-    mutationFn: async (values: CredentialValues) => {
-      const answer = await request<{ credential: ApiCredential }>("POST", "/api/credentials", {
-        ...fields(values),
-        credential_bodies: [{ name: "main", body: {} }],
-        ...mainBody(values),
-        project_credentials: values.projectIds.map((project_id) => ({ project_id })),
-      }).catch((error: unknown) => Promise.reject(renameFields(error, CREDENTIAL_FIELDS)));
-      await writeEnvironments(answer.credential.id, values, ["main"]);
-    },
-    onSettled: reload,
+    mutationFn: (values: CredentialValues) =>
+      request("POST", "/api/credentials", { credential_bodies: [{ name: "main", body: {} }], ...credentialBody(values) }).catch(onFields),
+    onSuccess: reload,
   });
   const update = useMutation({
-    mutationFn: async ({ id, values }: { id: string; values: CredentialValues }) => {
-      const saved = queryClient.getQueryData<ApiCredential[]>(credentialKeys.all)?.find((c) => c.id === id);
-      const linked = saved?.projects.map((p) => p.id) ?? [];
-      await request("PUT", path(id), {
-        ...fields(values),
-        ...mainBody(values),
-        // PUT only adds links; one taken away is unlinked on its own.
-        project_credentials: values.projectIds.filter((p) => !linked.includes(p)).map((project_id) => ({ project_id })),
-      }).catch((error: unknown) => Promise.reject(renameFields(error, CREDENTIAL_FIELDS)));
-      for (const projectId of linked.filter((p) => !values.projectIds.includes(p))) {
-        await request("DELETE", `/api/projects/${encodeURIComponent(projectId)}/credentials/${encodeURIComponent(id)}`);
-      }
-      await writeEnvironments(id, values, saved?.environments?.map((e) => e.name) ?? ["main"]);
-    },
-    onSettled: reload,
+    mutationFn: ({ id, values }: { id: string; values: CredentialValues }) => request("PUT", path(id), credentialBody(values)).catch(onFields),
+    onSuccess: reload,
   });
   const remove = useMutation({
     mutationFn: ({ id, now }: { id: string; now: boolean }) =>
@@ -222,8 +192,7 @@ export function useCredentialSaves() {
   });
   const cancelDeletion = useMutation({ mutationFn: (id: string) => request("DELETE", path(id, "/scheduled_deletion")), onSuccess: reload });
   const transfer = useMutation({
-    mutationFn: ({ id, email }: { id: string; email: string }) =>
-      request("PUT", path(id, "/transfer"), { recipient: email }).catch((error: unknown) => Promise.reject(renameFields(error, { recipient: "receiverEmail" }))),
+    mutationFn: ({ id, recipient }: { id: string; recipient: string }) => request("PUT", path(id, "/transfer"), { recipient }),
     onSuccess: reload,
   });
   const revokeTransfer = useMutation({ mutationFn: (id: string) => request("DELETE", path(id, "/transfer")), onSuccess: reload });
@@ -233,7 +202,7 @@ export function useCredentialSaves() {
     update: async (id: string, values: CredentialValues) => void (await update.mutateAsync({ id, values })),
     remove: async (id: string, intent: { now: boolean }) => void (await remove.mutateAsync({ id, ...intent })),
     cancelDeletion: async (id: string) => void (await cancelDeletion.mutateAsync(id)),
-    transfer: async (id: string, email: string) => void (await transfer.mutateAsync({ id, email })),
+    transfer: async (id: string, recipient: string) => void (await transfer.mutateAsync({ id, recipient })),
     revokeTransfer: async (id: string) => void (await revokeTransfer.mutateAsync(id)),
   };
 }
