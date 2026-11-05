@@ -15,6 +15,9 @@ const meta: Meta<typeof TokensPage> = {
     onGenerate: async () => "demo.fake-token-not-real.QrStU-24680",
     onDelete: async () => {},
     onClose: () => {},
+    isStepUpRequired: () => false,
+    onStepUp: async () => {},
+    hasMfa: false,
   },
 };
 export default meta;
@@ -30,3 +33,5 @@ export const NewToken: Story = {
   },
 };
 export const DeleteModalOpen: Story = { args: { tokenId: apiTokens[0]!.id } };
+export const Loading: Story = { args: { status: { state: "loading" }, tokens: [] } };
+export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, tokens: [] } };

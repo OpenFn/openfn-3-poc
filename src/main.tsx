@@ -14,29 +14,32 @@ import AnnotationsFrame from "./components/devtools/AnnotationsFrame";
 import SessionProvider from "./session/SessionProvider";
 import { session } from "./mock-data/users";
 import { setAssetBase } from "./utils/assets";
+import ApiProvider from "./api/ApiProvider";
 
 // Vite serves the replica under a base path; the library never reads it itself.
 setAssetBase(import.meta.env.BASE_URL);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <HashRouter>
-        <ReactRouterAdapter>
-          <AnnotationsProvider>
-            <SessionProvider session={session}>
-              <ToastProvider>
-                <AnnotationsFrame>
-                  <App />
-                </AnnotationsFrame>
-              </ToastProvider>
-            </SessionProvider>
-            {/* Demo tooling, outside the Lightning UI: annotations and themes. */}
-            <AnnotationsPanel />
-            <SettingsMenu />
-          </AnnotationsProvider>
-        </ReactRouterAdapter>
-      </HashRouter>
-    </ThemeProvider>
+    <ApiProvider>
+      <ThemeProvider>
+        <HashRouter>
+          <ReactRouterAdapter>
+            <AnnotationsProvider>
+              <SessionProvider session={session}>
+                <ToastProvider>
+                  <AnnotationsFrame>
+                    <App />
+                  </AnnotationsFrame>
+                </ToastProvider>
+              </SessionProvider>
+              {/* Demo tooling, outside the Lightning UI: annotations and themes. */}
+              <AnnotationsPanel />
+              <SettingsMenu />
+            </AnnotationsProvider>
+          </ReactRouterAdapter>
+        </HashRouter>
+      </ThemeProvider>
+    </ApiProvider>
   </StrictMode>
 );

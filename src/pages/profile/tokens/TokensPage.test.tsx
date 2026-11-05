@@ -5,7 +5,7 @@ import { renderPage } from "@/test/renderPage";
 import { RequestError } from "@/utils/errors";
 import TokensPage from "./TokensPage";
 
-const render = (tokenId: string | null = null) => renderPage(TokensPage, { tokens: apiTokens, tokenId }, ["onGenerate", "onDelete", "onClose"]);
+const render = (tokenId: string | null = null) => renderPage(TokensPage, { tokens: apiTokens, tokenId, isStepUpRequired: () => false, hasMfa: false }, ["onGenerate", "onDelete", "onClose", "onStepUp"]);
 const generate = () => fireEvent.click(screen.getByRole("button", { name: "Generate New Token" }));
 
 describe("TokensPage", () => {
@@ -33,5 +33,19 @@ describe("TokensPage", () => {
     expect(screen.queryByText("Token deleted successfully")).toBeNull();
     await host.resolve("onDelete");
     expect(screen.getByText("Token deleted successfully")).toBeTruthy();
+  });
+
+  it("asks for the password when the server wants it, then generates again", async () => {
+    const refusal = new RequestError("Enter your password or an MFA code again to do this.");
+    const host = renderPage(TokensPage, { tokens: apiTokens, tokenId: null, isStepUpRequired: (e) => e === refusal, hasMfa: false }, ["onGenerate", "onDelete", "onClose", "onStepUp"]);
+    generate();
+    await host.reject("onGenerate", refusal);
+    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: "my-password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(host.calls("onStepUp")).toEqual([[{ password: "my-password" }]]);
+    await host.resolve("onStepUp");
+    expect(host.calls("onGenerate")).toHaveLength(2);
+    await host.resolve("onGenerate", "demo.fake-token-not-real.XYZ");
+    expect((screen.getByLabelText("New token") as HTMLInputElement).value).toBe("demo.fake-token-not-real.XYZ");
   });
 });

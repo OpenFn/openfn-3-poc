@@ -243,17 +243,29 @@ const sessionImports = {
   message: 'Take the user and permissions as props; the replica reads the session.',
 }
 
+// The API boundaries, on their own rule id so they stack with the seam and tier
+// blocks (a later block replaces an earlier one's options for the same rule).
+// Only routes, replicas, main.tsx, stories and tests call src/api/; only
+// src/api/ uses TanStack Query; only src/api/client.ts reaches the fake server,
+// so going real is deleting src/fake-api/ and that one import.
 const apiImports = {
   regex: '(^|/)api(/.*)?$',
-  message: 'Take data as props; the replica wrapper calls the API client.',
+  message: "Take data and actions as props; the page's route calls src/api/.",
 }
+const queryImports = { name: '@tanstack/react-query', message: 'Only src/api/ uses TanStack Query; a route calls its hooks.' }
+const fakeApiImports = {
+  regex: '(^|/)fake-api(/.*)?$',
+  message: 'Only src/api/client.ts (and src/api/testing.ts, for stories and tests) knows the fake server. Stories and tests get failNext and resetFakeApi from @/api/testing.',
+}
+const apiCallers = ['**/*.route.{ts,tsx}', '**/*[rR]eplica.{ts,tsx}', 'src/main.tsx', '**/*.stories.tsx', '**/*.test.{ts,tsx}', 'src/test/**']
+const apiBoundary = (patterns, paths = []) => ({ '@typescript-eslint/no-restricted-imports': ['error', { paths, patterns }] })
 
 const cacheWriteMessage = "Don't write into the query cache: invalidate the keys the save changed and return that from onSuccess (.claude/rules/api.md)."
 
 const seamIgnores = ['**/*.stories.tsx', '**/*[rR]eplica.{ts,tsx}', 'src/pages/**/*.route.{ts,tsx}', '**/*.test.{ts,tsx}']
 const seamImports = (extra = []) => [
   'error',
-  { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, apiImports, relativeImports, ...extra] },
+  { paths: routerImports, patterns: [modelImports, recordImports, mockDataImports, sessionImports, relativeImports, ...extra] },
 ]
 
 // Each folder in src/components/ other than primitives/ and domain/ is an
@@ -447,6 +459,13 @@ export default defineConfig([
       ],
     },
   },
+  { files: ['src/**/*.{ts,tsx}'], ignores: ['src/api/**', 'src/fake-api/**'], rules: apiBoundary([fakeApiImports], [queryImports]) },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/api/**', 'src/fake-api/**', ...apiCallers],
+    rules: apiBoundary([fakeApiImports, apiImports], [queryImports]),
+  },
+  { files: ['src/api/**/*.{ts,tsx}'], ignores: ['src/api/client.ts', 'src/api/testing.ts'], rules: apiBoundary([fakeApiImports]) },
   {
     // Contract shapes are written by hand, never built on models or fixtures.
     files: ['src/types/**/*.ts'],

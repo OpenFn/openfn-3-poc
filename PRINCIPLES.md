@@ -117,11 +117,13 @@ out labels, errors or buttons itself.
 
 ## How data flows
 
-A page only shows what it's given (props). That way the same page works inside today's Lightning and in the new app. Fetching and saving happen in a small file beside each page, the wrapper and never in the page itself. 
+A page only shows what it's given (props). Fetching and saving happen in hooks in `src/api/`, one file per kind of data; the page's route calls them and passes the results down. Never in the page itself.
 
-- **Loading.** The wrapper loads with TanStack Query. The page never
-  fetches, and never imports `src/api/`.
-- **Saving.** After a save, the wrapper marks the affected queries
+- **Loading.** The route calls one hook per kind of data, from
+  `src/api/<resource>.ts` (`useTokens()`), and those hooks hold TanStack
+  Query. The route never calls TanStack Query itself; the page never fetches,
+  and never imports `src/api/`.
+- **Saving.** After a save, the resource's hook marks the affected queries
   stale, and the page's `on*` promise resolves once they've reloaded, the way
   LiveView re-renders after an event. Never write a response into the cache.
   Show a change before the server confirms it only where the page already
@@ -133,7 +135,7 @@ A page only shows what it's given (props). That way the same page works inside t
   until dismissed. A crash shows an error page with "Try again". The API
   code never shows a toast; the page decides where a message goes.
 - **The API code.** One `src/api/` folder: `client.ts` talks to
-  Lightning (or the stand-in) and turns refusals into `ApiError`, and one file
+  Lightning (or the fake server in `src/fake-api/`) and turns refusals into `ApiError`, and one file
   per resource holds the API's shape, the mapper to page props, the query keys,
   the queries and the saves. Show the server's `detail`; branch on `code`.
 

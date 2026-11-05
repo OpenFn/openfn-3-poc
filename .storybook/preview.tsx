@@ -5,6 +5,7 @@ import "@/monacoSetup";
 import { DEFAULT_THEME_ID, THEMES } from "@/theme/themes";
 import SessionProvider from "@/session/SessionProvider";
 import { session } from "@/mock-data/users";
+import ApiProvider from "@/api/ApiProvider";
 
 /*
  * Each deploy replaces every hashed file on GitHub Pages, so a tab or cached
@@ -56,6 +57,16 @@ const withSession: Decorator = (Story) => (
   </SessionProvider>
 );
 
+/**
+ * TanStack Query for the stories of routes, a fresh cache per story. No
+ * retries, so a failed load shows at once.
+ */
+const withApi: Decorator = (Story, context) => (
+  <ApiProvider key={context.id} retry={false}>
+    <Story />
+  </ApiProvider>
+);
+
 const preview: Preview = {
   parameters: {
     // The tiers first, as in src/components/ (docs/building.md), then the areas, then pages.
@@ -86,7 +97,7 @@ const preview: Preview = {
       },
     },
   },
-  decorators: [withTheme, withSession],
+  decorators: [withTheme, withSession, withApi],
 };
 
 export default preview;

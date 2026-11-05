@@ -22,6 +22,7 @@ async function ruleMessages(ruleId: string, filePath: string, code: string) {
   return (result?.messages ?? []).filter((m) => m.ruleId === ruleId).map((m) => m.message);
 }
 const seamMessages = (filePath: string, code: string) => ruleMessages("no-restricted-imports", filePath, code);
+const apiMessages = (filePath: string, code: string) => ruleMessages("@typescript-eslint/no-restricted-imports", filePath, code);
 
 describe("the data seam lint rule", () => {
   it("every import that crosses the seam is tagged wiring: or debt:", () => {
@@ -59,14 +60,6 @@ describe("the data seam lint rule", () => {
       expect(await seamMessages(probe, code(from))).toEqual([message(from)]);
     }
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("@/mock-data/models/workflows"))).toEqual([]);
-  });
-
-  it("pages and components may not call the API client; their wrappers do", async () => {
-    const code = (from: string) => `import { listCredentials } from "${from}";\nexport const x = listCredentials;\n`;
-    expect(await seamMessages("src/pages/SeamProbePage.tsx", code("@/api/credentials"))).toHaveLength(1);
-    expect(await seamMessages("src/components/primitives/SeamProbe.tsx", code("@/api/credentials"))).toHaveLength(1);
-    expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", code("@/api/credentials"))).toEqual([]);
-    expect(await seamMessages("src/pages/x/probe/SeamProbe.route.tsx", code("@/api/credentials"))).toEqual([]);
   });
 
   it("a .route file is only a route inside src/pages/; anywhere else the seam still applies", async () => {
@@ -239,5 +232,36 @@ describe("the data-flow lint rules (PRINCIPLES.md, How data flows)", () => {
     const code = 'import { useToast } from "@/components/primitives/Toast";\nexport const x = useToast;\n';
     expect(await seamMessages("src/api/seamProbe.ts", code)).toHaveLength(1);
     expect(await seamMessages("src/pages/x/SeamProbe.replica.tsx", 'import { useToast } from "@/components/primitives/Toast";\nexport const x = useToast;\n')).toEqual([]);
+  });
+});
+
+describe("the API boundary lint rules", () => {
+  const code = (from: string) => `import * as x from "${from}";\nexport const y = x;\n`;
+
+  it("only routes, replicas, main.tsx, stories and tests call src/api/", async () => {
+    for (const probe of ["src/pages/x/SeamProbePage.tsx", "src/components/primitives/SeamProbe.tsx", "src/session/seamProbe.ts", "src/App.tsx"]) {
+      expect(await apiMessages(probe, code("@/api/tokens")), probe).toHaveLength(1);
+    }
+    for (const probe of ["src/pages/x/SeamProbePage.route.tsx", "src/pages/x/SeamProbe.replica.tsx", "src/main.tsx", "src/pages/x/SeamProbe.stories.tsx", "src/x/seamProbe.test.ts"]) {
+      expect(await apiMessages(probe, code("@/api/tokens")), probe).toEqual([]);
+    }
+  });
+
+  it("only src/api/ uses TanStack Query", async () => {
+    expect(await apiMessages("src/pages/x/SeamProbePage.route.tsx", code("@tanstack/react-query"))).toHaveLength(1);
+    expect(await apiMessages("src/main.tsx", code("@tanstack/react-query"))).toHaveLength(1);
+    expect(await apiMessages("src/api/seamProbe.ts", code("@tanstack/react-query"))).toEqual([]);
+  });
+
+  it("only src/api/client.ts reaches the fake server", async () => {
+    for (const [probe, from] of [
+      ["src/api/tokens.ts", "@/fake-api"],
+      ["src/pages/x/SeamProbePage.route.tsx", "@/fake-api"],
+      ["src/pages/x/SeamProbe.stories.tsx", "@/fake-api/index"],
+      ["src/x/seamProbe.test.ts", "@/fake-api"],
+    ] as const) {
+      expect(await apiMessages(probe, code(from)), probe).toHaveLength(1);
+    }
+    expect(await apiMessages("src/api/client.ts", code("@/fake-api"))).toEqual([]);
   });
 });

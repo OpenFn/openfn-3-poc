@@ -1,20 +1,35 @@
 /**
- * The one way the replica reaches Lightning's API. With `VITE_API=lightning`
- * it calls a real Lightning through Vite's `/api` proxy (vite.config.ts), on
- * Lightning's session cookie; by default it calls the stand-in, which replays
- * recorded answers (`recorded/`) after a short delay. A refused request throws
- * an `ApiError`: show its `message`, branch on its `code`.
+ * The one way the app reaches Lightning's API. With `VITE_API=lightning` it
+ * calls a real Lightning through Vite's `/api` proxy (vite.config.ts), on
+ * Lightning's session cookie; otherwise the pretend server in `src/fake-api/`,
+ * which answers the same way. Swapping `fetch` here is the only place the app
+ * knows the fake exists. A refused request throws an `ApiError`: show its
+ * `message`, branch on its `code`.
  */
+import type { ResourceStatus } from "@/types/resource";
 import { RequestError } from "@/utils/errors";
-import credentials from "./recorded/credentials.json";
-import projects from "./recorded/projects.json";
-
-const live = import.meta.env["VITE_API"] === "lightning";
+// Decided when the app is built, so a build for real Lightning leaves the fake out entirely.
+const send: (path: string, init?: RequestInit) => Promise<Response> =
+  import.meta.env.VITE_API === "lightning" ? fetch : async (path, init) => (await import("@/fake-api")).fakeFetch(path, init);
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-export function request<T>(method: Method, path: string, body?: unknown): Promise<T> {
-  return live ? fetchLightning<T>(method, path, body) : standIn<T>(method, path);
+export async function request<T>(method: Method, path: string, body?: unknown): Promise<T> {
+  let response: Response;
+  try {
+    response = await send(path, {
+      method,
+      credentials: "same-origin",
+      headers: { Accept: "application/json", ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+  } catch {
+    throw new ApiError(0, "unreachable", "Couldn't reach Lightning.");
+  }
+  // 204 has no body; a proxy's error page isn't JSON.
+  const json: unknown = response.status === 204 ? undefined : await response.json().catch(() => undefined);
+  if (!response.ok) throw toApiError(response.status, json);
+  return json as T;
 }
 
 /** Every page of a paged list (api/conventions.md), following `links.next`. */
@@ -81,54 +96,23 @@ export function toApiError(status: number, body: unknown): ApiError {
   );
 }
 
-// Lightning.
 
-async function fetchLightning<T>(method: Method, path: string, body: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(path, {
-      method,
-      credentials: "same-origin",
-      headers: { Accept: "application/json", ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    });
-  } catch {
-    throw new ApiError(0, "unreachable", "Couldn't reach Lightning.");
-  }
-  const json: unknown = response.status === 204 ? undefined : await response.json().catch(() => undefined);
-  if (!response.ok) throw toApiError(response.status, json);
-  return json as T;
-}
+/** Lightning refused it, with this `code` if one is given (`isApiError(error, "step_up_required")`). */
+export const isApiError = (error: unknown, code?: string): error is ApiError =>
+  error instanceof ApiError && (code === undefined || error.code === code);
 
-// The stand-in.
-
-/** Delay to make loading states visible, in ms. */
-const LATENCY_MS = 500;
-
-const recorded: Record<string, unknown> = {
-  "GET /api/credentials": credentials,
-  "GET /api/projects": projects,
-};
-
-let failure: ApiError | null = null;
+/** Whether asking again might help: not for a refusal (4xx), which won't change. */
+export const canRetry = (error: unknown) => !(error instanceof ApiError && error.status !== undefined && error.status >= 400 && error.status < 500);
 
 /**
- * Makes the stand-in's next request fail with this problem, then clears. For
- * stories, tests and the console: `failNext({ status: 403, code: "forbidden" })`.
+ * A page's `status` from its query: loading while there's no data, Lightning's
+ * not found and no access from the code, otherwise the server's message. A
+ * failed reload keeps the rows already on screen.
  */
-export function failNext({ status, code, detail = "The server could not complete that request.", errors = [] }: { status: number; code: string; detail?: string; errors?: ProblemEntry[] }) {
-  failure = new ApiError(status, code, detail, errors);
-}
-
-function standIn<T>(method: Method, path: string): Promise<T> {
-  const fail = failure;
-  failure = null;
-  const key = `${method} ${path.split("?")[0]}`;
-  return new Promise((resolve, reject) =>
-    window.setTimeout(() => {
-      if (fail) reject(fail);
-      else if (key in recorded) resolve(structuredClone(recorded[key]) as T);
-      else reject(new ApiError(404, "not_found", `The stand-in has no recorded answer for ${key}.`));
-    }, LATENCY_MS)
-  );
+export function statusOf(query: { data: unknown; error: Error | null }): ResourceStatus {
+  if (query.data !== undefined) return { state: "ready" };
+  if (!query.error) return { state: "loading" };
+  if (isApiError(query.error, "not_found")) return { state: "notFound" };
+  if (isApiError(query.error, "forbidden")) return { state: "forbidden" };
+  return { state: "error", message: query.error.message };
 }
