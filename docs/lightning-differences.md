@@ -318,6 +318,11 @@ goes back to Lightning's way.
   `StepUpDialog`, with that page's words, and runs the action again once the
   person has confirmed, so nothing they were doing is lost. A wrong password
   shows on the field rather than above the form.
+- **The replica has no `/auth/confirm_access` route.** Nothing sends anyone
+  there, and on the API confirming is one `POST /api/session` the dialog
+  already sends. The page itself (`src/pages/auth/confirm-access/`) stays,
+  with its stories, because Lightning's design-system port renders it on its
+  own confirm-access screen.
 
 ## Audit
 
