@@ -97,12 +97,14 @@ describe("every page and component can be seen and checked", () => {
     ]);
   });
 
-  const drawsEmptyState = (path: string) => sources[path]!.includes('from "@/components/primitives/EmptyState"');
+  // Either quote style: nothing here enforces one.
+  const imports = (path: string, from: string) => new RegExp(`from ["']@/${from}["']`).test(sources[path]!);
+  const drawsEmptyState = (path: string) => imports(path, "components/primitives/EmptyState");
 
   it("a table leaves the empty state to ListPage", () => {
     // A page on ListPage passes its table as `list`, and ListPage draws the empty state.
     // A table is any component on the Table primitive, whatever its file is called.
-    const drawers = components.filter((path) => sources[path]!.includes('from "@/components/primitives/Table"') && drawsEmptyState(path));
+    const drawers = components.filter((path) => imports(path, "components/primitives/Table") && drawsEmptyState(path));
     expectOnlyKnown(drawers, [
       "./components/admin/AdminCollectionsTable.tsx",
       "./components/history/ChannelRequestsTable.tsx",
@@ -120,10 +122,10 @@ describe("every page and component can be seen and checked", () => {
     // Lint stops the page importing EmptyState; this stops a component it imports doing it instead.
     // ponytail: one level deep; follow imports further if a nested component ever slips through.
     const onListPage = paths.filter(
-      (path) => isSource(path) && !path.startsWith("./components/templates/") && sources[path]!.includes('from "@/components/templates/ListPage"')
+      (path) => isSource(path) && !path.startsWith("./components/templates/") && imports(path, "components/templates/ListPage")
     );
     const drawers = onListPage.flatMap((page) =>
-      [...sources[page]!.matchAll(/from "@\/(components\/[^"]+)"/g)]
+      [...sources[page]!.matchAll(/from ["']@\/(components\/[^"']+)["']/g)]
         .map(([, from]) => `./${from}.tsx`)
         .filter((child) => sources[child] && !/^\.\/components\/(primitives|templates)\//.test(child) && drawsEmptyState(child))
         .map((child) => `${page} imports ${child}`)
