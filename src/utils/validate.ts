@@ -14,14 +14,3 @@ export function emailErrors(value: string): string[] {
   if (empty.length > 0) return empty;
   return isValidEmail(value.trim()) ? [] : ["must have the @ sign and no spaces"];
 }
-
-/**
- * A project's URL-safe name (after `urlSafeName`): blank, or outside Lightning's
- * Project format, lowercase letters, digits and hyphens. `urlSafeName` keeps
- * "_", "." and accented letters, so "my_project" needs this error, as in Lightning.
- */
-export function projectNameErrors(name: string): string[] {
-  const empty = blank(name);
-  if (empty.length > 0) return empty;
-  return /^[a-z0-9-]+$/.test(name) ? [] : ["has invalid format"];
-}

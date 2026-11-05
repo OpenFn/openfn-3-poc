@@ -4,7 +4,6 @@ import type { ProjectRole } from "@/types/projects";
 import { fullName, urlSafeName } from "@/utils/format";
 import { cn } from "@/utils/cn";
 import { RequestError, errorMessage } from "@/utils/errors";
-import { projectNameErrors } from "@/utils/validate";
 import { useAction } from "@/utils/useAction";
 import SearchInput from "@/components/primitives/SearchInput";
 import Button from "@/components/primitives/Button";
@@ -65,9 +64,9 @@ export default function AdminProjectForm({ project, users, onSave, cancelHref }:
   const sort = useTableSort({ rows, initialKey: "name", sortMap, searchFields });
   const save = useAction(() => onSave({ rawName, roles }));
 
-  const nameErrors = projectNameErrors(urlSafeName(rawName));
+  const name = urlSafeName(rawName);
   const owners = Object.values(roles).filter((r) => r === "owner").length;
-  const valid = nameErrors.length === 0 && owners === 1;
+  const valid = name !== "" && owners === 1;
   const fieldErrors = save.error instanceof RequestError ? save.error.fieldErrors : {};
   const ownerError =
     fieldErrors["owner"]?.[0] ??
@@ -116,7 +115,7 @@ export default function AdminProjectForm({ project, users, onSave, cancelHref }:
             setTouched(true);
             save.reset();
           }}
-          errors={fieldErrors["rawName"] ?? (touched ? nameErrors : [])}
+          errors={fieldErrors["rawName"] ?? (touched && name === "" ? ["can't be blank"] : [])}
           badgeLabel="Note that this project will be named:"
           fieldClassName="w-1/2"
         />

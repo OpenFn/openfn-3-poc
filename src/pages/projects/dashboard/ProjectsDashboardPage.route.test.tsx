@@ -84,6 +84,7 @@ describe("ProjectsDashboardPageRoute", () => {
     renderRoute();
     await createProject("Malaria Programme");
     expect(await screen.findByText("has invalid format", {}, wait)).toBeTruthy();
+    expect(screen.queryByText(/will be named/)).toBeNull();
     expect(screen.getByRole("dialog")).toBeTruthy();
   });
 });

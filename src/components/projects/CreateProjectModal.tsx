@@ -4,7 +4,7 @@ import NameField from "@/components/primitives/NameField";
 import Text from "@/components/primitives/Text";
 import { urlSafeName } from "@/utils/format";
 import { useForm } from "@/utils/useForm";
-import { projectNameErrors } from "@/utils/validate";
+import { blank } from "@/utils/validate";
 import { Stack } from "@/components/primitives/Stack";
 import type { ProjectInput } from "@/types/projects";
 
@@ -28,7 +28,7 @@ export default function CreateProjectModal({
   const form = useForm<ProjectInput>({
     initial: { name: "", description: "" },
     validate: ({ name, description }) => ({
-      name: projectNameErrors(urlSafeName(name)),
+      name: blank(urlSafeName(name)),
       description: description.length > 240 ? ["should be at most 240 character(s)"] : [],
     }),
   });

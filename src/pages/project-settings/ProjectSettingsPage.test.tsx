@@ -253,15 +253,6 @@ describe("ProjectSettingsPage", () => {
     expect(await screen.findByText("has already been taken")).toBeTruthy();
   });
 
-  it("says a name Lightning can't take has invalid format, and doesn't save it", async () => {
-    const onSaveIdentity = vi.fn();
-    renderPage({ onSaveIdentity });
-    fireEvent.change(document.getElementById("project-settings-form_raw_name")!, { target: { value: "my_project" } });
-    fireEvent.submit(document.getElementById("project-settings-form")!);
-    expect(await screen.findByText("has invalid format")).toBeTruthy();
-    expect(onSaveIdentity).not.toHaveBeenCalled();
-  });
-
   it("links Export and Delete to the host's hrefs", () => {
     renderPage();
     expect(screen.getByRole("link", { name: "Export project" }).getAttribute("href")).toBe("/download/yaml?id=p1");
