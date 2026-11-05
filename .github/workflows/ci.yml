@@ -3,18 +3,29 @@ name: CI
 on:
   pull_request:
     branches: [main]
-    # Skip when only docs change. Later lines win: annotations/ is bundled into
-    # the app (the annotations panel), so it still runs CI.
-    paths:
-      - "**"
-      - "!**/*.md"
-      - "!docs/**"
-      - "!.claude/**"
-      - "annotations/**"
 
-# Three jobs that start together, so CI takes as long as the slowest one.
+# main requires lint, test and storybook, so CI runs on every PR. A PR that only
+# changes docs skips the three jobs (a skipped job counts as passed), so it
+# merges after a few seconds. annotations/ is bundled into the app, so it counts as code.
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: |
+          code=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -vE "(\.md$|^docs/|^\.claude/)" | head -1)
+          annotations=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep "^annotations/" | head -1)
+          if [ -n "$code$annotations" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; else echo "code=false" >> "$GITHUB_OUTPUT"; fi
+
+  # Then three jobs side by side, so CI takes as long as the slowest one.
   lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +39,8 @@ jobs:
       - run: node scripts/design-system-metrics.mjs --check
 
   test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +53,8 @@ jobs:
       - run: npm test
 
   storybook:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
