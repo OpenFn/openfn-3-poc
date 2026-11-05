@@ -11,7 +11,6 @@ paths:
 # The API and the wrappers that call it
 
 PRINCIPLES.md "How data flows" says what; this is how.
-At the moment the app supports us moving to Lightning as a single page React app with API or connecting up the existing backend with React islands. This document talks about the api side of things.
 
 ## `src/api/`
 
