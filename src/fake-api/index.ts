@@ -9,7 +9,7 @@ import { findUser, session } from "@/mock-data/users";
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
 import { projects as projectFixtures } from "@/mock-data/projects";
-import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
+import { workflowsIn } from "@/mock-data/workflows";
 import { workOrdersIn } from "@/mock-data/history";
 import type { Project } from "@/types/projects";
 import { FAILURE_STATES } from "@/types/workflow-health";
@@ -42,9 +42,10 @@ const seed = (): StoredToken[] =>
   apiTokens.map((t) => ({ id: t.id, token: t.masked, inserted_at: t.insertedAt, last_used_at: t.lastUsedAt }));
 
 let tokens = seed();
-// Projects live in the fixtures themselves, so a project made here opens on every other page.
-// A reset puts the fixtures back as they were.
-const projectsAtStart = projectFixtures.map((p) => ({ ...p }));
+// The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
+// on pages that load from the API.
+const seedProjects = (): Project[] => projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) }));
+let projects = seedProjects();
 let steppedUpUntil = 0;
 const failures = new Map<string, Problem>();
 
@@ -113,12 +114,12 @@ function badInclude(query: URLSearchParams, known: string[]) {
 const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === session.user.id)?.role;
 const projectStats = (p: Project) => {
-  const overview = projectsOverviewFor(session.user.id).find((o) => o.id === p.id)!;
+  const workflows = workflowsIn(p.id);
   return {
-    role: overview.role,
-    workflows_count: overview.workflowsCount,
-    collaborators_count: overview.collaboratorsCount,
-    last_activity: overview.lastUpdatedAt,
+    role: roleOf(p),
+    workflows_count: workflows.length,
+    collaborators_count: p.members.length,
+    last_activity: workflows.map((w) => w.updatedAt).sort().at(-1) ?? null,
     failed_work_orders_count: workOrdersIn(p.id).filter(
       (w) => (FAILURE_STATES as readonly string[]).includes(w.state) && Date.now() - Date.parse(w.insertedAt) < 30 * DAY_MS
     ).length,
@@ -181,10 +182,9 @@ const routes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    // Root projects you're a member of, as the dashboard's overview picks them.
-    const mine = new Set(projectsOverviewFor(session.user.id).map((o) => o.id));
-    const rows = projectFixtures
-      .filter((p) => mine.has(p.id))
+    // Root projects you're a member of: no sandboxes.
+    const rows = projects
+      .filter((p) => p.parentId === null && roleOf(p))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((p) => projectEntry(p, { members: false, stats }));
     return json(200, paged("/api/projects", rows, query));
@@ -192,7 +192,7 @@ const routes: Record<string, Handler> = {
   // Creates the project under :id, the caller its owner, or replaces the name and description.
   "PUT /api/projects/:id": ({ id }, body) => {
     if (!isUuid(id!)) return forbidden();
-    const existing = projectFixtures.find((p) => p.id === id);
+    const existing = projects.find((p) => p.id === id);
     if (existing && !["owner", "admin"].includes(roleOf(existing) ?? "")) return forbidden();
     const errors: NonNullable<Problem["errors"]> = Object.keys(body)
       .filter((key) => !PROJECT_KEYS.includes(key))
@@ -227,7 +227,7 @@ const routes: Record<string, Handler> = {
       lastUpdatedAt: at,
       insertedAt: at,
     };
-    projectFixtures.push(created);
+    projects = [...projects, created];
     return json(201, { data: projectEntry(created), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
   },
 };
@@ -270,7 +270,7 @@ export function failNext(route: string, failure: Problem) {
 /** For stories and tests: the starting data, not stepped up, nothing set to fail. */
 export function resetFakeApi() {
   tokens = seed();
-  projectFixtures.splice(0, projectFixtures.length, ...projectsAtStart.map((p) => ({ ...p })));
+  projects = seedProjects();
   steppedUpUntil = 0;
   failures.clear();
 }

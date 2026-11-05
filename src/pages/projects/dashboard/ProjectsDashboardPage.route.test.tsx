@@ -6,7 +6,6 @@ import { isApiError, request } from "@/api/client";
 import { failNext, resetFakeApi } from "@/api/testing";
 import { ToastProvider } from "@/components/primitives/Toast";
 import { projectsOverviewFor } from "@/mock-data/dashboard-stats";
-import { projects as projectFixtures } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
@@ -74,8 +73,6 @@ describe("ProjectsDashboardPageRoute", () => {
     expect(await screen.findByText("Project created successfully", {}, wait)).toBeTruthy();
     await waitFor(() => expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(before + 1), wait);
     expect(screen.getByText("malaria-programme").closest("tr")!.textContent).toContain("Owner");
-    // It's in the fixtures, so the pages still on them (the workflows list, the picker) open it.
-    expect(projectFixtures.some((p) => p.name === "malaria-programme")).toBe(true);
   });
 
   it("shows the server's field error on the Name field and keeps the modal open", async () => {
