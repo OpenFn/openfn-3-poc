@@ -11,6 +11,8 @@ import credentials from "./recorded/credentials.json";
 import { projects as projectFixtures } from "@/mock-data/projects";
 import { workflowsIn } from "@/mock-data/workflows";
 import { workOrdersIn } from "@/mock-data/history";
+import { workflowStatsFor } from "@/mock-data/dashboard-stats";
+import { compareBy, type SortValue } from "@/utils/useTableSort";
 import type { Project } from "@/types/projects";
 import { FAILURE_STATES } from "@/types/workflow-health";
 
@@ -73,7 +75,7 @@ const ORIGIN = "http://localhost:4000";
  * One page of a list (api/conventions.md): `page` from 1, `page_size` 10 by
  * default and at most 100, and links that carry the query as sent.
  */
-function paged<T>(path: string, rows: T[], query: URLSearchParams) {
+function paged<T>(path: string, rows: T[], query: URLSearchParams, key = "data") {
   const size = Math.min(Math.max(Number(query.get("page_size")) || 10, 1), 100);
   const last = Math.max(Math.ceil(rows.length / size), 1);
   const page = Math.min(Math.max(Number(query.get("page")) || 1, 1), last);
@@ -84,7 +86,7 @@ function paged<T>(path: string, rows: T[], query: URLSearchParams) {
     return `${ORIGIN}${path}?${q}`;
   };
   return {
-    data: rows.slice((page - 1) * size, page * size),
+    [key]: rows.slice((page - 1) * size, page * size),
     links: { self: link(page), first: link(1), last: link(last), next: page < last ? link(page + 1) : null, prev: page > 1 ? link(page - 1) : null },
   };
 }
@@ -101,6 +103,30 @@ const projectEntry = (p: Project, { members = true, stats = false } = {}) => ({
   },
   relationships: {},
   links: { self: `${ORIGIN}/api/projects/${p.id}` },
+});
+
+/** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
+const badSort = (field: string) =>
+  problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });
+
+// The fields GET /api/projects/:id/workflows sorts by (planned); last_work_order_updated_at needs include=stats.
+type WorkflowStatsRow = ReturnType<typeof workflowStatsFor>[number];
+const workflowSorts: Record<string, (s: WorkflowStatsRow) => SortValue> = {
+  name: (s) => s.workflow.name,
+  updated_at: (s) => s.workflow.updatedAt,
+  last_work_order_updated_at: (s) => s.lastWorkOrder?.updatedAt ?? null,
+};
+
+// A workflow as the list answers it. jobs, triggers and edges are left out: no page reads them from here yet.
+const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
+  id: s.workflow.id,
+  name: s.workflow.name,
+  project_id: s.workflow.projectId,
+  inserted_at: s.workflow.insertedAt,
+  updated_at: s.workflow.updatedAt,
+  ...(stats && {
+    stats: { last_work_order: s.lastWorkOrder && { state: s.lastWorkOrder.state, updated_at: s.lastWorkOrder.updatedAt } },
+  }),
 });
 
 /** A 400 for an `include` the route doesn't know (api/conventions.md). */
@@ -188,6 +214,23 @@ const routes: Record<string, Handler> = {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((p) => projectEntry(p, { members: false, stats }));
     return json(200, paged("/api/projects", rows, query));
+  },
+  // api/workflows.md "List workflows". sort, include=stats (only last_work_order here) and paging are planned.
+  "GET /api/projects/:id/workflows": ({ id }, _body, query) => {
+    const project = projects.find((p) => p.id === id);
+    // 403 whether or not the project exists.
+    if (!project || !roleOf(project)) return forbidden();
+    const refused = badInclude(query, ["stats"]);
+    if (refused) return refused;
+    const stats = query.get("include") === "stats";
+    const sort = query.get("sort") ?? "name";
+    const field = sort.replace(/^-/, "");
+    const by = workflowSorts[field];
+    if (!by || (field === "last_work_order_updated_at" && !stats)) return badSort(field);
+    const rows = workflowStatsFor(project.id)
+      .sort(compareBy(by, sort.startsWith("-") ? "desc" : "asc", "last"))
+      .map((s) => workflowEntry(s, stats));
+    return json(200, paged(`/api/projects/${id}/workflows`, rows, query, "workflows"));
   },
   // Creates the project under :id, the caller its owner, or replaces the name and description.
   "PUT /api/projects/:id": ({ id }, body) => {

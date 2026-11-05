@@ -27,6 +27,15 @@ export type WorkOrderDisplayState =
   | "exception"
   | "lost";
 
+/** A workflow on a project's Workflows list: what its row shows. */
+export interface WorkflowListItem {
+  id: string;
+  name: string;
+  updatedAt: string;
+  /** The latest work order in the last 30 days, or null. */
+  lastWorkOrder: { state: WorkOrderDisplayState; updatedAt: string } | null;
+}
+
 /** One row of the workflows index table (`DashboardStats.WorkflowStats`): the fields it shows, and nothing else. */
 export interface WorkflowRow {
   workflow: {

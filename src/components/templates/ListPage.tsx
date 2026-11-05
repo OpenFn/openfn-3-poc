@@ -24,6 +24,7 @@ export interface ListEmpty {
  */
 export default function ListPage({
   title,
+  breadcrumbs,
   showCount = false,
   description,
   actions,
@@ -35,6 +36,8 @@ export default function ListPage({
   children,
 }: {
   title: string;
+  /** A project page's trail, in the bar above the title. */
+  breadcrumbs?: ReactNode;
   /** Show "(3)" after the title, while the list has rows. */
   showCount?: boolean;
   /** One line under the header, saying what the list is. */
@@ -56,7 +59,7 @@ export default function ListPage({
   return (
     <PageContent
       header={
-        <Header title={title} count={showCount && itemCount > 0 ? itemCount : undefined}>
+        <Header title={title} breadcrumbs={breadcrumbs} count={showCount && itemCount > 0 ? itemCount : undefined}>
           {actions}
         </Header>
       }

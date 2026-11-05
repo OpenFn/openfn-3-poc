@@ -10,7 +10,7 @@ const stats = workflowStatsFor(project.id);
 const history = `/projects/${project.id}/history`;
 
 const meta: Meta<typeof WorkflowsIndexPage> = {
-  title: "Pages/Projects/WorkflowsIndexPage",
+  title: "Pages/Projects/WorkflowsIndexPage (old)",
   component: WorkflowsIndexPage,
   // PageContent fills its parent, so give it a screen to fill.
   decorators: [withRouter, withCanvas("h-screen")],
