@@ -10,6 +10,7 @@ import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
 import { json, noContent, now, problem, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
+import { auditRoutes } from "./audit";
 
 export type { Problem } from "./answers";
 
@@ -88,6 +89,7 @@ const routes: Record<string, Handler> = {
   "GET /api/credentials": () => json(200, credentials),
 
   ...projectRoutes,
+  ...auditRoutes,
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */

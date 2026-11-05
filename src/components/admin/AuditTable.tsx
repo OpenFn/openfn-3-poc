@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { AuditEvent } from "@/types/admin";
-import type { PageInfo } from "@/types/lists";
+import type { PageLinks } from "@/types/lists";
 import { shortUuid } from "@/utils/format";
 import Pagination from "@/components/primitives/Pagination";
 import Pill from "@/components/primitives/Pill";
@@ -31,7 +31,7 @@ export default function AuditTable({
 }: {
   /** The events on this page. */
   events: AuditEvent[];
-  page: PageInfo;
+  page: PageLinks;
 }) {
   return (
     <Table

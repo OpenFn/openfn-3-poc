@@ -7,7 +7,7 @@ const meta: Meta<typeof AuditTable> = {
   component: AuditTable,
   args: {
     events: auditEvents.slice(0, auditPageSize),
-    page: { number: 1, size: auditPageSize, totalEntries: auditEvents.length },
+    page: { number: 1, size: auditPageSize, totalPages: 2 },
   },
 };
 export default meta;
@@ -15,9 +15,8 @@ type Story = StoryObj<typeof AuditTable>;
 
 export const FirstPage: Story = {};
 export const LastPage: Story = {
-  args: { events: auditEvents.slice(auditPageSize), page: { number: 2, size: auditPageSize, totalEntries: auditEvents.length } },
+  args: { events: auditEvents.slice(auditPageSize), page: { number: 2, size: auditPageSize, totalPages: 2 } },
 };
-export const Empty: Story = { args: { events: [], page: { number: 1, size: auditPageSize, totalEntries: 0 } } };
 /** A long actor email and item type, to check they truncate rather than overflow. */
 export const LongValues: Story = {
   args: {
@@ -27,7 +26,8 @@ export const LongValues: Story = {
         i === 0
           ? {
               ...e,
-              actorIdentifier: "amelia.oluwaseun-van-der-westhuizen.health-informatics@ministry-of-health.example.org",
+              actorLabel:
+                "Amelia Oluwaseun-van der Westhuizen (amelia.oluwaseun-van-der-westhuizen.health-informatics@ministry-of-health.example.org)",
               itemType: "Lightning.Workflows.WebhookAuthMethodProjectCredentialAssociation",
             }
           : e

@@ -1,10 +1,10 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { AuditEvent } from "@/types/admin";
 import AuditChanges from "./AuditChanges";
 
 // What AuditLive.Index.diff/1 showed, now this component's job.
-const event = (changes: AuditEvent["changes"], credentialBodies?: Record<string, string>): AuditEvent => ({
+const event = (changes: AuditEvent["changes"]): AuditEvent => ({
   id: "audit-1",
   event: "updated",
   itemType: "credential",
@@ -14,7 +14,6 @@ const event = (changes: AuditEvent["changes"], credentialBodies?: Record<string,
   actorIdentifier: "amy@example.com",
   insertedAt: "2026-10-14T18:36:12Z",
   changes,
-  ...(credentialBodies && { credentialBodies }),
 });
 
 function renderChanges(audit: AuditEvent) {
@@ -91,14 +90,5 @@ describe("AuditChanges", () => {
       expect(screen.queryAllByRole("listitem")).toHaveLength(0);
       document.body.innerHTML = "";
     }
-  });
-
-  it("lists credential bodies by environment, without the body: prefix twice", () => {
-    renderChanges(event({ before: null, after: null }, { "body:staging": "abc==", "body:production": "xyz==" }));
-    const items = within(screen.getByRole("cell")).getAllByRole("listitem");
-    expect(items.map((li) => li.textContent?.replace(/\s+/g, " ").trim())).toEqual([
-      "body:production xyz==",
-      "body:staging abc==",
-    ]);
   });
 });

@@ -55,8 +55,6 @@ export interface AuditEvent {
   /** Email for users; the service account id for service accounts; null shows the actor's short id instead. */
   actorIdentifier: string | null;
   changes: { before: Record<string, AuditValue> | null; after: Record<string, AuditValue> | null };
-  /** Encrypted credential bodies per environment, shown under the changes. */
-  credentialBodies?: Record<string, string>;
 }
 
 /** The configured OpenID Connect provider, as the admin form shows it: the secret itself never leaves the host. */
