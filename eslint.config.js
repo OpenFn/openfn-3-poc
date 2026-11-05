@@ -305,6 +305,15 @@ const otherAreaImports = (area) => ({
   message: `A feature component uses primitives, domain/, the shell and its own area, not another area. Move what two areas share into domain/ (or primitives/ if it's general). ${tiers}`,
 })
 
+// ListPage draws the header, the layout, loading, failure and the empty state, so a file that
+// uses it doesn't import the primitives behind them: it passes words, actions and its list instead.
+const listPageOwns = {
+  selector:
+    'Program:has(ImportDeclaration[source.value="@/components/templates/ListPage"]) > ImportDeclaration[source.value=/^@\\x2fcomponents\\x2fprimitives\\x2f(Header|PageContent|EmptyState|AsyncBoundary)$/]',
+  message:
+    "ListPage owns the header, the layout, loading, failure and the empty state, so a page on it doesn't import Header, PageContent, EmptyState or AsyncBoundary. Pass `title`, `actions`, `status` and `empty` instead.",
+}
+
 // The design system runs outside Lightning too (the replica, Storybook), so it
 // can't lean on LiveView or the browser URL. URLs go through src/routing.
 const hostMessage = 'Design-system code must not depend on LiveView or the browser URL; use useRouter() from src/routing/router.'
@@ -351,7 +360,7 @@ export default defineConfig([
   {
     files: ['src/pages/**/*.tsx', 'src/components/*/**/*.tsx'],
     ignores: ['src/components/primitives/**', '**/*.stories.tsx'],
-    rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules, ...stackRules] },
+    rules: { 'no-restricted-syntax': [...consumerRules(colourRules()), ...typeRules, ...stackRules, listPageOwns] },
   },
   {
     // A primitive's className, from a page or feature component, is layout and sizing only.
