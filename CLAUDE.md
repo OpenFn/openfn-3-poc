@@ -76,7 +76,7 @@ data, comments, lint) and loads by itself when you touch one.
 - `src/components/shell/`: the app shell. `AppShell.route.tsx` fills
   `Layout` (sidebar and page slots); `ProjectGate.route.tsx` is the parent
   of every `/projects/:projectId` route: it loads the project once, so a
-  route under it reads it with `useLoadedProject`.
+  route under it reads it with `useGatedProject` and never checks it exists.
 - `src/components/`: `primitives/`, `domain/`, `shell/`, then one folder per
   area.
 - `src/types/`: the hand-written shapes pages take. `src/constants.ts`:

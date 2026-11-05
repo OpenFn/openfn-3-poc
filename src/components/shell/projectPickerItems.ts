@@ -1,8 +1,5 @@
 import type { PickerItem } from "@/components/primitives/Picker";
-import type { CurrentProject } from "@/types/projects";
-
-/** A project in the picker's tree. */
-type TreeProject = CurrentProject & { name: string };
+import type { ProjectNode } from "@/types/projects";
 
 /**
  * Where switching to `projectId` should land from the current URL
@@ -25,7 +22,7 @@ export function projectPickerTarget(projectId: string, currentPath: string) {
 }
 
 /** The project tree, flattened in pre-order (Lightning's `build_project_picker_items`). */
-export function buildProjectPickerItems(currentPath: string, all: TreeProject[]): PickerItem[] {
+export function buildProjectPickerItems(currentPath: string, all: ProjectNode[]): PickerItem[] {
   const out: PickerItem[] = [];
   const walk = (parentId: string | null, depth: number, parentLabel: string) => {
     all
@@ -52,9 +49,9 @@ export function buildProjectPickerItems(currentPath: string, all: TreeProject[])
 }
 
 /** "parent/child" label for a project, as shown on the picker button. */
-export function projectLabel(project: TreeProject, all: TreeProject[]): string {
+export function projectLabel(project: ProjectNode, all: ProjectNode[]): string {
   const names: string[] = [];
-  let p: TreeProject | undefined = project;
+  let p: ProjectNode | undefined = project;
   while (p) {
     names.unshift(p.name);
     p = all.find((x) => x.id === p!.parentId);

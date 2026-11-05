@@ -1,20 +1,19 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
-import { useLoadedProject } from "@/api/projects";
 import { failNext, resetFakeApi } from "@/api/testing";
 import { projects } from "@/mock-data/projects";
 import { session } from "@/mock-data/users";
 import ProjectGate from "./ProjectGate.route";
+import { useGatedProject } from "./useGatedProject.route";
 
 const wait = { timeout: 3000 };
 const member = projects.find((p) => p.members.some((m) => m.userId === session.user.id))!;
 
 /** A route under the gate, reading the project the way the sweep's routes will. */
 function Child() {
-  const { projectId = "" } = useParams();
-  return <p>Inside {useLoadedProject(projectId).name}</p>;
+  return <p>Inside {useGatedProject().name}</p>;
 }
 
 function renderAt(projectId: string) {

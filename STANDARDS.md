@@ -248,6 +248,11 @@ is the list example (a list on `ListPage`, with create).
   Nothing else: no toasts, no state of its own. The hooks talk to the fake
   server in `src/fake-api/` until Lightning's API is there;
   `.claude/rules/api.md` says how. Each route has a `XPage.route.test.tsx`.
+- **Under `/projects/:projectId`, the project is already there.**
+  `ProjectGate` loads it before the route renders and shows Not Found or No
+  Access itself; the route reads it with `useGatedProject()` and never checks
+  whether it exists. A replica's `if (!project) <Navigate …>` goes when the
+  page moves.
 - **Older pages** still have a `XPage.replica.tsx` wrapper in place of the
   route: it holds the fixtures in state, awaits `simulateRequest`, toasts and
   navigates. Each moves to a route, in its own folder, when it's next worked

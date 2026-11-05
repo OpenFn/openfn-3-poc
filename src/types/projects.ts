@@ -27,6 +27,9 @@ export interface CurrentProject {
   color: string | null;
 }
 
+/** A project with its name, as the shell and the project picker use it. */
+export type ProjectNode = CurrentProject & { name: string };
+
 /** A project and its members (Lightning.Projects.Project, ProjectUser), as the replica and permissions.ts use them. Not part of the page contract: pages take CurrentProject and the shapes above (STANDARDS §11). */
 
 export interface ProjectMember {

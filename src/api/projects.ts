@@ -1,7 +1,7 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a route calls. */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CredentialProjectRef } from "@/types/credentials";
-import type { CurrentProject, ProjectInput } from "@/types/projects";
+import type { ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { listAll, request, statusOf } from "./client";
@@ -43,9 +43,6 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
 
 export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
 
-/** A project as the shell and the project routes use it: its name and where it sits in the tree. */
-export type ProjectNode = CurrentProject & { name: string };
-
 function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
   return { id, name: a.name, parentId: a.parent_id ?? null, color: a.color ?? null };
 }
@@ -60,21 +57,24 @@ export function useProject(id: string): { status: ResourceStatus; project: Proje
   return { status: statusOf(query), project: query.data };
 }
 
-/** The project ProjectGate loaded, from the same cache. Only for routes under the gate. */
+/** The project ProjectGate loaded, from the same cache. Routes call the gate's useGatedProject, which passes the id. */
 export function useLoadedProject(id: string): ProjectNode {
   const { project } = useProject(id);
   if (!project) throw new Error("useLoadedProject is for routes under ProjectGate, which loads the project first");
   return project;
 }
 
-/** Every project and sandbox you can open (the planned `depth=all`), for the project picker. Empty until loaded. */
-export function useProjectTree(): ProjectNode[] {
+const toTree = (rows: ApiProject[]) => rows.map(projectNode);
+const NONE: ProjectNode[] = [];
+
+/** Every project and sandbox you can open (the planned `depth=all`), for the project picker, and where loading them stands. */
+export function useProjectTree(): { status: ResourceStatus; projects: ProjectNode[] } {
   const query = useQuery({
     queryKey: [...projectKeys.all, "tree"],
     queryFn: () => listAll<ApiProject>("/api/projects?depth=all", "data"),
-    select: (rows) => rows.map(projectNode),
+    select: toTree,
   });
-  return query.data ?? [];
+  return { status: statusOf(query), projects: query.data ?? NONE };
 }
 
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */

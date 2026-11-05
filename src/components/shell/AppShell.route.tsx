@@ -21,7 +21,7 @@ export default function AppShell() {
   const user = useCurrentUser();
   const { adminEmail, releaseLabel } = useInstanceInfo();
   const { canAccessAdmin } = usePermissions();
-  const projects = useProjectTree();
+  const { status: projectsStatus, projects } = useProjectTree();
   const [collapsed, setCollapsed] = useState(false);
   const toggle = useCallback(() => setCollapsed((c) => !c), []);
 
@@ -49,7 +49,9 @@ export default function AppShell() {
         items={buildProjectPickerItems(pathname, projects)}
         currentId={projectId}
         placeholder="Search projects..."
-        emptyMessage="No projects found"
+        emptyMessage={
+          projectsStatus.state === "loading" ? "Loading projects..." : projectsStatus.state === "ready" ? "No projects found" : "Couldn't load your projects"
+        }
         viewAllLabel="View all projects"
         viewAllHref="/projects"
         openEvent="open-project-picker"
