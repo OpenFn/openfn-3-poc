@@ -318,6 +318,10 @@ goes back to Lightning's way.
   `StepUpDialog`, with that page's words, and runs the action again once the
   person has confirmed, so nothing they were doing is lost. A wrong password
   shows on the field rather than above the form.
+- **Backup codes ask for your password on the page.** Lightning sends you
+  to Confirm access first. Here the server holds the codes back, so the page
+  opens the same pop-up over itself. Closing it leaves "Confirm it's you to
+  see your backup codes." and a "Confirm access" button where the codes go.
 
 ## Audit
 

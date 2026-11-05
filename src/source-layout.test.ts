@@ -83,7 +83,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
-      "./pages/profile/BackupCodesPage.replica.tsx",
       "./pages/profile/CredentialsIndexPage.replica.tsx",
       "./pages/profile/ProfilePage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
@@ -100,10 +99,8 @@ describe("every page and component can be seen and checked", () => {
     expectOnlyKnown(direct, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
       "./pages/auth/AuthConfirmAccountPage.tsx",
-      "./pages/auth/AuthLoginPage.tsx",
       "./pages/auth/AuthRegisterPage.tsx",
       "./pages/auth/AuthResetPasswordPage.tsx",
-      "./pages/auth/AuthTwoFactorPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/workflow-editor/WorkflowEditorPage.tsx",
     ]);
@@ -185,7 +182,7 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryChannelLogsPage.tsx",
       "./pages/history/HistoryWorkOrdersPage.tsx",
       "./pages/history/RunShowPage.tsx",
-      "./pages/profile/BackupCodesPage.tsx",
+      "./pages/profile/backup-codes/BackupCodesPage.tsx",
       "./pages/project-settings/ProjectSettingsPage.tsx",
       "./pages/projects/ChannelsIndexPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
