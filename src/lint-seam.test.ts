@@ -202,6 +202,26 @@ describe("the tier lint rule", () => {
   });
 });
 
+describe("the ListPage lint rule", () => {
+  const owns = /^ListPage owns the header/;
+  const listPageMessages = async (filePath: string, code: string) =>
+    (await ruleMessages("no-restricted-syntax", filePath, code)).filter((m) => owns.test(m));
+  const page = (from: string) =>
+    `import ListPage from "@/components/templates/ListPage";\nimport X from "${from}";\nexport default [ListPage, X];\n`;
+
+  it.each(["Header", "PageContent", "EmptyState", "AsyncBoundary"])("a page on ListPage may not import %s", async (name) => {
+    for (const probe of ["src/pages/x/ProbePage.tsx", "src/components/projects/Probe.tsx"]) {
+      expect(await listPageMessages(probe, page(`@/components/primitives/${name}`)), probe).toEqual([expect.stringMatching(owns)]);
+    }
+  });
+
+  it("lets a page on ListPage import other primitives, and a page without it import these", async () => {
+    expect(await listPageMessages("src/pages/x/ProbePage.tsx", page("@/components/primitives/Button"))).toEqual([]);
+    const without = 'import EmptyState from "@/components/primitives/EmptyState";\nexport default EmptyState;\n';
+    expect(await listPageMessages("src/pages/x/ProbePage.tsx", without)).toEqual([]);
+  });
+});
+
 describe("the relative import lint rule", () => {
   const code = (from: string) => `import X from "${from}";\nexport default X;\n`;
   // Every block that sets no-restricted-imports replaces the others' options, so each kind of file is probed.
