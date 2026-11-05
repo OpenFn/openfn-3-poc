@@ -102,6 +102,11 @@ goes back to Lightning's way.
 
 ## Fields
 
+- **A name field hides "will be named …" while the name has an error.**
+  Lightning does this only in the sandbox form; its project and collection
+  forms keep the badge, so "Your project will be named my_project." sits
+  under "has invalid format" (`settings.html.heex:124-128`, `project.ex:108`).
+  The annotations mark that a bug to fix.
 - **A field with an error turns the typed text red too.** Lightning only
   reddens the border (`new_inputs.ex`). Red text makes the wrong value easy
   to spot. A dropdown's prompt stays dark; only a chosen value turns red.
