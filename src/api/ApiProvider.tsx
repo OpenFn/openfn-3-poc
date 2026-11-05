@@ -5,7 +5,7 @@ import { canRetry } from "./client";
 /**
  * TanStack Query for whatever hosts the routes: the app, Storybook. A failed
  * load is tried up to three more times, a refusal (4xx) never. `retry={false}`
- * shows a failure at once, for stories.
+ * shows a failure at once, for stories and tests.
  */
 export default function ApiProvider({ retry = true, children }: { retry?: boolean; children: ReactNode }) {
   const [client] = useState(
