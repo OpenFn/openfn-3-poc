@@ -5,7 +5,6 @@ export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvid
 export { default as AdminCollectionsPage } from "./pages/admin/collections/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
 export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
-export { default as AdminUserEditPage } from "./pages/admin/AdminUserEditPage";
 export { default as AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
 export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
@@ -34,7 +33,6 @@ export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvide
 export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
 export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";
-export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
 export type { AdminUsersPageProps } from "./pages/admin/users/AdminUsersPage";
 export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
@@ -69,6 +67,7 @@ export type {
   AdminProjectRow,
   AdminProjectSortKey,
   AdminProjectUser,
+  AdminUserEditing,
   AdminUserListRow,
   AdminUserRow,
   AdminUserSortKey,

@@ -10,6 +10,7 @@ import { session, users } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";
 import { isDisabled } from "@/test/disabled";
+import { pickOption } from "@/test/select";
 import AdminUsersPageQuery from "./AdminUsersPage.query";
 
 const wait = { timeout: 3000 };
@@ -34,6 +35,8 @@ function renderAt(path = "/settings/users") {
             <ReactRouterAdapter>
               <Routes>
                 <Route path="/settings/users" element={page} />
+                <Route path="/settings/users/new" element={page} />
+                <Route path="/settings/users/:userId" element={page} />
                 <Route path="/settings/users/:userId/delete" element={page} />
               </Routes>
             </ReactRouterAdapter>
@@ -166,5 +169,158 @@ describe("AdminUsersPageQuery", { timeout: 10_000 }, () => {
     await request("POST", "/api/session", { email: esther.email, password: FAKE_PASSWORD });
     renderAt();
     expect(await screen.findByRole("heading", { name: "No Access" }, wait)).toBeTruthy();
+  });
+
+  describe("the user form", () => {
+    const form = () => within(dialog());
+    // Required fields have a star after their label.
+    const labelled = (label: string) => form().getByLabelText(new RegExp(`^${label}`));
+    const type = (label: string, value: string) => fireEvent.change(labelled(label), { target: { value } });
+    const openAt = async (path: string) => {
+      renderAt(path);
+      await within(await screen.findByRole("dialog", {}, wait)).findByLabelText(/^First name/, {}, wait);
+    };
+    const newUser = async ({ email = "emmy@example.com", password = "a long enough password", support = false } = {}) => {
+      await openAt("/settings/users/new?sort=role");
+      type("First name", "Emmy");
+      type("Last name", "Noether");
+      type("Email", email);
+      type("Password", password);
+      if (support) fireEvent.click(form().getByRole("checkbox", { name: "Support user" }));
+      fireEvent.click(form().getByRole("button", { name: "Create user" }));
+    };
+    const signsInWith = async (email: string, password: string) => {
+      await request("DELETE", "/api/session");
+      return request("POST", "/api/session", { email, password }).then(
+        () => true,
+        () => false
+      );
+    };
+
+    it("creates a user through /new, back on the list with its query, which has reloaded with them", async () => {
+      await newUser();
+      expect(await screen.findByText("User created successfully", {}, wait)).toBeTruthy();
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(where()).toBe("/settings/users?sort=role");
+      shown("emmy@example.com", "Emmy Noether", "User", "Enabled");
+      expect(await signsInWith("emmy@example.com", "a long enough password")).toBe(true);
+    });
+
+    it("creates a user with support access when Support user is ticked", async () => {
+      await newUser({ support: true });
+      expect(await screen.findByText("User created successfully", {}, wait)).toBeTruthy();
+      shown("emmy@example.com", "Support");
+    });
+
+    it("goes back to the list with an error toast when the user is created but support access isn't turned on", async () => {
+      failNext("PATCH /api/users/:id", { status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+      await newUser({ support: true });
+      const alert = await screen.findByRole("alert", {}, wait);
+      expect(alert.textContent).toContain("User created, but support access wasn't turned on. You are not allowed to do that.");
+      expect(where()).toBe("/settings/users?sort=role");
+      expect(await screen.findByText("emmy@example.com", {}, wait)).toBeTruthy();
+      expect(within(rowOf("emmy@example.com")).queryByText("Support")).toBeNull();
+    });
+
+    it.each([
+      ["an email someone has under Email", { email: esther.email.toUpperCase() }, "Email", "has already been taken"],
+      ["a short password under Password", { password: "too short" }, "Password", "should be at least 12 character(s)"],
+    ])("keeps the form open with the server's refusal of %s", async (_case, values, label, message) => {
+      await newUser(values);
+      await waitFor(() => expect(labelled(label).getAttribute("aria-invalid")).toBe("true"), wait);
+      expect(form().getByText(message)).toBeTruthy();
+      expect(where()).toBe("/settings/users/new?sort=role");
+    });
+
+    it("changes another user's name, role and Disabled through /:userId", async () => {
+      await openAt(`/settings/users/${vikram.id}?q=v`);
+      expect(screen.getByRole("heading", { name: "Edit Vikram Viewer" })).toBeTruthy();
+      type("Last name", "Varma");
+      await pickOption(form().getByRole("button", { name: /^Role/ }), "Superuser");
+      fireEvent.click(form().getByRole("checkbox", { name: "Disabled" }));
+      fireEvent.click(form().getByRole("button", { name: "Save" }));
+      expect(await screen.findByText("User updated successfully", {}, wait)).toBeTruthy();
+      expect(where()).toBe("/settings/users?q=v");
+      shown(vikram.email, "Vikram Varma", "Superuser", "Disabled");
+    });
+
+    it.each([
+      ["keeps their password when it's left blank", "", FAKE_PASSWORD],
+      ["sets a new password when one is typed", "a brand new password", "a brand new password"],
+    ])("%s", async (_case, typed, signsInWithPassword) => {
+      await openAt(`/settings/users/${esther.id}`);
+      type("Password", typed);
+      fireEvent.click(form().getByRole("button", { name: "Save" }));
+      expect(await screen.findByText("User updated successfully", {}, wait)).toBeTruthy();
+      expect(await signsInWith(esther.email, signsInWithPassword)).toBe(true);
+    });
+
+    it("on your own account, greys what you can't change here and saves your name", async () => {
+      await openAt(`/settings/users/${amy.id}`);
+      expect(form().queryByLabelText("Password")).toBeNull();
+      for (const control of [labelled("Email"), form().getByRole("button", { name: /^Role/ }), form().getByRole("checkbox", { name: "Support user" }), form().getByRole("checkbox", { name: "Disabled" })]) {
+        expect(isDisabled(control)).toBe(true);
+      }
+      expect(form().getByText("You can't change your own role.")).toBeTruthy();
+      type("Last name", "Adams");
+      fireEvent.click(form().getByRole("button", { name: "Save" }));
+      expect(await screen.findByText("User updated successfully", {}, wait)).toBeTruthy();
+      expect(rowOf(amy.email).textContent).toContain("Amy Adams (you)");
+    });
+
+    it("shows a refusal to demote the last superuser under Role", async () => {
+      failNext("PATCH /api/users/:id", {
+        status: 422,
+        code: "invalid",
+        detail: "The request body is not valid.",
+        errors: [{ code: "last_superuser", detail: "would leave this instance with no superuser", pointer: "#/role" }],
+      });
+      await openAt(`/settings/users/${sizwe.id}`);
+      await pickOption(form().getByRole("button", { name: /^Role/ }), "User");
+      fireEvent.click(form().getByRole("button", { name: "Save" }));
+      await waitFor(() => expect(form().getByRole("button", { name: /^Role/ }).getAttribute("aria-invalid")).toBe("true"), wait);
+      expect(form().getByText("would leave this instance with no superuser")).toBeTruthy();
+    });
+
+    it("shows a refusal that isn't about a field in the form, which stays open", async () => {
+      failNext("PATCH /api/users/:id", { status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+      await openAt(`/settings/users/${esther.id}`);
+      fireEvent.click(form().getByRole("button", { name: "Save" }));
+      const refusal = await form().findByText("You are not allowed to do that.", {}, wait);
+      expect(refusal.closest("[role=alert]")?.textContent).toContain("The account wasn't saved");
+      expect(where()).toBe(`/settings/users/${esther.id}`);
+    });
+
+    it("sends an unknown /:userId to the list, keeping its query", async () => {
+      renderAt("/settings/users/no-such-user?q=e");
+      await waitFor(() => expect(where()).toBe("/settings/users?q=e"), wait);
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("goes back to the list with its query on Cancel, saving nothing", async () => {
+      await openAt(`/settings/users/${esther.id}?sort=role&dir=desc`);
+      type("Last name", "Unsaved");
+      fireEvent.click(form().getByRole("button", { name: "Cancel" }));
+      expect(where()).toBe("/settings/users?sort=role&dir=desc");
+      expect(screen.queryByRole("dialog")).toBeNull();
+      // A save sent on Cancel would land before this answer: the fake answers in order.
+      const { data } = await request<{ data: { attributes: { last_name: string } } }>("GET", `/api/users/${esther.id}`);
+      expect(data.attributes.last_name).toBe("Editor");
+    });
+
+    it("opens an account as it is now, not as it was the last time its form was open", async () => {
+      await openAt(`/settings/users/${esther.id}`);
+      fireEvent.click(form().getByRole("button", { name: "Cancel" }));
+      await request("DELETE", `/api/users/${esther.id}`);
+      fireEvent.click(screen.getByRole("link", { name: "Edit Esther Editor" }));
+      const disabled = await within(await screen.findByRole("dialog", {}, wait)).findByRole("checkbox", { name: "Disabled" }, wait);
+      expect((disabled as HTMLInputElement).checked).toBe(true);
+    });
+
+    it("shows No Access in the form when the server refuses someone who isn't a superuser the account", async () => {
+      await signsInWith(esther.email, FAKE_PASSWORD);
+      renderAt(`/settings/users/${vikram.id}`);
+      expect(await within(await screen.findByRole("dialog", {}, wait)).findByRole("heading", { name: "No Access" }, wait)).toBeTruthy();
+    });
   });
 });

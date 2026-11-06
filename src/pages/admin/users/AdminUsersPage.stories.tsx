@@ -24,8 +24,13 @@ const meta: Meta<typeof AdminUsersPage> = {
     createHref: "/settings/users/new",
     editHref: (id) => `/settings/users/${id}`,
     deleteHref: (id) => `/settings/users/${id}/delete`,
+    creating: false,
+    editing: null,
+    profileHref: "/profile",
     deleting: null,
     onClose: () => {},
+    onCreate: async () => ({ supportRefused: null }),
+    onUpdate: done,
     onScheduleDeletion: done,
     onCancelDeletion: done,
   },
@@ -43,3 +48,7 @@ export const NoAccess: Story = { args: { status: { state: "forbidden" }, users: 
 export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, users: [] } };
 /** /settings/users/:id/delete for someone who has created runs: type the email to schedule the deletion. */
 export const Deleting: Story = { args: { deleting: { ...users[1]!, hasActivityInProjects: true } } };
+/** /settings/users/new: the New user form over the list. */
+export const NewUser: Story = { args: { creating: true } };
+/** /settings/users/:id: that user's form over the list. */
+export const EditUser: Story = { args: { editing: { id: users[1]!.id, status: { state: "ready" }, user: users[1]!, ownAccount: false } } };

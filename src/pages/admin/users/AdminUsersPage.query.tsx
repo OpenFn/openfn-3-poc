@@ -1,5 +1,5 @@
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { isAdminUserSortKey, useAdminUsers, useUserSaves } from "@/api/users";
+import { isAdminUserSortKey, useAdminUser, useAdminUsers, useUserSaves } from "@/api/users";
 import { canDeleteUser } from "@/permissions";
 import { useCurrentUser } from "@/session/session";
 import type { AdminUserSortKey } from "@/types/admin";
@@ -8,13 +8,14 @@ import { pageParam, useUrlParams } from "@/utils/useUrlParams";
 import AdminUsersPage from "./AdminUsersPage";
 
 /**
- * AdminUsersPage's query. A /:userId/delete for a user who isn't on the loaded
- * page, can't be deleted or is already scheduled goes to the list. Closing the
- * dialog replaces its URL, so Back doesn't open it again.
+ * AdminUsersPage's query. /new and /:userId open the user form over the list;
+ * an unknown /:userId goes to the list, as does a /:userId/delete for a user
+ * who isn't on the loaded page, can't be deleted or is already scheduled.
+ * Closing a modal replaces its URL, so Back doesn't open it again.
  */
 export default function AdminUsersPageQuery() {
   const { userId } = useParams();
-  const { search } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const me = useCurrentUser();
   const { params, update, href } = useUrlParams<"q" | "sort" | "dir" | "page">();
@@ -23,19 +24,24 @@ export default function AdminUsersPageQuery() {
     direction: params.dir === "desc" ? "desc" : "asc",
   };
   const list = useAdminUsers({ q: params.q ?? "", sort, page: pageParam(params.page) });
+  const creating = pathname.endsWith("/new");
+  const deleteRoute = pathname.endsWith("/delete");
+  const editId = deleteRoute ? undefined : userId;
+  const edited = useAdminUser(editId);
   const saves = useUserSaves();
 
   // Until the API says who can be deleted (docs/api-gaps.md, We clearly need these), permissions.ts stands in.
   const users = list.users.map((u) => ({ ...u, canDelete: canDeleteUser(u) }));
   const listHref = `/settings/users${search}`;
   const ready = list.status.state === "ready";
-  const deleting = userId && ready ? (users.find((u) => u.id === userId && u.canDelete && !u.scheduledDeletion) ?? null) : null;
+  const deleting = deleteRoute && ready ? (users.find((u) => u.id === userId && u.canDelete && !u.scheduledDeletion) ?? null) : null;
+  const leave = (deleteRoute && ready && !deleting) || (editId !== undefined && edited.status.state === "notFound");
 
   return (
     <>
       {/* Next to the page, not instead of it: once the dialog schedules the deletion, the reloaded row is scheduled
           and this fires too, and the list should stay on screen. */}
-      {userId && ready && !deleting && <Navigate to={listHref} replace />}
+      {leave && <Navigate to={listHref} replace />}
       <AdminUsersPage
         status={list.status}
         users={users}
@@ -48,8 +54,13 @@ export default function AdminUsersPageQuery() {
         createHref={`/settings/users/new${search}`}
         editHref={(id) => `/settings/users/${id}${search}`}
         deleteHref={(id) => `/settings/users/${id}/delete${search}`}
+        creating={creating}
+        editing={editId !== undefined && !leave ? { id: editId, ...edited, ownAccount: editId === me.id } : null}
+        profileHref="/profile"
         deleting={deleting}
         onClose={() => navigate(listHref, { replace: true })}
+        onCreate={saves.create}
+        onUpdate={saves.update}
         onScheduleDeletion={saves.scheduleDeletion}
         onCancelDeletion={saves.cancelDeletion}
       />
