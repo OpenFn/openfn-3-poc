@@ -5,7 +5,12 @@ import AdminProjectForm from "@/components/admin/AdminProjectForm";
 import AdminProjectsTable from "@/components/admin/AdminProjectsTable";
 import ListSearch from "@/components/admin/ListSearch";
 import ProjectDeletionModal from "@/components/domain/ProjectDeletionModal";
-import type { AdminProjectFormValues, AdminProjectRow, AdminProjectSortKey, AdminProjectUser } from "@/types/admin";
+import type {
+  AdminProjectFormValues,
+  AdminProjectRow,
+  AdminProjectSortKey,
+  AdminProjectUser,
+} from "@/types/admin";
 import type { PageLinks, SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { useActions } from "@/utils/useAction";
@@ -81,20 +86,24 @@ export default function AdminProjectsPage({
       await onCancelDeletion(id);
       toast("Project deletion canceled");
     },
-    { onError: "toast" }
+    { onError: "toast" },
   );
 
   return (
     <ListPage
       title="Projects"
       description="Every project on this instance, whoever is in it."
+      search={
+        <ListSearch
+          value={search}
+          onSearch={onSearch}
+          placeholder="Filter projects"
+        />
+      }
       actions={
-        <>
-          <ListSearch value={search} onSearch={onSearch} placeholder="Filter projects" />
-          <Button to={createHref} icon="hero-folder-plus">
-            New project
-          </Button>
-        </>
+        <Button to={createHref} icon="hero-folder-plus">
+          New project
+        </Button>
       }
       status={status}
       itemCount={projects.length}

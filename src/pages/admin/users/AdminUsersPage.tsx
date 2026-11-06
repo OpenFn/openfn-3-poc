@@ -8,7 +8,12 @@ import AdminUsersTable from "@/components/admin/AdminUsersTable";
 import ListSearch from "@/components/admin/ListSearch";
 import UserFormModal from "@/components/admin/UserFormModal";
 import UserDeletionModal from "@/components/domain/UserDeletionModal";
-import type { AdminUserEditing, AdminUserListRow, AdminUserSortKey, UserFormValues } from "@/types/admin";
+import type {
+  AdminUserEditing,
+  AdminUserListRow,
+  AdminUserSortKey,
+  UserFormValues,
+} from "@/types/admin";
 import type { PageLinks, SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { useActions } from "@/utils/useAction";
@@ -48,7 +53,9 @@ export interface AdminUsersPageProps {
   /** Closes the modal or dialog, back to the list. */
   onClose: () => void;
   /** Creates a user. Answers why support access wasn't turned on, if it was asked for and wasn't: the user exists without it. */
-  onCreate: (values: Partial<UserFormValues>) => Promise<{ supportRefused: string | null }>;
+  onCreate: (
+    values: Partial<UserFormValues>,
+  ) => Promise<{ supportRefused: string | null }>;
   /** Changes only the fields given. */
   onUpdate: (id: string, changes: Partial<UserFormValues>) => Promise<void>;
   /** Schedules a user's deletion, which disables them. */
@@ -90,20 +97,24 @@ export default function AdminUsersPage({
       await onCancelDeletion(id);
       toast("User deletion canceled");
     },
-    { onError: "toast" }
+    { onError: "toast" },
   );
 
   return (
     <ListPage
       title="Users"
       description="Every account on this instance. Adding people to a project and changing their role there is usually done by the project's admins, in its settings."
+      search={
+        <ListSearch
+          value={search}
+          onSearch={onSearch}
+          placeholder="Filter users"
+        />
+      }
       actions={
-        <>
-          <ListSearch value={search} onSearch={onSearch} placeholder="Filter users" />
-          <Button to={createHref} icon="hero-user-plus">
-            New user
-          </Button>
-        </>
+        <Button to={createHref} icon="hero-user-plus">
+          New user
+        </Button>
       }
       status={status}
       itemCount={users.length}
@@ -134,7 +145,11 @@ export default function AdminUsersPage({
           onSave={async (values) => {
             const { supportRefused } = await onCreate(values);
             onClose();
-            if (supportRefused) toast(`User created, but support access wasn't turned on. ${supportRefused}`, "danger");
+            if (supportRefused)
+              toast(
+                `User created, but support access wasn't turned on. ${supportRefused}`,
+                "danger",
+              );
             else toast("User created successfully");
           }}
         />
