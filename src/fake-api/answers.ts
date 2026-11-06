@@ -22,6 +22,7 @@ export const noContent = () => new Response(null, { status: 204 });
 export const stepUpRequired = () =>
   problem({ status: 403, code: "step_up_required", detail: "Enter your password or an MFA code again to do this." });
 export const forbidden = () => problem({ status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+export const notFound = () => problem({ status: 404, code: "not_found", detail: "Not found." });
 // One 422 for every problem with a body (api/errors.md).
 export const invalid = (errors: NonNullable<Problem["errors"]>) =>
   problem({ status: 422, code: "invalid", detail: "The request body is not valid.", errors });

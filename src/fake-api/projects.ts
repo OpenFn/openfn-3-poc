@@ -11,7 +11,7 @@ import { fullName } from "@/utils/format";
 import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, now, ORIGIN, paged, parseSort, problem, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, type Handler, type Problem } from "./answers";
 import { membersOf } from "./members";
 import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
 
@@ -150,14 +150,14 @@ const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
 const PROJECT_KEYS = ["id", "name", "description", "members", "notify"];
 const PROJECT_NAME = /^[a-z0-9-]+$/;
 // The fields GET /api/projects sorts by (planned).
-const projectSorts: Record<string, (p: Project) => SortValue> = { name: (p) => p.name, inserted_at: (p) => p.insertedAt, last_activity: (p) => lastActivity(p) };
+const projectSorts: Record<"name" | "inserted_at" | "last_activity", (p: Project) => SortValue> = { name: (p) => p.name, inserted_at: (p) => p.insertedAt, last_activity: (p) => lastActivity(p) };
 
 // Deleting, and cancelling a deletion, is for the project's owner, a sandbox's admins and the owners and admins at the top
 // of its tree, and (planned) any superuser. Unknown to a superuser is a 404; to anyone else, 403 either way.
 function deletable(id: string | undefined): Project | Response {
-  const project = projects.find((p) => p.id === id);
+  const project = findProject(id);
   const superuser = currentUser().role === "superuser";
-  if (!project) return superuser ? problem({ status: 404, code: "not_found", detail: "Not found." }) : forbidden();
+  if (!project) return superuser ? notFound() : forbidden();
   const sandboxAdmin = project.parentId !== null && (roleOf(project) === "admin" || ["owner", "admin"].includes(roleOf(rootOf(project)) ?? ""));
   if (superuser || (canEnter(project) && (roleOf(project) === "owner" || sandboxAdmin))) return project;
   return forbidden();
@@ -169,9 +169,8 @@ export const projectRoutes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    const sort = query.get("sort") ?? "name";
-    const field = sort.replace(/^-/, "");
-    if (!Object.hasOwn(projectSorts, field)) return badSort(field);
+    const { field, key, direction } = parseSort(query, projectSorts, "name");
+    if (!key) return badSort(field);
     // Root projects you're a member of and not scheduled for deletion, a superuser too; with the planned depth=all,
     // every sandbox you can open too. scope=all is ahead of the API (docs/api-gaps.md, Superuser access): every project
     // and sandbox on the instance, scheduled ones included, for the admin pages, and superusers only. Only it takes q.
@@ -185,13 +184,13 @@ export const projectRoutes: Record<string, Handler> = {
         const owner = ownerOf(p);
         return matchesQuery(q, p.name, p.description, owner && fullName(owner));
       })
-      .sort(compareBy(projectSorts[field]!, sort.startsWith("-") ? "desc" : "asc"))
+      .sort(compareBy(projectSorts[key], direction))
       .map((p) => projectEntry(p, { members: false, stats, tree, admin: everything }));
     return json(200, paged("/api/projects", rows, query));
   },
   // api/workflows.md "List workflows". sort, include=stats (only last_work_order here) and paging are planned.
   "GET /api/projects/:id/workflows": ({ id }, _body, query) => {
-    const project = projects.find((p) => p.id === id);
+    const project = findProject(id);
     // 403 whether or not the project exists.
     if (!project || !canEnter(project)) return forbidden();
     const refused = badInclude(query, ["stats"]);
@@ -210,19 +209,19 @@ export const projectRoutes: Record<string, Handler> = {
     if (!isUuid(id!) && currentUser().role === "superuser") {
       return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
     }
-    const project = projects.find((p) => p.id === id);
+    const project = findProject(id);
     if (project && canEnter(project)) {
       const entry = projectEntry(project);
       return json(200, { data: { ...entry, attributes: { ...entry.attributes, permissions: permissionsIn(project) } }, included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
     }
-    if (!project && currentUser().role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!project && currentUser().role === "superuser") return notFound();
     return forbidden();
   },
   // Creates the project under :id, or replaces the name and description. A new project's owner is the caller, unless a
   // superuser sends its `members`. `notify` is accepted and ignored: the fake sends no email.
   "PUT /api/projects/:id": ({ id }, body) => {
     if (!isUuid(id!)) return forbidden();
-    const existing = projects.find((p) => p.id === id);
+    const existing = findProject(id);
     if (existing && (!canEnter(existing) || !["owner", "admin"].includes(roleOf(existing) ?? ""))) return forbidden();
     const errors: NonNullable<Problem["errors"]> = Object.keys(body)
       .filter((key) => !PROJECT_KEYS.includes(key))

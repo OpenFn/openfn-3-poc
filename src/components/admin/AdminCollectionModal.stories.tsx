@@ -37,7 +37,7 @@ export const DuplicateName: Story = {
   play: submit,
 };
 
-/** The server refuses for another reason (a plan limit): its message shows above the form. */
+/** The server refuses for another reason (a plan limit): its message shows below the fields. */
 export const Refused: Story = {
   args: { ...Edit.args, onSave: () => Promise.reject(new RequestError("You have reached the limit of collections for this project.")) },
   play: submit,

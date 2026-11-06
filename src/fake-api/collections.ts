@@ -2,7 +2,7 @@
 import { collections as fixtures } from "@/mock-data/project-settings";
 import type { CollectionSortKey } from "@/types/admin";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
-import { badSort, forbidden, parseSort, invalid, json, paged, problem, type Handler, type Problem } from "./answers";
+import { badSort, forbidden, parseSort, invalid, json, notFound, paged, type Handler, type Problem } from "./answers";
 import { findProject } from "./projects";
 import { currentUser } from "./session";
 
@@ -43,7 +43,7 @@ export const collectionRoutes: Record<string, Handler> = {
   // planned scope; project owners and admins may call it too, but no page does yet, so only superusers here.
   "PUT /api/projects/:project_id/collections/:id": ({ project_id, id }, body) => {
     if (currentUser().role !== "superuser") return forbidden();
-    if (!findProject(project_id)) return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!findProject(project_id)) return notFound();
     const name = typeof body["name"] === "string" ? body["name"] : "";
     const errors: NonNullable<Problem["errors"]> = [];
     if (name === "") errors.push({ code: "required", detail: "can't be blank", pointer: "#/name" });

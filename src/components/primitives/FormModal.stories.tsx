@@ -50,7 +50,7 @@ export const Pending: Story = {
     canvasElement.ownerDocument.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
   },
 };
-/** A rejected `onSubmit`: the modal stays open and shows the message above the form. */
+/** A rejected `onSubmit`: the modal stays open and shows the message below the fields. */
 export const Failed: Story = {
   args: { onSubmit: () => Promise.reject(new Error("A project with that name already exists.")) },
   play: async ({ canvasElement }) => {

@@ -1,5 +1,5 @@
 import { useAuditEvents } from "@/api/auditEvents";
-import { useUrlParams } from "@/utils/useUrlParams";
+import { pageParam, useUrlParams } from "@/utils/useUrlParams";
 import AdminAuditPage from "./AdminAuditPage";
 
 /**
@@ -8,6 +8,6 @@ import AdminAuditPage from "./AdminAuditPage";
  */
 export default function AdminAuditPageQuery() {
   const { params } = useUrlParams<"page">();
-  const { status, events, page } = useAuditEvents(Math.max(1, Math.trunc(Number(params.page)) || 1));
+  const { status, events, page } = useAuditEvents(pageParam(params.page));
   return <AdminAuditPage status={status} events={events} page={page} />;
 }
