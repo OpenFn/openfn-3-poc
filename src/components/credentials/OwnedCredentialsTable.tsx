@@ -1,5 +1,5 @@
-import IconButton from "@/components/primitives/IconButton";
-import Menu, { MenuDivider, MenuItem } from "@/components/primitives/Menu";
+import { MenuItem } from "@/components/primitives/Menu";
+import RowMenu from "@/components/primitives/RowMenu";
 import Pill from "@/components/primitives/Pill";
 import { Row, Stack } from "@/components/primitives/Stack";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
@@ -84,8 +84,11 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
             </Row>
           </Td>
           <Td actions>
-            <Menu
-              trigger={<IconButton icon="hero-ellipsis-horizontal" label={`Actions for ${c.name}`} pending={isPending(c.id)} />}
+            <RowMenu
+              name={c.name}
+              pending={isPending(c.id)}
+              onDelete={() => onDelete(c)}
+              deleteLabel={c.scheduledDeletion ? "Delete now" : undefined}
             >
               {c.scheduledDeletion ? (
                 <MenuItem icon="hero-arrow-uturn-left" onClick={() => onCancelDeletion(c)}>
@@ -93,7 +96,12 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
                 </MenuItem>
               ) : (
                 <>
-                  <MenuItem icon="hero-pencil" onClick={() => onEdit(c)}>
+                  <MenuItem
+                    icon="hero-pencil"
+                    onClick={() => onEdit(c)}
+                    disabled={c.schema === "oauth"}
+                    description={c.schema === "oauth" && "OAuth credentials can't be edited here yet."}
+                  >
                     Edit
                   </MenuItem>
                   <MenuItem icon="hero-arrows-right-left" onClick={() => onTransfer(c)}>
@@ -101,11 +109,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
                   </MenuItem>
                 </>
               )}
-              <MenuDivider />
-              <MenuItem icon="hero-trash" tone="danger" onClick={() => onDelete(c)}>
-                {c.scheduledDeletion ? "Delete now" : "Delete"}
-              </MenuItem>
-            </Menu>
+            </RowMenu>
           </Td>
         </Tr>
       ))}

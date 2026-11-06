@@ -98,6 +98,14 @@ const preview: Preview = {
     },
   },
   decorators: [withTheme, withSession, withApi],
+  // An Alert stays invisible for its first moment (Alert.tsx), and axe skips what it can't see, so wait it out.
+  afterEach: async ({ canvasElement }) => {
+    const hidden = () => canvasElement.ownerDocument.querySelector("[data-ui=alert].invisible");
+    for (let tries = 0; tries < 50 && hidden(); tries++) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    if (hidden()) throw new Error("An Alert stayed hidden past 1s, so axe would skip it");
+  },
 };
 
 export default preview;

@@ -22,6 +22,10 @@ goes back to Lightning's way.
   disables them natively (`new_inputs.ex:268-280`, `phx-disable-with`), which
   drops focus and hides the reason from the keyboard. A disabled button with
   no reason is natively disabled in both.
+- **Disabled menu items keep arrow-key focus**, for the same reason: they're
+  `aria-disabled`, ignore clicks, Enter and Space, and read out their reason.
+  Lightning's blocked Delete on a superuser is a plain span the keyboard
+  never reaches (`user_live/components.ex:172`).
 - **Disabled buttons take their own colours, the same family as Lightning's.**
   Primary, danger and success fill with their 300 shade, as Lightning does
   (`new_inputs.ex:232-247`), and secondary and plain buttons go grey
@@ -172,9 +176,9 @@ goes back to Lightning's way.
 - **For now, the credential form can only change `main`, and can't take
   a project away.** Saving says so instead of doing it. This goes when the
   form moves to the API's environment and project routes.
-- **For now, OAuth credentials can't be added or edited here.** Edit says
-  why. Transfer and delete still work. The API has no way to sign in to the
-  provider yet.
+- **For now, OAuth credentials can't be added or edited here.** Edit is
+  disabled and says why. Transfer and delete still work. The API has no way
+  to sign in to the provider yet.
 - **A refused transfer doesn't say whether the email has an account.**
   Lightning says "User does not exist", or names the projects the person
   isn't in, which tells anyone who has an account. Here both get "They need

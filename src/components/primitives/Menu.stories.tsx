@@ -18,9 +18,7 @@ const meta: Meta<typeof Menu> = {
       <>
         <MenuItem icon="hero-pencil-square">Edit</MenuItem>
         <MenuItem icon="hero-document-duplicate">Duplicate</MenuItem>
-        <MenuItem icon="hero-arrow-down-tray" disabled>
-          Export
-        </MenuItem>
+        <MenuItem icon="hero-arrow-down-tray">Export</MenuItem>
         <MenuDivider />
         <MenuItem icon="hero-trash" tone="danger">
           Delete
@@ -102,3 +100,20 @@ export const WithInlineLink: Story = {
 
 /** `panelProps` reach the portalled panel, so the annotations panel can find its `data-annotation`. */
 export const WithPanelProps: Story = { args: { panelProps: { "data-annotation": "workflow-editor-versions-and-promote" } } };
+
+/** A blocked item with its reason. Opened, so axe checks it. */
+export const DisabledWithReason: Story = {
+  args: {
+    children: (
+      <>
+        <MenuItem icon="hero-pencil-square">Edit</MenuItem>
+        <MenuItem icon="hero-trash" disabled description="Only project owners can delete this">
+          Delete
+        </MenuItem>
+      </>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector("button")?.click();
+  },
+};
