@@ -319,6 +319,9 @@ export function dataclipsIn(projectId: string): Dataclip[] {
   return dataclips.filter((d) => d.projectId === projectId);
 }
 
+/** Whether this user has created a run (Lightning's has_activity_in_projects): they can't be removed entirely until those projects are deleted. */
+export const hasCreatedRun = (userId: string) => runs.some((r) => r.createdBy === userId);
+
 export function findRun(id: string | undefined): Run | undefined {
   return runs.find((r) => r.id === id);
 }

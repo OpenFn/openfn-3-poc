@@ -23,10 +23,22 @@ interface Props {
  * title: the bar holds the breadcrumbs, and the title and actions take a row
  * beneath it, so every page names itself the same way.
  */
-export default function Header({ title, count, breadcrumbs, description, children, size = "md" }: Props) {
+export default function Header({
+  title,
+  count,
+  breadcrumbs,
+  description,
+  children,
+  size = "md",
+}: Props) {
   // One title for both places, so the two can't drift apart.
   const h1 = title && (
-    <h1 className={cn("min-w-0 text-strong", size === "xl" ? "text-3xl font-bold" : "text-xl font-semibold")}>
+    <h1
+      className={cn(
+        "min-w-0 text-strong",
+        size === "xl" ? "text-3xl font-bold" : "text-xl font-semibold",
+      )}
+    >
       {title}
       {count !== undefined && (
         <>
@@ -50,30 +62,59 @@ export default function Header({ title, count, breadcrumbs, description, childre
   if (breadcrumbs && title) {
     return (
       <div className="flex-none">
-        <div className="bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">{breadcrumbs}</div>
+        <div
+          className="bg-surface shadow-xs border-b border-subtle"
+          data-ui="page-header"
+          data-testid="top-bar"
+        >
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 flex items-center h-20">
+            {breadcrumbs}
+          </div>
         </div>
         {/* Part of the page, so themes paint it like the body. The same gutter as the body, so
             the title lines up with the content under it (the gutter needs an overflow). */}
-        <div className="bg-page overflow-x-auto [scrollbar-gutter:stable_both-edges]" data-ui="page-title-row">
+        <div
+          className="bg-page overflow-x-auto [scrollbar-gutter:stable_both-edges]"
+          data-ui="page-title-row"
+        >
           {/* One height whatever sits beside the title (nothing, a button, a search box), so the
               title and the content start at the same place on every page. Narrow, the actions
               wrap under the title, and pb-1 keeps their focus rings inside the row. With a description
               the actions stay level with the title, not halfway down the two lines. */}
-          <div className={cn("max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 pb-1 flex min-h-16 flex-wrap justify-between gap-x-4 gap-y-2", description ? "items-start" : "items-center")}>
+          <div
+            className={cn(
+              "max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4 pb-1 flex min-h-16 flex-wrap justify-between gap-x-4 gap-y-2",
+              description ? "items-start" : "items-center",
+            )}
+          >
             {heading}
-            {children && <div className="flex min-w-0 items-center gap-2">{children}</div>}
+            {children && (
+              <div className="flex min-w-0 items-center gap-2">{children}</div>
+            )}
           </div>
         </div>
       </div>
     );
   }
   return (
-    <div className="flex-none bg-surface shadow-xs border-b border-subtle" data-ui="page-header" data-testid="top-bar">
-      <div className={cn("max-w-7xl mx-auto sm:px-6 lg:px-8 flex items-center", description ? "min-h-20 py-4" : "h-20 py-6")}>
+    <div
+      className="flex-none bg-surface shadow-xs border-b border-subtle"
+      data-ui="page-header"
+      data-testid="top-bar"
+    >
+      <div
+        className={cn(
+          "max-w-7xl mx-auto sm:px-6 lg:px-8 flex items-center",
+          description ? "min-h-20 py-4" : "h-20 py-6",
+        )}
+      >
         {breadcrumbs ?? heading}
-        <div className="grow" />
-        {children}
+        {/* The actions keep their width and a gap, so a long description wraps instead of squashing a button. */}
+        {children && (
+          <div className="ml-auto flex shrink-0 items-center gap-2 pl-4">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );

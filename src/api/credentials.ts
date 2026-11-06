@@ -117,6 +117,7 @@ function credentialBody(values: CredentialValues) {
 
 export const credentialKeys = {
   all: ["credentials"] as const,
+  inProject: (projectId: string) => ["projects", projectId, "credentials"] as const,
   schemas: ["credential_schemas"] as const,
   schema: (name: string) => ["credential_schemas", name] as const,
 };
@@ -129,6 +130,17 @@ export function useCredentials(viewerEmail: string): { status: ResourceStatus; c
     select: (rows) => rows.map((c) => credentialRow(c, viewerEmail)),
   });
   return { status: statusOf(query), credentials: query.data ?? [] };
+}
+
+/** The credentials linked to a project, whoever owns them, as [name, id] options by name, loaded while `enabled`; and where loading them stands. */
+export function useProjectCredentialOptions(projectId: string, enabled: boolean): { status: ResourceStatus; options: [label: string, value: string][] } {
+  const query = useQuery({
+    queryKey: credentialKeys.inProject(projectId),
+    queryFn: () => listAll<ApiCredential>(`/api/projects/${projectId}/credentials`, "credentials"),
+    enabled,
+    select: (rows) => rows.map((c): [string, string] => [c.name, c.id]),
+  });
+  return { status: statusOf(query), options: query.data ?? [] };
 }
 
 /** The adaptor types a credential can be, and a loader for one type's fields. */

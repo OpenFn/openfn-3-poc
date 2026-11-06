@@ -3,6 +3,7 @@
  * in its source rather than read from the database. Safe to import anywhere.
  */
 import type { HistoryWorkOrderState, RunState, SearchFieldId } from "./types/history";
+import type { ProjectRole } from "./types/projects";
 import type { HealthRange } from "./types/workflow-health";
 import type { EdgeConditionType } from "./types/workflow-graph";
 
@@ -14,11 +15,14 @@ export const edgeConditionOptions: [label: string, value: EdgeConditionType][] =
   ["On Match", "js_expression"],
 ];
 
-/** Role options for the user form (User.RolesEnum, capitalised, sorted). */
+/** Role options for the user form (User.RolesEnum, capitalised, in the design's order). */
 export const userRoleOptions: [label: string, value: string][] = [
-  ["Superuser", "superuser"],
   ["User", "user"],
+  ["Superuser", "superuser"],
 ];
+
+/** What a superuser can reach, in the design's words. */
+export const superuserReach = "A superuser can reach everything on this instance, across every project, including these settings.";
 
 /** Lightning's User contact_preference enum (enum_options): label, value. */
 export const contactPreferenceOptions: [label: string, value: string][] = [
@@ -29,6 +33,15 @@ export const contactPreferenceOptions: [label: string, value: string][] = [
 /** Shown as the field's hint; Lightning shows a longer version in a tooltip. */
 export const contactPreferenceHint =
   "How often we email you about your account. Anytime: all updates. Critical: only issues affecting your projects or account.";
+
+/** A project role, or none, for each person in the admin New project form. */
+export const projectRoleOptions: [label: string, value: ProjectRole | ""][] = [
+  ["No access", ""],
+  ["Owner", "owner"],
+  ["Admin", "admin"],
+  ["Editor", "editor"],
+  ["Viewer", "viewer"],
+];
 
 /** Roles offered when adding or inviting collaborators. */
 export const collaboratorRoles = ["viewer", "editor", "admin"] as const;

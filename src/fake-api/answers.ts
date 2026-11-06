@@ -10,6 +10,7 @@ export interface Problem {
 export type Body = Record<string, unknown>;
 export type Handler = (params: Record<string, string>, body: Body, query: URLSearchParams) => Response;
 
+export const DAY_MS = 86_400_000;
 export const now = (at = new Date()) => at.toISOString().replace(/\.\d+Z$/, "Z"); // utc_datetime: whole seconds, like Lightning
 /** When the seeded records were made. */
 export const SEEDED_AT = "2026-01-01T00:00:00Z";
@@ -29,6 +30,7 @@ export const accepted = () => new Response(null, { status: 202 });
 // One 422 for every problem with a body (api/errors.md).
 export const invalid = (errors: NonNullable<Problem["errors"]>) =>
   problem({ status: 422, code: "invalid", detail: "The request body is not valid.", errors });
+export const isUrl = (value: string) => URL.canParse(value) && /^https?:/.test(value);
 export const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
 // Links are absolute, like Lightning's; the client keeps only the path.
@@ -52,6 +54,22 @@ export function paged<T>(path: string, rows: T[], query: URLSearchParams, key = 
     links: { self: link(page), first: link(1), last: link(last), next: page < last ? link(page + 1) : null, prev: page > 1 ? link(page - 1) : null },
   };
 }
+
+/**
+ * A list's `sort` parameter (api/conventions.md, `-` first for descending,
+ * `fallback` when absent) as its field and direction. `key` is the field when
+ * `sorts` has it, so a field the route doesn't take (or `constructor`) is null.
+ */
+export function parseSort<K extends string>(query: URLSearchParams, sorts: Record<K, unknown>, fallback: K) {
+  const sort = query.get("sort") ?? fallback;
+  const field = sort.replace(/^-/, "");
+  const direction: "asc" | "desc" = sort.startsWith("-") ? "desc" : "asc";
+  return { field, key: Object.hasOwn(sorts, field) ? (field as K) : null, direction };
+}
+
+/** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
+export const badSort = (field: string) =>
+  problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });
 
 /** A 400 for an `include` the route doesn't know (api/conventions.md). */
 export function badInclude(query: URLSearchParams, known: string[]) {

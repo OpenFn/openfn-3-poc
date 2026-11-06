@@ -1,12 +1,11 @@
 // The package's public surface: anything a consumer needs goes through here.
 
 export { default as AdminAuditPage } from "./pages/admin/audit/AdminAuditPage";
-export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvidersPage";
-export { default as AdminCollectionsPage } from "./pages/admin/AdminCollectionsPage";
+export { default as AdminAuthProvidersPage } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
+export { default as AdminCollectionsPage } from "./pages/admin/collections/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
-export { default as AdminProjectsPage } from "./pages/admin/AdminProjectsPage";
-export { default as AdminUserEditPage } from "./pages/admin/AdminUserEditPage";
-export { default as AdminUsersPage } from "./pages/admin/AdminUsersPage";
+export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
+export { default as AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
 export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export { default as AuthConfirmAccountPage } from "./pages/auth/confirm-account/AuthConfirmAccountPage";
 export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
@@ -15,8 +14,8 @@ export { default as AuthResetPasswordPage } from "./pages/auth/reset-password/Au
 export { default as AuthConfirmationRequiredPage } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/first-setup/FirstSetupPage";
 export { default as AuthRegisterPage } from "./pages/auth/register/AuthRegisterPage";
-export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
-export { default as DataclipShowPage } from "./pages/history/DataclipShowPage";
+export { default as ChannelRequestShowPage } from "./pages/history/channel-request/ChannelRequestShowPage";
+export { default as DataclipShowPage } from "./pages/history/dataclip/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
 export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
 export { default as RunShowPage } from "./pages/history/RunShowPage";
@@ -25,20 +24,19 @@ export { default as BackupCodesPage } from "./pages/profile/backup-codes/BackupC
 export { default as ProfilePage } from "./pages/profile/profile/ProfilePage";
 export { default as CredentialsIndexPage } from "./pages/profile/credentials/CredentialsIndexPage";
 export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
-export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
+export { default as ChannelsIndexPage } from "./pages/projects/channels/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/dashboard/ProjectsDashboardPage";
-export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
+export { default as SandboxesIndexPage } from "./pages/projects/sandboxes/SandboxesIndexPage";
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { AdminAuditPageProps } from "./pages/admin/audit/AdminAuditPage";
-export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
-export type { AdminCollectionsPageProps } from "./pages/admin/AdminCollectionsPage";
+export type { AdminAuthProvidersPageProps } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
+export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
-export type { AdminProjectsPageProps } from "./pages/admin/AdminProjectsPage";
-export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
-export type { AdminUsersPageProps } from "./pages/admin/AdminUsersPage";
+export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";
+export type { AdminUsersPageProps } from "./pages/admin/users/AdminUsersPage";
 export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export type { AuthConfirmAccountPageProps } from "./pages/auth/confirm-account/AuthConfirmAccountPage";
 export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
@@ -47,8 +45,8 @@ export type { AuthResetPasswordPageProps } from "./pages/auth/reset-password/Aut
 export type { AuthConfirmationRequiredPageProps } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/first-setup/FirstSetupPage";
 export type { AuthRegisterPageProps } from "./pages/auth/register/AuthRegisterPage";
-export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
-export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
+export type { ChannelRequestShowPageProps } from "./pages/history/channel-request/ChannelRequestShowPage";
+export type { DataclipShowPageProps } from "./pages/history/dataclip/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrdersPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
@@ -57,9 +55,9 @@ export type { BackupCodesPageProps } from "./pages/profile/backup-codes/BackupCo
 export type { ProfilePageProps } from "./pages/profile/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/credentials/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
-export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
+export type { ChannelsIndexPageProps } from "./pages/projects/channels/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/dashboard/ProjectsDashboardPage";
-export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
+export type { SandboxesIndexPageProps } from "./pages/projects/sandboxes/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
@@ -70,19 +68,22 @@ export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-heal
 
 export type {
   AdminCollectionRow,
-  AdminDeleteProject,
-  AdminDeleteUser,
-  AdminProjectForm,
   AdminProjectFormValues,
   AdminProjectRow,
+  AdminProjectSortKey,
+  AdminProjectUser,
+  AdminUserEditing,
+  AdminUserListRow,
   AdminUserRow,
+  AdminUserSortKey,
   AuditEvent,
   AuthProvider,
   AuthProviderValues,
   CollectionFormValues,
+  CollectionSortKey,
   UserFormValues,
 } from "./types/admin";
-export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";
+export type { ChannelFormValues, ChannelRequestDetail, ChannelRow } from "./types/channels";
 export type {
   CredentialActions,
   CredentialEnvironmentSecrets,
@@ -113,6 +114,7 @@ export type {
 } from "./types/credentials";
 export type {
   DataclipBody,
+  DataclipDetail,
   ErrorSignatureFilter,
   HistoryWorkflowRef,
   HistoryWorkOrderState,
@@ -176,7 +178,6 @@ export type {
   MergeTargetRef,
   MergeValues,
   MergeWorkflowRow,
-  SandboxForm,
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";

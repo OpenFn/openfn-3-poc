@@ -1,5 +1,6 @@
 import type { SortState } from "@/types/lists";
 import type { WorkflowListItem, WorkflowSortKey } from "@/types/workflows";
+import { serverSortThProps } from "@/utils/useTableSort";
 import { RowLink, Table, Td, Th, Tr } from "@/components/primitives/Table";
 import DateTime from "@/components/primitives/DateTime";
 import WorkOrderStatus from "./WorkOrderStatus";
@@ -23,13 +24,7 @@ export default function WorkflowsTable({
   sort: SortState<WorkflowSortKey>;
   onSort: (sort: SortState<WorkflowSortKey>) => void;
 }) {
-  const thProps = (key: WorkflowSortKey) => {
-    const current = sort.key === key;
-    return {
-      sortDirection: current ? sort.direction : null,
-      onSort: () => onSort({ key, direction: current && sort.direction === "asc" ? "desc" : "asc" }),
-    };
-  };
+  const thProps = serverSortThProps(sort, onSort);
 
   return (
     <Table

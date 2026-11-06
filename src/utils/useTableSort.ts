@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { SortState } from "@/types/lists";
 import { matchesQuery } from "./search";
 
 export type SortDirection = "asc" | "desc";
@@ -29,6 +30,20 @@ export function useSort<K extends string>(
     onSort: () => toggle(key),
   });
   return { sortKey, direction, toggle, thProps };
+}
+
+/**
+ * `thProps` for a list the server sorts, where `sort` comes in as a prop:
+ * the current column flips, another starts ascending. Props for a sortable `<Th>`.
+ */
+export function serverSortThProps<K extends string>(sort: SortState<K>, onSort: (sort: SortState<K>) => void) {
+  return (key: K) => {
+    const current = sort.key === key;
+    return {
+      sortDirection: current ? sort.direction : null,
+      onSort: () => onSort({ key, direction: current && sort.direction === "asc" ? "desc" : "asc" }),
+    };
+  };
 }
 
 /**

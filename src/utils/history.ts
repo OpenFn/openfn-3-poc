@@ -1,9 +1,8 @@
 /**
- * Pure helpers over history records: log filtering, channel request events,
- * failure counts, run state labels, work order selection, History's search in
- * words and as URL params. No fixture access.
+ * Pure helpers over history records: log filtering, failure counts, run
+ * state labels, work order selection, History's search in words and as URL
+ * params. No fixture access.
  */
-import type { ChannelEvent } from "@/types/channels";
 import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
 import type { SortState } from "@/types/lists";
 import { historySearchFields, historyStatuses } from "@/constants";
@@ -16,11 +15,6 @@ const levelScore = (l: string) => ({ debug: 0, info: 1, warn: 2, error: 3 })[l] 
 /** The log lines a level filter lets through: `level` and everything above it. */
 export function logsAtLevel<T extends { level: string }>(logs: T[], level: LogLine["level"]): T[] {
   return logs.filter((l) => levelScore(l.level) >= levelScore(level));
-}
-
-/** Prefers the destination response event, falls back to the error event. */
-export function primaryEvent(cr: { events: ChannelEvent[] }): ChannelEvent | undefined {
-  return cr.events.find((e) => e.type === "destination_response") ?? cr.events.find((e) => e.type === "error");
 }
 
 export const failureTotal = (counts: WorkOrderStateCounts) =>

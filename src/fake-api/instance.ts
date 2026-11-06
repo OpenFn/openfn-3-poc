@@ -2,7 +2,7 @@
 import { authConfig } from "@/mock-data/auth";
 import { session as sessionFixture } from "@/mock-data/users";
 import { json, ORIGIN, type Handler } from "./answers";
-import { endSession, isSignedIn } from "./session";
+import { endSession, isSignedIn, PURGE_DELETED_AFTER_DAYS } from "./session";
 
 /** A fresh install: no superuser yet. */
 let setupNeeded = false;
@@ -31,7 +31,7 @@ export const instanceRoutes: Record<string, Handler> = {
         url: ORIGIN,
         release: { label: sessionFixture.instance.releaseLabel, commit: null, image_tag: null, branch: null },
         admin_email: isSignedIn() ? sessionFixture.instance.adminEmail : null,
-        purge_deleted_after_days: 7,
+        purge_deleted_after_days: PURGE_DELETED_AFTER_DAYS,
         sign_in_providers: provider ? [{ name: provider.name, kind: "external", start_url: `${ORIGIN}${provider.handlerUrl}` }] : [],
         ai_assistant: true,
         github_sync: false,

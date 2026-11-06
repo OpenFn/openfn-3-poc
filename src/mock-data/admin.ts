@@ -4,33 +4,41 @@
  * project fields the shared users / projects fixtures don't carry.
  * Static fixtures only: nothing here talks to a backend.
  */
+import { canDeleteUser } from "@/permissions";
 import { fullName } from "@/utils/format";
+import { authRedirectUri } from "@/utils/urls";
 import { users } from "./users";
 import { projects } from "./projects";
 import type { Project } from "@/types/projects";
+import { hasCreatedRun } from "./history";
 import type { User } from "@/types/users";
 import { collections } from "./project-settings";
-import type { AdminCollectionRow, AdminProjectRow, AuditEvent, AuthProvider, LiveDashboardData } from "@/types/admin";
+import type { AdminCollectionRow, AdminProjectRow, AdminUserListRow, AuditEvent, AuthProvider, LiveDashboardData } from "@/types/admin";
+
+// ---------------------------------------------------------------------------
+// Users (admin-only fields)
+
+/** Every user as /settings/users lists them. */
+export function adminUserRows(): AdminUserListRow[] {
+  return users.map((u) => ({ ...u, hasActivityInProjects: hasCreatedRun(u.id), canDelete: canDeleteUser(u) }));
+}
 
 // ---------------------------------------------------------------------------
 // Projects (admin-only fields)
 
-/** Projects scheduled for deletion (project id -> ISO date). */
-export const projectScheduledDeletions: Record<string, string> = {};
-
-function projectOwnerName(project: Project): string {
-  const owner = project.members.find((m) => m.role === "owner");
-  const user = owner && users.find((u) => u.id === owner.userId);
-  return user ? fullName(user) : "";
-}
-
-/** Every project, with its owner's name and deletion date (ProjectLive.Index). */
+/** Every project, with its owner and member count (ProjectLive.Index); none scheduled for deletion. */
 export function adminProjectRows(): AdminProjectRow[] {
-  return projects.map((p) => ({
-    ...p,
-    ownerName: projectOwnerName(p),
-    scheduledDeletion: projectScheduledDeletions[p.id] ?? null,
-  }));
+  return projects.map((p) => {
+    const owner = users.find((u) => u.id === p.members.find((m) => m.role === "owner")?.userId);
+    return {
+      id: p.id,
+      name: p.name,
+      ownerName: owner ? fullName(owner) : null,
+      membersCount: p.members.length,
+      insertedAt: p.insertedAt,
+      scheduledDeletion: null,
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -152,28 +160,15 @@ export const auditPageSize = 10;
 // ---------------------------------------------------------------------------
 // Authentication (OpenID Connect provider)
 
-/** LightningWeb.Endpoint.struct_url(), the default redirect host. */
+/** LightningWeb.Endpoint.struct_url(), the instance's own URL. */
 export const instanceUrl = "http://localhost:4000";
 
-/** The configured provider; null means none is set up yet. */
-export const authProvider: AuthProvider | null = {
-  id: "auth-provider-google",
+/** The provider the fake server starts with; the fake holds its secret. */
+export const authProvider: AuthProvider = {
   name: "google",
   discoveryUrl: "https://accounts.google.com/.well-known/openid-configuration",
   clientId: "1081234567890-abc123def456.apps.googleusercontent.com",
-  hasClientSecret: true,
-  redirectHost: instanceUrl,
-  allowUnverifiedEmail: false,
-};
-
-export const emptyAuthProvider: AuthProvider = {
-  id: null,
-  name: "",
-  discoveryUrl: "",
-  clientId: "",
-  hasClientSecret: false,
-  redirectHost: instanceUrl,
-  allowUnverifiedEmail: false,
+  redirectUri: authRedirectUri(instanceUrl, "google"),
 };
 
 // ---------------------------------------------------------------------------
@@ -189,9 +184,15 @@ export function adminCollectionRows(): AdminCollectionRow[] {
   return collections.map((c) => ({ ...c, projectName: projects.find((p) => p.id === c.projectId)?.name ?? "" }));
 }
 
-/** Project options for the collection form's select. */
+// A sandbox's name with its parents', "parent/sandbox", as the API's display_name has it.
+const displayName = (p: Project): string => {
+  const parent = projects.find((q) => q.id === p.parentId);
+  return parent ? `${displayName(parent)}/${p.name}` : p.name;
+};
+
+/** Project options for the collection form's select, sandboxes as "parent/sandbox". */
 export const collectionProjectOptions: [label: string, value: string][] = projects
-  .map((p): [string, string] => [p.name, p.id])
+  .map((p): [string, string] => [displayName(p), p.id])
   .sort((a, b) => a[0].localeCompare(b[0]));
 
 // ---------------------------------------------------------------------------

@@ -148,9 +148,9 @@ describe("FirstSetupPageQuery, once set up", () => {
     expect(screen.getByText("At /projects")).toBeTruthy();
   });
 
-  it("refuses a create from a stale first-setup form", async () => {
+  // Signed in, the same request is a superuser's create (the admin users page), so only a signed-out one is stale.
+  it("refuses a signed-out create from a stale first-setup form", async () => {
     const values = { first_name: "Ada", last_name: "Admin", email: "ada@example.com", password: NEW_PASSWORD };
-    await expect(request("POST", "/api/users", values)).rejects.toMatchObject({ status: 403 });
     await request("DELETE", "/api/session");
     await expect(request("POST", "/api/users", values)).rejects.toMatchObject({ status: 401 });
   });

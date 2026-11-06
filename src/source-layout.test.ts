@@ -68,20 +68,12 @@ describe("every page and component can be seen and checked", () => {
     // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
-      "./pages/admin/AdminAuthProvidersPage.replica.tsx",
-      "./pages/admin/AdminCollectionsPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",
-      "./pages/admin/AdminProjectsPage.replica.tsx",
-      "./pages/admin/AdminUserEditPage.replica.tsx",
-      "./pages/admin/AdminUsersPage.replica.tsx",
-      "./pages/history/ChannelRequestShowPage.replica.tsx",
-      "./pages/history/DataclipShowPage.replica.tsx",
+
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
-      "./pages/projects/ChannelsIndexPage.replica.tsx",
-      "./pages/projects/SandboxesIndexPage.replica.tsx",
       "./pages/projects/WorkflowHealthPage.replica.tsx",
     ]);
   });
@@ -126,14 +118,12 @@ describe("every page and component can be seen and checked", () => {
     // A table is any component on the Table primitive, whatever its file is called.
     const drawers = components.filter((path) => imports(path, "components/primitives/Table") && drawsEmptyState(path));
     expectOnlyKnown(drawers, [
-      "./components/admin/AdminCollectionsTable.tsx",
       "./components/history/ChannelRequestsTable.tsx",
       "./components/profile/TokensTable.tsx",
       "./components/project-settings/CollaboratorsTable.tsx",
       "./components/project-settings/CollectionsTable.tsx",
       "./components/project-settings/HistoryExportsTable.tsx",
       "./components/project-settings/WebhookAuthMethodsTable.tsx",
-      "./components/projects/channels/ChannelsTable.tsx",
     ]);
   });
 
@@ -160,23 +150,17 @@ describe("every page and component can be seen and checked", () => {
     );
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",
-      "./pages/admin/AdminAuthProvidersPage.tsx",
-      "./pages/admin/AdminCollectionsPage.tsx",
+      "./pages/admin/auth-providers/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
-      "./pages/admin/AdminProjectsPage.tsx",
-      "./pages/admin/AdminUserEditPage.tsx",
-      "./pages/admin/AdminUsersPage.tsx",
       "./pages/auth/first-setup/FirstSetupPage.tsx",
-      "./pages/history/ChannelRequestShowPage.tsx",
-      "./pages/history/DataclipShowPage.tsx",
+      "./pages/history/channel-request/ChannelRequestShowPage.tsx",
+      "./pages/history/dataclip/DataclipShowPage.tsx",
       "./pages/history/HistoryChannelLogsPage.tsx",
       "./pages/history/HistoryWorkOrdersPage.tsx",
       "./pages/history/RunShowPage.tsx",
       "./pages/profile/backup-codes/BackupCodesPage.tsx",
       "./pages/project-settings/ProjectSettingsPage.tsx",
-      "./pages/projects/ChannelsIndexPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
-      "./pages/projects/SandboxesIndexPage.tsx",
       "./pages/projects/WorkflowHealthPage.tsx",
     ]);
   });

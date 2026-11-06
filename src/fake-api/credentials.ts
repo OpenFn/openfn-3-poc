@@ -9,7 +9,7 @@ import { purgeDeletedAfterDays } from "@/mock-data/project-settings";
 import { SEEDED_AT, forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
 import { credentialSchemaRoutes, schemaPackage } from "./credentialSchemas";
 import { fakeOauthClients, oauthClientRoutes, resetOauthClients } from "./oauthClients";
-import { fakeProjects, isEditorIn, isMemberOf } from "./projects";
+import { canEnter, fakeProjects, findProject, isEditorIn, isMemberOf } from "./projects";
 import { currentUser, people } from "./session";
 
 type Errors = NonNullable<Problem["errors"]>;
@@ -51,6 +51,11 @@ const seed = (): StoredCredential[] => {
   }));
 };
 let credentials = seed();
+
+/** Whether a credential is linked to the project, as a channel's destination credential must be. */
+export const isCredentialIn = (projectId: string, id: string) => credentials.some((c) => c.id === id && c.project_ids.includes(projectId));
+/** A credential's name, or null once it's deleted. */
+export const credentialName = (id: string) => credentials.find((c) => c.id === id)?.name ?? null;
 
 /** For stories and tests: the starting credentials and OAuth clients. */
 export const resetCredentials = () => {
@@ -178,6 +183,16 @@ export const credentialRoutes: Record<string, Handler> = {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(credentialJson);
     return json(200, paged("/api/credentials", rows, query, "credentials"));
+  },
+  // Every credential linked to the project, whoever owns it, for any member; by name.
+  "GET /api/projects/:project_id/credentials": ({ project_id }, _body, query) => {
+    const project = findProject(project_id);
+    if (!project || !canEnter(project)) return forbidden();
+    const rows = credentials
+      .filter((c) => c.project_ids.includes(project_id!))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(credentialJson);
+    return json(200, paged(`/api/projects/${project_id}/credentials`, rows, query, "credentials"));
   },
   // POST takes no owner or id: those are PUT's.
   "POST /api/credentials": (_params, body) => {

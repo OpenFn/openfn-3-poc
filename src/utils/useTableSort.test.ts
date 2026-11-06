@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { compareBy, type SortValue } from "./useTableSort";
+import { describe, expect, it, vi } from "vitest";
+import { compareBy, serverSortThProps, type SortValue } from "./useTableSort";
 
 type Row = { name: string; at?: SortValue };
 
@@ -51,5 +51,19 @@ describe("compareBy", () => {
     expect(sorted(rows, "desc")).toEqual(["c", "b", "a"]);
     const ties = [{ name: "First" }, { name: "Second" }, { name: "Third" }];
     expect(sorted(ties, "desc")).toEqual(["First", "Second", "Third"]);
+  });
+});
+
+describe("serverSortThProps", () => {
+  it("marks the current column, flips it on a click, and starts another column ascending", () => {
+    const onSort = vi.fn();
+    const thProps = serverSortThProps<"name" | "size">({ key: "name", direction: "asc" }, onSort);
+    expect(thProps("name").sortDirection).toBe("asc");
+    expect(thProps("size").sortDirection).toBeNull();
+    thProps("name").onSort();
+    thProps("size").onSort();
+    expect(onSort.mock.calls).toEqual([[{ key: "name", direction: "desc" }], [{ key: "size", direction: "asc" }]]);
+    serverSortThProps<"name" | "size">({ key: "name", direction: "desc" }, onSort)("name").onSort();
+    expect(onSort).toHaveBeenLastCalledWith({ key: "name", direction: "asc" });
   });
 });

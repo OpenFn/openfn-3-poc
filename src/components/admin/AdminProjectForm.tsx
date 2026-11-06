@@ -1,169 +1,132 @@
 import { useState } from "react";
-import type { AdminProjectForm as FormData, AdminProjectFormValues, AdminProjectUser } from "@/types/admin";
+import { projectRoleOptions } from "@/constants";
+import type { AdminProjectFormValues, AdminProjectUser } from "@/types/admin";
 import type { ProjectRole } from "@/types/projects";
+import type { ResourceStatus } from "@/types/resource";
+import { RequestError } from "@/utils/errors";
 import { fullName, urlSafeName } from "@/utils/format";
-import { cn } from "@/utils/cn";
-import { RequestError, errorMessage } from "@/utils/errors";
-import { useAction } from "@/utils/useAction";
-import SearchInput from "@/components/primitives/SearchInput";
-import Button from "@/components/primitives/Button";
-import Form from "@/components/primitives/Form";
-import Section from "@/components/primitives/Section";
-import { Radio } from "@/components/primitives/Inputs";
+import { matchesQuery } from "@/utils/search";
+import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
+import AsyncBoundary from "@/components/primitives/AsyncBoundary";
+import FormModal from "@/components/primitives/FormModal";
+import { Field, Select, TextArea } from "@/components/primitives/Inputs";
 import NameField from "@/components/primitives/NameField";
+import SearchInput from "@/components/primitives/SearchInput";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
-import { useTableSort, type SortValue } from "@/utils/useTableSort";
-
-type Role = ProjectRole | "";
-const ROLES: ProjectRole[] = ["owner", "admin", "editor", "viewer"];
-
-interface Row {
-  user: AdminProjectUser;
-  role: Role;
-}
-
-type SortKey = "name" | "email" | "no_access" | ProjectRole;
-
-const sortMap: Record<SortKey, (r: Row) => SortValue> = {
-  name: (r) => fullName(r.user),
-  email: (r) => r.user.email,
-  no_access: (r) => r.role === "",
-  owner: (r) => r.role === "owner",
-  admin: (r) => r.role === "admin",
-  editor: (r) => r.role === "editor",
-  viewer: (r) => r.role === "viewer",
-};
-
-const searchFields: ((r: Row) => string)[] = [(r) => fullName(r.user), (r) => r.user.email, (r) => r.role];
+import Text from "@/components/primitives/Text";
 
 interface Props {
-  /** The project being edited; omit for /settings/projects/new. */
-  project?: FormData["project"] | undefined;
+  /** Who can be given a role. */
   users: AdminProjectUser[];
-  /** Saves the form. Rejects with field errors (`rawName`, `owner`) or a message, shown by the form. */
+  /** Where loading `users` stands. Left out, they are ready. */
+  status?: ResourceStatus | undefined;
+  onCancel: () => void;
+  /** Creates the project, with the URL-safe name. Rejects with a message, or a 422's field errors keyed as the API keys them (`name`, `description`, `members`, `members.0.email`). */
   onSave: (values: AdminProjectFormValues) => Promise<void>;
-  /** Where Cancel goes. */
-  cancelHref: string;
 }
 
 /**
- * The superuser project form (project_live/form_component.html.heex): a
- * name (with the slug it will get) and a role radio grid for every user in
- * the instance. Save is always enabled: pressing it without a name or
- * exactly one owner shows why and sends nothing. The host checks both again
- * and replies its own owner error.
+ * A 422's errors go on the form: one about a single member (`members.2.email`)
+ * goes under Members, with that member's email in front. Any other refusal
+ * (a plan limit's entry at `#/members`) is a message for the whole form.
  */
-export default function AdminProjectForm({ project, users, onSave, cancelHref }: Props) {
-  const [rawName, setRawName] = useState(project?.name ?? "");
-  const [roles, setRoles] = useState<Record<string, Role>>(() =>
-    Object.fromEntries(users.map((u) => [u.id, project?.members.find((m) => m.userId === u.id)?.role ?? ""]))
-  );
-  // Errors show once something has changed or Save was pressed.
-  const [touched, setTouched] = useState(false);
-  const rows: Row[] = users.map((user) => ({ user, role: roles[user.id] ?? "" }));
-  const sort = useTableSort({ rows, initialKey: "name", sortMap, searchFields });
-  const save = useAction(() => onSave({ rawName, roles }));
+function onTheForm(error: unknown, members: AdminProjectFormValues["members"]): unknown {
+  if (!(error instanceof RequestError) || !error.hasFieldErrors) return error;
+  if (error.status !== undefined && error.status !== 422) return new RequestError(error.message);
+  const fieldErrors: Record<string, string[]> = {};
+  for (const [key, messages] of Object.entries(error.fieldErrors)) {
+    const [field = key, index] = key.split(".");
+    const email = index === undefined ? undefined : members[Number(index)]?.email;
+    (fieldErrors[field] ??= []).push(...messages.map((m) => (email ? `${email} ${m}` : m)));
+  }
+  return new RequestError(error.message, { fieldErrors });
+}
 
-  const name = urlSafeName(rawName);
-  const owners = Object.values(roles).filter((r) => r === "owner").length;
-  const valid = name !== "" && owners === 1;
-  const fieldErrors = save.error instanceof RequestError ? save.error.fieldErrors : {};
-  const ownerError =
-    fieldErrors["owner"]?.[0] ??
-    (owners > 1
-      ? "A project can have only one owner."
-      : touched && owners === 0
-        ? "Every project must have exactly one owner. Please specify one below."
-        : null);
-  // Both show: a new owner mistake mustn't hide why the last Save failed.
-  const otherError = save.error && !fieldErrors["owner"] && !fieldErrors["rawName"] ? errorMessage(save.error) : null;
-
-  const th = (key: SortKey, label: string, center = true) => (
-    <Th align={center ? "center" : "left"} {...sort.thProps(key)}>
-      {label}
-    </Th>
-  );
+/**
+ * The superuser's New project modal (project_live/form_component.html.heex):
+ * a name, with the URL-safe name it will get, a description, and a role for
+ * each person. The client checks only that there's a name and an owner; the
+ * server checks the rest. Filtering the people keeps every role already given.
+ */
+export default function AdminProjectForm({ users, status = { state: "ready" }, onCancel, onSave }: Props) {
+  const form = useForm<AdminProjectFormValues>({
+    initial: { name: "", description: "", members: [] },
+    validate: ({ name, members }) => ({
+      name: blank(urlSafeName(name)),
+      members: members.some((m) => m.role === "owner") ? [] : ["Every project must have exactly one owner."],
+    }),
+  });
+  const [filter, setFilter] = useState("");
+  const { members } = form.values;
+  const roleOf = (email: string) => members.find((m) => m.email === email)?.role ?? "";
+  const setRole = (email: string, role: string) => {
+    const others = members.filter((m) => m.email !== email);
+    form.set("members", role ? [...others, { email, role: role as ProjectRole }] : others);
+  };
+  const shown = users.filter((u) => matchesQuery(filter, fullName(u), u.email));
 
   return (
-    <div id={`project-form-${project?.id ?? "new"}`}>
-      <Form
-        id="project-form"
-        pending={save.pending}
-        error={[ownerError, otherError].filter(Boolean).join(" ") || null}
-        actions={
-          <>
-            <Button variant="secondary" to={cancelHref}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              Save
-            </Button>
-          </>
+    <FormModal
+      open
+      onClose={onCancel}
+      size="2xl"
+      title="New project"
+      formId="project-form"
+      submitLabel="Create project"
+      errorHeader="The project wasn't saved"
+      submitDisabled={status.state !== "ready"}
+      onSubmit={form.modalSubmit(async (values) => {
+        try {
+          await onSave({ ...values, name: urlSafeName(values.name), description: values.description.trim() });
+        } catch (error) {
+          throw onTheForm(error, values.members);
         }
-        onSubmit={(e) => {
-          e.preventDefault();
-          setTouched(true);
-          if (valid) void save.run();
-        }}
-      >
-        <NameField
-          id="project_raw_name"
-          name="raw_name"
-          value={rawName}
-          onChange={(raw) => {
-            setRawName(raw);
-            setTouched(true);
-            save.reset();
-          }}
-          errors={fieldErrors["rawName"] ?? (touched && name === "" ? ["can't be blank"] : [])}
-          badgeLabel="Note that this project will be named:"
-          fieldClassName="w-1/2"
-        />
-        {/* eslint-disable-next-line local/primitive-classname -- debt: margin (mt-8) */}
-        <Section title="Manage project users" className="mt-8">
-          <SearchInput value={sort.filter} onChange={sort.setFilter} placeholder="Filter users..." className="max-w-sm" />
-
+      })}
+    >
+      <AsyncBoundary status={status}>
+        <NameField id="project_raw_name" required {...form.fieldProps("name")} badgeLabel="Note that this project will be named:" />
+        <TextArea id="project_description" label="Description" rows={2} {...form.fieldProps("description")} />
+        <Field group label="Members" hint="Give each person a role in this project. Exactly one of them is its owner." errors={form.errors.members}>
+          <SearchInput value={filter} onChange={setFilter} placeholder="Filter users" />
           <Table
             id="project_users_table"
             header={
               <Tr>
-                {th("name", "NAME", false)}
-                {th("email", "EMAIL", false)}
-                {th("no_access", "NO ACCESS")}
-                {th("owner", "OWNER")}
-                {th("admin", "ADMIN")}
-                {th("editor", "EDITOR")}
-                {th("viewer", "VIEWER")}
+                <Th>Name</Th>
+                <Th align="right">Role</Th>
               </Tr>
             }
           >
-            {sort.rows.map(({ user, role }) => (
-              // eslint-disable-next-line local/primitive-classname -- debt: colour (text-faint)
-              <Tr key={user.id} className={cn(role === "" && "text-faint")}>
-                <Td>{fullName(user)}</Td>
-                <Td>{user.email}</Td>
-                {(["", ...ROLES] as Role[]).map((r) => (
-                  <Td key={r || "no_access"} align="center">
-                    <span className="inline-flex justify-center">
-                      <Radio
-                        name={`project_users[${user.id}][role]`}
-                        id={`project_users_${user.id}_role_${r || "no_access"}`}
-                        label={<span className="sr-only">{`${fullName(user)}: ${r || "no access"}`}</span>}
-                        checked={role === r}
-                        onChange={() => {
-                          setRoles((prev) => ({ ...prev, [user.id]: r }));
-                          setTouched(true);
-                          save.reset();
-                        }}
-                      />
-                    </span>
-                  </Td>
-                ))}
+            {shown.length === 0 ? (
+              <Tr>
+                <Td colSpan={2}>No users match.</Td>
               </Tr>
-            ))}
+            ) : (
+              shown.map((user) => (
+                <Tr key={user.id}>
+                  <Td>
+                    <Text as="div" tone={roleOf(user.email) ? "strong" : "muted"}>
+                      {fullName(user)}
+                    </Text>
+                    <Text as="div" variant="body-sm">
+                      {user.email}
+                    </Text>
+                  </Td>
+                  <Td align="right">
+                    <Select
+                      aria-label={`${fullName(user)}'s role`}
+                      options={projectRoleOptions}
+                      value={roleOf(user.email)}
+                      onChange={(e) => setRole(user.email, e.target.value)}
+                    />
+                  </Td>
+                </Tr>
+              ))
+            )}
           </Table>
-        </Section>
-      </Form>
-    </div>
+        </Field>
+      </AsyncBoundary>
+    </FormModal>
   );
 }

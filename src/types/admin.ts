@@ -1,8 +1,9 @@
-/** Superuser admin views: audit trail and auth provider. Types only: no data, no behaviour. */
-import type { ProjectRole } from "./projects";
+/** Superuser admin views: users, projects, collections, audit trail and auth provider. Types only: no data, no behaviour. */
+import type { ProjectInput, ProjectRole } from "./projects";
+import type { ResourceStatus } from "./resource";
 import type { UserRole } from "./users";
 
-/** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
+/** The account the admin user form edits: what it shows, nothing more. */
 export interface AdminUserRow {
   id: string;
   firstName: string;
@@ -11,31 +12,39 @@ export interface AdminUserRow {
   role: UserRole;
   supportUser: boolean;
   disabled: boolean;
+}
+
+/** The account the open user form edits, by id; where loading it stands; and whether it's the signed-in user's. */
+export interface AdminUserEditing {
+  id: string;
+  status: ResourceStatus;
+  /** Undefined until it has loaded. */
+  user: AdminUserRow | undefined;
+  ownAccount: boolean;
+}
+
+/** A row of /settings/users. */
+export interface AdminUserListRow extends AdminUserRow {
   /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
-}
-
-/** The account whose deletion dialog is open (/settings/users/:id/delete). */
-export interface AdminDeleteUser {
-  id: string;
-  /** Typed back to confirm. */
-  email: string;
-  /** Set when a deletion is already scheduled: confirming then deletes the account at once. */
-  scheduledDeletion: string | null;
-  /** The account has run activity in projects: deleting it now is refused. */
+  /** They have created runs (`hasCreatedRun`). */
   hasActivityInProjects: boolean;
+  /** Whether their deletion can be scheduled. Superusers' can't. */
+  canDelete: boolean;
 }
 
-/** What the admin user form saves. On a new account the host ignores the edit-only fields. */
+/** The fields the users list sorts by (`?sort=`), as the API names them. */
+export type AdminUserSortKey = "first_name" | "role" | "disabled";
+
+/** What the admin user form saves, named as the API names them. */
 export interface UserFormValues {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  /** Empty on edit keeps the current password. */
+  /** Blank on edit keeps the current password. */
   password: string;
   role: UserRole;
-  supportUser: boolean;
-  scheduledDeletion: string;
+  support_user: boolean;
   disabled: boolean;
 }
 
@@ -57,38 +66,38 @@ export interface AuditEvent {
   changes: { before: Record<string, AuditValue> | null; after: Record<string, AuditValue> | null };
 }
 
-/** The configured OpenID Connect provider, as the admin form shows it: the secret itself never leaves the host. */
+/** The instance's OpenID Connect provider, as the API sends it: the client secret never comes back. */
 export interface AuthProvider {
-  id: string | null;
   name: string;
   discoveryUrl: string;
   clientId: string;
-  /** A secret is stored; the form may leave the field blank to keep it. */
-  hasClientSecret: boolean;
-  redirectHost: string;
-  allowUnverifiedEmail: boolean;
+  /** Where the provider sends people back, to register with it. */
+  redirectUri: string;
 }
 
-/** What the auth provider form saves or tests. A blank secret keeps the stored one. */
+/** What the auth provider form saves, named as the API names them. A blank `client_secret` keeps the stored one. */
 export interface AuthProviderValues {
   name: string;
-  discoveryUrl: string;
-  clientId: string;
-  clientSecret: string;
-  redirectHost: string;
-  allowUnverifiedEmail: boolean;
+  discovery_url: string;
+  client_id: string;
+  client_secret: string;
 }
 
-/** A row of /settings/projects: what the table shows, with the owner's name joined in. */
+/** A row of /settings/projects: what the table shows, with the owner joined in. */
 export interface AdminProjectRow {
   id: string;
+  /** A sandbox's is "parent/sandbox". */
   name: string;
-  description: string;
+  /** The owner's full name; null when the project has no owner. */
+  ownerName: string | null;
+  membersCount: number;
   insertedAt: string;
-  /** The owner's full name; "" when the project has no owner. */
-  ownerName: string;
+  /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
 }
+
+/** The fields the projects list sorts by (`?sort=`), as the API names them. */
+export type AdminProjectSortKey = "name" | "inserted_at";
 
 /** Someone the admin project form can give a role to. */
 export interface AdminProjectUser {
@@ -98,24 +107,9 @@ export interface AdminProjectUser {
   email: string;
 }
 
-/** The admin project form while the route has it open (/settings/projects/new, /settings/projects/:id). */
-export interface AdminProjectForm {
-  /** The project being edited, with its members' roles; null for a new project. */
-  project: { id: string; name: string; members: { userId: string; role: ProjectRole }[] } | null;
-  /** Every account on the instance, one row each. */
-  users: AdminProjectUser[];
-}
-
-/** What the admin project form saves: the name as typed (the host derives the URL-safe name) and a role, or "" for none, per user id. */
-export interface AdminProjectFormValues {
-  rawName: string;
-  roles: Record<string, ProjectRole | "">;
-}
-
-/** The project whose deletion dialog is open (/settings/projects/:id/delete). The host knows whether confirming schedules or purges. */
-export interface AdminDeleteProject {
-  id: string;
-  name: string;
+/** The body of `PUT /api/projects/:id` with `members`; `name` is as typed until the form sends it URL-safe. */
+export interface AdminProjectFormValues extends ProjectInput {
+  members: { email: string; role: ProjectRole }[];
 }
 
 /** One row of the instance-wide collections table (/settings/collections): what it shows, no preview. */
@@ -123,16 +117,19 @@ export interface AdminCollectionRow {
   id: string;
   projectId: string;
   name: string;
-  /** Sum of the byte size of every item (shown as "Used storage"). */
+  /** Sum of the byte size of every item (shown as "Size"). */
   byteSizeSum: number;
   projectName: string;
 }
 
-/** What the create / edit collection form saves: the name as typed (the host derives the URL-safe name) and the project. */
+/** What the create / edit collection form saves, named as the API names them: the name (as typed until it's sent URL-safe) and the project it goes in. */
 export interface CollectionFormValues {
-  rawName: string;
-  projectId: string;
+  name: string;
+  project_id: string;
 }
+
+/** The fields the collections list sorts by (`?sort=`), as the API names them. */
+export type CollectionSortKey = "name" | "byte_size_sum";
 
 /** What Phoenix LiveDashboard's home page shows (a static approximation). */
 export interface LiveDashboardData {

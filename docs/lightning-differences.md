@@ -157,11 +157,140 @@ goes back to Lightning's way.
   parse, "Run From Here" shows "Fix the JSON input to run". Lightning gives
   no reason.
 
+## Dataclip
+
+- **A dataclip that isn't there, isn't this project's, or has a malformed
+  id shows No Access or Not Found in place.** Lightning sends you to History
+  with "Dataclip not found" (`dataclip_live/show.ex:20-34`). The API answers
+  403 for any of them but the wrong project (docs/api-gaps.md, Dataclips).
+- **The breadcrumb has "History" after the project picker.** Lightning's
+  ends with "Dataclip" and has no way back.
+- **The details show the dataclip's name when it has one.** The API sends
+  it; Lightning never shows it.
+- **The details and body load together, behind one spinner, and a failed
+  load shows the server's message in place of both.** Lightning shows the
+  details at once, an empty viewer while the body loads, and "Failed to
+  load content" in the viewer. The API sends the body with the dataclip.
+- **The sidebar marks History as the current page.** Lightning marks
+  nothing (`active_menu_item: :dataclip`); the dataclip is part of History.
+- **Sentence case: "Dataclip details", "No data available".** Lightning
+  title-cases them.
+
 ## Channels
 
 - **The last crumb stays "Channels" while the form is open.** Lightning
   changes it to "New Channel" or "Edit Channel". Here the form is a dialog
   over the list, so the page underneath hasn't changed.
+- **No Total channels or Total requests cards, and no "View all".**
+  openfn-ia-demo shows none, as Workflows dropped its cards; the title still
+  counts the channels, and History's Channel Logs lists every request.
+- **A switched-off channel's name isn't greyed, and its switch has no
+  "<name> (disabled)" tooltip.** The Enabled column already says it. Row
+  Delete is a quiet button, not red, as on the admin lists.
+- **Delete asks in a dialog with openfn-ia-demo's words**, "Delete <name>?"
+  and "Delete channel", and says the request history goes too, which
+  Lightning deletes without saying (api/channels.md). Lightning uses the
+  browser's confirm: 'Delete "<name>"? This cannot be undone.'
+- **With no client credential ticked, the form warns that anyone with the
+  proxy URL can use the channel.** Lightning says nothing, and an open
+  channel forwards anyone's request with the destination credential added
+  (annotation 6.1).
+- **Switching a channel on or off shows no toast.** The switch's new
+  position is the confirmation; Lightning flashes "Channel updated". A refused
+  switch goes back and shows the server's message in a toast that stays.
+- **`/channels/new` or `/channels/:id/edit` without permission, and an edit
+  for a channel this project doesn't have, go to the list with no message.**
+  Lightning flashes "You are not authorized to create channels." or
+  "Channel not found"; nothing here carries a message across a redirect yet.
+- **A save refused for a stale version shows the server's message in the
+  form; one refused for a credential or auth method outside the project shows
+  it under that field.** Lightning's form shows nothing (annotation 6.1), so
+  the save seems to do nothing.
+- **openfn-ia-demo's words and form order, where it has the screen.** "New
+  channel" with a plus, the line under the title, "No channels yet.", "New
+  channel" / "Edit <name>", "Create channel" on create, "Created <name>.",
+  "Add new", its hints, and Enabled last in the form. Lightning says "New
+  Channel", "No channels found.", "New Channel" / "Edit Channel", "Save" on
+  create, "Channel created successfully." and "Add New", with Enabled second.
+- **Opening `/channels/new` or `/channels/:id/edit` directly shows the list
+  behind the form.** Lightning shows zero totals and "No channels found."
+  until the form closes (annotation 6.1).
+
+## Channel request
+
+- **A request that isn't there, isn't this project's, or has a malformed id
+  shows No Access or Not Found in place.** Lightning sends you to History
+  without a word. The API answers 403 for any of them but another project's
+  (docs/api-gaps.md, Channel requests).
+- **The summary shows the channel name and destination URL the request
+  used**, from its snapshot. Lightning shows the channel's current ones, so
+  after an edit its summary names a destination the request never went to.
+- **The title and summary show the request id clients and destinations
+  see** (`x-request-id`, the one Channel logs lists). Lightning shows the
+  database id, which stays in the URL.
+- **A deleted client auth method or destination credential reads
+  "(deleted)".** Lightning's helper says so too, but its database clears the
+  reference when the record goes, so its page reads "None", as for a
+  request with no auth (annotation 6.1).
+- **An error code Lightning doesn't recognise reads "No response received"
+  with the code**, and the timing shows. Lightning shows an empty Response
+  card.
+- **No body hash or "Copy hash", and no "(reused)" on the Connect bar.** The
+  API doesn't send them (docs/api-gaps.md).
+- **Sentence case: "Channel request", "Channel name", "Config version".**
+  Lightning title-cases them.
+
+## Sandboxes
+
+- **Cards sit under "Selected" and "Active", as openfn-ia-demo has them.**
+  The page's project is under Selected with a "Selected" badge, the rest of
+  the workspace under Active (the top project first, with "Main"), then
+  Lightning's "Scheduled for deletion". Each card has a description ("No
+  description" without one) and "Made from <parent>". Lightning lists the
+  root, then the sandboxes, with env badges and an "active" badge; the API
+  sends no env, and openfn-ia-demo shows none.
+- **The whole card is a link to its project**, where Lightning makes the
+  card's body a `role="button"`, so it also opens in a new tab. The •••
+  menu sits above the link. The card you're in opens nothing.
+- **The three action icons are one ••• menu**, "Actions for <name>", with
+  Edit, Merge and Delete last in red, each greyed with Lightning's reason
+  (PRINCIPLES, Row actions). Lightning shows three icon buttons.
+- **No actions on the top sandbox of someone who's only in a sandbox.**
+  Nothing above it lists it, so nothing sends its permissions
+  (docs/api-gaps.md). Lightning lets its admins edit and delete it.
+- **A taken name shows when you press Create sandbox or Save, not as you
+  type.** The client checks only a blank name; the server checks the rest.
+- **New sandbox isn't disabled at the nesting limit.** The API doesn't say a
+  project is at it (docs/api-gaps.md), so the form shows the server's
+  "Maximum sandbox nesting depth reached". Lightning disables the button.
+- **A new sandbox's first colour follows how many sandboxes there are**, as
+  openfn-ia-demo picks it, not chance, so two in a row differ.
+- **Deleting the sandbox you're in takes you to the nearest project above it
+  you can open, and the dialog names that one.** Lightning names the root
+  and goes to the parent, which someone in only the sandbox can't open
+  (annotation 6.1).
+- **Edit links stay under the page's project.** Lightning's go under the
+  sandbox's parent, which 404s for someone in only the sandbox (annotation
+  6.1).
+- **The delete and merge warnings count only the sandboxes you can see.**
+  Lightning counts every one below (docs/api-gaps.md).
+- **Merge lists only the workflows a merge would change, has no collections
+  section, and offers projects the server may refuse.** A refused merge
+  stays in the dialog with the server's message; Lightning closes it with
+  "Couldn't merge this sandbox. Please try again." Lightning offers only
+  projects where you're an editor or above, and lets you untick collections
+  (docs/api-gaps.md).
+- **`/sandboxes/new` without permission, and an edit of a sandbox that isn't
+  listed or you can't edit, go to the list with no message.** Lightning
+  flashes; nothing here carries a message across a redirect yet.
+- **openfn-ia-demo's words, where it has the screen.** The line under the
+  title, "New sandbox", "No other sandboxes", "New sandbox" / "Edit <name>",
+  "Create sandbox" / "Save", "My sandbox", "Colour" with its hint,
+  "Created a sandbox from <parent>.", and the merge dialog's "Merge into",
+  "Changed in <target> too", its warning, "Credentials only in this
+  sandbox" and "Merge into <target>". Lightning says "Create Sandbox",
+  "Create a new sandbox" / "Edit sandbox", "Save changes", "Color" and
+  "Sandbox created".
 
 ## Project settings
 
@@ -290,6 +419,248 @@ goes back to Lightning's way.
   The API sends no total and joins the actor into one string
   (docs/api-gaps.md, Audit trail: the total, and the actor).
 
+## Admin collections
+
+- **Delete is disabled, with "Not available in the API yet".** Lightning
+  lets a superuser delete any collection (`collection_live/index.ex:48-62`);
+  the API's delete needs a project owner or admin, with no superuser scope
+  planned (docs/api-gaps.md, We clearly need these).
+- **The name hint says names are unique within their project.** Lightning
+  says "across all projects within this instance"
+  (`collection_creation_modal.ex:135`), which has been false since names
+  became unique per project.
+- **The create form's project picker starts blank**, with "Select a
+  project", and Save with none chosen says it can't be blank. Lightning
+  preselects the first project alphabetically
+  (`collection_creation_modal.ex:146-152`), so it's easy to create a
+  collection in the wrong project.
+- **The picker labels sandboxes "parent/sandbox"**, from the API's
+  `display_name`, sorted by that label. Lightning shows bare names
+  (`collection_creation_modal.ex:30-32`), so projects with the same name
+  can't be told apart.
+- **The sort lives in the URL and survives a save.** Lightning keeps it in
+  the LiveView's assigns and every save or close remounts the page, so it
+  falls back to name (`index.ex:54`, `:62`).
+- **The name field keeps what was typed.** Lightning replaces it with the
+  URL-safe name once the field loses focus (`collection_creation_modal.ex:133`);
+  the replica shows the typed text, with "This collection will be named x"
+  under it, as the project and sandbox forms do.
+- **Modal words.** "Create collection" and "Edit collection" as titles, and
+  "Create collection" or "Save changes" on the button; Lightning has
+  "Create Collection", "Edit Collection" and "Save"
+  (`collection_creation_modal.ex:103-105`). Sentence case, and a button
+  says what it does (PRINCIPLES.md, Words).
+- **The design's words on the list.** A line under the title, "Every
+  collection on this instance, across all projects."; the storage column is
+  "Size", not "Used storage" (`collection_live/components.ex`); the empty
+  state is "No collections yet.", with the collections icon, not "No
+  collection found." (`index.ex:89-90`). The design has this screen
+  (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
+  its words win.
+
+## Admin authentication
+
+- **No Test button.** Lightning tests the discovery URL without saving,
+  and Save doesn't wait for a passing test, so a plaintext `http://` URL
+  can be saved and then fails every sign-in (`form_component.ex:196-203`).
+  Here Save does the check and refuses a discovery document it can't use,
+  under Discovery URL. The API has no way to check without saving
+  (api/misfits.md, Form helpers). Lightning's scenarios S05 to S07 don't
+  apply.
+- **No Redirect host field.** Lightning lets the superuser type the host
+  the redirect URI starts with (`auth_config_form.ex:47-49`); here it starts
+  with the instance's own URL, as the API builds `redirect_uri`.
+- **No "Trust unverified emails from this provider" checkbox**, until the
+  API has the field (docs/api-gaps.md, We clearly need these).
+- **/settings/authentication/new shows the provider when one exists.**
+  Lightning shows a blank form there, and saving it adds a second provider,
+  after which the edit page crashes (`index.ex:42-48`). The side menu links
+  to /new, so it was easy to hit.
+- **Remove asks first**, in a dialog that names the provider. Lightning
+  removes at once, though its copy says it turns off external
+  authentication (`form_component.ex:272-289`).
+- **The stored client secret never reaches the browser.** Lightning writes
+  it into the edit page's HTML as the input's value
+  (`form_component.ex:168-174`); here the box is blank and a blank secret
+  keeps the stored one.
+- **Save is never disabled, and the name's format and the https rule come
+  back from the server on Save.** Lightning disables Save while the form is
+  invalid and checks the name and URL as you type (`auth_config_form.ex`);
+  here the client checks only blanks (PRINCIPLES.md, Forms).
+- **The page's words and layout are openfn-ia-demo's**: one column, the line
+  under the title, the "No provider set up" notice, sentence-case labels
+  ("Client secret"), the redirect URI with a copy button, and the "Remove
+  provider" card. Lightning's Google help paragraphs and links go, since
+  they named one provider only (`form_component.ex:214-234`, `:260-270`).
+
+## Admin users
+
+- **The columns.** Name (the full name, "(you)" on your row, the email under
+  it), Role ("User" or "Superuser", and "Support" for a support user) and
+  Status ("Enabled" or "Disabled", and a red "Deletes 21 Oct 2026" when one is
+  scheduled), all as badges. Lightning has First name, Last name, Email,
+  "Role*", "Enabled?", "Support?" and "Scheduled Deletion", with ticks and
+  the raw role (`user_live/components.ex`). The design has this screen and
+  these columns, so they win. It has a Last login column too, which the API
+  can't fill (docs/api-gaps.md, Changed, and that's fine).
+- **The deletion date is a day and year, in UTC**: "Deletes 21 Oct 2026".
+  Lightning shows "21 Oct  09:30", in UTC with no year and no label
+  (`user_live/components.ex:131-134`, annotation 6.2), so a reader can't tell
+  the year or the time zone. The time of day says nothing useful about a
+  purge that runs nightly.
+- **Only Name, Role and Status sort, and Name is the default.** Lightning
+  sorts every column and starts on email. The design has three columns,
+  each sorted by a field the API's planned `sort` takes.
+- **The server searches, sorts and pages the list**, 25 to a page, the search
+  300 ms after the last key, and all of it in the URL (`?q`, `?sort`, `?dir`,
+  `?page`). Lightning loads every user and filters and sorts them in memory,
+  with no paging, and loses both on reload or after opening the dialog
+  (annotation 6.2, 6.4).
+- **Row actions are buttons.** Every row has Edit; a live user has Delete; a
+  scheduled one has Cancel deletion and a ••• menu holding Delete now.
+  Lightning puts them all in one Actions menu (`user_live/components.ex`).
+  Two quiet buttons, the rest in a menu, is the rule for every list
+  (PRINCIPLES.md, Row actions).
+- **A superuser's Delete is disabled with why**: "You can't delete your own
+  account" on your row, "Superusers can't be deleted" on the others.
+  Lightning shows a plain span with no explanation
+  (`user_live/components.ex:172-187`). A blocked control stays visible and
+  says why (PRINCIPLES.md, Everyone can use it).
+- **Delete now is disabled, with "Not available in the API yet".** Lightning
+  purges a scheduled user at once from the row's menu; the API only
+  schedules deletions (`api/misfits.md`), so the item stays in the ••• menu,
+  disabled, with the reason under it.
+- **The words.** "New user", in sentence case, with the user-plus icon
+  (Lightning: "New User"); "Filter users" (Lightning: "Filter users...");
+  a line under the title and a footnote under the table in place of
+  Lightning's "*Note that a superuser can access everything…"; "No users
+  match." when nothing does, where Lightning shows the header with no rows.
+  The design has this screen, so its words win.
+- **A stale or unknown `/settings/users/:id/delete` goes to the list.**
+  Lightning raises on an unknown id (`user_live/index.ex:28-32`, annotation
+  6.2). A superuser's, or one already scheduled for deletion, goes to the
+  list too, since neither can be scheduled.
+- **Cancelling the deletion of a user who has already gone shows an error
+  toast with the server's reason.** Lightning crashes and reloads the page,
+  and its "Cancel user deletion failed" never says why
+  (`user_live/index.ex:40-50`, annotation 6.1, 6.2).
+
+## Admin user form
+
+- **New user and Edit open in a dialog over the users list**, at the same
+  URLs (`/settings/users/new`, `/settings/users/:id`). Lightning opens a
+  page titled "New User" or "Edit User".
+- **Format, length and taken-email errors appear on Save, from the
+  server.** Lightning checks them as you type, hashing the password on each
+  keystroke (annotation 6.4). The form checks only for blanks itself.
+- **No Scheduled Deletion field.** A deletion is scheduled from the list's
+  dialog. Lightning's form has a free-text date that revokes tokens without
+  disabling the user or emailing them (annotation 6.2).
+- **No confirmation email on create**, and so no "User created, but the
+  confirmation email could not be sent". The API emails nobody it creates
+  (docs/api-gaps.md, Changed, and that's fine; annotation S02, S03).
+- **Creating a user with support access is two requests.** The API can't
+  create one with it (docs/api-gaps.md), so the app creates the account,
+  then turns support access on; if that fails, an error toast says the user
+  was created without it.
+- **Your own account: Role, Support user, Disabled and Email are greyed,
+  each saying why, and there's no Password.** Email and password are changed
+  in Profile, which links from the Email hint. Lightning lets you change all
+  of them here and signs you out partway through the save (annotation 6.1).
+- **The last superuser can't be demoted or disabled.** The server's refusal
+  shows under Role or Disabled. Lightning lets one save lock everyone out of
+  admin (annotation 6.1).
+- **The heads-up shows whenever Support user is ticked**, including on
+  opening an account that already has it. Lightning shows it only after a
+  click (annotation 6.2).
+- **The Disabled checkbox has a label**, "Disabled", with "A disabled user
+  can't log in." under it. Lightning's checkbox has no label of its own
+  (annotation 6.1).
+- **The words.** The design's, in sentence case: "New user", "Edit" and the
+  user's name, "Create user", "First name", "Last name", "Support user", and
+  "Heads up" with "This user will be able to open every project that has
+  support access turned on.", plus hints under Password and Role. Lightning
+  has "New User", "Edit User", "Save", "First Name", "Last Name", "Support
+  User", "Heads Up!" and "access ALL projects that have support access
+  enabled" (annotation 6.2). Role lists User first; Lightning lists
+  Superuser first.
+- **An unknown `/settings/users/:id` goes to the list.** Lightning raises
+  (annotation 6.2).
+
+## Admin projects
+
+- **No Edit.** Lightning's superuser can rename any project and change its
+  members (`project_live/index.ex:56-67`). The API refuses a superuser who
+  isn't a member on every route that reads or changes one project, with no
+  superuser scope planned (docs/api-gaps.md, We clearly need these), so the row
+  has no Edit and `/settings/projects/:id` goes to the list.
+- **Delete now is disabled, with "Not available in the API yet".** Lightning
+  purges a scheduled project at once from the row's menu; the API only
+  schedules deletions (`api/misfits.md`), so the item stays in the ••• menu,
+  disabled, with the reason under it.
+- **New project opens in a modal over the list, at the same URL**, and the
+  title stays "Projects". Lightning swaps the list for a page titled "New
+  Project" at `/settings/projects/new` (`index.ex:72`).
+- **The columns.** Project (with a red "Deletes 10 Nov 2026" when one is
+  scheduled), Owner, Members and Created, a date with no time. Lightning has
+  Name, Created At, Description, Owner and Scheduled Deletion, with times as
+  "%d %b  %H:%M" (`index.html.heex:82-108`). The design has this screen
+  and these columns (`AdminProjectTable.tsx`), so they win. The search still
+  matches the description.
+- **Row actions are buttons.** A live project has Delete; a scheduled one has
+  Cancel deletion and a ••• menu holding Delete now. Lightning puts Edit,
+  Delete, Cancel deletion and Delete now in one Actions menu
+  (`index.html.heex`). Two quiet buttons, the rest in a menu, is the rule for
+  every list (PRINCIPLES.md, Row actions).
+- **The server searches, sorts and pages the list**, 25 to a page, the search
+  300 ms after the last key, and all of it in the URL (`?q`, `?sort`, `?dir`,
+  `?page`). Lightning loads every project and filters and sorts them in
+  memory, with no paging (annotation 6.4), so a large instance's list is slow.
+- **Only Project and Created sort.** Lightning sorts all five columns. The
+  API sorts by name and creation date only (docs/api-gaps.md, Admin
+  projects).
+- **Sandboxes show as "parent/sandbox"**, from the API's `display_name`.
+  Lightning lists them under their bare names, so a sandbox can't be told
+  from a project with the same name (annotation 6.2). They still sort and
+  search by their own name, as the API does, so `parent/sandbox` sorts
+  under "sandbox". Deleting one asks you to type that label, as the row
+  shows it.
+- **The words.** A line under the title, "Every project on this instance,
+  whoever is in it."; "New project", in sentence case, with the folder
+  icon (Lightning: "New Project"); the modal's "New project" and "Create project" (Lightning: "New
+  Project" and "Save"); "Members" (Lightning: "Manage project users");
+  "Filter projects" and "Filter users" (Lightning adds "..."); "Every project
+  must have exactly one owner." (Lightning adds "Please specify one below.").
+  The design has this screen, so its words win.
+- **The empty state is "No projects match."**, with the folder icon, with or
+  without a search. Lightning shows the table's header with no rows and no
+  words (`project_live/index.html.heex`), so nothing says the search found
+  nothing; the design's words fill that.
+- **The form has a Description field**, sent with the name; Lightning's form
+  has none though its list shows and searches descriptions (annotation 6.2).
+  The design has the field, so it stays.
+- **Each person's role is a select** ("No access", "Owner", "Admin",
+  "Editor", "Viewer"), one per row, in place of Lightning's five radio
+  columns, whose headers looked sortable and weren't (annotation 6.1).
+- **Disabled users aren't offered as members**, and someone scheduled for
+  deletion is disabled. Lightning lists every user and emails a disabled one
+  that they now have access (annotation 6.1).
+- **Two owners are refused by the server on Create**, under Members.
+  Lightning flags "A project can have only one owner." as you pick and
+  disables Save until it's fixed (`form_component.html.heex:191`); here the
+  client checks only for a name and an owner, and Create is never disabled
+  for an invalid form.
+- **The name field keeps what was typed**, with "Note that this project will
+  be named: x" under it. Lightning puts the URL-safe name back in the field
+  on re-render (`form_component.html.heex:12-17`), so what you typed changes
+  under you; every other name field here keeps it.
+- **Filtering the member grid keeps every role already given.** Lightning
+  drops the hidden rows from the form, so an owner picked before filtering
+  vanishes (annotation 6.1).
+- **A stale or unknown `/settings/projects/:id/delete` goes to the list.**
+  Lightning crashes on an unknown id (`index.html.heex:19`). One already
+  scheduled for deletion goes to the list too.
+
 ## Forms everywhere
 
 - **No browser validation bubbles.** Lightning's forms let the browser say
@@ -309,11 +680,14 @@ goes back to Lightning's way.
   switch for both, which looks like it takes effect at once.
 - **Save and Create stay pressable until the form is right.** Lightning
   disables Save in the collaborator dialogs until every row has an email and
-  a role, Create in the YAML import until the YAML looks right, and first
-  setup's Save and register's Register until the form is valid. Here
-  pressing them says what's missing ("can't be blank", "Enter YAML content to
-  create workflow"), so nobody faces a dead button without knowing why. A
-  row's email error shows only then, not while typing.
+  a role, Create in the YAML import until the YAML looks right, the admin
+  collection's Save until its name is URL safe, the admin user's Save
+  with "All fields are required" (even on edit, where the password is
+  optional), and first setup's Save and register's Register until the form
+  is valid. Here pressing them says what's missing ("can't be blank",
+  "Enter YAML content to create workflow"), so nobody faces a dead button
+  without knowing why. A row's email error shows only then, not while
+  typing.
 - **"Will be named …" hides while the name has an error.** Lightning does
   this only in the sandbox form; its project and collection forms show "Your
   project will be named my_project." under "has invalid format". The

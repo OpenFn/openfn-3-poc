@@ -204,12 +204,6 @@ export function shortUuid(id: string, length = 8): string {
   return id.slice(0, length);
 }
 
-/** Calendar.strftime(dt, "%d %b  %H:%M") in UTC: "14 Oct  18:36" (two spaces). */
-export function formatShortDateTime(iso: string): string {
-  const d = new Date(iso);
-  return `${pad(d.getUTCDate())} ${MONTHS_SHORT[d.getUTCMonth()]}  ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
-}
-
 /** "21 Oct 2026", in UTC. */
 export function formatUtcDate(iso: string): string {
   const d = new Date(iso);
@@ -275,6 +269,18 @@ export function fullName(user: { firstName: string; lastName: string }): string 
 export function formatCredentialType(credential: { schema: string; oauthClient: { name: string } | null }): string {
   if (credential.schema === "oauth") return credential.oauthClient ? credential.oauthClient.name.toLowerCase() : "oauth";
   return credential.schema;
+}
+
+const authTypes = { api: "API key", basic: "Basic auth" };
+
+/** How a channel request's client signed in (helpers.ex `format_client_auth`): "Partner key (API key)", "(deleted) (API key)" once the method is gone, "None" for an open channel. */
+export function formatClientAuth(auth: { type: "api" | "basic" | null; methodName: string | null }): string {
+  return auth.type ? `${auth.methodName ?? "(deleted)"} (${authTypes[auth.type]})` : "None";
+}
+
+/** A channel request's destination credential (helpers.ex `format_destination_auth`): its name, "(deleted)" once it's gone, "None" when there was none. */
+export function formatDestinationAuth(credential: { name: string | null } | null): string {
+  return credential ? (credential.name ?? "(deleted)") : "None";
 }
 
 /** Lightning's `format_schema_name`: "dhis2" → "Dhis2", "aws-s3" → "Aws-s3". */

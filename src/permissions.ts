@@ -126,3 +126,8 @@ export function permissionsFor(project: Project | undefined, user: User): Permis
 export function canEditCredential(record: { ownerId: string }, user: Pick<User, "id">): boolean {
   return record.ownerId === user.id;
 }
+
+/** Whether a superuser may schedule this account's deletion: never a superuser's (User.scheduled_deletion_changeset). */
+export function canDeleteUser(user: Pick<User, "role">): boolean {
+  return user.role !== "superuser";
+}

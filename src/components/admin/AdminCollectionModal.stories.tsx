@@ -14,6 +14,15 @@ type Story = StoryObj<typeof AdminCollectionModal>;
 
 export const Create: Story = {};
 export const Edit: Story = { args: { collection: collections[0] } };
+/** A long unspaced name and project label, to check they wrap rather than overflow. */
+export const LongValues: Story = {
+  args: {
+    collection: { ...collections[0]!, name: "patient-registration-events-from-the-national-health-information-exchange-staging" },
+    projectOptions: [
+      ["openhie-national-health-information-exchange/fhir-mapping-and-terminology-services-staging", collections[0]!.projectId],
+    ],
+  },
+};
 
 const submit: Story["play"] = async ({ canvasElement }) => {
   canvasElement.ownerDocument.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
@@ -23,10 +32,27 @@ const submit: Story["play"] = async ({ canvasElement }) => {
 export const DuplicateName: Story = {
   args: {
     ...Edit.args,
-    onSave: () => Promise.reject(new RequestError("has already been taken", { fieldErrors: { rawName: ["has already been taken"] } })),
+    onSave: () => Promise.reject(new RequestError("The request body is not valid.", { fieldErrors: { name: ["A collection with this name already exists"] } })),
   },
   play: submit,
 };
 
+/** The server refuses for another reason (a plan limit): its message shows below the fields. */
+export const Refused: Story = {
+  args: { ...Edit.args, onSave: () => Promise.reject(new RequestError("You have reached the limit of collections for this project.")) },
+  play: submit,
+};
+
+/** Create pressed on a blank form: both fields say what is missing. */
+export const Blank: Story = { play: submit };
+
 /** Save is still out: the button shows pending. */
 export const Saving: Story = { args: { ...Edit.args, onSave: () => new Promise(() => {}) }, play: submit };
+
+/** The projects are still loading: the modal shows a spinner and Save is off. */
+export const LoadingProjects: Story = { args: { projectOptions: [], projectOptionsStatus: { state: "loading" } } };
+
+/** The projects couldn't load: the failure shows instead of the form, and Save is off. */
+export const ProjectsFailed: Story = {
+  args: { projectOptions: [], projectOptionsStatus: { state: "error", message: "Something went wrong in Lightning." } },
+};

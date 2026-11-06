@@ -7,9 +7,14 @@
  */
 import { apiTokens } from "@/mock-data/tokens";
 import { json, noContent, notFound, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { channelRoutes, resetChannels } from "./channels";
 import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
+import { sandboxRoutes } from "./sandboxes";
 import { auditRoutes } from "./audit";
+import { authProviderRoutes, resetAuthProvider } from "./authProvider";
+import { collectionRoutes, resetCollections } from "./collections";
+import { dataclipRoutes } from "./dataclips";
 import { mfaRoutes, resetMfa } from "./mfa";
 import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
@@ -53,8 +58,13 @@ const routes: Record<string, Handler> = {
   },
 
   ...credentialRoutes,
+  ...channelRoutes,
   ...projectRoutes,
+  ...sandboxRoutes,
   ...auditRoutes,
+  ...collectionRoutes,
+  ...dataclipRoutes,
+  ...authProviderRoutes,
   ...mfaRoutes,
   ...instanceRoutes,
   ...userRoutes,
@@ -101,7 +111,10 @@ export function failNext(route: string, failure: Problem) {
 export function resetFakeApi() {
   tokens = seed();
   resetProjects();
+  resetCollections();
+  resetAuthProvider();
   resetCredentials();
+  resetChannels();
   resetSession();
   resetMfa();
   setNeedsSetup(false);

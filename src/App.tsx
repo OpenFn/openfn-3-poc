@@ -18,15 +18,15 @@ import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardP
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";
 import WorkflowsIndexPage from "./pages/projects/workflows/WorkflowsIndexPage.query";
 import WorkflowHealthPage from "./pages/projects/WorkflowHealthPage.replica";
-import SandboxesIndexPage from "./pages/projects/SandboxesIndexPage.replica";
-import ChannelsIndexPage from "./pages/projects/ChannelsIndexPage.replica";
+import SandboxesIndexPage from "./pages/projects/sandboxes/SandboxesIndexPage.query";
+import ChannelsIndexPage from "./pages/projects/channels/ChannelsIndexPage.query";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
 import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
-import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
+import ChannelRequestShowPage from "./pages/history/channel-request/ChannelRequestShowPage.query";
 import RunShowPage from "./pages/history/RunShowPage.replica";
-import DataclipShowPage from "./pages/history/DataclipShowPage.replica";
+import DataclipShowPage from "./pages/history/dataclip/DataclipShowPage.query";
 
 import ProjectSettingsPage from "./pages/project-settings/ProjectSettingsPage.replica";
 
@@ -35,13 +35,12 @@ import ProfilePage from "./pages/profile/profile/ProfilePage.query";
 import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 
-import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
-import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
-import AdminProjectsPage from "./pages/admin/AdminProjectsPage.replica";
+import AdminUsersPage from "./pages/admin/users/AdminUsersPage.query";
+import AdminProjectsPage from "./pages/admin/projects/AdminProjectsPage.query";
 import AdminAuditPage from "./pages/admin/audit/AdminAuditPage.query";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
-import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage.replica";
-import AdminCollectionsPage from "./pages/admin/AdminCollectionsPage.replica";
+import AdminAuthProvidersPage from "./pages/admin/auth-providers/AdminAuthProvidersPage.query";
+import AdminCollectionsPage from "./pages/admin/collections/AdminCollectionsPage.query";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
 
 /**
@@ -116,8 +115,8 @@ export default function App() {
             <Route path="/settings" element={<Navigate to="/settings/projects" replace />} />
             <Route path="/settings/users" element={<AdminUsersPage />} /> {/* admin-users */}
             <Route path="/settings/users/:userId/delete" element={<AdminUsersPage />} />
-            <Route path="/settings/users/new" element={<AdminUserEditPage />} /> {/* admin-user-edit */}
-            <Route path="/settings/users/:userId" element={<AdminUserEditPage />} />
+            <Route path="/settings/users/new" element={<AdminUsersPage />} /> {/* admin-user-edit */}
+            <Route path="/settings/users/:userId" element={<AdminUsersPage />} />
             <Route path="/settings/projects" element={<AdminProjectsPage />} /> {/* admin-projects */}
             <Route path="/settings/projects/new" element={<AdminProjectsPage />} />
             <Route path="/settings/projects/:projectId" element={<AdminProjectsPage />} />

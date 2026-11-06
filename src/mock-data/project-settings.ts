@@ -65,7 +65,7 @@ export const collections: Collection[] = [
   },
 ];
 
-export function collectionsIn(projectId: string): Collection[] {
+function collectionsIn(projectId: string): Collection[] {
   return collections.filter((c) => c.projectId === projectId);
 }
 

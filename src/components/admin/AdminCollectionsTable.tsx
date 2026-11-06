@@ -1,42 +1,26 @@
-import type { AdminCollectionRow } from "@/types/admin";
+import type { AdminCollectionRow, CollectionSortKey } from "@/types/admin";
+import type { SortState } from "@/types/lists";
 import { formatBytes } from "@/utils/format";
+import { serverSortThProps } from "@/utils/useTableSort";
 import Button from "@/components/primitives/Button";
-import EmptyState from "@/components/primitives/EmptyState";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
-import { useTableSort, type SortValue } from "@/utils/useTableSort";
-
-const sortMap: Record<"name" | "byte_size_sum", (c: AdminCollectionRow) => SortValue> = {
-  name: (c) => c.name,
-  byte_size_sum: (c) => c.byteSizeSum,
-};
 
 interface Props {
   collections: AdminCollectionRow[];
-  onCreate: () => void;
+  /** The order the server listed `collections` in. */
+  sort: SortState<CollectionSortKey>;
+  onSort: (sort: SortState<CollectionSortKey>) => void;
   onEdit: (collection: AdminCollectionRow) => void;
-  onDelete: (collection: AdminCollectionRow) => void;
 }
 
 /**
  * The instance-wide collections table (collection_live/components.ex
- * `collections_table`): name / project / used storage with Edit and Delete
- * per row, sorted in the browser. With no collections it's the dashed "Create a new one." box.
- * Ids are Lightning's.
+ * `collections_table`): name / project / size with Edit and Delete
+ * per row. Delete is disabled until the API
+ * lets a superuser delete any collection. Ids are Lightning's.
  */
-export default function AdminCollectionsTable({ collections, onCreate, onEdit, onDelete }: Props) {
-  const { rows, thProps } = useTableSort({ rows: collections, sortMap, initialKey: "name" });
-
-  if (collections.length === 0) {
-    return (
-      <EmptyState
-        id="open-create-collection-modal-big-buttton"
-        icon="hero-plus-circle"
-        message="No collection found."
-        buttonText="Create a new one."
-        onClick={onCreate}
-      />
-    );
-  }
+export default function AdminCollectionsTable({ collections, sort, onSort, onEdit }: Props) {
+  const thProps = serverSortThProps(sort, onSort);
 
   return (
     <Table
@@ -45,12 +29,12 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
         <Tr>
           <Th {...thProps("name")}>Name</Th>
           <Th>Project</Th>
-          <Th {...thProps("byte_size_sum")}>Used storage</Th>
+          <Th {...thProps("byte_size_sum")}>Size</Th>
           <Th actions />
         </Tr>
       }
     >
-      {rows.map((collection) => (
+      {collections.map((collection) => (
         <Tr key={collection.id} id={`collections-table-row-${collection.id}`}>
           {/* eslint-disable-next-line local/primitive-classname -- debt: colour (text-strong) */}
           <Td wrap maxWidth={60} className="text-strong">{collection.name}</Td>
@@ -59,7 +43,7 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
           <Td actions>
             <Button
               id={`edit-collection-${collection.id}-button`}
-              aria-label={`Edit ${collection.name}`}
+              aria-label={`Edit ${collection.name} in ${collection.projectName}`}
               variant="secondary"
               size="xs"
               onClick={() => onEdit(collection)}
@@ -68,10 +52,11 @@ export default function AdminCollectionsTable({ collections, onCreate, onEdit, o
             </Button>
             <Button
               id={`delete-collection-${collection.id}-button`}
-              aria-label={`Delete ${collection.name}`}
+              aria-label={`Delete ${collection.name} in ${collection.projectName}`}
               variant="secondary"
               size="xs"
-              onClick={() => onDelete(collection)}
+              disabled
+              tooltip="Not available in the API yet"
             >
               Delete
             </Button>

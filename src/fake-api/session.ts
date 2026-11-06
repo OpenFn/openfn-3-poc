@@ -6,7 +6,7 @@
  * already set.
  */
 import { backupCodes } from "@/mock-data/tokens";
-import { hasActivityInProjects } from "@/mock-data/profile";
+import { hasCreatedRun } from "@/mock-data/history";
 import { users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { accepted, invalid, json, noContent, notFound, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
@@ -26,6 +26,8 @@ export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
 export const FAKE_RESET_TOKEN = "fake-reset-token";
 /** The one confirm link the fake knows: it confirms Una's account (unconfirmed@openfn.org), once until a reload or reset. */
 export const FAKE_CONFIRM_TOKEN = "fake-confirm-token";
+
+export const PURGE_DELETED_AFTER_DAYS = 7;
 
 /** How long a step-up lasts (api/authentication.md, session tokens). */
 const STEP_UP_MS = 5 * 60_000;
@@ -214,6 +216,7 @@ export const userJson = (u: User) => ({
       support_user: u.supportUser,
       disabled: u.disabled,
       scheduled_deletion: u.scheduledDeletion,
+      has_activity_in_projects: hasCreatedRun(u.id),
     },
     links: { self: `${ORIGIN}/api/users/${u.id}` },
   },
@@ -225,7 +228,6 @@ export const meJson = (u: User) => ({
     ...userJson(u).data,
     attributes: {
       ...userJson(u).data.attributes,
-      has_activity_in_projects: hasActivityInProjects,
       mfa_enabled: u.mfaEnabled,
       has_password: true,
       inserted_at: u.insertedAt,

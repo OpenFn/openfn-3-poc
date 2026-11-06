@@ -1,6 +1,6 @@
 /** OAuth clients on the pretend server (api/credentials.md, OAuth clients). */
 import { clientSecretsFor, credentialsFixture, oauthClients as clientFixtures } from "@/mock-data/credentials";
-import { SEEDED_AT, forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
+import { SEEDED_AT, forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem, isUrl } from "./answers";
 import { isEditorIn } from "./projects";
 import { currentUser } from "./session";
 
@@ -61,7 +61,6 @@ const clientJson = (c: StoredClient) => ({ ...c, client_secret: undefined });
 
 const ENDPOINTS = ["authorization_endpoint", "token_endpoint", "revocation_endpoint", "userinfo_endpoint", "introspection_endpoint", "scopes_doc_url"];
 const TEXT = ["name", "client_id", "client_secret", "mandatory_scopes", "optional_scopes", ...ENDPOINTS];
-const isUrl = (value: string) => URL.canParse(value) && /^https?:/.test(value);
 
 function check(body: Body, existing: StoredClient | undefined): NonNullable<Problem["errors"]> {
   const errors: NonNullable<Problem["errors"]> = Object.keys(body)

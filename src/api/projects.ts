@@ -1,9 +1,12 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AdminProjectFormValues, AdminProjectRow, AdminProjectSortKey } from "@/types/admin";
+import type { PageLinks, SortState } from "@/types/lists";
+import type { ProjectAction, ProjectInput, ProjectNode, ProjectRole } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { isApiError, listAll, request, statusOf } from "./client";
+import { fullName } from "@/utils/format";
+import { isApiError, listAll, PAGE_SIZE, pageLinks, request, sortParam, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -11,7 +14,7 @@ export interface ApiProject {
   attributes: {
     name: string;
     description: string | null;
-    role?: ProjectOverview["role"];
+    role?: ProjectOverview["role"] | null;
     workflows_count?: number;
     collaborators_count?: number;
     last_activity?: string | null;
@@ -20,10 +23,26 @@ export interface ApiProject {
     color?: string | null;
     /** Planned: a sandbox's project at the top of its tree. */
     root_id?: string;
+    /** Planned: a sandbox's names from the root down, joined by "/" ("malaria-programme/staging"). */
+    display_name?: string;
     /** Planned (api/projects.md): whether members need MFA to open it. useRefusedForMfa depends on it. */
     requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
+    /** Planned, on `GET /api/projects/:id`: whether the plan allows more, and why not. */
+    limits?: { sandboxes?: { allowed: true; message: null } | { allowed: false; message: string } };
+    /** On `GET /api/projects/:id`; the list leaves them out. */
+    members?: { email: string | null; role: ProjectRole }[];
+  };
+}
+
+/** A project as a superuser's `GET /api/projects?scope=all&include=stats` lists it: every project on the instance, with its owner. */
+interface ApiAdminProject extends ApiProject {
+  attributes: ApiProject["attributes"] & {
+    inserted_at: string;
+    owner: { id: string; email: string; first_name: string; last_name: string } | null;
+    scheduled_deletion: string | null;
+    collaborators_count: number;
   };
 }
 
@@ -39,6 +58,22 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
   };
 }
 
+/** A row of the instance's projects table (/settings/projects). */
+export function adminProjectRow({ id, attributes: a }: ApiAdminProject): AdminProjectRow {
+  return {
+    id,
+    name: a.display_name ?? a.name,
+    ownerName: a.owner && fullName({ firstName: a.owner.first_name, lastName: a.owner.last_name }),
+    membersCount: a.collaborators_count,
+    insertedAt: a.inserted_at,
+    scheduledDeletion: a.scheduled_deletion,
+  };
+}
+
+/** The `sort` fields the instance's list takes, so a query can check what the URL asks for. */
+const ADMIN_SORT_KEYS: Record<AdminProjectSortKey, true> = { name: true, inserted_at: true };
+export const isAdminProjectSortKey = (key: string | undefined): key is AdminProjectSortKey => key !== undefined && Object.hasOwn(ADMIN_SORT_KEYS, key);
+
 export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
 
 function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
@@ -46,7 +81,7 @@ function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
 }
 
 // `GET /api/projects/:id`, one cache entry for useProject and useProjectPermissions.
-const projectQuery = (id: string | undefined) =>
+export const projectQuery = (id: string | undefined) =>
   queryOptions({
     queryKey: projectKeys.one(id ?? ""),
     // No id (a page outside any project): nothing to load.
@@ -89,11 +124,28 @@ export function useProjectTree(): { status: ResourceStatus; projects: ProjectNod
 }
 
 /**
+ * Every project and sandbox on the instance (`scope=all`, superusers only,
+ * ahead of the API: docs/api-gaps.md) as `[label, id]` options for an admin
+ * form's project picker, sorted by label: a sandbox by its planned
+ * `display_name` ("parent/sandbox"), so two with the same name can be told apart.
+ */
+export function useAllProjectOptions(): { status: ResourceStatus; options: [label: string, value: string][] } {
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "all"],
+    queryFn: () => listAll<ApiProject>("/api/projects?scope=all", "data"),
+    select: (rows) =>
+      rows.map((p): [string, string] => [p.attributes.display_name ?? p.attributes.name, p.id]).sort((a, b) => a[0].localeCompare(b[0])),
+  });
+  return { status: statusOf(query), options: query.data ?? [] };
+}
+
+/**
  * Whether a refused project is refused for its MFA requirement rather than
  * for no access, or "checking" while that loads. The API answers both 403
  * `forbidden` (docs/api-gaps.md), but the list holds every project you're a
- * member of, so a listed project that requires MFA and still refuses you is
- * the MFA requirement. The picker has usually loaded the list already.
+ * member of, a superuser too (without `scope=all`), so a listed project that
+ * requires MFA and still refuses you is the MFA requirement. The picker has
+ * usually loaded the list already.
  */
 export function useRefusedForMfa(id: string, refused: boolean): boolean | "checking" {
   const query = useQuery({
@@ -132,18 +184,59 @@ export function useShareableProjects(): { status: ResourceStatus; projects: { id
 }
 
 /**
- * Create. Resolves once the list has reloaded with the new project; rejects
- * with the `ApiError`, whose field errors are keyed `name` and `description`.
- * Creating as any user, who becomes the owner, is planned (api/projects.md).
+ * One page of every project on the instance (`scope=all`, superusers only,
+ * ahead of the API), searched by name, description or owner and sorted by the
+ * server, with each one's owner and member count; and where loading it stands.
+ */
+export function useAdminProjects({ q, sort, page }: { q: string; sort: SortState<AdminProjectSortKey>; page: number }): {
+  status: ResourceStatus;
+  projects: AdminProjectRow[];
+  page: PageLinks;
+} {
+  const params = new URLSearchParams({ scope: "all", include: "stats", sort: sortParam(sort), page: String(page), page_size: String(PAGE_SIZE) });
+  if (q) params.set("q", q);
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "admin", String(params)],
+    queryFn: () => request<{ data: ApiAdminProject[]; links: { self: string; last: string } }>("GET", `/api/projects?${params}`),
+    select: (answer) => ({ projects: answer.data.map(adminProjectRow), page: pageLinks(answer.links) }),
+    placeholderData: keepPreviousData,
+  });
+  return { status: statusOf(query), projects: query.data?.projects ?? [], page: query.data?.page ?? { number: page, size: PAGE_SIZE, totalPages: 1 } };
+}
+
+/** A new project: a superuser may send its members (planned). */
+type NewProject = ProjectInput & Partial<Pick<AdminProjectFormValues, "members">>;
+
+/**
+ * Create, schedule a deletion and cancel one. Each resolves once the lists
+ * have reloaded and rejects with the `ApiError`. A create's field errors are
+ * keyed as the body is (`name`, `description`, `members`, `members.0.email`).
+ * Creating as any user, who becomes the owner, is planned (api/projects.md);
+ * a superuser who sends `members` creates it with just those. A superuser
+ * scheduling or cancelling any project's deletion is planned too.
  */
 export function useProjectSaves() {
   const queryClient = useQueryClient();
+  const reload = () => queryClient.invalidateQueries({ queryKey: projectKeys.all });
   const create = useMutation({
-    mutationFn: (project: ProjectInput) =>
+    mutationFn: (project: NewProject) =>
       request<{ data: ApiProject }>("PUT", `/api/projects/${crypto.randomUUID()}`, project),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
+    onSuccess: reload,
   });
-  return { create: async (project: ProjectInput) => void (await create.mutateAsync(project)) };
+  // `leave` runs once the server has agreed and before the lists reload, so a page about to lose its project can go first.
+  const scheduleDeletion = useMutation({
+    mutationFn: ({ id }: { id: string; leave?: (() => void) | undefined }) => request<void>("DELETE", `/api/projects/${id}`),
+    onSuccess: (_answer, { leave }) => {
+      leave?.();
+      return reload();
+    },
+  });
+  const cancelDeletion = useMutation({ mutationFn: (id: string) => request<unknown>("DELETE", `/api/projects/${id}/scheduled_deletion`), onSuccess: reload });
+  return {
+    create: async (project: NewProject) => void (await create.mutateAsync(project)),
+    scheduleDeletion: async (id: string, leave?: () => void) => void (await scheduleDeletion.mutateAsync({ id, leave })),
+    cancelDeletion: async (id: string) => void (await cancelDeletion.mutateAsync(id)),
+  };
 }
 
 /**
@@ -155,4 +248,13 @@ export function useProjectSaves() {
 export function useProjectPermissions(id: string): (action: ProjectAction) => boolean {
   const { data } = useQuery({ ...projectQuery(id), select: (p) => p.attributes.permissions ?? {} });
   return (action) => data?.[action] ?? false;
+}
+
+/** The emails of the project's owner and admins, from the same `GET /api/projects/:id` and cache as useProject. Empty until it has loaded. */
+export function useProjectAdminEmails(id: string): string[] {
+  const { data } = useQuery({
+    ...projectQuery(id),
+    select: (p) => (p.attributes.members ?? []).flatMap((m) => ((m.role === "owner" || m.role === "admin") && m.email ? [m.email] : [])),
+  });
+  return data ?? [];
 }

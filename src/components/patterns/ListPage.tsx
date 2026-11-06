@@ -27,6 +27,7 @@ export default function ListPage({
   showCount = false,
   description,
   actions,
+  search,
   notice,
   status = { state: "ready" },
   itemCount,
@@ -41,8 +42,10 @@ export default function ListPage({
   showCount?: boolean;
   /** One line under the title, in the header, saying what the list is. */
   description?: ReactNode;
-  /** The header's buttons (and a search box), main action first. Shown in every state. */
+  /** The header's buttons, main action first. Shown in every state. */
   actions?: ReactNode;
+  /** The list's search box, on its own line above the list, so the header keeps room for the title, its description and the buttons. Shown in every state. */
+  search?: ReactNode;
   /** Above the list, e.g. a greeting or a banner after a save. Shown in every state. */
   notice?: ReactNode;
   /** Where loading the list stands. Left out, it is ready. */
@@ -58,16 +61,30 @@ export default function ListPage({
   return (
     <PageContent
       header={
-        <Header title={title} breadcrumbs={breadcrumbs} description={description} count={showCount && itemCount > 0 ? itemCount : undefined}>
+        <Header
+          title={title}
+          breadcrumbs={breadcrumbs}
+          description={description}
+          count={showCount && itemCount > 0 ? itemCount : undefined}
+        >
           {actions}
         </Header>
       }
     >
       <Centered>
         <Stack>
+          {search && <div className="max-w-sm">{search}</div>}
           {notice}
           <AsyncBoundary status={status}>
-            {itemCount === 0 ? <EmptyState icon={empty.icon} title={empty.title} message={empty.message} /> : list}
+            {itemCount === 0 ? (
+              <EmptyState
+                icon={empty.icon}
+                title={empty.title}
+                message={empty.message}
+              />
+            ) : (
+              list
+            )}
           </AsyncBoundary>
         </Stack>
       </Centered>
