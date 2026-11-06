@@ -241,9 +241,10 @@ goes back to Lightning's way.
   (`require_authenticated_user` in `user_auth.ex` dropped its "You must log
   in" flash). If signing out fails, the replica says so and stays, rather
   than showing the login page while the session may still be live.
-- **The login page's message is polite.** Lightning marks its info flash
-  `role="alert"`. Here it is Alert's `role="status"`, so a screen reader
-  reads it in turn rather than interrupting.
+- **A signed-out page's message is polite.** Lightning marks its info
+  flash `role="alert"` on log in and reset password. Here it is Alert's
+  `role="status"`, so a screen reader reads it in turn rather than
+  interrupting.
 - **A dead reset link is found on submit, not on opening it.** Lightning
   checks the link when it's opened (`UserResetPasswordController`), flashes
   "Reset password link is invalid or it has expired." and sends the person

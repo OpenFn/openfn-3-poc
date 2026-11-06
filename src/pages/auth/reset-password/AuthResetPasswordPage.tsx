@@ -1,6 +1,6 @@
-import { useState } from "react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard, { AuthFooterLinks } from "@/components/auth/AuthCard";
+import { useCarriedFlash } from "@/components/auth/useCarriedFlash";
 import Button from "@/components/primitives/Button";
 import Form from "@/components/primitives/Form";
 import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
@@ -42,10 +42,7 @@ export default function AuthResetPasswordPage({ step, onRequest, onReset, allowS
   });
   const { error, ...formProps } = step === "request" ? request.formProps(onRequest) : reset.formProps(onReset);
   const cardError = error ? errorMessage(error) : status?.state === "error" ? status.message : undefined;
-  // Once refused, the carried message stays gone, as Lightning re-renders with only the new flash.
-  const [replaced, setReplaced] = useState(false);
-  if (error && !replaced) setReplaced(true);
-  const card = { error: cardError, info: replaced ? undefined : flash?.message };
+  const card = useCarriedFlash(flash, !!error, cardError);
   const logIn = <TextLink variant="plain" to="/users/log_in">Log in</TextLink>;
   const register = allowSignup && <TextLink variant="plain" to="/users/register">Register</TextLink>;
 
