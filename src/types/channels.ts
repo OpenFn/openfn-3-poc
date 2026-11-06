@@ -31,32 +31,6 @@ export interface ChannelFormValues {
 
 export type ChannelRequestState = "pending" | "success" | "failed" | "timeout" | "error";
 
-export interface ChannelEvent {
-  type: "destination_response" | "error";
-  /** Null on a wiped request. */
-  requestMethod: string | null;
-  requestPath: string | null;
-  requestQueryString: string | null;
-  requestHeaders: [string, string][] | null;
-  requestBodyPreview: string | null;
-  requestBodySize: number | null;
-  requestBodyHash: string | null;
-  responseStatus: number | null;
-  responseHeaders: [string, string][] | null;
-  responseBodyPreview: string | null;
-  responseBodySize: number | null;
-  responseBodyHash: string | null;
-  /** Microseconds. */
-  latencyUs: number | null;
-  ttfbUs: number | null;
-  queueUs: number | null;
-  connectUs: number | null;
-  requestSendUs: number | null;
-  responseDurationUs: number | null;
-  reusedConnection: boolean;
-  errorMessage: string | null;
-}
-
 /** One row of History's Channel Logs table: what it shows, with the path and error already picked from the events. */
 export interface ChannelLogRow {
   id: string;
@@ -71,27 +45,45 @@ export interface ChannelLogRow {
   errorMessage: string | null;
 }
 
-/** What the channel request page shows of a request: the host sends no other id, and only the primary event. */
+/** One request through a channel, as its page shows it (`GET /api/channel_requests/:id`). */
 export interface ChannelRequestDetail {
   id: string;
+  /** The id clients and the destination see (`x-request-id`). */
+  requestId: string;
+  channelId: string;
   state: ChannelRequestState;
   startedAt: string;
   completedAt: string | null;
+  /** The caller's address; null once wiped. */
   clientIdentity: string | null;
-  clientAuth: string;
-  destinationAuth: string;
-  isWiped: boolean;
+  /** `type` null: the channel was open. `methodName` null: the method has since been deleted. */
+  clientAuth: { type: "api" | "basic" | null; methodId: string | null; methodName: string | null };
+  /** Null when the channel had none; `name` null when it has since been deleted. */
+  destinationCredential: { id: string; name: string | null } | null;
   /** The channel's config as it was when the request ran. */
   snapshot: { name: string; destinationUrl: string; lockVersion: number };
-  events: ChannelEvent[];
-}
-
-/** The channel a request ran through, as the request page shows it: its current name, destination and version. */
-export interface ChannelRequestChannel {
-  id: string;
-  projectId: string;
-  name: string;
-  destinationUrl: string;
-  /** Bumped on every save; channel requests record the version they ran against. */
-  lockVersion: number;
+  /** Path, query string, headers and body are null once wiped. */
+  request: {
+    method: string;
+    path: string | null;
+    queryString: string | null;
+    headers: [string, string][] | null;
+    body: string | null;
+    bodySize: number | null;
+  } | null;
+  /** Null when no response came back. */
+  response: { status: number; headers: [string, string][] | null; body: string | null; bodySize: number | null } | null;
+  errorMessage: string | null;
+  /** `credential`: never sent. `transport`: no response came back. Null for an error the server doesn't know, or none. */
+  errorCategory: "credential" | "transport" | null;
+  /** Microseconds. */
+  timing: {
+    latencyUs: number | null;
+    queueUs: number | null;
+    connectUs: number | null;
+    requestSendUs: number | null;
+    ttfbUs: number | null;
+    responseDurationUs: number | null;
+  } | null;
+  wiped: boolean;
 }

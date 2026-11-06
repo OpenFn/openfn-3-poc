@@ -54,6 +54,8 @@ let credentials = seed();
 
 /** Whether a credential is linked to the project, as a channel's destination credential must be. */
 export const isCredentialIn = (projectId: string, id: string) => credentials.some((c) => c.id === id && c.project_ids.includes(projectId));
+/** A credential's name, or null once it's deleted. */
+export const credentialName = (id: string) => credentials.find((c) => c.id === id)?.name ?? null;
 
 /** For stories and tests: the starting credentials and OAuth clients. */
 export const resetCredentials = () => {

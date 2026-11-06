@@ -552,6 +552,30 @@ goes back to Lightning's way.
   behind the form.** Lightning shows zero totals and "No channels found."
   until the form closes (annotation 6.1).
 
+## Channel request
+
+- **A request that isn't there, isn't this project's, or has a malformed id
+  shows No Access or Not Found in place.** Lightning sends you to History
+  without a word. The API answers 403 for any of them but another project's
+  (docs/api-gaps.md, Channel requests).
+- **The summary shows the channel name and destination URL the request
+  used**, from its snapshot. Lightning shows the channel's current ones, so
+  after an edit its summary names a destination the request never went to.
+- **The title and summary show the request id clients and destinations
+  see** (`x-request-id`, the one Channel logs lists). Lightning shows the
+  database id, which stays in the URL.
+- **A deleted client auth method or destination credential reads
+  "(deleted)".** Lightning's helper says so too, but its database clears the
+  reference when the record goes, so its page reads "None", as for a
+  request with no auth (annotation 6.1).
+- **An error code Lightning doesn't recognise reads "No response received"
+  with the code**, and the timing shows. Lightning shows an empty Response
+  card.
+- **No body hash or "Copy hash", and no "(reused)" on the Connect bar.** The
+  API doesn't send them (docs/api-gaps.md).
+- **Sentence case: "Channel request", "Channel name", "Config version".**
+  Lightning title-cases them.
+
 ## Audit
 
 - **The audit trail no longer shows which credential environments an event

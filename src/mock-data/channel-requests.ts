@@ -31,8 +31,9 @@ export const channelRequests: ChannelRequest[] = [
     startedAt: "2026-10-14T09:31:12Z",
     completedAt: "2026-10-14T09:31:12.284Z",
     clientIdentity: "10.0.4.17",
-    clientAuth: "CommCare API key (API key)",
-    destinationAuth: "OpenHIM basic auth",
+    clientAuthType: "api",
+    clientWebhookAuthMethodId: "wam-partner-api",
+    destinationCredentialId: "cred-hapi-fhir",
     isWiped: false,
     snapshot: { name: "SHR proxy", destinationUrl: "https://openhim.example.org/fhir", lockVersion: 3 },
     events: [
@@ -44,7 +45,6 @@ export const channelRequests: ChannelRequest[] = [
         requestHeaders: jsonHeaders,
         requestBodyPreview: patientBody,
         requestBodySize: 152,
-        requestBodyHash: "9f2b6c1e4d7a8b3c5e0f1a2d4c6b8e0f9a1c3e5d7b9f0a2c4e6d8b0f2a4c6e8d",
         responseStatus: 201,
         responseHeaders: [
           ["content-type", "application/fhir+json"],
@@ -53,14 +53,12 @@ export const channelRequests: ChannelRequest[] = [
         ],
         responseBodyPreview: JSON.stringify({ resourceType: "Patient", id: "58213" }, null, 2),
         responseBodySize: 48,
-        responseBodyHash: null,
         latencyUs: 284_000,
         ttfbUs: 251_000,
         queueUs: 1_200,
         connectUs: 38_400,
         requestSendUs: 2_100,
         responseDurationUs: 31_000,
-        reusedConnection: false,
         errorMessage: null,
       },
     ],
@@ -74,10 +72,11 @@ export const channelRequests: ChannelRequest[] = [
     startedAt: "2026-10-14T08:02:45Z",
     completedAt: "2026-10-14T08:02:45.131Z",
     clientIdentity: "10.0.4.17",
-    clientAuth: "CommCare API key (API key)",
-    destinationAuth: "OpenHIM basic auth",
+    clientAuthType: "api",
+    clientWebhookAuthMethodId: "wam-partner-api",
+    destinationCredentialId: "cred-hapi-fhir",
     isWiped: false,
-    snapshot: { name: "SHR proxy", destinationUrl: "https://openhim.example.org/fhir", lockVersion: 2 },
+    snapshot: { name: "Patient proxy", destinationUrl: "https://openhim.example.org/fhir", lockVersion: 2 },
     events: [
       {
         type: "destination_response",
@@ -87,7 +86,6 @@ export const channelRequests: ChannelRequest[] = [
         requestHeaders: jsonHeaders.slice(1),
         requestBodyPreview: "",
         requestBodySize: 0,
-        requestBodyHash: null,
         responseStatus: 404,
         responseHeaders: [["content-type", "application/fhir+json"]],
         responseBodyPreview: JSON.stringify(
@@ -96,14 +94,12 @@ export const channelRequests: ChannelRequest[] = [
           2
         ),
         responseBodySize: 96,
-        responseBodyHash: null,
         latencyUs: 131_000,
         ttfbUs: 118_500,
         queueUs: null,
         connectUs: null,
         requestSendUs: null,
         responseDurationUs: null,
-        reusedConnection: true,
         errorMessage: null,
       },
     ],
@@ -117,8 +113,9 @@ export const channelRequests: ChannelRequest[] = [
     startedAt: "2026-10-13T16:20:03Z",
     completedAt: "2026-10-13T16:20:08Z",
     clientIdentity: "41.79.12.200",
-    clientAuth: "None",
-    destinationAuth: "CommCare HQ",
+    clientAuthType: null,
+    clientWebhookAuthMethodId: null,
+    destinationCredentialId: null,
     isWiped: false,
     snapshot: {
       name: "CommCare forms",
@@ -134,19 +131,16 @@ export const channelRequests: ChannelRequest[] = [
         requestHeaders: [["content-type", "application/json"]],
         requestBodyPreview: JSON.stringify({ form: { "@name": "Patient registration" } }, null, 2),
         requestBodySize: 52,
-        requestBodyHash: null,
         responseStatus: null,
         responseHeaders: null,
         responseBodyPreview: null,
         responseBodySize: null,
-        responseBodyHash: null,
         latencyUs: 5_000_000,
         ttfbUs: null,
         queueUs: null,
         connectUs: null,
         requestSendUs: null,
         responseDurationUs: null,
-        reusedConnection: false,
         errorMessage: "econnrefused",
       },
     ],
@@ -155,8 +149,4 @@ export const channelRequests: ChannelRequest[] = [
 
 export function channelRequestsIn(projectId: string): ChannelRequest[] {
   return channelRequests.filter((r) => r.projectId === projectId);
-}
-
-export function findChannelRequest(id: string | undefined): ChannelRequest | undefined {
-  return channelRequests.find((r) => r.id === id);
 }

@@ -24,7 +24,7 @@ import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
 import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
-import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
+import ChannelRequestShowPage from "./pages/history/channel-request/ChannelRequestShowPage.query";
 import RunShowPage from "./pages/history/RunShowPage.replica";
 import DataclipShowPage from "./pages/history/DataclipShowPage.replica";
 
