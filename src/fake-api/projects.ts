@@ -73,7 +73,7 @@ const ownerJson = (p: Project) => {
 // Membership is per project: a sandbox copies its parent's members when it's made.
 const canOpen = (p: Project) => !!roleOf(p);
 // A member without MFA is refused every route on a project that requires it; the list still shows it.
-const canEnter = (p: Project) => canOpen(p) && (!p.requiresMfa || currentUser().mfaEnabled);
+export const canEnter = (p: Project) => canOpen(p) && (!p.requiresMfa || currentUser().mfaEnabled);
 const rootOf = (p: Project): Project => {
   const parent = findProject(p.parentId ?? undefined);
   return parent ? rootOf(parent) : p;

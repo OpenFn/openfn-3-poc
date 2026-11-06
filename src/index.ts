@@ -13,7 +13,7 @@ export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFac
 export { default as AuthConfirmationRequiredPage } from "./pages/auth/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
 export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
-export { default as DataclipShowPage } from "./pages/history/DataclipShowPage";
+export { default as DataclipShowPage } from "./pages/history/dataclip/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
 export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
 export { default as RunShowPage } from "./pages/history/RunShowPage";
@@ -42,7 +42,7 @@ export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFact
 export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
-export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
+export type { DataclipShowPageProps } from "./pages/history/dataclip/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrdersPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
@@ -109,6 +109,7 @@ export type {
 } from "./types/credentials";
 export type {
   DataclipBody,
+  DataclipDetail,
   ErrorSignatureFilter,
   HistoryWorkflowRef,
   HistoryWorkOrderState,

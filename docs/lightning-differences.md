@@ -185,6 +185,25 @@ goes back to Lightning's way.
 - **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
   step after setting up MFA, not a section.
 
+## Dataclip
+
+- **A dataclip that isn't there, isn't this project's, or has a malformed
+  id shows No Access or Not Found in place.** Lightning sends you to History
+  with "Dataclip not found" (`dataclip_live/show.ex:20-34`). The API answers
+  403 for any of them but the wrong project (docs/api-gaps.md, Dataclips).
+- **The breadcrumb has "History" after the project picker.** Lightning's
+  ends with "Dataclip" and has no way back.
+- **The details show the dataclip's name when it has one.** The API sends
+  it; Lightning never shows it.
+- **The details and body load together, behind one spinner, and a failed
+  load shows the server's message in place of both.** Lightning shows the
+  details at once, an empty viewer while the body loads, and "Failed to
+  load content" in the viewer. The API sends the body with the dataclip.
+- **The sidebar marks History as the current page.** Lightning marks
+  nothing (`active_menu_item: :dataclip`); the dataclip is part of History.
+- **Sentence case: "Dataclip details", "No data available".** Lightning
+  title-cases them.
+
 ## Tags
 
 - **A timed-out channel request is a warning (yellow).** Lightning draws the

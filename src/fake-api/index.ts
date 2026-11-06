@@ -11,6 +11,7 @@ import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
 import { collectionRoutes, resetCollections } from "./collections";
+import { dataclipRoutes } from "./dataclips";
 import { mfaRoutes, resetMfa } from "./mfa";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
@@ -55,6 +56,7 @@ const routes: Record<string, Handler> = {
   ...projectRoutes,
   ...auditRoutes,
   ...collectionRoutes,
+  ...dataclipRoutes,
   ...mfaRoutes,
   ...userRoutes,
 };

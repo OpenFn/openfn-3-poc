@@ -7,7 +7,8 @@ import { withCanvas, withRouter } from "@/stories/decorators";
 
 const project = projects[0]!;
 const dataclip: DataclipDetail = {
-  id: "7f3a91c2-4d8e-4b1a-9c6f-2e5d8a1b3c4d",
+  id: "dc-7f3a91",
+  name: null,
   type: "http_request",
   insertedAt: "2026-10-14T09:12:00Z",
   updatedAt: "2026-10-14T09:12:00Z",
@@ -19,14 +20,25 @@ const meta: Meta<typeof DataclipShowPage> = {
   component: DataclipShowPage,
   decorators: [withRouter, withCanvas("h-screen")],
   parameters: { layout: "fullscreen" },
-  args: { project, projectLabel: project.name, dataclip, body: { text: JSON.stringify(dataclips[0]!.body, null, 2) } },
+  args: {
+    project,
+    projectLabel: project.name,
+    dataclip,
+    body: { text: JSON.stringify(dataclips[0]!.body, null, 2) },
+    historyHref: `/projects/${project.id}/history`,
+  },
 };
 export default meta;
 type Story = StoryObj<typeof DataclipShowPage>;
 
 export const Default: Story = {};
-export const Loading: Story = { args: { body: undefined } };
-export const LoadFailed: Story = { args: { body: { error: "Failed to load content" } } };
+export const Named: Story = { args: { dataclip: { ...dataclip, id: "dc-saved-1", name: "Sample registration", type: "saved_input" } } };
 export const Wiped: Story = {
   args: { dataclip: { ...dataclip, type: "step_result", wipedAt: "2026-10-20T00:00:00Z" }, body: undefined },
 };
+export const Loading: Story = { args: { status: { state: "loading" }, dataclip: null, body: undefined } };
+export const LoadFailed: Story = {
+  args: { status: { state: "error", message: "Something went wrong in Lightning." }, dataclip: null, body: undefined },
+};
+export const NoAccess: Story = { args: { status: { state: "forbidden" }, dataclip: null, body: undefined } };
+export const NotFound: Story = { args: { status: { state: "notFound" }, dataclip: null, body: undefined } };

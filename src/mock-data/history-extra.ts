@@ -1,9 +1,9 @@
 /**
- * Extra fixtures and lookups for History, the run page and the dataclip page,
+ * Extra fixtures and lookups for History and the run page,
  * layered on top of the shared `history.ts` (which stays read-only here).
  * Static data only.
  */
-import { dataclips, findDataclip, runLogs, runs, steps, stepsOf, workOrders } from "./history";
+import { findDataclip, runLogs, runs, steps, stepsOf, workOrders } from "./history";
 import type { HistoryWorkOrderState, LogLine, RunRow, WorkOrderRow, WorkOrderState } from "@/types/history";
 import type { Run, Step, WorkOrder } from "./models/history";
 
@@ -102,9 +102,4 @@ export function workflowJobs(workflowId: string): { id: string; name: string }[]
     }
   }
   return [...seen].map(([id, name]) => ({ id, name }));
-}
-
-/** When each dataclip was last updated (Lightning shows Created + Updated). */
-export function dataclipUpdatedAt(id: string): string | undefined {
-  return dataclips.find((d) => d.id === id)?.insertedAt;
 }

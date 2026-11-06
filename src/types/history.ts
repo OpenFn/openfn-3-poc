@@ -71,9 +71,10 @@ export interface RunStep {
   snapshotLockVersion: number;
 }
 
-/** The dataclip page's record (DataclipLive.Show): metadata only, the body arrives separately. */
+/** The dataclip page's record (DataclipLive.Show), without its body. */
 export interface DataclipDetail {
   id: string;
+  name: string | null;
   type: DataclipType;
   insertedAt: string;
   updatedAt: string;
