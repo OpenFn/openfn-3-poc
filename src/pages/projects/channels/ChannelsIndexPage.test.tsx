@@ -129,6 +129,14 @@ describe("ChannelsIndexPage", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New channel" })));
   });
 
+  it("closes the delete dialog when the channel is deleted elsewhere", () => {
+    const host = render();
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete idle" }));
+    expect(dialog()).toBeTruthy();
+    host.sendProps({ channels: [lab] });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("shows the new channel form with its options, its links to project settings, and the open-channel warning", async () => {
     render({ creating: true });
     expect(within(dialog()).getByRole("heading", { name: "New channel" })).toBeTruthy();

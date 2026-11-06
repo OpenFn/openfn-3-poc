@@ -1,14 +1,7 @@
 /**
- * URLs Lightning builds from the instance's own address. The channel and
- * webhook host is fixed here; once wired it comes from the instance config.
+ * URLs Lightning builds from the instance's own address. The webhook host is
+ * fixed here; once wired it comes from the instance config.
  */
-
-/** Base URL the proxy URLs hang off (`LightningWeb.Endpoint.url()`). */
-export const channelProxyBase = "https://app.openfn.org";
-
-export function channelProxyUrl(channelId: string): string {
-  return `${channelProxyBase}/channels/${channelId}`;
-}
 
 /** The webhook URL Lightning shows for a trigger. */
 export function webhookUrl(triggerId: string): string {

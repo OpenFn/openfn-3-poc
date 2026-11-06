@@ -8,7 +8,6 @@ import { credentials } from "./credentials";
 import { webhookAuthMethodsIn } from "./project-settings";
 import type { Channel } from "./models/channels";
 import type { ChannelRow } from "@/types/channels";
-import { channelProxyUrl } from "@/utils/urls";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 
@@ -50,6 +49,11 @@ export const channels: Channel[] = [
     lockVersion: 1,
   },
 ];
+
+/** A channel's proxy URL, as Lightning builds it from `LightningWeb.Endpoint.url()`. The API sends it as the channel's `url`. */
+export function channelProxyUrl(channelId: string): string {
+  return `https://app.openfn.org/channels/${channelId}`;
+}
 
 export function channelsIn(projectId: string): Channel[] {
   return channels.filter((c) => c.projectId === projectId);
