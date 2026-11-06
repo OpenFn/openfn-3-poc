@@ -268,11 +268,15 @@ describe("SandboxesIndexPage", () => {
       expect(isDisabled(mergeButton())).toBe(true);
     });
 
-    it("holds Merge with nothing ticked", async () => {
+    it("holds Merge with nothing ticked, or only a deletion", async () => {
       const host = await open();
       await host.resolve("onPreviewMerge", preview("p1", { credentials: [] }));
       fireEvent.click(screen.getByLabelText(/^intake/));
       expect(isDisabled(mergeButton())).toBe(true);
+      fireEvent.click(screen.getByLabelText(/^reporting/));
+      expect(isDisabled(mergeButton())).toBe(true);
+      fireEvent.click(mergeButton());
+      expect(host.calls("onMerge")).toEqual([]);
     });
 
     it("sends what's ticked, keeps the dialog open on a refusal, and says so once merged", async () => {

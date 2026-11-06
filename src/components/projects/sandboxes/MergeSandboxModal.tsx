@@ -94,11 +94,14 @@ export default function MergeSandboxModal({
   // A target that has gone since (deleted elsewhere) has no name; the server refuses the merge.
   const target = targets.find((t) => t.id === s.targetId)?.name ?? "";
   const diverged = (preview?.workflows ?? []).filter((w) => w.isDiverged && s.workflows.has(w.id));
+  const ticked = (preview?.workflows ?? []).filter((w) => s.workflows.has(w.id));
+  const workflowIds = ticked.filter((w) => !w.isDeleted).map((w) => w.id);
+  // A ticked deletion alone doesn't count: an empty workflow_ids may read as "merge all".
   const blockedReason = loading
     ? "Loading the merge preview"
     : !preview
       ? "The merge preview didn't load"
-      : s.workflows.size === 0
+      : workflowIds.length === 0
         ? "No workflows selected"
         : null;
 
@@ -115,8 +118,8 @@ export default function MergeSandboxModal({
       onSubmit={() =>
         onMerge({
           targetId: preview!.targetId,
-          workflowIds: preview!.workflows.filter((w) => !w.isDeleted && s.workflows.has(w.id)).map((w) => w.id),
-          deletedWorkflowIds: preview!.workflows.filter((w) => w.isDeleted && s.workflows.has(w.id)).map((w) => w.id),
+          workflowIds,
+          deletedWorkflowIds: ticked.filter((w) => w.isDeleted).map((w) => w.id),
           credentialIds: preview!.credentials.filter((c) => s.credentials.has(c.id)).map((c) => c.id),
         })
       }
