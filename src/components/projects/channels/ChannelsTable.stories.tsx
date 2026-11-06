@@ -18,7 +18,7 @@ const meta: Meta<typeof ChannelsTable> = {
     editHref: (id) => `/projects/${project.id}/channels/${id}/edit`,
     logsHref: (id) => `/projects/${project.id}/history/channels?filters[channel_id]=${id}`,
     onToggle: () => Promise.resolve(),
-    onDelete: () => Promise.resolve(),
+    onDelete: () => {},
   },
 };
 export default meta;
@@ -49,19 +49,4 @@ export const LongValues: Story = {
 export const SwitchFails: Story = {
   args: { onToggle: () => Promise.reject(new Error("Someone else changed this channel since you loaded it. Load it again and retry.")) },
   play: async ({ canvasElement }) => canvasElement.querySelector<HTMLButtonElement>('[role="switch"]')?.click(),
-};
-
-/** Clicks the first row's Delete, then the dialog's Delete channel. */
-const confirmDelete: NonNullable<Story["play"]> = async ({ canvasElement }) => {
-  const doc = canvasElement.ownerDocument;
-  [...canvasElement.querySelectorAll("button")].find((b) => b.textContent === "Delete")?.click();
-  await new Promise((r) => setTimeout(r));
-  doc.querySelector<HTMLButtonElement>('[role="dialog"] button[type="submit"]')?.click();
-};
-/** The delete is still out: the dialog shows pending. */
-export const DeletePending: Story = { args: { onDelete: () => new Promise(() => {}) }, play: confirmDelete };
-/** The server refuses: the dialog stays open with its message. */
-export const DeleteFails: Story = {
-  args: { onDelete: () => Promise.reject(new Error("A request arrived while the channel was being deleted. Try again.")) },
-  play: confirmDelete,
 };

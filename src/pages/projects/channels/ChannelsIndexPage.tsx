@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Button from "@/components/primitives/Button";
+import ConfirmModal from "@/components/primitives/ConfirmModal";
 import ListPage from "@/components/patterns/ListPage";
 import { useToast } from "@/components/primitives/Toast";
 import ProjectBreadcrumbs from "@/components/shell/ProjectBreadcrumbs";
@@ -37,8 +38,8 @@ export interface ChannelsIndexPageProps {
   webhookSecuritySettingsHref: string;
   /** Whether the New channel form is open. */
   creating: boolean;
-  /** The channel whose Edit form is open, or null. The form opens once it's among `channels`. */
-  editingId: string | null;
+  /** The listed channel whose Edit form is open, or null. */
+  editing: ChannelRow | null;
   /** The project's credentials, as [name, id], loaded while the form is open. */
   credentialOptions: [label: string, value: string][];
   /** The project's webhook auth methods, as [name, id], loaded while the form is open. */
@@ -74,7 +75,7 @@ export default function ChannelsIndexPage({
   credentialsSettingsHref,
   webhookSecuritySettingsHref,
   creating,
-  editingId,
+  editing,
   credentialOptions,
   authMethodOptions,
   optionsStatus,
@@ -86,7 +87,9 @@ export default function ChannelsIndexPage({
   const toast = useToast();
   // Where focus goes once a deleted channel's row, and its Delete, are gone.
   const newChannel = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
-  const editing = channels.find((c) => c.id === editingId);
+  // Looked up each render, so a channel deleted elsewhere closes its dialog.
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const deleting = channels.find((c) => c.id === deletingId);
 
   return (
     <ListPage
@@ -117,18 +120,35 @@ export default function ChannelsIndexPage({
           editHref={editHref}
           logsHref={logsHref}
           onToggle={(channel, enabled) => onUpdate(channel, { enabled })}
-          onDelete={async (id) => {
-            await onDelete(id);
-            toast("Channel deleted.");
-            requestAnimationFrame(() => newChannel.current?.focus());
-          }}
+          onDelete={setDeletingId}
         />
       }
     >
+      {deleting && (
+        <ConfirmModal
+          key={deleting.id}
+          open
+          onClose={() => setDeletingId(null)}
+          onConfirm={async () => {
+            await onDelete(deleting.id);
+            toast("Channel deleted.");
+            requestAnimationFrame(() => newChannel.current?.focus());
+            setDeletingId(null);
+          }}
+          title={`Delete ${deleting.name}?`}
+          confirmLabel="Delete channel"
+          tone="danger"
+        >
+          <p>
+            Requests to it stop being forwarded straight away, and its address stops working. Workflows that call it will fail at that step. Its
+            request history is deleted too.
+          </p>
+        </ConfirmModal>
+      )}
       {(creating || editing) && (
         <ChannelFormModal
           key={editing?.id ?? "new"}
-          channel={editing}
+          channel={editing ?? undefined}
           credentialOptions={credentialOptions}
           authMethodOptions={authMethodOptions}
           status={optionsStatus}

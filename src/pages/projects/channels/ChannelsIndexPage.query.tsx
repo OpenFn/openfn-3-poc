@@ -27,13 +27,13 @@ export default function ChannelsIndexPageQuery() {
 
   const isNew = pathname.endsWith("/new");
   const creating = isNew && can("create_channel");
-  const editingId = channelId !== undefined && can("update_channel") ? channelId : null;
-  const loadOptions = creating || editingId !== null;
+  const editRoute = channelId !== undefined && can("update_channel");
+  const editing = editRoute ? (list.channels.find((c) => c.id === channelId) ?? null) : null;
+  const loadOptions = creating || editRoute;
   const credentials = useProjectCredentialOptions(project.id, loadOptions);
   const authMethods = useWebhookAuthMethodOptions(project.id, loadOptions);
   const formRoute = isNew || channelId !== undefined;
-  const formShows = creating || list.channels.some((c) => c.id === editingId);
-  const leave = formRoute && list.status.state === "ready" && !formShows;
+  const leave = formRoute && list.status.state === "ready" && !creating && !editing;
 
   const base = `/projects/${project.id}`;
   const listHref = `${base}/channels`;
@@ -55,7 +55,7 @@ export default function ChannelsIndexPageQuery() {
         credentialsSettingsHref={`${base}/settings#credentials`}
         webhookSecuritySettingsHref={`${base}/settings#webhook_security`}
         creating={creating}
-        editingId={editingId}
+        editing={editing}
         credentialOptions={credentials.options}
         authMethodOptions={authMethods.options}
         optionsStatus={combinedStatus(credentials.status, authMethods.status)}

@@ -39,7 +39,7 @@ const render = (data: Partial<Data> = {}) =>
       credentialsSettingsHref: "/projects/p1/settings#credentials",
       webhookSecuritySettingsHref: "/projects/p1/settings#webhook_security",
       creating: false,
-      editingId: null,
+      editing: null,
       credentialOptions: [["My API Key", "cred1"]],
       authMethodOptions: [["API Key Auth", "wam1"]],
       ...data,
@@ -129,6 +129,14 @@ describe("ChannelsIndexPage", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New channel" })));
   });
 
+  it("closes the delete dialog when the channel is deleted elsewhere", () => {
+    const host = render();
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete idle" }));
+    expect(dialog()).toBeTruthy();
+    host.sendProps({ channels: [lab] });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("shows the new channel form with its options, its links to project settings, and the open-channel warning", async () => {
     render({ creating: true });
     expect(within(dialog()).getByRole("heading", { name: "New channel" })).toBeTruthy();
@@ -203,7 +211,7 @@ describe("ChannelsIndexPage", () => {
   });
 
   it("edits a channel from its listed values, sends them back, then closes and says so", async () => {
-    const host = render({ editingId: "c1" });
+    const host = render({ editing: lab });
     expect(within(dialog()).getByRole("heading", { name: "Edit lab-results" })).toBeTruthy();
     expect(dialog().textContent).toContain("lightning.example.com/channels/c1");
     expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("lab-results");
@@ -222,10 +230,5 @@ describe("ChannelsIndexPage", () => {
     await host.resolve("onUpdate");
     expect(host.calls("onClose")).toHaveLength(1);
     expect(screen.getByText("Channel updated successfully.")).toBeTruthy();
-  });
-
-  it("opens no form for an edit id that isn't listed", () => {
-    render({ editingId: "gone" });
-    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });
