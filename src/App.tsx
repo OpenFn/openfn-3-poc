@@ -8,7 +8,7 @@ import UserSettings from "./components/shell/UserSettings.query";
 
 import AuthLoginPage from "./pages/auth/login/AuthLoginPage.query";
 import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
-import AuthResetPasswordPage from "./pages/auth/AuthResetPasswordPage";
+import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPasswordPage.query";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
 import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
 import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage.replica";

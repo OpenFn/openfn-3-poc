@@ -15,3 +15,9 @@ export interface Flash {
   tone: "info" | "danger";
   message: string;
 }
+
+/** What the reset-password form holds. Only `password` is sent: the confirmation is the page's own check. */
+export interface ResetPasswordValues {
+  password: string;
+  passwordConfirmation: string;
+}

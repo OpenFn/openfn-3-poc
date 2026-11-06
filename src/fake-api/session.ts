@@ -10,7 +10,7 @@ import { backupCodes } from "@/mock-data/tokens";
 import { hasActivityInProjects } from "@/mock-data/profile";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
-import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
+import { invalid, json, noContent, problem, ORIGIN, type Handler, type Problem } from "./answers";
 import { spendBackupCode } from "./mfa";
 
 /**
@@ -22,6 +22,8 @@ export const FAKE_PASSWORD = "welcome12345";
 export const FAKE_MFA_CODE = "123456";
 // The first of the fake's backup codes; signing in with it marks it used.
 export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
+/** The one reset link the fake knows: it sets Esther's (editor@openfn.org) password, once until a reload or reset. */
+export const FAKE_RESET_TOKEN = "fake-reset-token";
 
 /** How long a step-up lasts (api/authentication.md, session tokens). */
 const STEP_UP_MS = 5 * 60_000;
@@ -69,6 +71,16 @@ export const pendingEmails = new Map<string, string>();
 const passwords = new Map<string, string>();
 export const setPassword = (userId: string, password: string) => void passwords.set(userId, password);
 const passwordOf = (userId: string) => passwords.get(userId) ?? FAKE_PASSWORD;
+let resetTokenUsed = false;
+
+/** A new password's problems, as a 422 lists them: 12 to 72 characters. */
+export function passwordErrors(password: unknown): NonNullable<Problem["errors"]> {
+  if (typeof password !== "string" || password.length < 12) {
+    return [{ code: "too_short", detail: "should be at least 12 character(s)", pointer: "#/password" }];
+  }
+  if (password.length > 72) return [{ code: "too_long", detail: "should be at most 72 character(s)", pointer: "#/password" }];
+  return [];
+}
 
 /** Back to the first fixture user, signed in and not stepped up, with the fixtures' users. */
 export function resetSession() {
@@ -78,6 +90,7 @@ export function resetSession() {
   people = seedPeople();
   pendingEmails.clear();
   passwords.clear();
+  resetTokenUsed = false;
 }
 
 /** Ends this browser's session, as signing out does. */
@@ -159,14 +172,16 @@ function stepUp(body: Record<string, unknown>) {
  */
 export function refuse(route: string, headers: Headers): Response | undefined {
   const { userId, mfaPendingId, csrf } = read();
-  const open = route === "GET /api/instance" || route === "POST /api/session" || route === "DELETE /api/session";
+  // Need no token (api/account.md): they answer signed out and while an MFA code is owed.
+  const tokenless = route === "GET /api/instance" || route === "POST /api/password_resets" || route === "PUT /api/password_resets/:token";
+  const open = tokenless || route === "POST /api/session" || route === "DELETE /api/session";
   const hasSession = Boolean(userId || mfaPendingId);
   if (!hasSession) return open ? undefined : unauthenticated();
   if (!route.startsWith("GET ") && headers.get("x-csrf-token") !== csrf) {
     return problem({ status: 403, code: "forbidden", detail: "The request's CSRF token is missing or wrong." });
   }
-  // Waiting for an MFA code: only the session routes answer.
-  if (!userId && !route.endsWith(" /api/session") && route !== "GET /api/instance") return unauthenticated();
+  // Waiting for an MFA code: only the session routes and the tokenless ones answer.
+  if (!userId && !route.endsWith(" /api/session") && !tokenless) return unauthenticated();
   return undefined;
 }
 
@@ -216,6 +231,18 @@ export const sessionRoutes: Record<string, Handler> = {
   "POST /api/session": (_params, body) => (read().userId && body["email"] === undefined ? stepUp(body) : signIn(body)),
   "DELETE /api/session": () => {
     endSession();
+    return noContent();
+  },
+
+  // Answers the same whether or not the email has an account. The fake sends nothing.
+  "POST /api/password_resets": () => new Response(null, { status: 202 }),
+  // ponytail: Lightning also ends the person's other sessions and API tokens; the fake keeps them.
+  "PUT /api/password_resets/:token": ({ token }, body) => {
+    if (token !== FAKE_RESET_TOKEN || resetTokenUsed) return problem({ status: 404, code: "not_found", detail: "Not found." });
+    const errors = passwordErrors(body["password"]);
+    if (errors.length) return invalid(errors);
+    resetTokenUsed = true;
+    setPassword(people.find((u) => u.email === "editor@openfn.org")!.id, body["password"] as string);
     return noContent();
   },
 

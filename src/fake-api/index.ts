@@ -15,7 +15,7 @@ import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
 
 export type { Problem } from "./answers";
-export { FAKE_BACKUP_CODE, FAKE_MFA_CODE, FAKE_PASSWORD } from "./session";
+export { FAKE_BACKUP_CODE, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
 
 const WAIT_MS = 300;
 

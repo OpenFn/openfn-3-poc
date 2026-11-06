@@ -6,7 +6,7 @@
  */
 import { forbidden, invalid, json, noContent, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { isValidEmail } from "@/utils/validate";
-import { currentUser, endSession, isSteppedUp, pendingEmails, people, setPassword, userJson } from "./session";
+import { currentUser, endSession, isSteppedUp, passwordErrors, pendingEmails, people, setPassword, userJson } from "./session";
 
 // Planned: what a person may change on their own account (api/users.md, Update a user).
 const OWN_KEYS = ["first_name", "last_name", "contact_preference", "email", "password", "experimental_features", "consent", "ai_disclaimer_accepted"];
@@ -38,14 +38,7 @@ function check(body: Body): NonNullable<Problem["errors"]> {
       errors.push({ code: "taken", detail: "has already been taken", pointer: "#/email" });
     }
   }
-  const password = body["password"];
-  if (password !== undefined) {
-    if (typeof password !== "string" || password.length < 12) {
-      errors.push({ code: "too_short", detail: "should be at least 12 character(s)", pointer: "#/password" });
-    } else if (password.length > 72) {
-      errors.push({ code: "too_long", detail: "should be at most 72 character(s)", pointer: "#/password" });
-    }
-  }
+  if ("password" in body) errors.push(...passwordErrors(body["password"]));
   return errors;
 }
 
