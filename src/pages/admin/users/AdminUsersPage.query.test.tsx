@@ -61,6 +61,7 @@ const user = (id: string) => users.find((u) => u.id === id)!;
 const amy = user("user-amy");
 const esther = user("user-esther");
 const vikram = user("user-vikram");
+const una = user("user-una");
 const sizwe = user("user-sizwe");
 
 function scheduleEsther() {
@@ -83,7 +84,7 @@ describe("AdminUsersPageQuery", { timeout: 10_000 }, () => {
   it("loads every user on the instance by first name, with their role and status", async () => {
     renderAt();
     await screen.findByRole("table", {}, wait);
-    expect(emails()).toEqual([amy.email, esther.email, sizwe.email, vikram.email]);
+    expect(emails()).toEqual([amy.email, esther.email, sizwe.email, una.email, vikram.email]);
     expect(screen.getByRole("columnheader", { name: /Name/ }).getAttribute("aria-sort")).toBe("ascending");
     expect(rowOf(amy.email).textContent).toContain("Amy Admin (you)");
     shown(sizwe.email, "Superuser", "Enabled");
@@ -92,7 +93,7 @@ describe("AdminUsersPageQuery", { timeout: 10_000 }, () => {
 
   it("sorts by Role from the URL and its header, and searches through ?q= on the server, back to the first page", async () => {
     renderAt("/settings/users?sort=role&dir=desc&page=2");
-    await waitFor(() => expect(emails()).toEqual([esther.email, vikram.email, amy.email, sizwe.email]), wait);
+    await waitFor(() => expect(emails()).toEqual([esther.email, vikram.email, una.email, amy.email, sizwe.email]), wait);
     fireEvent.change(screen.getByRole("textbox", { name: "Filter users" }), { target: { value: "esther" } });
     await waitFor(() => expect(where()).toBe("/settings/users?sort=role&dir=desc&q=esther"), wait);
     await waitFor(() => expect(emails()).toEqual([esther.email]), wait);
@@ -101,7 +102,7 @@ describe("AdminUsersPageQuery", { timeout: 10_000 }, () => {
     await waitFor(() => expect(emails()).toHaveLength(users.length), wait);
     fireEvent.click(screen.getByRole("button", { name: /Role/ }));
     expect(where()).toBe("/settings/users?sort=role&dir=asc");
-    await waitFor(() => expect(emails()).toEqual([amy.email, sizwe.email, esther.email, vikram.email]), wait);
+    await waitFor(() => expect(emails()).toEqual([amy.email, sizwe.email, esther.email, vikram.email, una.email]), wait);
   });
 
   it("schedules a deletion from the row's Delete once the email is typed, then cancels it from the row", async () => {

@@ -7,10 +7,13 @@ export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenanceP
 export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
 export { default as AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
 export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
+export { default as AuthConfirmAccountPage } from "./pages/auth/confirm-account/AuthConfirmAccountPage";
 export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
 export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFactorPage";
-export { default as AuthConfirmationRequiredPage } from "./pages/auth/AuthConfirmationRequiredPage";
-export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
+export { default as AuthResetPasswordPage } from "./pages/auth/reset-password/AuthResetPasswordPage";
+export { default as AuthConfirmationRequiredPage } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
+export { default as FirstSetupPage } from "./pages/auth/first-setup/FirstSetupPage";
+export { default as AuthRegisterPage } from "./pages/auth/register/AuthRegisterPage";
 export { default as ChannelRequestShowPage } from "./pages/history/channel-request/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/dataclip/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
@@ -35,10 +38,13 @@ export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePa
 export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";
 export type { AdminUsersPageProps } from "./pages/admin/users/AdminUsersPage";
 export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
+export type { AuthConfirmAccountPageProps } from "./pages/auth/confirm-account/AuthConfirmAccountPage";
 export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
 export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFactorPage";
-export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
-export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
+export type { AuthResetPasswordPageProps } from "./pages/auth/reset-password/AuthResetPasswordPage";
+export type { AuthConfirmationRequiredPageProps } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
+export type { FirstSetupPageProps } from "./pages/auth/first-setup/FirstSetupPage";
+export type { AuthRegisterPageProps } from "./pages/auth/register/AuthRegisterPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/channel-request/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/dataclip/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
@@ -55,9 +61,8 @@ export type { SandboxesIndexPageProps } from "./pages/projects/sandboxes/Sandbox
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
-export type { ChangeEmailResult, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { ResendResult } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export type { ConfirmAccessValues } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
-export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
 export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";
 
 
@@ -176,7 +181,7 @@ export type {
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";
-export type { SsoProvider, TwoFactorMethod } from "./types/auth";
+export type { FirstSetupValues, Flash, RegisterValues, ResetPasswordValues, SsoProvider, TwoFactorMethod } from "./types/auth";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 

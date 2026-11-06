@@ -1,5 +1,5 @@
-import IconButton from "@/components/primitives/IconButton";
-import Menu, { MenuDivider, MenuItem } from "@/components/primitives/Menu";
+import { MenuItem } from "@/components/primitives/Menu";
+import RowMenu from "@/components/primitives/RowMenu";
 import Pill from "@/components/primitives/Pill";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
 import Text from "@/components/primitives/Text";
@@ -49,15 +49,11 @@ export default function OwnedOauthClientsTable({ clients, onEdit, onDelete }: Pr
           </Td>
           <Td actions>
             {c.canEdit && (
-              <Menu trigger={<IconButton icon="hero-ellipsis-horizontal" label={`Actions for ${c.name}`} />}>
+              <RowMenu name={c.name} onDelete={() => onDelete(c)}>
                 <MenuItem icon="hero-pencil" onClick={() => onEdit(c)}>
                   Edit
                 </MenuItem>
-                <MenuDivider />
-                <MenuItem icon="hero-trash" tone="danger" onClick={() => onDelete(c)}>
-                  Delete
-                </MenuItem>
-              </Menu>
+              </RowMenu>
             )}
           </Td>
         </Tr>

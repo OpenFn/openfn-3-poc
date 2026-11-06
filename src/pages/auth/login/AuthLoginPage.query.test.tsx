@@ -1,10 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate, type InitialEntry } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { request } from "@/api/client";
 import { FAKE_MFA_CODE, FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/testing";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
+import Button from "@/components/primitives/Button";
 import AuthTwoFactorPageQuery from "@/pages/auth/two-factor/AuthTwoFactorPage.query";
 import AuthLoginPageQuery from "./AuthLoginPage.query";
 
@@ -12,10 +13,16 @@ const wait = { timeout: 3000 };
 
 function Where() {
   const { pathname, search } = useLocation();
-  return <p>At {pathname + search}</p>;
+  const navigate = useNavigate();
+  return (
+    <>
+      <p>At {pathname + search}</p>
+      <Button onClick={() => void navigate(-1)}>Back</Button>
+    </>
+  );
 }
 
-function renderAt(path: string) {
+function renderAt(path: InitialEntry) {
   render(
     <ApiProvider retry={false}>
       <MemoryRouter initialEntries={[path]}>
@@ -62,6 +69,15 @@ describe("AuthLoginPageQuery", () => {
     renderAt("/users/log_in");
     expect(await screen.findByText("Something went wrong in Lightning.", {}, wait)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Log in" })).toBeTruthy();
+  });
+
+  it("shows a carried message once, and not again after Back", async () => {
+    renderAt({ pathname: "/users/log_in", state: { flash: { tone: "info", message: "Password reset successfully." } } });
+    expect((await screen.findByRole("status", {}, wait)).textContent).toContain("Password reset successfully.");
+    fireEvent.click(screen.getByRole("link", { name: "Forgot your password?" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Back" }, wait));
+    expect(await screen.findByRole("button", { name: "Log in" }, wait)).toBeTruthy();
+    expect(screen.queryByText("Password reset successfully.")).toBeNull();
   });
 
   it("refuses a wrong password in Lightning's words and stays signed out", async () => {

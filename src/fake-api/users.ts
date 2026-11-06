@@ -1,23 +1,29 @@
 /**
- * Users on the pretend server: a superuser listing, creating and changing
- * them and scheduling or cancelling their deletion, and a person changing
- * their own account, api/users.md and api/account.md (GitHub). Changing one is
- * planned scope, as is a superuser's session doing any of it without stepping
- * up.
+/**
+ * Users on the pretend server: api/users.md and api/account.md (GitHub). A
+ * superuser lists, creates and changes them and schedules or cancels their
+ * deletion; someone signed out registers, or makes the first account on a
+ * fresh install; a person changes their own account. Most of it is planned
+ * scope, as is a superuser's session doing any of it without stepping up.
  */
 import { badSort, DAY_MS, forbidden, invalid, json, noContent, notFound, now, paged, parseSort, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import type { User } from "@/types/users";
 import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { isValidEmail } from "@/utils/validate";
+import { allowSignup, needsSetup, setNeedsSetup } from "./instance";
 import {
   currentUser,
   endSession,
+  isSignedIn,
   isSteppedUp,
+  passwordErrors,
   pendingEmails,
   people,
   PURGE_DELETED_AFTER_DAYS,
   setPassword,
+  startSession,
+  unauthenticated,
   userJson,
 } from "./session";
 
@@ -27,11 +33,14 @@ const OWN_KEYS = ["first_name", "last_name", "contact_preference", "email", "pas
 const CREATE_KEYS = ["email", "password", "first_name", "last_name", "role", "confirmed"];
 const ADMIN_KEYS = ["first_name", "last_name", "email", "password", "role", "support_user", "disabled"];
 
+const unknownKeys = (body: Body, known: string[]): NonNullable<Problem["errors"]> =>
+  Object.keys(body)
+    .filter((key) => !known.includes(key))
+    .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
+
 /** Every problem with a body that may hold only `keys`, for a new user (`target` null) or a change to `target`. */
 function check(body: Body, keys: string[], target: User | null): NonNullable<Problem["errors"]> {
-  const errors: NonNullable<Problem["errors"]> = Object.keys(body)
-    .filter((key) => !keys.includes(key))
-    .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
+  const errors = unknownKeys(body, keys);
   for (const key of ["first_name", "last_name"]) {
     if (key in body && (typeof body[key] !== "string" || !(body[key] as string).trim())) {
       errors.push({ code: "required", detail: "can't be blank", pointer: `#/${key}` });
@@ -61,14 +70,7 @@ function check(body: Body, keys: string[], target: User | null): NonNullable<Pro
       errors.push({ code: "taken", detail: "has already been taken", pointer: "#/email" });
     }
   }
-  const password = body["password"];
-  if (password !== undefined) {
-    if (typeof password !== "string" || password.length < 12) {
-      errors.push({ code: "too_short", detail: "should be at least 12 character(s)", pointer: "#/password" });
-    } else if (password.length > 72) {
-      errors.push({ code: "too_long", detail: "should be at most 72 character(s)", pointer: "#/password" });
-    }
-  }
+  if ("password" in body) errors.push(...passwordErrors(body["password"]));
   return errors;
 }
 
@@ -110,8 +112,33 @@ function changeSomeoneElse(id: string | undefined, body: Body) {
   return json(200, userJson(user));
 }
 
+// A signed-in superuser making an account (planned scope): any role, confirmed or not, and nothing is emailed.
+function createAsSuperuser(body: Body) {
+  if (currentUser().role !== "superuser") return forbidden();
+  const errors = check({ first_name: "", last_name: "", email: "", password: "", ...body }, CREATE_KEYS, null);
+  if (errors.length) return invalid(errors);
+  const user: User = {
+    id: crypto.randomUUID(),
+    firstName: body["first_name"] as string,
+    lastName: body["last_name"] as string,
+    email: body["email"] as string,
+    role: (body["role"] as User["role"] | undefined) ?? "user",
+    confirmedAt: body["confirmed"] === true ? now() : null,
+    insertedAt: now(),
+    mfaEnabled: false,
+    githubConnected: false,
+    experimentalFeatures: false,
+    supportUser: false,
+    disabled: false,
+    scheduledDeletion: null,
+    contactPreference: "critical",
+  };
+  people.push(user);
+  setPassword(user.id, body["password"] as string);
+  return json(201, userJson(user));
+}
+
 export const userRoutes: Record<string, Handler> = {
-  // A superuser's personal access token, q and sort are planned scope; anyone else is refused.
   "GET /api/users": (_params, _body, query) => {
     if (currentUser().role !== "superuser") return forbidden();
     const { field, key, direction } = parseSort(query, userSorts, "email");
@@ -132,18 +159,39 @@ export const userRoutes: Record<string, Handler> = {
     return user ? json(200, userJson(user)) : notFound();
   },
 
-  // A signed-in superuser's branch. Register and first setup are a signed-out caller's branches of this handler.
+  // The shared create (api/users.md, Create a user). While `needs_setup` the first account becomes the superuser
+  // (api/account.md), with or without sign-up, terms accepted but not required. Otherwise, with sign-up on,
+  // someone signed out registers as a user and must accept the terms. Signed in, it's a superuser's create.
   "POST /api/users": (_params, body) => {
-    if (currentUser().role !== "superuser") return forbidden();
-    const errors = check({ first_name: "", last_name: "", email: "", password: "", ...body }, CREATE_KEYS, null);
+    const setup = needsSetup();
+    if (!setup && isSignedIn()) return createAsSuperuser(body);
+    if (!setup && !allowSignup()) return unauthenticated();
+    const keys = ["first_name", "last_name", "email", "password"];
+    // Lightning doesn't cast `role` or `confirmed` on sign-up, so they're ignored, not refused (docs/api-gaps.md).
+    const ignored = setup ? [] : ["role", "confirmed"];
+    const errors = unknownKeys(body, [...keys, "terms_accepted", ...ignored]);
+    const text = (key: string) => (typeof body[key] === "string" ? (body[key] as string).trim() : "");
+    for (const key of keys) {
+      if (!text(key)) errors.push({ code: "required", detail: "can't be blank", pointer: `#/${key}` });
+    }
+    const email = text("email").toLowerCase();
+    // Lightning's validate_email_format.
+    if (email && !isValidEmail(email)) errors.push({ code: "format", detail: "must be a valid email address", pointer: "#/email" });
+    else if (email && people.some((u) => u.email.toLowerCase() === email)) errors.push({ code: "taken", detail: "has already been taken", pointer: "#/email" });
+    if (text("password")) errors.push(...passwordErrors(body["password"]));
+    // Refused when left out too, where Lightning lets a hand-built request through (docs/lightning-differences.md).
+    if (!setup && body["terms_accepted"] !== true) {
+      errors.push({ code: "must_accept", detail: "Please accept the terms and conditions to register.", pointer: "#/terms_accepted" });
+    }
     if (errors.length) return invalid(errors);
     const user: User = {
       id: crypto.randomUUID(),
-      firstName: body["first_name"] as string,
-      lastName: body["last_name"] as string,
-      email: body["email"] as string,
-      role: (body["role"] as User["role"] | undefined) ?? "user",
-      confirmedAt: body["confirmed"] === true ? now() : null,
+      firstName: text("first_name"),
+      lastName: text("last_name"),
+      email,
+      role: setup ? "superuser" : "user",
+      // As Lightning: unconfirmed, and nothing is emailed.
+      confirmedAt: null,
       insertedAt: now(),
       mfaEnabled: false,
       githubConnected: false,
@@ -155,6 +203,8 @@ export const userRoutes: Record<string, Handler> = {
     };
     people.push(user);
     setPassword(user.id, body["password"] as string);
+    if (setup) setNeedsSetup(false);
+    startSession(user.id);
     return json(201, userJson(user));
   },
 

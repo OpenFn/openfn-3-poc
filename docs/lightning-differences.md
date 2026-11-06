@@ -23,10 +23,57 @@ goes back to Lightning's way.
   both, so here an empty password is caught before the form is sent.
 - **Login has no Remember me checkbox.** Lightning's keeps you signed in for
   60 days. The API's sign-in has no such option yet (docs/api-gaps.md).
-- **Logging out says nothing.** Lightning shows "Logged out successfully." on
-  the login page. Here the login page just appears, because no message
-  survives a redirect yet. If logging out fails, the page says so and stays,
-  rather than showing the login page while the session may still be live.
+- **A failed log out says so and stays.** Lightning always lands on the
+  login page with "Logged out successfully.", as this app does when logging
+  out works. If it fails, the page says so rather than showing the login
+  page while the session may still be live.
+- **A signed-out page's message is a status, not an alert.** Lightning marks
+  its info message `role="alert"` on log in and reset password. Here it is
+  `role="status"`, so a screen reader reads it in turn rather than
+  interrupting.
+- **A dead reset link is found on submit, not on opening it.** Lightning
+  checks the link when it's opened, says "Reset password link is invalid or
+  it has expired." and sends the person to log in. The API can't check a
+  link without using it (docs/api-gaps.md), so here the form shows and,
+  once submitted, goes to the request page with the same words.
+- **A dead confirm link shows its error after "Confirm my account" is
+  pressed.** Lightning checks the link when it's opened and goes to
+  /projects with "User confirmation link is invalid or it has expired."
+  Here the page shows, and the same words appear in the card once the
+  button is pressed, for the same reason as reset.
+- **The confirm page has no "Log in" or "Register" links.** Only someone
+  signed in reaches it, so neither leads anywhere useful. The resend page
+  keeps both.
+- **The confirm-your-email page says "your email address" and has no
+  "Change email address" form.** Lightning shows the address and a form to
+  change it. The API has no route for either while locked out
+  (docs/api-gaps.md), so a mistyped address needs an administrator.
+- **Arriving at the confirm-your-email page shows no "Your account is
+  blocked…" message.** Lightning shows it above a body that says the same
+  thing.
+- **A throttled or failed resend replaces "We have sent…".** Lightning keeps
+  the earlier message beside the new warning; here only the latest shows.
+- **On a fresh install, only log in and signed-in pages go to first setup.**
+  Lightning sends every page to /first_setup until the first superuser
+  exists. Here reset, register, confirm, confirm-your-email and two-factor
+  opened directly stay put: none of them can do anything without an account.
+  Register, with sign-up on, shows its form and its create makes the
+  superuser, as first setup's does.
+- **Once set up, /first_setup goes to the projects list**, where Lightning
+  answers a plain-text 404. The API can't say why setup is closed
+  (docs/api-gaps.md).
+- **First setup and register check the email's format and the password's
+  length after Save or Register, in the server's words.** Lightning checks
+  while typing, and first setup shows "Password minimum length is 12
+  characters." twice. Here the page checks only for blanks, the matching
+  confirmation and the terms box, and the server brings the rest ("must be
+  a valid email address", "should be at least 12 character(s)").
+- **A signed-in visitor to register goes to the projects list, even with
+  sign-up off.** Lightning answers with the plain-text "Self-signup has been
+  disabled" 404. The signed-in check comes first, as on reset password.
+- **A new user always lands on the projects list.** Lightning can make a
+  starter project and open its new workflow page. The API can't say a
+  project was made (docs/api-gaps.md).
 - **The two-factor and confirm-access boxes have a label, not a heading.**
   Lightning heads the panel "Authentication Code" or "Password" and puts the
   help text under the button. Here the same words are the field's label,
@@ -66,8 +113,8 @@ goes back to Lightning's way.
   sees Not Found (`ProjectGate`).
 - **An admin page shows No Access in place to anyone but a superuser**, with
   the side menu still there. Lightning sends you to /projects and shows "No
-  Access" there, which needs a message that survives a redirect. /dashboard,
-  which has no menu, still goes to /projects, but without the message
+  Access" there. /dashboard, which has no menu, still goes to /projects,
+  without a message, because Lightning's is a whole No Access screen
   (`AdminGate`).
 
 ## Lists
@@ -297,8 +344,7 @@ goes back to Lightning's way.
 - **Someone else's delete URL stays put.** Lightning answers
   `/profile/:id/delete` for another user with a message and goes back to
   /profile. Here the page shows the same words, "You can't perform this
-  action", in an alert at the top and opens no dialog, since there's no
-  message that survives a redirect yet.
+  action", in an alert at the top and opens no dialog.
 
 ## Credentials
 
@@ -330,9 +376,9 @@ goes back to Lightning's way.
 - **For now, the credential form can only change `main`, and can't take a
   project away.** Saving says so instead of doing it. This goes when the form
   moves to the API's environment and project routes.
-- **For now, OAuth credentials can't be added or edited here.** Edit says
-  why. Transfer and delete still work. The API has no way to sign in to the
-  provider yet.
+- **For now, OAuth credentials can't be added or edited here.** Edit is
+  disabled and says why. Transfer and delete still work. The API has no way
+  to sign in to the provider yet.
 - **A refused transfer doesn't say whether the email has an account.**
   Lightning says "User does not exist", or names the projects the person
   isn't in, which tells anyone whether they have an account. Here both get
@@ -635,9 +681,10 @@ goes back to Lightning's way.
 - **Save and Create stay pressable until the form is right.** Lightning
   disables Save in the collaborator dialogs until every row has an email and
   a role, Create in the YAML import until the YAML looks right, the admin
-  collection's Save until its name is URL safe, and the admin user's Save
-  with "All fields are required", even on edit, where the password is
-  optional. Here pressing them says what's missing ("can't be blank",
+  collection's Save until its name is URL safe, the admin user's Save
+  with "All fields are required" (even on edit, where the password is
+  optional), and first setup's Save and register's Register until the form
+  is valid. Here pressing them says what's missing ("can't be blank",
   "Enter YAML content to create workflow"), so nobody faces a dead button
   without knowing why. A row's email error shows only then, not while
   typing.
@@ -650,6 +697,10 @@ goes back to Lightning's way.
   reason from the keyboard. Here they ignore presses but stay focusable
   (`aria-disabled`). A disabled button with no reason is disabled outright in
   both.
+- **Disabled menu items stay reachable with the arrow keys**, for the same
+  reason, and read out why. Lightning's blocked Delete on a superuser is a
+  plain span the keyboard never reaches. Here the item is `aria-disabled` and
+  ignores clicks, Enter and Space.
 - **An error toast stays until you close it.** Lightning hides every toast
   after 5 seconds, so a failure is easy to miss. Success toasts still fade
   after 5 seconds.

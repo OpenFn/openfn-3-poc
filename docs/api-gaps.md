@@ -264,6 +264,65 @@ apart.
   rules for your own account, and the user form greys those fields, with
   email and password left to Profile.
 
+- **Confirm account: the lockout sentence leaves out confirming.** api/account.md (Get the
+  session) says a `confirmation_required` account gets 401 from every route
+  except `POST /api/confirmations`. Lightning's lockout also lets it open and
+  submit `/users/confirm/:token` (`confirmation_lockout.ex:18-33`), or a
+  locked-out person could never confirm. The contract should list
+  `PUT /api/confirmations/:token` too. Replica: confirm-required's fake
+  allows it.
+- **Confirm account: no way to check a confirm link before pressing.** Lightning checks the
+  token when the link is opened (`verify_confirmation_token` on `:edit`). The
+  API only refuses on `PUT /api/confirmations/:token`, which uses the link.
+  Would need `GET /api/confirmations/:token` answering 204 or 404 without
+  using it. Replica: finds out when "Confirm my account" is pressed, and says
+  so in the card (docs/lightning-differences.md).
+- **Confirm required: when `confirmation_required` starts is unclear.** api/account.md says the
+  state means "unconfirmed and the instance requires it", and that routes
+  answer 401 "from 48 hours after sign-up". Its implementation note maps it
+  to `Accounts.locked_out?/1`, which includes the 48 hours. Read the first
+  way, every fresh sign-up would be sent here at once, and a client can't
+  tell the grace period from the lockout without `/api/me`, which is locked
+  too. The spec should say the state starts at 48 hours. Replica: the fake
+  does that.
+- **Confirm required: the locked-out 401 has no code of its own.** It answers
+  `unauthenticated`, like a signed-out one, so a client has to reload the
+  session to tell them apart. Replica: ApiProvider already reloads it on a
+  401.
+- **First setup: the create isn't sign-up.** api/users.md plans a create without
+  a token only "on an instance that allows sign-up", with
+  `terms_accepted: true`. Lightning's first setup works with sign-up off and
+  asks for no terms. api/account.md says the first account becomes the
+  superuser, but not that these conditions are lifted. The spec should say
+  so. Replica: the fake lifts both while `needs_setup`.
+- **First setup: is the first superuser confirmed?** Sign-up "emails them a confirmation
+  link"; Lightning's first setup leaves `confirmed_at` unset and sends
+  nothing, so under `require_email_verification` the only administrator is
+  locked out after 48 hours. The contract should say which. Replica:
+  unconfirmed, nothing sent.
+- **First setup: a create can't say "only as first setup".** A first-setup form
+  submitted after setup is done becomes an ordinary create (a plain user
+  under sign-up, or one made with the new superuser's session). It needs a
+  refusal for "already set up". Replica: 401 signed out (with sign-up on,
+  a 422 for the missing terms, which the form shows only as "The request
+  body is not valid."), 403 signed in, until the admin create defines the
+  rest.
+- **Register: no code says sign-up is closed.** A signed-out create on an instance
+  without sign-up answers 401 `unauthenticated`, the same as "sign in
+  first", so a register tab left open after sign-up was turned off can't
+  say why. It needs its own code. Replica: 401, shown as sent.
+- **Register: the terms refusal isn't specified.** api/users.md asks for
+  `terms_accepted: true` but not what a missing or false one answers.
+  Replica: a `must_accept` entry at `#/terms_accepted` (api/errors.md lists
+  the code), also when the key is left out.
+- **Register: a `role` or `confirmed` sent on sign-up.** The contract says sign-up
+  gets role `user`, but not whether a sent `role` or `confirmed` is ignored
+  or refused. Replica: ignored, as Lightning.
+- **Register: starter project.** Lightning's `init_project_for_new_user` makes a
+  project and lands the new user on its new-workflow page; the create's
+  answer can't say a project was made or where to go. Replica: none, so
+  every new user lands on the projects list.
+
 ## Changed, and that's fine
 
 The replica shows less, or shows it another way, and nothing breaks.
@@ -358,3 +417,21 @@ The replica shows less, or shows it another way, and nothing breaks.
   collection is created.
 - **Channel requests: no body hash.** The detail sends no SHA256 of the
   request or response body, so the page has no hash and no "Copy hash".
+- **Reset password: no way to check a reset link before the form**
+  (Lightning's `auth-reset-password`). Lightning checks the token when the
+  link is opened, without using it up, and refuses a used, expired or
+  unknown one at once. The API can only refuse on
+  `PUT /api/password_resets/:token`, so the person types a new password
+  before learning the link is dead. Would need
+  `GET /api/password_resets/:token` answering 204 or 404 without using the
+  link. Replica: finds out on submit, then sends the person to ask for a new
+  link (docs/lightning-differences.md).
+- **Confirm required: no way to correct a mistyped address while locked out.** Lightning's
+  page has a "Change email address" form (`request_email_correction/2`); no
+  route covers it, and the implementation note says so. A locked-out person
+  can't change anything else either, so the replica drops the form and a
+  mistyped address needs an administrator.
+- **First setup: `needs_setup` hides why setup is closed.** It is false both once a
+  superuser exists and when a service account runs the instance, so the
+  replica can't show Lightning's "First setup is disabled for this
+  instance." 404.

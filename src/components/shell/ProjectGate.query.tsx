@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useParams } from "react-router-dom";
-import { useEffect, useRef } from "react";
 import { useProject, useRefusedForMfa } from "@/api/projects";
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
+import { useFocusMainAfterSwap } from "@/utils/useFocusMainAfterSwap";
 
 /**
  * The parent of every /projects/:projectId route (Lightning's :project_scope,
@@ -17,21 +17,7 @@ export default function ProjectGate() {
   const mfa = useRefusedForMfa(projectId, loaded.state === "forbidden");
   // Keep the spinner up while finding out which refusal it is, so No Access doesn't flash first.
   const status = mfa === "checking" ? ({ state: "loading" } as const) : loaded;
-  // Opening another project swaps the page for the spinner, and with it the
-  // picker button focus would return to. Once the new page (or Not Found) is
-  // in, give focus to <main> (Layout) instead of leaving it on <body>
-  // (WCAG 2.4.3). Not on the first load: nothing was swapped out then.
-  const shown = useRef(false);
-  const swapped = useRef(false);
-  useEffect(() => {
-    if (status.state === "loading") {
-      if (shown.current) swapped.current = true;
-      return;
-    }
-    if (swapped.current && document.activeElement === document.body) document.querySelector<HTMLElement>("main")?.focus();
-    swapped.current = false;
-    shown.current = true;
-  }, [status.state]);
+  useFocusMainAfterSwap(status.state === "loading");
   if (mfa === true) return <Navigate to="/mfa_required" replace />;
   return (
     <AsyncBoundary status={status} titleAs="h1">

@@ -100,10 +100,11 @@ describe("CredentialsIndexPage", { timeout: 15_000 }, () => {
     expect(items).toEqual(["Cancel deletion", "Delete now"]);
   });
 
-  it("says why an OAuth credential can't be edited, and opens no form", async () => {
+  it("blocks Edit on an OAuth credential with its reason, opening no form", async () => {
     const host = render();
-    await choose("Sheets", "Edit");
-    expect(screen.getByText(/OAuth credentials can't be edited here yet/)).toBeTruthy();
+    const edit = within(await menu("Sheets")).getByRole("menuitem", { name: "Edit", description: "OAuth credentials can't be edited here yet." });
+    expect(edit.getAttribute("aria-disabled")).toBe("true");
+    await userEvent.click(edit);
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(host.calls("onLoadCredentialSchema")).toEqual([]);
   });

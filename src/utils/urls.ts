@@ -1,7 +1,10 @@
 /**
- * URLs Lightning builds from the instance's own address. The webhook host is
- * fixed here; once wired it comes from the instance config.
+/**
+ * URLs Lightning builds from the instance's own address, and the in-app
+ * redirects around sign-in. The webhook host is fixed here; once wired it
+ * comes from the instance config.
  */
+import type { GateState } from "@/types/auth";
 
 /** The webhook URL Lightning shows for a trigger. */
 export function webhookUrl(triggerId: string): string {
@@ -27,4 +30,15 @@ export function returnTo(params: URLSearchParams, fallback = "/projects"): strin
   const to = params.get("return_to");
   // Browsers read "/\host" as "//host" too.
   return to && /^\/(?![/\\])/.test(to) ? to : fallback;
+}
+
+/**
+ * Where a session that hasn't finished signing in goes from `here` (path,
+ * query and hash): log in or the MFA code, coming back after (`return_to`).
+ */
+export function signInRedirect(state: GateState | undefined, here: string): string | undefined {
+  const query = new URLSearchParams({ return_to: here });
+  if (state === "signed_out") return `/users/log_in?${query}`;
+  if (state === "mfa_required") return `/users/two-factor?${query}`;
+  return undefined;
 }

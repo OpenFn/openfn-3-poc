@@ -8,7 +8,7 @@
   "Raw <input>/<select>/<textarea> in features + pages": 3,
   "Raw <table> in features + pages": 1,
   "Raw palette classes in features + pages": 0,
-  "debt: lines in src": 141,
+  "debt: lines in src": 134,
   "Colour roles in theme/tokens.css": 108,
   "Palette classes in src (any scale, any file)": 0,
   "Colour alpha or faded disabled in src": 0,
@@ -21,7 +21,7 @@
   "z- numbers instead of a named layer": 27,
   "Fixed widths or heights outside the shell and patterns": 160,
   "List keys that are a position": 9,
-  "Hand-written ids instead of useId()": 189,
+  "Hand-written ids instead of useId()": 183,
   "className built from a template string": 6,
   "Files over 300 lines": 7
 }

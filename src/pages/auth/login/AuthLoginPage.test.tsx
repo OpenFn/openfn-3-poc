@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { renderPage } from "@/test/renderPage";
 import AuthLoginPage, { type AuthLoginPageProps } from "./AuthLoginPage";
 
-const signedOut = { allowSignup: false, ssoProvider: null };
+const signedOut = { allowSignup: false, ssoProvider: null, flash: null };
 const open = (data: Partial<Omit<AuthLoginPageProps, "onLogIn">> = {}) => renderPage(AuthLoginPage, { ...signedOut, ...data }, ["onLogIn"]);
 const type = (email: string, password: string) => {
   fireEvent.change(screen.getByRole("textbox", { name: /^Email/ }), { target: { value: email } });
@@ -35,6 +35,18 @@ describe("AuthLoginPage", () => {
     expect(page.calls("onLogIn")).toEqual([[{ email: "amy@openfn.org", password: "wrong" }]]);
     await page.reject("onLogIn", new Error("Invalid email or password"));
     expect(screen.getByText("Invalid email or password")).toBeTruthy();
+  });
+
+  it("shows a message a redirect carried, until a refused sign-in replaces it", async () => {
+    const page = open({ flash: { tone: "info", message: "Logged out successfully." } });
+    expect(screen.getByRole("status").textContent).toContain("Logged out successfully.");
+    type("amy@openfn.org", "wrong");
+    logIn();
+    await page.reject("onLogIn", new Error("Invalid email or password"));
+    expect(screen.getByText("Invalid email or password")).toBeTruthy();
+    expect(screen.queryByText("Logged out successfully.")).toBeNull();
+    logIn();
+    expect(screen.queryByText("Logged out successfully.")).toBeNull();
   });
 
   it("has no Register link, provider button or Remember me by default", () => {

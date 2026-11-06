@@ -16,11 +16,13 @@ import { authProviderRoutes, resetAuthProvider } from "./authProvider";
 import { collectionRoutes, resetCollections } from "./collections";
 import { dataclipRoutes } from "./dataclips";
 import { mfaRoutes, resetMfa } from "./mfa";
+import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
 
 export type { Problem } from "./answers";
-export { FAKE_BACKUP_CODE, FAKE_MFA_CODE, FAKE_PASSWORD } from "./session";
+export { FAKE_BACKUP_CODE, FAKE_CONFIRM_TOKEN, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
+export { setAllowSignup, setNeedsSetup };
 
 const WAIT_MS = 300;
 
@@ -64,6 +66,7 @@ const routes: Record<string, Handler> = {
   ...dataclipRoutes,
   ...authProviderRoutes,
   ...mfaRoutes,
+  ...instanceRoutes,
   ...userRoutes,
 };
 
@@ -114,5 +117,7 @@ export function resetFakeApi() {
   resetChannels();
   resetSession();
   resetMfa();
+  setNeedsSetup(false);
+  setAllowSignup(false);
   failures.clear();
 }

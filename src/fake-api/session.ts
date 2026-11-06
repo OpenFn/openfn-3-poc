@@ -5,12 +5,12 @@
  * stored it starts signed in as the first fixture user, as if the cookie were
  * already set.
  */
-import { authConfig } from "@/mock-data/auth";
 import { backupCodes } from "@/mock-data/tokens";
 import { hasCreatedRun } from "@/mock-data/history";
-import { session as sessionFixture, users } from "@/mock-data/users";
+import { users } from "@/mock-data/users";
 import type { User } from "@/types/users";
-import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
+import { accepted, invalid, json, noContent, notFound, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
+import { lockedOut, openWhileLockedOut, resetResends, spendResend } from "./lockout";
 import { spendBackupCode } from "./mfa";
 
 /**
@@ -22,6 +22,10 @@ export const FAKE_PASSWORD = "welcome12345";
 export const FAKE_MFA_CODE = "123456";
 // The first of the fake's backup codes; signing in with it marks it used.
 export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
+/** The one reset link the fake knows: it sets Esther's (editor@openfn.org) password, once until a reload or reset. */
+export const FAKE_RESET_TOKEN = "fake-reset-token";
+/** The one confirm link the fake knows: it confirms Una's account (unconfirmed@openfn.org), once until a reload or reset. */
+export const FAKE_CONFIRM_TOKEN = "fake-confirm-token";
 
 export const PURGE_DELETED_AFTER_DAYS = 7;
 
@@ -71,6 +75,16 @@ export const pendingEmails = new Map<string, string>();
 const passwords = new Map<string, string>();
 export const setPassword = (userId: string, password: string) => void passwords.set(userId, password);
 const passwordOf = (userId: string) => passwords.get(userId) ?? FAKE_PASSWORD;
+let resetTokenUsed = false;
+
+/** A new password's problems, as a 422 lists them: 12 to 72 characters. */
+export function passwordErrors(password: unknown): NonNullable<Problem["errors"]> {
+  if (typeof password !== "string" || password.length < 12) {
+    return [{ code: "too_short", detail: "should be at least 12 character(s)", pointer: "#/password" }];
+  }
+  if (password.length > 72) return [{ code: "too_long", detail: "should be at most 72 character(s)", pointer: "#/password" }];
+  return [];
+}
 
 /** Back to the first fixture user, signed in and not stepped up, with the fixtures' users. */
 export function resetSession() {
@@ -80,6 +94,14 @@ export function resetSession() {
   people = seedPeople();
   pendingEmails.clear();
   passwords.clear();
+  resetResends();
+  resetTokenUsed = false;
+}
+
+/** Signs this browser in as the user, replacing any session, as a create that signs the person in does. */
+export function startSession(userId: string) {
+  write(signedInAs(userId));
+  steppedUpUntil = 0;
 }
 
 /** Ends this browser's session, as signing out does. */
@@ -95,6 +117,9 @@ export function currentUser(): User {
   return user;
 }
 
+/** Whether someone is signed in, past any MFA code. */
+export const isSignedIn = () => Boolean(read().userId);
+
 /** Whether the session was stepped up in the last five minutes. */
 export const isSteppedUp = () => steppedUpUntil > Date.now();
 
@@ -102,7 +127,7 @@ const sessionData = () => {
   const { userId, mfaPendingId, csrf } = read();
   return {
     data: {
-      state: userId ? "signed_in" : "mfa_required",
+      state: userId ? (lockedOut(currentUser()) ? "confirmation_required" : "signed_in") : "mfa_required",
       user_id: userId ?? mfaPendingId,
       stepped_up_until: isSteppedUp() ? new Date(steppedUpUntil).toISOString() : null,
       csrf_token: csrf,
@@ -114,7 +139,7 @@ const sessionData = () => {
 // Every refused sign-in or step-up is the same 401, whatever was wrong.
 const invalidCredentials = () =>
   problem({ status: 401, code: "invalid_credentials", detail: "The email, password or code is not valid." });
-const unauthenticated = () => problem({ status: 401, code: "unauthenticated", detail: "You must sign in first." });
+export const unauthenticated = () => problem({ status: 401, code: "unauthenticated", detail: "You must sign in first." });
 
 const codeIsGood = (body: Record<string, unknown>) =>
   body["mfa_code"] === FAKE_MFA_CODE || (typeof body["backup_code"] === "string" && spendBackupCode(body["backup_code"]));
@@ -124,8 +149,7 @@ function signIn(body: Record<string, unknown>) {
   // The second step: only the code, for the person who passed the password.
   if (body["email"] === undefined && mfaPendingId) {
     if (!codeIsGood(body)) return invalidCredentials();
-    steppedUpUntil = 0;
-    write(signedInAs(mfaPendingId));
+    startSession(mfaPendingId);
     return json(201, sessionData());
   }
   const user = people.find((u) => u.email === body["email"]);
@@ -135,8 +159,7 @@ function signIn(body: Record<string, unknown>) {
     write({ userId: null, mfaPendingId: user.id, csrf: `fake-csrf-${crypto.randomUUID()}` });
     return problem({ status: 401, code: "mfa_required", detail: "Enter the code from your authenticator app." });
   }
-  steppedUpUntil = 0;
-  write(signedInAs(user.id));
+  startSession(user.id);
   return json(201, sessionData());
 }
 
@@ -155,20 +178,28 @@ function stepUp(body: Record<string, unknown>) {
 
 /**
  * What every request answers before its route, or nothing to go on: 401
- * without a session (except the routes for signing in), and 403 for a write
- * whose `x-csrf-token` isn't the session's. api/errors.md has no code of its
- * own for a bad CSRF token, so it's `forbidden`.
+ * without a session (except the routes for signing in) or while locked out
+ * (except `openWhileLockedOut`), and 403 for a write whose `x-csrf-token`
+ * isn't the session's (api/errors.md has no code for it, so `forbidden`).
  */
 export function refuse(route: string, headers: Headers): Response | undefined {
   const { userId, mfaPendingId, csrf } = read();
-  const open = route === "GET /api/instance" || route === "POST /api/session" || route === "DELETE /api/session";
+  // Need no token (api/account.md): they answer signed out and while an MFA code is owed.
+  const tokenless =
+    route === "GET /api/instance" ||
+    route === "POST /api/password_resets" ||
+    route === "PUT /api/password_resets/:token" ||
+    route === "POST /api/confirmations" ||
+    route === "POST /api/users";
+  const open = tokenless || route === "POST /api/session" || route === "DELETE /api/session";
   const hasSession = Boolean(userId || mfaPendingId);
   if (!hasSession) return open ? undefined : unauthenticated();
   if (!route.startsWith("GET ") && headers.get("x-csrf-token") !== csrf) {
     return problem({ status: 403, code: "forbidden", detail: "The request's CSRF token is missing or wrong." });
   }
-  // Waiting for an MFA code: only the session routes answer.
-  if (!userId && !route.endsWith(" /api/session") && route !== "GET /api/instance") return unauthenticated();
+  // Waiting for an MFA code: only the session routes and the tokenless ones answer.
+  if (!userId && !route.endsWith(" /api/session") && !tokenless) return unauthenticated();
+  if (userId && !openWhileLockedOut.has(route) && lockedOut(currentUser())) return unauthenticated();
   return undefined;
 }
 
@@ -221,24 +252,38 @@ export const sessionRoutes: Record<string, Handler> = {
     return noContent();
   },
 
-  "GET /api/me": () => json(200, meJson(currentUser())),
-
-  "GET /api/instance": () => {
-    const signedIn = Boolean(read().userId);
-    const provider = authConfig.ssoProvider;
-    return json(200, {
-      data: {
-        needs_setup: false,
-        allow_signup: authConfig.allowSignup,
-        url: ORIGIN,
-        release: { label: sessionFixture.instance.releaseLabel, commit: null, image_tag: null, branch: null },
-        admin_email: signedIn ? sessionFixture.instance.adminEmail : null,
-        purge_deleted_after_days: PURGE_DELETED_AFTER_DAYS,
-        sign_in_providers: provider ? [{ name: provider.name, kind: "external", start_url: `${ORIGIN}${provider.handlerUrl}` }] : [],
-        ai_assistant: true,
-        github_sync: false,
-        github_connect_url: null,
-      },
-    });
+  // Answers the same whether or not the email has an account. The fake sends nothing.
+  "POST /api/password_resets": accepted,
+  // ponytail: Lightning also ends the person's other sessions and API tokens; the fake keeps them.
+  "PUT /api/password_resets/:token": ({ token }, body) => {
+    if (token !== FAKE_RESET_TOKEN || resetTokenUsed) return notFound();
+    const errors = passwordErrors(body["password"]);
+    if (errors.length) return invalid(errors);
+    resetTokenUsed = true;
+    setPassword(people.find((u) => u.email === "editor@openfn.org")!.id, body["password"] as string);
+    return noContent();
   },
+
+  // By email it always answers 202. Signed in without one, the fourth in 15 minutes is refused.
+  "POST /api/confirmations": (_params, body) => {
+    const { userId } = read();
+    if (body["email"] !== undefined) {
+      const user = people.find((u) => u.email === body["email"]);
+      if (user) spendResend(user.id);
+    } else if (userId && !spendResend(userId)) {
+      return problem({ status: 429, code: "too_many_requests", detail: "Too many requests. Try again later." });
+    }
+    return accepted();
+  },
+  // ponytail: only the account link is faked; email-change and credential-transfer tokens answer 404 until a page needs them.
+  "PUT /api/confirmations/:token": ({ token }) => {
+    const user = currentUser();
+    if (token !== FAKE_CONFIRM_TOKEN || user.email !== "unconfirmed@openfn.org" || user.confirmedAt) {
+      return notFound();
+    }
+    user.confirmedAt = now();
+    return json(200, { data: { confirmed: "account" } });
+  },
+
+  "GET /api/me": () => json(200, meJson(currentUser())),
 };
