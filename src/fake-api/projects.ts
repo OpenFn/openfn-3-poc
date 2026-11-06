@@ -11,7 +11,7 @@ import { fullName } from "@/utils/format";
 import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, SEEDED_AT, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, SEEDED_AT, type Body, type Handler, type Problem } from "./answers";
 import { membersOf } from "./members";
 import { permissionsIn } from "./permissions";
 import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
@@ -31,8 +31,6 @@ let projects = seedProjects();
 // When each scheduled project is purged, by id.
 const seedScheduled = () => new Map([[OLD_IMPORT_TEST, now(new Date(Date.now() + 3 * DAY_MS))]]);
 let scheduled = seedScheduled();
-
-export { permissionsIn };
 
 /** The projects as the fake holds them now. */
 export const fakeProjects = () => projects;
@@ -139,9 +137,17 @@ const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
 });
 
 const PROJECT_KEYS = ["id", "name", "description", "members", "notify", "color"];
-export const PROJECT_NAME = /^[a-z0-9-]+$/;
-export const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
-export const SANDBOX_NAME_TAKEN = "Sandbox name already exists";
+const PROJECT_NAME = /^[a-z0-9-]+$/;
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+/** What's wrong with a sent name and colour, for both PUTs: `taken` when one of `siblings` has the name. */
+export function nameAndColorErrors({ name, color }: Body, siblings: Project[]): NonNullable<Problem["errors"]> {
+  const errors: NonNullable<Problem["errors"]> = [];
+  if (typeof name !== "string" || name === "") errors.push({ code: "required", detail: "can't be blank", pointer: "#/name" });
+  else if (!PROJECT_NAME.test(name)) errors.push({ code: "format", detail: "has invalid format", pointer: "#/name" });
+  else if (siblings.some((p) => p.name === name)) errors.push({ code: "taken", detail: "Sandbox name already exists", pointer: "#/name" });
+  if (color !== undefined && color !== null && !(typeof color === "string" && HEX_COLOR.test(color))) errors.push({ code: "format", detail: "is not a hex colour", pointer: "#/color" });
+  return errors;
+}
 // The fields GET /api/projects sorts by (planned).
 const projectSorts: Record<"name" | "inserted_at" | "last_activity", (p: Project) => SortValue> = { name: (p) => p.name, inserted_at: (p) => p.insertedAt, last_activity: (p) => lastActivity(p) };
 
@@ -220,15 +226,9 @@ export const projectRoutes: Record<string, Handler> = {
     const errors: NonNullable<Problem["errors"]> = Object.keys(body)
       .filter((key) => !PROJECT_KEYS.includes(key))
       .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
-    const name = body["name"];
+    const { name, color } = body;
     const description = body["description"] ?? null;
-    if (typeof name !== "string" || name === "") errors.push({ code: "required", detail: "can't be blank", pointer: "#/name" });
-    else if (!PROJECT_NAME.test(name)) errors.push({ code: "format", detail: "has invalid format", pointer: "#/name" });
-    else if (existing?.parentId && projects.some((p) => p.parentId === existing.parentId && p.name === name && p.id !== existing.id)) {
-      errors.push({ code: "taken", detail: SANDBOX_NAME_TAKEN, pointer: "#/name" });
-    }
-    const color = body["color"];
-    if (color !== undefined && color !== null && !(typeof color === "string" && HEX_COLOR.test(color))) errors.push({ code: "format", detail: "is not a hex colour", pointer: "#/color" });
+    errors.push(...nameAndColorErrors(body, existing?.parentId ? projects.filter((p) => p.parentId === existing.parentId && p !== existing) : []));
     if (description !== null && typeof description !== "string") errors.push({ code: "type", detail: "is not a string", pointer: "#/description" });
     else if (typeof description === "string" && description.length > 240) {
       errors.push({ code: "too_long", detail: "should be at most 240 character(s)", pointer: "#/description" });

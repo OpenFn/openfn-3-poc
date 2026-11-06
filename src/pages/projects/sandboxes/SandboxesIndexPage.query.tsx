@@ -1,7 +1,7 @@
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { combinedStatus } from "@/api/client";
 import { useCurrentProject, useProjectPermissions, useProjectSaves, useProjectTree } from "@/api/projects";
-import { previewMerge, useSandboxes, useSandboxLimit, useSandboxSaves } from "@/api/sandboxes";
+import { useMergePreview, useSandboxes, useSandboxLimit, useSandboxSaves } from "@/api/sandboxes";
 import { usePurgeDeletedAfterDays } from "@/api/session";
 import { projectLabel } from "@/components/shell/projectPickerItems";
 import SandboxesIndexPage from "./SandboxesIndexPage";
@@ -25,6 +25,7 @@ export default function SandboxesIndexPageQuery() {
   const limit = useSandboxLimit(project.id);
   const purge = usePurgeDeletedAfterDays();
   const saves = useSandboxSaves();
+  const previewMerge = useMergePreview();
   const projectSaves = useProjectSaves();
 
   const [root = null, ...sandboxes] = workspace;
@@ -58,16 +59,12 @@ export default function SandboxesIndexPageQuery() {
         onClose={() => navigate(listHref, { replace: true })}
         onCreate={async (values) => navigate(workflowsHref(await saves.create(project.id, values)))}
         onUpdate={saves.update}
-        // Leaving a sandbox being deleted happens before the lists reload, so the page never shows it gone from under itself.
         onDelete={(sandbox) =>
           projectSaves.scheduleDeletion(sandbox.id, sandbox.holdsCurrent ? () => navigate(`/projects/${sandbox.parentId}/sandboxes`, { replace: true }) : undefined)
         }
         onCancelDeletion={projectSaves.cancelDeletion}
         onPreviewMerge={previewMerge}
-        onMerge={async (sandbox, values) => {
-          await saves.merge(sandbox, values);
-          navigate(workflowsHref(values.targetId));
-        }}
+        onMerge={(sandbox, values) => saves.merge(sandbox, values, () => navigate(workflowsHref(values.targetId)))}
       />
     </>
   );

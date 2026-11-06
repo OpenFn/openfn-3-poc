@@ -54,7 +54,7 @@ export const storyWorkspace: SandboxRow[] = [
   row(openhie, { parentId: null, parentName: null, canEdit: false, canDelete: false, canMerge: false, descendantCount: 1, holdsCurrent: true, mergeTargets: [] }),
   row(fhir, { description: "Trying the FHIR R4 mappings before they go live." }),
   row(
-    { id: "2b3c4d5e-6f70-4a81-92b3-c4d5e6f70a81", name: "old-import-test", color: "#5AA1F0" },
+    { id: "story-old-import-test", name: "old-import-test", color: "#5AA1F0" },
     { scheduledDeletion: "2026-12-01T00:00:00Z", canEdit: false, canDelete: false, canMerge: false, canCancelDeletion: true }
   ),
 ];

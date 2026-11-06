@@ -8,7 +8,7 @@ import { projectKeys, projectQuery, useProjectTree, type ApiProject } from "./pr
 type SandboxAction = "update_sandbox" | "delete_sandbox" | "merge_sandbox" | "cancel_scheduled_deletion";
 
 /** A sandbox as `GET /api/projects/:id/sandboxes` lists it, with the planned `include=scheduled,permissions`. */
-export interface ApiSandbox {
+interface ApiSandbox {
   id: string;
   attributes: Omit<ApiProject["attributes"], "permissions"> & {
     scheduled_deletion: string | null;
@@ -29,7 +29,7 @@ interface ApiMergePreview {
  * viewer can open, so the counts and targets cover only what they can see
  * (docs/api-gaps.md). The top project's card has no actions.
  */
-export function workspaceRows(root: ApiProject, sandboxes: ApiSandbox[], currentId: string): SandboxRow[] {
+function workspaceRows(root: ApiProject, sandboxes: ApiSandbox[], currentId: string): SandboxRow[] {
   const all: ApiSandbox[] = [{ ...root, attributes: { ...root.attributes, scheduled_deletion: null, permissions: {} } }, ...sandboxes];
   const live = all.filter((p) => !p.attributes.scheduled_deletion);
   const below = (id: string): ApiSandbox[] => all.filter((p) => p.attributes.parent_id === id).flatMap((c) => [c, ...below(c.id)]);
@@ -58,7 +58,7 @@ export function workspaceRows(root: ApiProject, sandboxes: ApiSandbox[], current
 }
 
 /** A preview as the merge dialog lists it: unchanged workflows left out, by name. */
-export function mergePreview(p: ApiMergePreview): MergePreviewResult {
+function mergePreview(p: ApiMergePreview): MergePreviewResult {
   return {
     targetId: p.target_project_id,
     workflows: p.workflows
@@ -98,12 +98,27 @@ export function useSandboxes(projectId: string): { status: ResourceStatus; works
 /** Why the plan allows no more sandboxes in a project (the planned `limits.sandboxes`), or null while it does. */
 export function useSandboxLimit(projectId: string): string | null {
   const { data } = useQuery({ ...projectQuery(projectId), select: (p) => p.attributes.limits?.sandboxes });
-  return data && !data.allowed ? (data.message ?? "") : null;
+  return data && !data.allowed ? data.message : null;
 }
 
-/** What merging a sandbox into `targetId` would do. Nothing is written, so nothing is kept. */
-export const previewMerge = (sandbox: SandboxRow, targetId: string) =>
-  request<ApiMergePreview>("POST", `/api/projects/${sandbox.parentId}/sandboxes/${sandbox.id}/merge_previews`, { target_project_id: targetId }).then(mergePreview);
+/**
+ * What merging a sandbox into a target would do, asked for each target the
+ * dialog picks. A POST that writes nothing, kept as a query under the
+ * sandbox, so going back to a target answers at once and any project save
+ * asks again.
+ */
+export function useMergePreview(): (sandbox: SandboxRow, targetId: string) => Promise<MergePreviewResult> {
+  const queryClient = useQueryClient();
+  return (sandbox, targetId) =>
+    queryClient
+      .query({
+        queryKey: [...projectKeys.one(sandbox.id), "merge_preview", targetId],
+        queryFn: () =>
+          request<ApiMergePreview>("POST", `/api/projects/${sandbox.parentId}/sandboxes/${sandbox.id}/merge_previews`, { target_project_id: targetId }),
+        staleTime: 60_000,
+      })
+      .then(mergePreview);
+}
 
 /**
  * Create, rename or recolour, and merge. Each resolves once the lists have
@@ -125,20 +140,24 @@ export function useSandboxSaves() {
       request("PUT", `/api/projects/${sandbox.id}`, { ...values, description: sandbox.description }),
     onSuccess: reload,
   });
-  // deleted_target_workflow_ids and credential_ids are planned.
+  // deleted_target_workflow_ids and credential_ids are planned. `leave` runs before the lists reload, as useProjectSaves' delete
+  // has it, since the merge schedules the sandbox for deletion and the page may be in it.
   const merge = useMutation({
-    mutationFn: ({ sandbox, values }: { sandbox: SandboxRow; values: MergeValues }) =>
+    mutationFn: ({ sandbox, values }: { sandbox: SandboxRow; values: MergeValues; leave: () => void }) =>
       request("POST", `/api/projects/${sandbox.parentId}/sandboxes/${sandbox.id}/merges`, {
         target_project_id: values.targetId,
         workflow_ids: values.workflowIds,
         deleted_target_workflow_ids: values.deletedWorkflowIds,
         credential_ids: values.credentialIds,
       }),
-    onSuccess: reload,
+    onSuccess: (_answer, { leave }) => {
+      leave();
+      return reload();
+    },
   });
   return {
     create: async (parentId: string, values: SandboxValues) => (await create.mutateAsync({ parentId, values })).data.id,
     update: async (sandbox: SandboxRow, values: SandboxValues) => void (await update.mutateAsync({ sandbox, values })),
-    merge: async (sandbox: SandboxRow, values: MergeValues) => void (await merge.mutateAsync({ sandbox, values })),
+    merge: async (sandbox: SandboxRow, values: MergeValues, leave: () => void) => void (await merge.mutateAsync({ sandbox, values, leave })),
   };
 }

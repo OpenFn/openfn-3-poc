@@ -192,26 +192,28 @@ describe("SandboxesIndexPageQuery", () => {
     await loaded();
     await userEvent.click(await choose("fhir-mapping-v2", "Merge"));
     const merge = () => document.getElementById("merge-sandbox-submit")!;
-    await within(dialog()).findByLabelText("OpenHIE Workflow", {}, wait);
+    await within(dialog()).findByLabelText(/^OpenHIE Workflow/, {}, wait);
     expect(dialog().textContent).toContain("Changed in openhie-project too");
-    expect((screen.getByLabelText("Facility registry sync") as HTMLInputElement).checked).toBe(false);
+    expect((screen.getByLabelText(/^Facility registry sync/) as HTMLInputElement).checked).toBe(false);
     expect(screen.queryByLabelText("Referral follow-ups")).toBeNull();
 
     // Amy only views lab-pilot.
     await pickOption(document.getElementById("merge-target-select")!, "lab-pilot");
-    await waitFor(() => expect(screen.queryByLabelText("Facility registry sync")).toBeNull(), wait);
+    // Unchanged against the parent, new in lab-pilot.
+    await within(dialog()).findByLabelText(/^Referral follow-ups/, {}, wait);
+    expect(screen.queryByLabelText(/^Facility registry sync/)).toBeNull();
     expect(dialog().textContent).not.toContain("too");
     fireEvent.click(merge());
     expect(await within(dialog()).findByText("You are not authorized to merge into this project", {}, wait)).toBeTruthy();
 
     await pickOption(document.getElementById("merge-target-select")!, "openhie-project");
-    await within(dialog()).findByLabelText("Facility registry sync", {}, wait);
+    await within(dialog()).findByLabelText(/^Facility registry sync/, {}, wait);
     fireEvent.click(merge());
     expect(await screen.findByText("Merged fhir-mapping-v2 into openhie-project. Sandbox scheduled for deletion.", {}, wait)).toBeTruthy();
     expect(where()).toBe(`/projects/${openhie.id}/w`);
   });
 
-  it("for a viewer, greys New sandbox and the menu, and sends /new and an unknown /edit back to the list", async () => {
+  it("for a viewer, greys New sandbox and the menu, and sends /new back to the list", async () => {
     await signInAs("viewer@openfn.org");
     renderAt(`${listOf(openhie.id)}/new`);
     await loaded();

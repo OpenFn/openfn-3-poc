@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { sandboxColorPalette } from "@/constants";
 import Button from "@/components/primitives/Button";
 import ListPage from "@/components/patterns/ListPage";
@@ -89,6 +89,9 @@ export default function SandboxesIndexPage({
   onMerge,
 }: SandboxesIndexPageProps) {
   const toast = useToast();
+  // Where focus goes once a deleted or restored card has moved to another section, taking its button with it.
+  const newSandbox = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const refocus = () => requestAnimationFrame(() => newSandbox.current?.focus());
   // Ids, not rows, so a dialog always shows the latest row and closes if it goes.
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [mergingId, setMergingId] = useState<string | null>(null);
@@ -101,6 +104,7 @@ export default function SandboxesIndexPage({
     async (_id: string, sandbox: SandboxRow) => {
       await onCancelDeletion(sandbox.id);
       toast(`Cancelled deletion of sandbox ${sandbox.name}.`);
+      refocus();
     },
     { onError: "toast" }
   );
@@ -112,7 +116,7 @@ export default function SandboxesIndexPage({
       breadcrumbs={<ProjectBreadcrumbs project={project} label={projectLabel} current="Sandboxes" />}
       description="Isolated copies of this project for trying out changes before merging them back."
       actions={
-        <Button id="create-sandbox-button" icon="hero-plus" to={createHref} disabled={createBlocked !== null} tooltip={createBlocked ?? undefined}>
+        <Button ref={newSandbox} id="create-sandbox-button" icon="hero-plus" to={createHref} disabled={createBlocked !== null} tooltip={createBlocked ?? undefined}>
           New sandbox
         </Button>
       }
@@ -170,6 +174,7 @@ export default function SandboxesIndexPage({
             await onDelete(deleting);
             setDeletingId(null);
             toast(`Sandbox ${deleting.name} scheduled for deletion.`);
+            refocus();
           }}
         />
       )}

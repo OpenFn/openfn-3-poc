@@ -30,7 +30,7 @@ export interface ApiProject {
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
     /** Planned, on `GET /api/projects/:id`: whether the plan allows more, and why not. */
-    limits?: { sandboxes?: { allowed: boolean; message: string | null } };
+    limits?: { sandboxes?: { allowed: true; message: null } | { allowed: false; message: string } };
   };
 }
 

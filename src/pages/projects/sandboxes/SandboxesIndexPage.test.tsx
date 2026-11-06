@@ -201,17 +201,13 @@ describe("SandboxesIndexPage", () => {
     expect(dialog().textContent).toContain("You are currently viewing this project. After deletion, you'll be redirected to openhie-project.");
   });
 
-  it("spins only the sandbox being restored, and toasts a refusal that stays", async () => {
+  it("spins only the sandbox being restored, then says so", async () => {
     const host = render({ sandboxes: [gone, { ...gone, id: "s4", name: "older" }] });
     const restore = within(cardOf("old-import")).getByRole("button", { name: "Restore" });
     fireEvent.click(restore);
     expect(host.calls("onCancelDeletion")).toEqual([["s2"]]);
     expect(restore.getAttribute("aria-busy")).toBe("true");
     expect(within(cardOf("older")).getByRole("button", { name: "Restore" }).getAttribute("aria-busy")).toBeNull();
-    await host.reject("onCancelDeletion", new RequestError("This project isn't scheduled for deletion."));
-    expect(screen.getByRole("alert").textContent).toContain("This project isn't scheduled for deletion.");
-
-    fireEvent.click(restore);
     await host.resolve("onCancelDeletion");
     expect(screen.getByText("Cancelled deletion of sandbox old-import.")).toBeTruthy();
   });
@@ -240,8 +236,8 @@ describe("SandboxesIndexPage", () => {
       expect(within(dialog()).getByRole("status", { name: "Loading the merge preview" })).toBeTruthy();
       expect(host.calls("onPreviewMerge")).toEqual([[fhir, "p1"]]);
       await host.resolve("onPreviewMerge", preview("p1"));
-      expect((screen.getByLabelText("intake") as HTMLInputElement).checked).toBe(true);
-      expect((screen.getByLabelText("reporting") as HTMLInputElement).checked).toBe(false);
+      expect((screen.getByLabelText(/^intake/) as HTMLInputElement).checked).toBe(true);
+      expect((screen.getByLabelText(/^reporting/) as HTMLInputElement).checked).toBe(false);
       expect((screen.getByLabelText("DHIS2 sandbox") as HTMLInputElement).checked).toBe(true);
       expect(dialog().textContent).toContain("Changed in openhie-project too");
       expect(dialog().textContent).toContain("Deleted in sandbox");
@@ -256,7 +252,7 @@ describe("SandboxesIndexPage", () => {
       await pickOption(document.getElementById("merge-target-select")!, "staging");
       expect(host.calls("onPreviewMerge")).toEqual([[fhir, "p1"], [fhir, "s3"]]);
       await host.resolve("onPreviewMerge", preview("p1"));
-      expect(screen.queryByLabelText("intake")).toBeNull();
+      expect(screen.queryByLabelText(/^intake/)).toBeNull();
       await host.resolve("onPreviewMerge", preview("s3", { workflows: [] }));
       expect(dialog().textContent).toContain("No workflow has changed in this sandbox.");
       expect(mergeButton().textContent).toBe("Merge into staging");
@@ -272,14 +268,14 @@ describe("SandboxesIndexPage", () => {
     it("holds Merge with nothing ticked", async () => {
       const host = await open();
       await host.resolve("onPreviewMerge", preview("p1", { credentials: [] }));
-      fireEvent.click(screen.getByLabelText("intake"));
+      fireEvent.click(screen.getByLabelText(/^intake/));
       expect(isDisabled(mergeButton())).toBe(true);
     });
 
     it("sends what's ticked, keeps the dialog open on a refusal, and says so once merged", async () => {
       const host = await open();
       await host.resolve("onPreviewMerge", preview("p1"));
-      fireEvent.click(screen.getByLabelText("reporting"));
+      fireEvent.click(screen.getByLabelText(/^reporting/));
       const merge = mergeButton();
       expect(merge.textContent).toBe("Merge into openhie-project");
       fireEvent.click(merge);

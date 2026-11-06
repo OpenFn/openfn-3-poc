@@ -15,7 +15,7 @@ interface State {
   /** The latest preview that arrived. */
   preview: MergePreviewResult | null;
   /** The target picked, whose preview may still be on its way. */
-  targetId: string | undefined;
+  targetId: string;
   loading: boolean;
   error: string | null;
   workflows: Set<string>;
@@ -73,7 +73,8 @@ export default function MergeSandboxModal({
   const targets = sandbox.mergeTargets;
   const [s, setS] = useState<State>({
     preview: null,
-    targetId: targets[0]?.id,
+    // The parent comes first, and is always there.
+    targetId: targets[0]!.id,
     loading: true,
     error: null,
     workflows: new Set(),
@@ -89,23 +90,22 @@ export default function MergeSandboxModal({
     void previewing.run(targetId);
   };
   // Once, on open, for the default target.
-  const open = useRef(() => s.targetId && void previewing.run(s.targetId));
+  const open = useRef(() => void previewing.run(s.targetId));
   useEffect(() => {
     open.current();
   }, []);
 
-  const { preview } = s;
-  const target = targets.find((t) => t.id === s.targetId)?.name ?? "";
+  // Only the picked target's preview: none while the next one loads or after it failed.
+  const preview = s.loading || s.error ? null : s.preview;
+  const target = targets.find((t) => t.id === s.targetId)!.name;
   const diverged = (preview?.workflows ?? []).filter((w) => w.isDiverged && s.workflows.has(w.id));
-  const blockedReason = !s.targetId
-    ? "No project to merge into"
-    : s.loading
-      ? "Loading the merge preview"
-      : !preview || s.error
-        ? "The merge preview didn't load"
-        : s.workflows.size + s.credentials.size === 0
-          ? "No workflows or credentials selected"
-          : null;
+  const blockedReason = s.loading
+    ? "Loading the merge preview"
+    : !preview
+      ? "The merge preview didn't load"
+      : s.workflows.size + s.credentials.size === 0
+        ? "No workflows or credentials selected"
+        : null;
 
   return (
     <FormModal
@@ -131,7 +131,7 @@ export default function MergeSandboxModal({
           id="merge-target-select"
           label="Merge into"
           options={targets.map((t) => ({ label: t.name, value: t.id }))}
-          value={s.targetId ?? ""}
+          value={s.targetId}
           onChange={(e) => ask(e.target.value)}
         />
 
@@ -141,7 +141,7 @@ export default function MergeSandboxModal({
           </Alert>
         )}
 
-        {s.loading && !preview ? (
+        {s.loading ? (
           <Spinner size="md" label="Loading the merge preview" />
         ) : (
           preview && (
@@ -154,11 +154,19 @@ export default function MergeSandboxModal({
                   <Text tone="muted">No workflow has changed in this sandbox.</Text>
                 ) : (
                   preview.workflows.map((w) => (
-                    <Row key={w.id} justify="between">
-                      <Checkbox label={w.name} checked={s.workflows.has(w.id)} onChange={() => setS((cur) => ({ ...cur, workflows: toggled(cur.workflows, w.id) }))} />
-                      {w.isDiverged && <Pill tone="warning">Changed in {target} too</Pill>}
-                      {w.isDeleted && <Pill tone="danger">Deleted in sandbox</Pill>}
-                    </Row>
+                    <Checkbox
+                      key={w.id}
+                      // The badges are in the label, so they're read with the checkbox.
+                      label={
+                        <Row as="span" gap="sm">
+                          <span>{w.name}</span>
+                          {w.isDiverged && <Pill tone="warning">Changed in {target} too</Pill>}
+                          {w.isDeleted && <Pill tone="danger">Deleted in sandbox</Pill>}
+                        </Row>
+                      }
+                      checked={s.workflows.has(w.id)}
+                      onChange={() => setS((cur) => ({ ...cur, workflows: toggled(cur.workflows, w.id) }))}
+                    />
                   ))
                 )}
               </Stack>

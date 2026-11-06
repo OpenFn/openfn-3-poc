@@ -1,4 +1,5 @@
 import type { SandboxRow } from "@/types/sandboxes";
+import Button from "@/components/primitives/Button";
 import Card from "@/components/primitives/Card";
 import Section from "@/components/primitives/Section";
 import { Stack } from "@/components/primitives/Stack";
@@ -9,8 +10,9 @@ import WorkspaceCard from "./WorkspaceCard";
 /**
  * The sandboxes page's list, in openfn-ia-demo's sections: "Selected" (the
  * page's project), "Active" (the rest of the workspace, its top project
- * first), then Lightning's "Scheduled for deletion". The top project's card
- * has no actions. The selected card isn't a link: you're already there.
+ * first), then Lightning's "Scheduled for deletion", whose cards offer
+ * Restore. The top project's card has no actions. The selected card isn't a
+ * link: you're already there.
  */
 export default function WorkspaceList({
   root,
@@ -44,6 +46,7 @@ export default function WorkspaceList({
   const selected = all.find((s) => s.id === currentProjectId);
   const active = all.filter((s) => s !== selected && !s.scheduledDeletion);
   const scheduled = sandboxes.filter((s) => s.scheduledDeletion);
+  const restoreBlocked = (s: SandboxRow) => (s.canCancelDeletion ? restoreBlockedReason : "You are not authorized to cancel deletion of this sandbox");
   const card = (s: SandboxRow) => (
     <WorkspaceCard
       key={s.id}
@@ -52,16 +55,18 @@ export default function WorkspaceList({
       selected={s === selected}
       href={s === selected || s.scheduledDeletion ? undefined : workflowsHref(s.id)}
       actions={
-        s !== root && (
-          <SandboxActions
-            sandbox={s}
-            editHref={editHref(s.id)}
-            restoreBlockedReason={restoreBlockedReason}
-            restoring={restoring(s.id)}
-            onMerge={() => onMerge(s)}
-            onDelete={() => onDelete(s)}
-            onRestore={() => onRestore(s)}
-          />
+        s === root ? null : s.scheduledDeletion ? (
+          <Button
+            variant="secondary"
+            disabled={restoreBlocked(s) !== null}
+            tooltip={restoreBlocked(s) ?? undefined}
+            pending={restoring(s.id)}
+            onClick={() => onRestore(s)}
+          >
+            Restore
+          </Button>
+        ) : (
+          <SandboxActions sandbox={s} editHref={editHref(s.id)} onMerge={() => onMerge(s)} onDelete={() => onDelete(s)} />
         )
       }
     />

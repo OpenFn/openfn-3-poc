@@ -8,22 +8,21 @@
 import { mergeFixtures } from "@/mock-data/sandboxes";
 import { workflowsIn } from "@/mock-data/workflows";
 import type { Project } from "@/types/projects";
-import { badInclude, forbidden, invalid, isUuid, json, notFound, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
+import { badInclude, forbidden, invalid, isUuid, json, notFound, now, ORIGIN, paged, problem, type Body, type Handler, type Problem } from "./answers";
+import { permissionsIn } from "./permissions";
 import {
   addProject,
   canEnter,
   DAY_MS,
   fakeProjects,
   findProject,
-  HEX_COLOR,
+  isEditorIn,
   isScheduled,
   managesSandbox,
-  permissionsIn,
-  PROJECT_NAME,
+  nameAndColorErrors,
   projectEntry,
   roleOf,
   rootOf,
-  SANDBOX_NAME_TAKEN,
   scheduleTree,
   treeOf,
 } from "./projects";
@@ -41,7 +40,8 @@ const unknownKeys = (body: Body, known: string[]): Errors =>
     .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
 const childrenOf = (id: string) => fakeProjects().filter((p) => p.parentId === id);
 const depthOf = (p: Project): number => (p.parentId ? 1 + depthOf(findProject(p.parentId)!) : 0);
-const below = (p: Project, deep: boolean): Project[] => childrenOf(p.id).flatMap((c) => [c, ...(deep ? below(c, true) : [])]);
+// As GET /api/projects/:id answers it.
+const answer = (status: number, p: Project) => json(status, { data: projectEntry(p), included: [], links: { self: `${ORIGIN}/api/projects/${p.id}` } });
 
 // The planned include=permissions, by Lightning's sandbox policy (policies/sandboxes.ex).
 function sandboxPermissions(p: Project) {
@@ -101,7 +101,7 @@ export const sandboxRoutes: Record<string, Handler> = {
     const refused = badInclude(query, ["scheduled", "permissions"]);
     if (refused) return refused;
     const include = (query.get("include") ?? "").split(",");
-    const rows = below(parent, query.get("depth") === "all")
+    const rows = (query.get("depth") === "all" ? treeOf(parent).slice(1) : childrenOf(parent.id))
       .filter((p) => roleOf(p) && (include.includes("scheduled") || !isScheduled(p.id)))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((p) => {
@@ -116,17 +116,11 @@ export const sandboxRoutes: Record<string, Handler> = {
     const parent = findProject(project_id);
     if (!parent || !canEnter(parent) || !permissionsIn(parent)["provision_sandbox"] || !isUuid(id!)) return forbidden();
     const existing = findProject(id);
-    if (existing) return existing.parentId === parent.id ? json(200, { data: projectEntry(existing) }) : forbidden();
-    const errors = unknownKeys(body, SANDBOX_KEYS);
-    const { name, color } = body;
-    if (typeof name !== "string" || name === "") errors.push({ code: "required", detail: "can't be blank", pointer: "#/name" });
-    else if (!PROJECT_NAME.test(name)) errors.push({ code: "format", detail: "has invalid format", pointer: "#/name" });
+    if (existing) return existing.parentId === parent.id ? answer(200, existing) : forbidden();
     // Scheduled siblings count: their names are still taken.
-    else if (childrenOf(parent.id).some((c) => c.name === name)) errors.push({ code: "taken", detail: SANDBOX_NAME_TAKEN, pointer: "#/name" });
-    if (color !== undefined && color !== null && !(typeof color === "string" && HEX_COLOR.test(color))) {
-      errors.push({ code: "format", detail: "is not a hex colour", pointer: "#/color" });
-    }
+    const errors = [...unknownKeys(body, SANDBOX_KEYS), ...nameAndColorErrors(body, childrenOf(parent.id))];
     if (errors.length) return invalid(errors);
+    const { name, color } = body;
     // Lightning's message, with no code or pointer (docs/api-gaps.md, nesting depth).
     if (depthOf(parent) + 1 > MAX_DEPTH) return problem({ status: 422, code: "invalid", detail: "Maximum sandbox nesting depth reached" });
 
@@ -148,7 +142,7 @@ export const sandboxRoutes: Record<string, Handler> = {
       insertedAt: at,
     };
     addProject(sandbox);
-    return json(201, { data: projectEntry(sandbox) });
+    return answer(201, sandbox);
   },
 
   "POST /api/projects/:project_id/sandboxes/:id/merge_previews": (params, body) => {
@@ -165,7 +159,7 @@ export const sandboxRoutes: Record<string, Handler> = {
     if (sandbox instanceof Response) return sandbox;
     const target = targetOf(sandbox, body);
     if (target instanceof Response) return target;
-    if (!["owner", "admin", "editor"].includes(roleOf(target) ?? "")) {
+    if (!isEditorIn(target.id)) {
       return problem({ status: 403, code: "forbidden", detail: "You are not authorized to merge into this project" });
     }
     const errors = unknownKeys(body, MERGE_KEYS);
@@ -180,6 +174,6 @@ export const sandboxRoutes: Record<string, Handler> = {
     listed("deleted_target_workflow_ids", rows.filter((w) => w.change === "deleted").map((w) => w.target_workflow_id));
     if (errors.length) return invalid(errors);
     scheduleTree(sandbox, now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS)));
-    return json(201, { data: projectEntry(target) });
+    return answer(201, target);
   },
 };

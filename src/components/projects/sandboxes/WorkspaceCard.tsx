@@ -47,8 +47,15 @@ export default function WorkspaceCard({
           <Tooltip content={deleted ? deletionTooltip(deleted) : undefined}>
             {/* Tooltip wraps its child in a span, and a heading can't sit in one. */}
             <div className="min-w-0">
-              <Heading size="lg" className="truncate">
-                {href ? <Link to={href}>{name}</Link> : name}
+              {/* A link truncates itself, so the heading doesn't clip its focus ring. */}
+              <Heading size="lg" as="h3" className={href ? "" : "truncate"}>
+                {href ? (
+                  <Link to={href} className="block truncate rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                    {name}
+                  </Link>
+                ) : (
+                  name
+                )}
               </Heading>
             </div>
           </Tooltip>

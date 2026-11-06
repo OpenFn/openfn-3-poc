@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { userEvent, within } from "storybook/test";
 import { samplePreview, storyWorkspace } from "@/mock-data/sandboxes";
 import { RequestError } from "@/utils/errors";
 import { withCanvas, withRouter } from "@/stories/decorators";
@@ -65,5 +66,17 @@ export const EditNameTaken: Story = {
     },
   },
 };
+/** Someone in only a sandbox: it's the top of what they see, with no actions. */
+export const OnlyInASandbox: Story = {
+  args: { project: { id: sandboxes[0]!.id, parentId: null, color: null }, root: { ...sandboxes[0]!, parentId: null, parentName: null }, rootIsSandbox: true, sandboxes: [] },
+};
+/** The merge dialog, opened from the sandbox's menu. */
+export const Merging: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("button", { name: `Actions for ${sandboxes[0]!.name}` }));
+    await userEvent.click(within(canvasElement.ownerDocument.body).getByRole("menuitem", { name: "Merge" }));
+  },
+};
 export const Loading: Story = { args: { status: { state: "loading" }, root: null, sandboxes: [] } };
+export const NoAccess: Story = { args: { status: { state: "forbidden" }, root: null, sandboxes: [] } };
 export const Failed: Story = { args: { status: { state: "error", message: "The server could not complete that request." }, root: null, sandboxes: [] } };

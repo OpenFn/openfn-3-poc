@@ -156,6 +156,12 @@ apart.
 - **Sandboxes: deleting one takes its sandboxes.** `DELETE /api/projects/:id`
   and the cancel route don't say a sandbox's own sandboxes are scheduled and
   restored with it, as Lightning does. The fake does both.
+- **Sandboxes: which project the merge routes take in the path.**
+  `…/sandboxes/:id/merge_previews` and `…/merges` sit under a project, but
+  api/ doesn't say whether it must be the sandbox's parent. The page sends
+  the nearest project above that the viewer can open (the list's
+  `parent_id`), which is the parent unless they aren't in it. The fake takes
+  any project above.
 - **Sandboxes: whether the merge's scheduled deletion worked.** The planned
   scope says the response says so, but not how. Lightning reports "but could
   not schedule the sandbox for deletion" (S46). The fake always succeeds, and
