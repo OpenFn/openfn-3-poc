@@ -10,7 +10,7 @@ export interface Problem {
 export type Body = Record<string, unknown>;
 export type Handler = (params: Record<string, string>, body: Body, query: URLSearchParams) => Response;
 
-export const now = () => new Date().toISOString().replace(/\.\d+Z$/, "Z"); // utc_datetime: whole seconds, like Lightning
+export const now = (fromNowMs = 0) => new Date(Date.now() + fromNowMs).toISOString().replace(/\.\d+Z$/, "Z"); // utc_datetime: whole seconds, like Lightning
 
 const titles: Record<number, string> = { 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found", 422: "Unprocessable Content" };
 export const json = (status: number, body: unknown) =>

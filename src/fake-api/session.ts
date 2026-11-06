@@ -23,6 +23,8 @@ export const FAKE_MFA_CODE = "123456";
 // The first of the fake's backup codes; signing in with it marks it used.
 export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
 
+export const PURGE_DELETED_AFTER_DAYS = 7;
+
 /** How long a step-up lasts (api/authentication.md, session tokens). */
 const STEP_UP_MS = 5 * 60_000;
 const KEY = "fake-api:session";
@@ -231,7 +233,7 @@ export const sessionRoutes: Record<string, Handler> = {
         url: ORIGIN,
         release: { label: sessionFixture.instance.releaseLabel, commit: null, image_tag: null, branch: null },
         admin_email: signedIn ? sessionFixture.instance.adminEmail : null,
-        purge_deleted_after_days: 7,
+        purge_deleted_after_days: PURGE_DELETED_AFTER_DAYS,
         sign_in_providers: provider ? [{ name: provider.name, kind: "external", start_url: `${ORIGIN}${provider.handlerUrl}` }] : [],
         ai_assistant: true,
         github_sync: false,

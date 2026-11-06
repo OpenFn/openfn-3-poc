@@ -7,7 +7,6 @@
 import { fullName } from "@/utils/format";
 import { users } from "./users";
 import { projects } from "./projects";
-import type { Project } from "@/types/projects";
 import type { User } from "@/types/users";
 import { collections } from "./project-settings";
 import type { AdminCollectionRow, AdminProjectRow, AuditEvent, AuthProvider, LiveDashboardData } from "@/types/admin";
@@ -15,22 +14,19 @@ import type { AdminCollectionRow, AdminProjectRow, AuditEvent, AuthProvider, Liv
 // ---------------------------------------------------------------------------
 // Projects (admin-only fields)
 
-/** Projects scheduled for deletion (project id -> ISO date). */
-export const projectScheduledDeletions: Record<string, string> = {};
-
-function projectOwnerName(project: Project): string {
-  const owner = project.members.find((m) => m.role === "owner");
-  const user = owner && users.find((u) => u.id === owner.userId);
-  return user ? fullName(user) : "";
-}
-
-/** Every project, with its owner's name and deletion date (ProjectLive.Index). */
+/** Every project, with its owner and member count (ProjectLive.Index); none scheduled for deletion. */
 export function adminProjectRows(): AdminProjectRow[] {
-  return projects.map((p) => ({
-    ...p,
-    ownerName: projectOwnerName(p),
-    scheduledDeletion: projectScheduledDeletions[p.id] ?? null,
-  }));
+  return projects.map((p) => {
+    const owner = users.find((u) => u.id === p.members.find((m) => m.role === "owner")?.userId);
+    return {
+      id: p.id,
+      name: p.name,
+      ownerName: owner ? fullName(owner) : null,
+      membersCount: p.members.length,
+      insertedAt: p.insertedAt,
+      scheduledDeletion: null,
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------

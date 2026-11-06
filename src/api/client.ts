@@ -6,6 +6,7 @@
  * knows the fake exists. A refused request throws an `ApiError`: show its
  * `message`, branch on its `code`.
  */
+import type { PageLinks } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { RequestError } from "@/utils/errors";
 // Decided when the app is built, so a build for real Lightning leaves the fake out entirely.
@@ -81,6 +82,16 @@ export async function listAll<T>(path: string, key: string): Promise<T[]> {
     next = url ? url.pathname + url.search : null;
   }
   return rows;
+}
+
+/**
+ * Where one page of a list stands, from its links (api/conventions.md sends no
+ * total): the page the server answered, which moves an overflow page back to
+ * the last, its size, and the last page.
+ */
+export function pageLinks(links: { self: string; last: string }): PageLinks {
+  const self = new URL(links.self).searchParams;
+  return { number: Number(self.get("page")), size: Number(self.get("page_size")), totalPages: Number(new URL(links.last).searchParams.get("page")) };
 }
 
 // Errors.
