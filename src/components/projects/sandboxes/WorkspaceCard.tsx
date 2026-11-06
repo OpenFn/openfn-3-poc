@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import type { SandboxRow } from "@/types/sandboxes";
 import { formatUtcDate } from "@/utils/format";
 import Card from "@/components/primitives/Card";
@@ -36,11 +36,12 @@ export default function WorkspaceCard({
   /** The card's buttons, at its right. */
   actions?: ReactNode;
 }) {
+  const headingId = useId();
   const deleted = sandbox.scheduledDeletion;
   const description = isMain ? "The live version of this project. Sandboxes merge back into main." : sandbox.description;
   const name = deleted ? <s>{sandbox.name}</s> : sandbox.name;
   return (
-    <Card padding="none" variant={deleted ? "muted" : "default"} className="flex overflow-hidden">
+    <Card as="article" aria-labelledby={headingId} padding="none" variant={deleted ? "muted" : "default"} className="flex overflow-hidden">
       <div className="w-3 shrink-0" style={{ backgroundColor: (!isMain && sandbox.color) || "var(--background-color-brand)" }} />
       <div className="flex min-w-0 flex-1 flex-col gap-1 p-4" {...(deleted && { "aria-description": deletionTooltip(deleted) })}>
         <Row wrap>
@@ -48,7 +49,7 @@ export default function WorkspaceCard({
             {/* Tooltip wraps its child in a span, and a heading can't sit in one. */}
             <div className="min-w-0">
               {/* A heading wraps a long name rather than cutting it off (PRINCIPLES, Look and behaviour). */}
-              <Heading size="lg" as="h3" className="wrap-break-word">
+              <Heading id={headingId} size="sm" as="h3" className="wrap-break-word">
                 {href ? (
                   <TextLink variant="plain" to={href} className="block">
                     {name}

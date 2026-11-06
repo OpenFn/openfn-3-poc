@@ -162,8 +162,13 @@ apart.
   the nearest project above that the viewer can open (the list's
   `parent_id`), which is the parent unless they aren't in it. The fake takes
   any project above.
+- **Sandboxes: what an empty `workflow_ids` means in a merge.** api/ says
+  it defaults to all when left out, but not what `[]` does. A merge with
+  only a "Deleted in sandbox" row ticked sends `[]`; if Lightning reads it
+  as "all", that merge would overwrite every workflow. Merge waits for a
+  ticked workflow, as Lightning's does.
 - **Sandboxes: whether the merge's scheduled deletion worked.** The planned
-  scope says the response says so, but not how. Lightning reports "but could
+  scope has the response report it, but doesn't say how. Lightning reports "but could
   not schedule the sandbox for deletion" (S46). The fake always succeeds, and
   the page shows the plain success.
 

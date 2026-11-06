@@ -25,7 +25,7 @@ const seedProjects = (): Project[] => [
   // One with no owner and no members, as Lightning has once its only member's account is removed; every fixture has an owner.
   { ...projectFixtures[0]!, id: "5b2e8f41-6c3d-4e7a-9b1f-2d4c6e8a0b13", name: "legacy-imports", description: "Imports from the old reporting server.", members: [], insertedAt: "2023-11-20T09:00:00Z" },
   // A sandbox of openhie-project scheduled for deletion (seedScheduled), so the sandboxes page has one to restore.
-  { ...projectFixtures[0]!, id: OLD_IMPORT_TEST, name: "old-import-test", description: "", parentId: projectFixtures[0]!.id, color: sandboxColorPalette[11]!, insertedAt: SEEDED_AT },
+  { ...projectFixtures[0]!, id: OLD_IMPORT_TEST, name: "old-import-test", description: "", parentId: projectFixtures[0]!.id, color: sandboxColorPalette[11]!, members: projectFixtures[0]!.members.map((m) => ({ ...m })), insertedAt: SEEDED_AT },
 ];
 let projects = seedProjects();
 // When each scheduled project is purged, by id.

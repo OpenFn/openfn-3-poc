@@ -56,7 +56,7 @@ const render = (data: Partial<Data> = {}) =>
   );
 
 const section = (title: string) => screen.getByRole("heading", { name: title }).closest("section")!;
-const cardOf = (name: string) => screen.getByRole("heading", { name }).closest("[data-ui=card]") as HTMLElement;
+const cardOf = (name: string) => screen.getByRole("article", { name });
 const dialog = () => screen.getByRole("dialog");
 // The section's heading first, then its cards'.
 const namesIn = (title: string) => within(section(title)).getAllByRole("heading").slice(1).map((h) => h.textContent);

@@ -158,7 +158,7 @@ export const sandboxRoutes: Record<string, Handler> = {
     if (sandbox instanceof Response) return sandbox;
     const target = targetOf(sandbox, body);
     if (target instanceof Response) return target;
-    if (!isEditorIn(target.id)) {
+    if (!canEnter(target) || !isEditorIn(target.id)) {
       return problem({ status: 403, code: "forbidden", detail: "You are not authorized to merge into this project" });
     }
     const errors = unknownKeys(body, MERGE_KEYS);

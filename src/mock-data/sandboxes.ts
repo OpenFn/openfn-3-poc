@@ -31,7 +31,7 @@ export const mergeFixtures: Record<string, MergeFixture> = {
   },
 };
 
-const row = (p: { id: string; name: string; color: string | null }, extra: Partial<SandboxRow> = {}): SandboxRow => ({
+const row = (p: { id: string; name: string; color: string | null }, extra: Partial<SandboxRow>): SandboxRow => ({
   id: p.id,
   name: p.name,
   description: null,

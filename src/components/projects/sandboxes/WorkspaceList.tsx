@@ -76,11 +76,11 @@ export default function WorkspaceList({
   return (
     <Stack gap="lg">
       {selected && (
-        <Section size="sm" title="Selected">
+        <Section variant="eyebrow" title="Selected">
           {card(selected)}
         </Section>
       )}
-      <Section size="sm" title="Active">
+      <Section variant="eyebrow" title="Active">
         {active.length > 0 ? (
           active.map(card)
         ) : (
@@ -95,7 +95,7 @@ export default function WorkspaceList({
         )}
       </Section>
       {scheduled.length > 0 && (
-        <Section size="sm" title="Scheduled for deletion">
+        <Section variant="eyebrow" title="Scheduled for deletion">
           {scheduled.map(card)}
         </Section>
       )}

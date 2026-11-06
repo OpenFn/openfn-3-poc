@@ -79,7 +79,7 @@ const dialog = () => screen.getByRole("dialog");
 const section = (title: string) => screen.getByRole("heading", { name: title }).closest("section")!;
 // The section's heading first, then its cards'.
 const namesIn = (title: string) => within(section(title)).getAllByRole("heading").slice(1).map((h) => h.textContent);
-const cardOf = (name: string) => screen.getByRole("heading", { name }).closest("[data-ui=card]") as HTMLElement;
+const cardOf = (name: string) => screen.getByRole("article", { name });
 const loaded = () => screen.findByRole("heading", { name: "Selected" }, wait);
 const choose = async (name: string, item: string) => {
   await userEvent.click(within(cardOf(name)).getByRole("button", { name: `Actions for ${name}` }));
@@ -184,6 +184,8 @@ describe("SandboxesIndexPageQuery", () => {
 
     fireEvent.click(within(cardOf("old-import-test")).getByRole("button", { name: "Restore old-import-test" }));
     expect(await screen.findByText("Cancelled deletion of sandbox old-import-test.", {}, wait)).toBeTruthy();
+    // The refusal is still there: errors stay until dismissed.
+    expect(screen.getByRole("alert").textContent).toContain("You are not allowed to do that.");
     await waitFor(() => expect(namesIn("Active")).toEqual(["fhir-mapping-v2", "lab-pilot", "old-import-test"]), wait);
   });
 
@@ -224,6 +226,13 @@ describe("SandboxesIndexPageQuery", () => {
     expect(await tooltipOf(create)).toBe("You are not authorized to create sandboxes in this workspace");
     await choose("lab-pilot", "Edit");
     expect(screen.getAllByRole("menuitem").every(isDisabled)).toBe(true);
+  });
+
+  it("shows the server's message when the workspace doesn't load", async () => {
+    failNext("GET /api/projects/:project_id/sandboxes", { status: 500, code: "internal", detail: "The server could not complete that request." });
+    renderAt(listOf(openhie.id));
+    expect(await screen.findByText("The server could not complete that request.", {}, wait)).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Selected" })).toBeNull();
   });
 
   it("sends an edit of a sandbox that isn't listed back to the list", async () => {

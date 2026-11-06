@@ -10,8 +10,7 @@ import ColorPalette from "./ColorPalette";
  * New sandbox, or rename and recolour one (SandboxLive.FormComponent): a
  * name, shown as the URL-safe name it becomes, and a colour. Only a blank
  * name is checked here; the server checks the rest, and its field errors
- * (`name`) land on the field. The fields are named as the API names them:
- * `name` holds what was typed until it's sent.
+ * (`name`) land on the field.
  */
 export default function SandboxFormModal({
   sandbox,

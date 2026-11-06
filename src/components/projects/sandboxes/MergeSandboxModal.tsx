@@ -98,8 +98,8 @@ export default function MergeSandboxModal({
     ? "Loading the merge preview"
     : !preview
       ? "The merge preview didn't load"
-      : s.workflows.size + s.credentials.size === 0
-        ? "No workflows or credentials selected"
+      : s.workflows.size === 0
+        ? "No workflows selected"
         : null;
 
   return (

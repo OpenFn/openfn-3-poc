@@ -71,7 +71,7 @@ function mergePreview(p: ApiMergePreview): MergePreviewResult {
 }
 
 // Under the project keys, so a project's save or deletion reloads its workspace too.
-export const sandboxKeys = {
+const sandboxKeys = {
   under: (rootId: string) => [...projectKeys.one(rootId), "sandboxes"] as const,
   mergePreview: (sandboxId: string, targetId: string) => [...projectKeys.one(sandboxId), "merge_preview", targetId] as const,
 };

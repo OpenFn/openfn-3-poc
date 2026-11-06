@@ -57,7 +57,7 @@ export default function SandboxesIndexPageQuery() {
         creating={creating}
         editingId={editingId}
         onClose={() => navigate(listHref, { replace: true })}
-        onCreate={async (values) => navigate(workflowsHref(await saves.create(project.id, values)))}
+        onCreate={async (values) => navigate(workflowsHref(await saves.create(project.id, values)), { replace: true })}
         onUpdate={saves.update}
         onDelete={(sandbox) =>
           projectSaves.scheduleDeletion(sandbox.id, sandbox.holdsCurrent ? () => navigate(`/projects/${sandbox.parentId}/sandboxes`, { replace: true }) : undefined)
