@@ -130,6 +130,20 @@ describe("ChannelsIndexPageQuery", () => {
     expect(rowOf("Lab results").textContent).toContain("https://example.org/fhir");
   });
 
+  it("shows a refused auth method under Client credentials", async () => {
+    renderAt(`${list}/${shr!.id}/edit`);
+    await screen.findByLabelText("Name", {}, wait);
+    failNext("PUT /api/projects/:project_id/channels/:id", {
+      status: 422,
+      code: "invalid",
+      detail: "The request body is not valid.",
+      errors: [{ code: "not_found", detail: "is not one of this project's webhook auth methods", pointer: "#/client_auth_method_ids/0" }],
+    });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save" }));
+    const error = await within(dialog()).findByText("is not one of this project's webhook auth methods", {}, wait);
+    expect(within(dialog()).getByRole("group", { name: "Client credentials" }).getAttribute("aria-describedby")).toContain(error.id);
+  });
+
   it("refuses an edit made over someone else's change, in the modal", async () => {
     renderAt(`${list}/${shr!.id}/edit`);
     const name = await screen.findByLabelText("Name", {}, wait);
