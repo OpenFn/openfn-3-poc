@@ -2,7 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ChannelFormValues, ChannelRequestDetail, ChannelRequestState, ChannelRow } from "@/types/channels";
 import type { ResourceStatus } from "@/types/resource";
-import { listAll, request, statusOf } from "./client";
+import { listAll, renameFields, request, statusOf } from "./client";
 
 /** A channel as `GET /api/projects/:project_id/channels` lists it. */
 export interface ApiChannel {
@@ -145,8 +145,13 @@ export function useChannelSaves(projectId: string) {
   const reload = () => queryClient.invalidateQueries({ queryKey: channelKeys.inProject(projectId) });
   const path = (id: string) => `/api/projects/${projectId}/channels/${id}`;
   // A refused save or delete reloads too, so the switch's next try carries the latest version and a channel
-  // someone else deleted leaves the list.
-  const put = useMutation({ mutationFn: ({ id, body }: { id: string; body: ChannelInput }) => request("PUT", path(id), body), onSettled: reload });
+  // someone else deleted leaves the list. A refused auth method (`#/client_auth_method_ids/0`) drops its index,
+  // so it lands on the form's one field.
+  const put = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: ChannelInput }) =>
+      request("PUT", path(id), body).catch((error: unknown) => Promise.reject(renameFields(error, { client_auth_method_ids: "client_auth_method_ids" }))),
+    onSettled: reload,
+  });
   const remove = useMutation({ mutationFn: (id: string) => request("DELETE", path(id)), onSettled: reload });
   return {
     create: async (values: ChannelFormValues) => void (await put.mutateAsync({ id: crypto.randomUUID(), body: values })),

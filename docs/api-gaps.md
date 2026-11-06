@@ -120,6 +120,13 @@ apart.
   project list doesn't say where you may. The app guesses from your role
   in each project, which PRINCIPLES says it shouldn't. The list needs a
   "can share credentials here" on each project. (`create_project_credential`)
+- **Auth provider: "trust unverified emails"** (api/authentication.md,
+  Single sign-on provider). Lightning's page and openfn-ia-demo let a
+  superuser choose whether an email the provider hasn't marked verified can
+  claim an account (`allow_unverified_email`, off by default). The API
+  neither sends nor takes it, so the app can't show a provider that trusts
+  unverified emails, or turn that off. Would need `allow_unverified_email`
+  on GET and PUT. Replica: left out.
 - **Channels: a save with `lock_version` for a channel someone deleted.**
   `api/channels.md` says `PUT` creates a channel at a new id, and a
   mismatched `lock_version` is a 409, but not what happens when the version
@@ -181,6 +188,12 @@ apart.
 ## Changed, and that's fine
 
 The replica shows less, or shows it another way, and nothing breaks.
+
+- **Auth provider: the redirect host** (api/authentication.md, Single
+  sign-on provider). Lightning and openfn-ia-demo let the superuser type the
+  host the redirect URI starts with; the API builds `redirect_uri` from the
+  instance's `url`. Replica: no field; the URI is built from
+  `GET /api/instance`'s `url` and the typed name.
 
 - **Workflows list: Members, who edited each workflow, most recent first**
   (ia-demo `ProjectWorkflowsPage`, `WorkflowRow`; an avatar stack).

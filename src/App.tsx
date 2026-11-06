@@ -40,7 +40,7 @@ import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/projects/AdminProjectsPage.query";
 import AdminAuditPage from "./pages/admin/audit/AdminAuditPage.query";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
-import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage.replica";
+import AdminAuthProvidersPage from "./pages/admin/auth-providers/AdminAuthProvidersPage.query";
 import AdminCollectionsPage from "./pages/admin/collections/AdminCollectionsPage.query";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
 
