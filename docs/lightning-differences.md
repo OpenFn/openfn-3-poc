@@ -371,7 +371,7 @@ goes back to Lightning's way.
 - **Delete is disabled, with "Not available in the API yet".** Lightning
   lets a superuser delete any collection (`collection_live/index.ex:48-62`);
   the API's delete needs a project owner or admin, with no superuser scope
-  planned (docs/api-gaps.md, Superuser access).
+  planned (docs/api-gaps.md, We clearly need these).
 - **The name hint says names are unique within their project.** Lightning
   says "across all projects within this instance"
   (`collection_creation_modal.ex:135`), which has been false since names
@@ -410,7 +410,7 @@ goes back to Lightning's way.
 - **No Edit.** Lightning's superuser can rename any project and change its
   members (`project_live/index.ex:56-67`). The API refuses a superuser who
   isn't a member on every route that reads or changes one project, with no
-  superuser scope planned (docs/api-gaps.md, Superuser access), so the row
+  superuser scope planned (docs/api-gaps.md, We clearly need these), so the row
   has no Edit and `/settings/projects/:id` goes to the list.
 - **Delete now is disabled, with "Not available in the API yet".** Lightning
   purges a scheduled project at once from the row's menu; the API only
