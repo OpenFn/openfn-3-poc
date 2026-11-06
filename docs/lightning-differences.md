@@ -124,7 +124,15 @@ goes back to Lightning's way.
   authentication", "GitHub access" and "Delete account" ("Deleting your
   account is irreversible, and your credentials go with it.") (Lightning:
   "Change basic information", "Enable multi-factor authentication",
-  "GitHub Access", and no line under the forms). The two columns stay Lightning's for now.
+  "GitHub Access", and no line under the forms).
+- **Profile is one column, in Brandon's layout.** Lightning's left column
+  (the name, "Change name, email, password, and request deletion.", then
+  "Created:" and "Email:") is gone: the name heads the section, with
+  "<email> · Member since <date>" under it, and the cards stack below. The
+  line about what the page does is dropped; the card titles say it.
+  "Delete account" stays a card with his line rather than his red callout:
+  our danger alert is announced to screen readers as an alert, which suits a
+  message, not a standing section.
 - **Parts of his screen we leave out, and why.**
   - His breadcrumb ("User settings › API tokens"): Lightning has none here,
     and the menu already marks the page.
@@ -159,7 +167,7 @@ goes back to Lightning's way.
   "New owner's email", the delete dialog's "steps" for Lightning's "jobs",
   and its section headings in the OAuth client form ("Scopes", "Project
   access").
-- **One ⋮ menu per row, Delete last in red.** Lightning's is an "Actions"
+- **One ••• menu per row, Delete last in red.** Lightning's is an "Actions"
   dropdown. A credential scheduled for deletion offers only "Cancel
   deletion" and "Delete now": Lightning also offers Transfer and Edit, which
   the API refuses while the deletion is scheduled (409
@@ -171,8 +179,8 @@ goes back to Lightning's way.
   created successfully", "OAuth client updated successfully", and
   `"<name>" deleted` for a credential deleted now or an OAuth client
   (Lightning: "Credential deleted successfully", "Oauth client created
-  successfully", "Oauth client deleted"). The rest stay Lightning's. His
-  OAuth client delete dialog's words replace Lightning's, and its button
+  successfully", "Oauth client deleted"). The rest stay Lightning's.
+  openfn-ia-demo's OAuth client delete dialog's words replace Lightning's, and its button
   says "Delete OAuth client".
 - **Editing never shows a saved secret.** Lightning loads a credential's
   values and an OAuth client's secret into the edit form. Here every field
@@ -193,10 +201,8 @@ goes back to Lightning's way.
   project this credential is shared with".
 - **Sharing offers only the projects you edit or own.** Lightning offers
   every project you're a member of; the API needs editor or above to link.
-- **Layout.** Profile's two columns start when its section is wide enough,
-  not at a screen size, so they fit beside the menu. Backup codes stays a
-  page of its own, as in Lightning: it is a step after setting up MFA, not a
-  section.
+- **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
+  step after setting up MFA, not a section.
 
 ## Tags
 
