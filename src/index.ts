@@ -22,7 +22,7 @@ export { default as BackupCodesPage } from "./pages/profile/backup-codes/BackupC
 export { default as ProfilePage } from "./pages/profile/profile/ProfilePage";
 export { default as CredentialsIndexPage } from "./pages/profile/credentials/CredentialsIndexPage";
 export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
-export { default as ChannelsIndexPage } from "./pages/projects/ChannelsIndexPage";
+export { default as ChannelsIndexPage } from "./pages/projects/channels/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
@@ -51,7 +51,7 @@ export type { BackupCodesPageProps } from "./pages/profile/backup-codes/BackupCo
 export type { ProfilePageProps } from "./pages/profile/profile/ProfilePage";
 export type { CredentialsIndexPageProps } from "./pages/profile/credentials/CredentialsIndexPage";
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
-export type { ChannelsIndexPageProps } from "./pages/projects/ChannelsIndexPage";
+export type { ChannelsIndexPageProps } from "./pages/projects/channels/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/dashboard/ProjectsDashboardPage";
 export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
@@ -78,7 +78,7 @@ export type {
   CollectionSortKey,
   UserFormValues,
 } from "./types/admin";
-export type { ChannelForm, ChannelFormValues, ChannelRow } from "./types/channels";
+export type { ChannelFormValues, ChannelRow } from "./types/channels";
 export type {
   CredentialActions,
   CredentialEnvironmentSecrets,

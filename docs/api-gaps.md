@@ -127,6 +127,16 @@ apart.
   neither sends nor takes it, so the app can't show a provider that trusts
   unverified emails, or turn that off. Would need `allow_unverified_email`
   on GET and PUT. Replica: left out.
+- **Channels: a save with `lock_version` for a channel someone deleted.**
+  `api/channels.md` says `PUT` creates a channel at a new id, and a
+  mismatched `lock_version` is a 409, but not what happens when the version
+  is sent for an id that's gone. Creating it again would undo the delete. The
+  fake answers 409 `concurrent_edit`.
+- **Channels: no stated limit on name and destination URL.** Both are
+  `varchar(255)` in Lightning with no validation, and a longer value crashes
+  the save (annotation 6.1). `api/channels.md` lists no error for it. Would
+  need a 422 at `#/name` and `#/destination_url`. Until then neither the
+  form nor the fake checks the length.
 
 ## Superuser access (api/projects.md, api/collections.md)
 
@@ -212,3 +222,10 @@ The replica shows less, or shows it another way, and nothing breaks.
 - **OAuth clients: projects come without names.** A credential lists its
   projects by name; an OAuth client only by id. The app looks the names up
   in the project list, so the OAuth clients table waits for that list too.
+- **Channels: openfn-ia-demo's channel fields and channel page.** Its
+  channels have a description, a kind (read, write or event), a system, a
+  method, an auth summary, an example payload, seven-day traffic, a median
+  time and recent messages, shown on a page of their own (`ChannelPage`,
+  `ChannelView`). `api/channels.md` has none of them, and Lightning has no
+  channel page. The list and form show what the API sends; the form has no
+  Description, Kind or System.
