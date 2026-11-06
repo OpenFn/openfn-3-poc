@@ -10,6 +10,7 @@ export interface Problem {
 export type Body = Record<string, unknown>;
 export type Handler = (params: Record<string, string>, body: Body, query: URLSearchParams) => Response;
 
+export const DAY_MS = 86_400_000;
 export const now = (at = new Date()) => at.toISOString().replace(/\.\d+Z$/, "Z"); // utc_datetime: whole seconds, like Lightning
 /** When the seeded records were made. */
 export const SEEDED_AT = "2026-01-01T00:00:00Z";

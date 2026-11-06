@@ -11,12 +11,11 @@ import { fullName } from "@/utils/format";
 import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, SEEDED_AT, type Body, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, DAY_MS, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, SEEDED_AT, type Body, type Handler, type Problem } from "./answers";
 import { membersOf } from "./members";
 import { permissionsIn } from "./permissions";
 import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
 
-const DAY_MS = 86_400_000;
 const OLD_IMPORT_TEST = "2b3c4d5e-6f70-4a81-92b3-c4d5e6f70a81";
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
 // on pages that load from the API.

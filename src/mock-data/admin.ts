@@ -4,14 +4,24 @@
  * project fields the shared users / projects fixtures don't carry.
  * Static fixtures only: nothing here talks to a backend.
  */
+import { canDeleteUser } from "@/permissions";
 import { fullName } from "@/utils/format";
 import { authRedirectUri } from "@/utils/urls";
 import { users } from "./users";
 import { projects } from "./projects";
 import type { Project } from "@/types/projects";
+import { hasCreatedRun } from "./history";
 import type { User } from "@/types/users";
 import { collections } from "./project-settings";
-import type { AdminCollectionRow, AdminProjectRow, AuditEvent, AuthProvider, LiveDashboardData } from "@/types/admin";
+import type { AdminCollectionRow, AdminProjectRow, AdminUserListRow, AuditEvent, AuthProvider, LiveDashboardData } from "@/types/admin";
+
+// ---------------------------------------------------------------------------
+// Users (admin-only fields)
+
+/** Every user as /settings/users lists them. */
+export function adminUserRows(): AdminUserListRow[] {
+  return users.map((u) => ({ ...u, hasActivityInProjects: hasCreatedRun(u.id), canDelete: canDeleteUser(u) }));
+}
 
 // ---------------------------------------------------------------------------
 // Projects (admin-only fields)

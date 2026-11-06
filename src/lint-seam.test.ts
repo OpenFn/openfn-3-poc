@@ -195,7 +195,7 @@ describe("the tier lint rule", () => {
 
   it("a replica outside src/pages/ doesn't import a page", async () => {
     for (const probe of ["src/utils/probeReplica.ts", "src/components/history/Probe.replica.tsx", "src/mock-data/probeReplica.ts"]) {
-      expect(await seamMessages(probe, code("@/pages/admin/AdminUsersPage"))).toEqual([
+      expect(await seamMessages(probe, code("@/pages/admin/users/AdminUsersPage"))).toEqual([
         expect.stringMatching(tier),
       ]);
     }

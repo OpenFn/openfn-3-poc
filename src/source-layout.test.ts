@@ -71,8 +71,6 @@ describe("every page and component can be seen and checked", () => {
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
       "./pages/admin/AdminMaintenancePage.replica.tsx",
-      "./pages/admin/AdminUserEditPage.replica.tsx",
-      "./pages/admin/AdminUsersPage.replica.tsx",
       "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
       "./pages/auth/FirstSetupPage.replica.tsx",
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
@@ -160,8 +158,6 @@ describe("every page and component can be seen and checked", () => {
       "./components/auth/AuthLayout.tsx",
       "./pages/admin/auth-providers/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
-      "./pages/admin/AdminUserEditPage.tsx",
-      "./pages/admin/AdminUsersPage.tsx",
       "./pages/auth/FirstSetupPage.tsx",
       "./pages/history/channel-request/ChannelRequestShowPage.tsx",
       "./pages/history/dataclip/DataclipShowPage.tsx",

@@ -3,12 +3,10 @@
  */
 import type { MfaSetupResult, ProfilePageData } from "@/types/profile";
 import type { User } from "@/types/users";
+import { hasCreatedRun } from "./history";
 
 /** VersionControl.github_enabled?(): the demo instance has no GitHub app configured, like the reference. */
 export const githubOauthEnabled = false;
-
-/** Whether the user has run activity in projects (UserDeletionModal's footnote). */
-export const hasActivityInProjects = true;
 
 /** What starting MFA setup answers with: a fake secret and its otpauth URI. */
 export const fakeMfaSetup: MfaSetupResult = {
@@ -18,6 +16,7 @@ export const fakeMfaSetup: MfaSetupResult = {
 
 /** The profile page's data for a user, as Lightning's ProfileLive would send it. */
 export function profilePropsFor(user: User): ProfilePageData {
+  const hasActivityInProjects = hasCreatedRun(user.id);
   return {
     user: {
       id: user.id,

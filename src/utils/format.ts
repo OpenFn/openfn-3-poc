@@ -204,12 +204,6 @@ export function shortUuid(id: string, length = 8): string {
   return id.slice(0, length);
 }
 
-/** Calendar.strftime(dt, "%d %b  %H:%M") in UTC: "14 Oct  18:36" (two spaces). */
-export function formatShortDateTime(iso: string): string {
-  const d = new Date(iso);
-  return `${pad(d.getUTCDate())} ${MONTHS_SHORT[d.getUTCMonth()]}  ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
-}
-
 /** "21 Oct 2026", in UTC. */
 export function formatUtcDate(iso: string): string {
   const d = new Date(iso);

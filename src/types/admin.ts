@@ -1,8 +1,9 @@
 /** Superuser admin views: users, projects, collections, audit trail and auth provider. Types only: no data, no behaviour. */
 import type { ProjectInput, ProjectRole } from "./projects";
+import type { ResourceStatus } from "./resource";
 import type { UserRole } from "./users";
 
-/** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
+/** The account the admin user form edits: what it shows, nothing more. */
 export interface AdminUserRow {
   id: string;
   firstName: string;
@@ -11,31 +12,39 @@ export interface AdminUserRow {
   role: UserRole;
   supportUser: boolean;
   disabled: boolean;
+}
+
+/** The account the open user form edits, by id; where loading it stands; and whether it's the signed-in user's. */
+export interface AdminUserEditing {
+  id: string;
+  status: ResourceStatus;
+  /** Undefined until it has loaded. */
+  user: AdminUserRow | undefined;
+  ownAccount: boolean;
+}
+
+/** A row of /settings/users. */
+export interface AdminUserListRow extends AdminUserRow {
   /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
-}
-
-/** The account whose deletion dialog is open (/settings/users/:id/delete). */
-export interface AdminDeleteUser {
-  id: string;
-  /** Typed back to confirm. */
-  email: string;
-  /** Set when a deletion is already scheduled: confirming then deletes the account at once. */
-  scheduledDeletion: string | null;
-  /** The account has run activity in projects: deleting it now is refused. */
+  /** They have created runs (`hasCreatedRun`). */
   hasActivityInProjects: boolean;
+  /** Whether their deletion can be scheduled. Superusers' can't. */
+  canDelete: boolean;
 }
 
-/** What the admin user form saves. On a new account the host ignores the edit-only fields. */
+/** The fields the users list sorts by (`?sort=`), as the API names them. */
+export type AdminUserSortKey = "first_name" | "role" | "disabled";
+
+/** What the admin user form saves, named as the API names them. */
 export interface UserFormValues {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  /** Empty on edit keeps the current password. */
+  /** Blank on edit keeps the current password. */
   password: string;
   role: UserRole;
-  supportUser: boolean;
-  scheduledDeletion: string;
+  support_user: boolean;
   disabled: boolean;
 }
 
