@@ -39,7 +39,7 @@ const render = (data: Partial<Data> = {}) =>
       credentialsSettingsHref: "/projects/p1/settings#credentials",
       webhookSecuritySettingsHref: "/projects/p1/settings#webhook_security",
       creating: false,
-      editing: null,
+      editingId: null,
       credentialOptions: [["My API Key", "cred1"]],
       authMethodOptions: [["API Key Auth", "wam1"]],
       ...data,
@@ -211,7 +211,7 @@ describe("ChannelsIndexPage", () => {
   });
 
   it("edits a channel from its listed values, sends them back, then closes and says so", async () => {
-    const host = render({ editing: lab });
+    const host = render({ editingId: "c1" });
     expect(within(dialog()).getByRole("heading", { name: "Edit lab-results" })).toBeTruthy();
     expect(dialog().textContent).toContain("lightning.example.com/channels/c1");
     expect((screen.getByLabelText("Name") as HTMLInputElement).value).toBe("lab-results");
@@ -230,5 +230,10 @@ describe("ChannelsIndexPage", () => {
     await host.resolve("onUpdate");
     expect(host.calls("onClose")).toHaveLength(1);
     expect(screen.getByText("Channel updated successfully.")).toBeTruthy();
+  });
+
+  it("opens no form for an edit id that isn't listed", () => {
+    render({ editingId: "gone" });
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });

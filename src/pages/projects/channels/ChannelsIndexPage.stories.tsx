@@ -27,7 +27,7 @@ const meta: Meta<typeof ChannelsIndexPage> = {
     credentialsSettingsHref: `${base}/settings#credentials`,
     webhookSecuritySettingsHref: `${base}/settings#webhook_security`,
     creating: false,
-    editing: null,
+    editingId: null,
     credentialOptions: projectCredentialOptions,
     authMethodOptions: webhookAuthMethodOptions,
     onClose: () => {},
@@ -60,7 +60,7 @@ export const Loading: Story = { args: { status: { state: "loading" }, channels: 
 export const NoAccess: Story = { args: { status: { state: "forbidden" }, channels: [] } };
 export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, channels: [] } };
 export const Creating: Story = { args: { creating: true } };
-export const Editing: Story = { args: { editing: channels[0]! } };
+export const Editing: Story = { args: { editingId: channels[0]!.id } };
 
 /** Clicks the first row's Delete, then the dialog's Delete channel. */
 const confirmDelete: NonNullable<Story["play"]> = async ({ canvasElement }) => {

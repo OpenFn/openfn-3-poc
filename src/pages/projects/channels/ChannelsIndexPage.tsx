@@ -38,8 +38,8 @@ export interface ChannelsIndexPageProps {
   webhookSecuritySettingsHref: string;
   /** Whether the New channel form is open. */
   creating: boolean;
-  /** The listed channel whose Edit form is open, or null. */
-  editing: ChannelRow | null;
+  /** The channel whose Edit form is open, or null. The form opens once it's among `channels`. */
+  editingId: string | null;
   /** The project's credentials, as [name, id], loaded while the form is open. */
   credentialOptions: [label: string, value: string][];
   /** The project's webhook auth methods, as [name, id], loaded while the form is open. */
@@ -75,7 +75,7 @@ export default function ChannelsIndexPage({
   credentialsSettingsHref,
   webhookSecuritySettingsHref,
   creating,
-  editing,
+  editingId,
   credentialOptions,
   authMethodOptions,
   optionsStatus,
@@ -87,6 +87,7 @@ export default function ChannelsIndexPage({
   const toast = useToast();
   // Where focus goes once a deleted channel's row, and its Delete, are gone.
   const newChannel = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const editing = channels.find((c) => c.id === editingId);
   // Looked up each render, so a channel deleted elsewhere closes its dialog.
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const deleting = channels.find((c) => c.id === deletingId);
@@ -148,7 +149,7 @@ export default function ChannelsIndexPage({
       {(creating || editing) && (
         <ChannelFormModal
           key={editing?.id ?? "new"}
-          channel={editing ?? undefined}
+          channel={editing}
           credentialOptions={credentialOptions}
           authMethodOptions={authMethodOptions}
           status={optionsStatus}
