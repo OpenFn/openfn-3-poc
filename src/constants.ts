@@ -3,6 +3,7 @@
  * in its source rather than read from the database. Safe to import anywhere.
  */
 import type { HistoryWorkOrderState, RunState, SearchFieldId } from "./types/history";
+import type { ProjectRole } from "./types/projects";
 import type { HealthRange } from "./types/workflow-health";
 import type { EdgeConditionType } from "./types/workflow-graph";
 
@@ -29,6 +30,15 @@ export const contactPreferenceOptions: [label: string, value: string][] = [
 /** Shown as the field's hint; Lightning shows a longer version in a tooltip. */
 export const contactPreferenceHint =
   "How often we email you about your account. Anytime: all updates. Critical: only issues affecting your projects or account.";
+
+/** A project role, or none, for each person in the admin New project form. */
+export const projectRoleOptions: [label: string, value: ProjectRole | ""][] = [
+  ["No access", ""],
+  ["Owner", "owner"],
+  ["Admin", "admin"],
+  ["Editor", "editor"],
+  ["Viewer", "viewer"],
+];
 
 /** Roles offered when adding or inviting collaborators. */
 export const collaboratorRoles = ["viewer", "editor", "admin"] as const;

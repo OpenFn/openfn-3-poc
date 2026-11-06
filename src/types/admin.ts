@@ -1,5 +1,5 @@
-/** Superuser admin views: audit trail and auth provider. Types only: no data, no behaviour. */
-import type { ProjectRole } from "./projects";
+/** Superuser admin views: users, projects, collections, audit trail and auth provider. Types only: no data, no behaviour. */
+import type { ProjectInput, ProjectRole } from "./projects";
 import type { UserRole } from "./users";
 
 /** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
@@ -79,16 +79,21 @@ export interface AuthProviderValues {
   allowUnverifiedEmail: boolean;
 }
 
-/** A row of /settings/projects: what the table shows, with the owner's name joined in. */
+/** A row of /settings/projects: what the table shows, with the owner joined in. */
 export interface AdminProjectRow {
   id: string;
+  /** A sandbox's is "parent/sandbox". */
   name: string;
-  description: string;
+  /** The owner's full name; null when the project has no owner. */
+  ownerName: string | null;
+  membersCount: number;
   insertedAt: string;
-  /** The owner's full name; "" when the project has no owner. */
-  ownerName: string;
+  /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
 }
+
+/** The fields the projects list sorts by (`?sort=`), as the API names them. */
+export type AdminProjectSortKey = "name" | "inserted_at";
 
 /** Someone the admin project form can give a role to. */
 export interface AdminProjectUser {
@@ -98,24 +103,9 @@ export interface AdminProjectUser {
   email: string;
 }
 
-/** The admin project form while the route has it open (/settings/projects/new, /settings/projects/:id). */
-export interface AdminProjectForm {
-  /** The project being edited, with its members' roles; null for a new project. */
-  project: { id: string; name: string; members: { userId: string; role: ProjectRole }[] } | null;
-  /** Every account on the instance, one row each. */
-  users: AdminProjectUser[];
-}
-
-/** What the admin project form saves: the name as typed (the host derives the URL-safe name) and a role, or "" for none, per user id. */
-export interface AdminProjectFormValues {
-  rawName: string;
-  roles: Record<string, ProjectRole | "">;
-}
-
-/** The project whose deletion dialog is open (/settings/projects/:id/delete). The host knows whether confirming schedules or purges. */
-export interface AdminDeleteProject {
-  id: string;
-  name: string;
+/** The body of `PUT /api/projects/:id` with `members`; `name` is as typed until the form sends it URL-safe. */
+export interface AdminProjectFormValues extends ProjectInput {
+  members: { email: string; role: ProjectRole }[];
 }
 
 /** One row of the instance-wide collections table (/settings/collections): what it shows, no preview. */

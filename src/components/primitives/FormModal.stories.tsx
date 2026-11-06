@@ -57,3 +57,5 @@ export const Failed: Story = {
     canvasElement.ownerDocument.querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
   },
 };
+/** The same, with `errorHeader` above the message. */
+export const FailedWithHeader: Story = { ...Failed, args: { ...Failed.args, errorHeader: "The project wasn't saved" } };

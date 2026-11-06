@@ -1,10 +1,11 @@
 /**
- * A person changing their own account on the pretend server: api/users.md
- * (Update a user, Delete a user) and api/account.md (GitHub). Each answer is
- * the planned scope for your own id; a superuser changing someone else isn't
- * built, so another id is refused.
+ * Users on the pretend server: a superuser listing them, and a person
+ * changing their own account, api/users.md (List users, Update a user, Delete
+ * a user) and api/account.md (GitHub). Changing one is the planned scope for
+ * your own id; a superuser changing someone else isn't built, so another id
+ * is refused.
  */
-import { forbidden, invalid, json, noContent, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { forbidden, invalid, json, noContent, paged, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { isValidEmail } from "@/utils/validate";
 import { currentUser, endSession, isSteppedUp, pendingEmails, people, setPassword, userJson } from "./session";
 
@@ -50,6 +51,12 @@ function check(body: Body): NonNullable<Problem["errors"]> {
 }
 
 export const userRoutes: Record<string, Handler> = {
+  // A superuser's personal access token is planned scope; anyone else is refused. No q or sort yet.
+  "GET /api/users": (_params, _body, query) => {
+    if (currentUser().role !== "superuser") return forbidden();
+    return json(200, paged("/api/users", people.map((u) => userJson(u).data), query));
+  },
+
   "PATCH /api/users/:id": ({ id }, body) => {
     const me = currentUser();
     if (id !== me.id) return forbidden();

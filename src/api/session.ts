@@ -47,6 +47,8 @@ export interface ApiInstance {
   sign_in_providers: { name: string; kind: "social" | "external"; start_url: string }[];
   /** Where to connect a GitHub account, or null when GitHub sync isn't set up. */
   github_connect_url: string | null;
+  /** How many days a deleted project is kept before it's purged. */
+  purge_deleted_after_days: number;
 }
 
 export function userFromMe({ id, attributes: a }: ApiMe): User {
@@ -107,6 +109,12 @@ const meQuery = queryOptions({
 export function useSignInOptions(): { status: ResourceStatus; allowSignup: boolean; ssoProvider: SsoProvider | null } {
   const query = useQuery(instanceQuery);
   return { status: statusOf(query), ...signInOptions(query.data) };
+}
+
+/** How many days a deleted project is kept before it's purged, and where loading that stands. SessionGate has already loaded it. */
+export function usePurgeDeletedAfterDays(): { status: ResourceStatus; days: number } {
+  const query = useQuery({ ...instanceQuery, select: (instance) => instance.purge_deleted_after_days });
+  return { status: statusOf(query), days: query.data ?? 0 };
 }
 
 /** The states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */

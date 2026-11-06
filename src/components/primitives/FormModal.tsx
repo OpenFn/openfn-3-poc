@@ -30,14 +30,16 @@ interface Props extends Omit<ComponentProps<typeof Modal>, "footer" | "variant">
   formClassName?: string;
   /** Content above the form, outside it (e.g. an Alert). */
   before?: ReactNode;
+  /** A heading for a failed submit's message ("The project wasn't saved"). */
+  errorHeader?: ReactNode;
 }
 
 /**
  * A Modal wrapping one form, with the standard footer: the submit button
  * and a secondary Cancel. Enter submits; nothing happens while
  * `submitDisabled`. While `onSubmit` is pending the submit button spins,
- * Cancel and the backdrop are inert, and a failure shows as an Alert above
- * the form (STANDARDS.md patterns 1 and 2). As in `Form`, only the fields'
+ * Cancel and the backdrop are inert, and a failure shows as an Alert below
+ * the fields (STANDARDS.md patterns 1 and 2). As in `Form`, only the fields'
  * own errors show (no browser bubbles), and a refused Save moves focus to the
  * first field with an error. Use Modal's `footer` directly for anything else.
  */
@@ -53,6 +55,7 @@ export default function FormModal({
   cancelId,
   formClassName = "space-y-6",
   before,
+  errorHeader,
   onClose,
   children,
   ...modal
@@ -109,7 +112,7 @@ export default function FormModal({
       </form>
       {/* As in Form: the form's own error sits after its fields, just above the buttons. */}
       {submit.error && (
-        <Alert tone="danger" className="mt-4" id={`${formId}-error`}>
+        <Alert tone="danger" header={errorHeader} className="mt-4" id={`${formId}-error`}>
           {errorMessage(submit.error)}
         </Alert>
       )}

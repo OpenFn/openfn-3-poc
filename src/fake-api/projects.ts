@@ -7,34 +7,46 @@ import { workflowStatsFor } from "@/mock-data/dashboard-stats";
 import { permissionsFor, type Permissions } from "@/permissions";
 import type { Project, ProjectAction } from "@/types/projects";
 import type { WorkflowSortKey } from "@/types/workflows";
+import { fullName } from "@/utils/format";
+import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
-import { currentUser } from "./session";
+import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { membersOf } from "./members";
+import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
 
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
 // on pages that load from the API.
-const seedProjects = (): Project[] => projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) }));
+const seedProjects = (): Project[] => [
+  ...projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) })),
+  // One with no owner and no members, as Lightning has once its only member's account is removed; every fixture has an owner.
+  { ...projectFixtures[0]!, id: "5b2e8f41-6c3d-4e7a-9b1f-2d4c6e8a0b13", name: "legacy-imports", description: "Imports from the old reporting server.", members: [], insertedAt: "2023-11-20T09:00:00Z" },
+];
 let projects = seedProjects();
+// When each scheduled project is purged, by id. None to start with.
+const scheduled = new Map<string, string>();
 
 /** For stories and tests: the starting projects. */
 export const resetProjects = () => {
   projects = seedProjects();
+  scheduled.clear();
 };
 
 /** A project as the fake holds it, for the routes of what lives inside one. */
 export const findProject = (id: string | undefined) => projects.find((p) => p.id === id);
 
 // A project as GET /api/projects/:id answers it; the list leaves out members. requires_mfa,
-// parent_id, color and a sandbox's display_name are planned on both; the list sends parent_id
-// and color with the planned depth=all.
-const projectEntry = (p: Project, { members = true, stats = false, tree = true } = {}) => ({
+// parent_id, color, scheduled_deletion and a sandbox's display_name are planned on both; the list
+// sends parent_id and color with the planned depth=all, and inserted_at and owner with scope=all.
+const projectEntry = (p: Project, { members = true, stats = false, tree = true, admin = false } = {}) => ({
   type: "projects",
   id: p.id,
   attributes: {
     name: p.name,
     description: p.description || null,
     requires_mfa: p.requiresMfa,
+    scheduled_deletion: scheduled.get(p.id) ?? null,
+    ...(admin && { inserted_at: p.insertedAt, owner: ownerJson(p) }),
     ...(p.parentId !== null && { display_name: displayName(p) }),
     ...(tree && { parent_id: openParentId(p), color: p.color, ...(p.parentId !== null && { root_id: rootOf(p).id }) }),
     ...(members && { members: p.members.map((m) => ({ email: findUser(m.userId)?.email ?? null, role: m.role })) }),
@@ -46,6 +58,11 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true }
 
 const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === currentUser().id)?.role;
+const ownerOf = (p: Project) => people.find((u) => u.id === p.members.find((m) => m.role === "owner")?.userId);
+const ownerJson = (p: Project) => {
+  const owner = ownerOf(p);
+  return owner ? { id: owner.id, email: owner.email, first_name: owner.firstName, last_name: owner.lastName } : null;
+};
 // Membership is per project: a sandbox copies its parent's members when it's made.
 const canOpen = (p: Project) => !!roleOf(p);
 // A member without MFA is refused every route on a project that requires it; the list still shows it.
@@ -63,13 +80,14 @@ const openParentId = (p: Project): string | null => {
   const parent = projects.find((q) => q.id === p.parentId);
   return !parent ? null : canOpen(parent) ? parent.id : openParentId(parent);
 };
+const lastActivity = (p: Project) => workflowsIn(p.id).map((w) => w.updatedAt).sort().at(-1) ?? null;
 const projectStats = (p: Project) => {
   const workflows = workflowsIn(p.id);
   return {
-    role: roleOf(p),
+    role: roleOf(p) ?? null,
     workflows_count: workflows.length,
     collaborators_count: p.members.length,
-    last_activity: workflows.map((w) => w.updatedAt).sort().at(-1) ?? null,
+    last_activity: lastActivity(p),
     failed_work_orders_count: workOrdersIn(p.id).filter(
       (w) => (FAILURE_STATES as readonly string[]).includes(w.state) && Date.now() - Date.parse(w.insertedAt) < 30 * DAY_MS
     ).length,
@@ -132,23 +150,44 @@ const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
 
 const PROJECT_KEYS = ["id", "name", "description", "members", "notify"];
 const PROJECT_NAME = /^[a-z0-9-]+$/;
+// The fields GET /api/projects sorts by (planned).
+const projectSorts: Record<string, (p: Project) => SortValue> = { name: (p) => p.name, inserted_at: (p) => p.insertedAt, last_activity: (p) => lastActivity(p) };
+
+// Deleting, and cancelling a deletion, is for the project's owner, a sandbox's admins and the owners and admins at the top
+// of its tree, and (planned) any superuser. Unknown to a superuser is a 404; to anyone else, 403 either way.
+function deletable(id: string | undefined): Project | Response {
+  const project = projects.find((p) => p.id === id);
+  const superuser = currentUser().role === "superuser";
+  if (!project) return superuser ? problem({ status: 404, code: "not_found", detail: "Not found." }) : forbidden();
+  const sandboxAdmin = project.parentId !== null && (roleOf(project) === "admin" || ["owner", "admin"].includes(roleOf(rootOf(project)) ?? ""));
+  if (superuser || (canEnter(project) && (roleOf(project) === "owner" || sandboxAdmin))) return project;
+  return forbidden();
+}
 
 export const projectRoutes: Record<string, Handler> = {
-  // api/projects.md. include=stats, and creating as any user, are planned: not in Lightning yet.
+  // api/projects.md. include=stats, sort, q, and creating as any user, are planned: not in Lightning yet.
   "GET /api/projects": (_params, _body, query) => {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    // Root projects you're a member of, a superuser too; with the planned depth=all, every sandbox you can open too.
-    // scope=all is ahead of the API (docs/api-gaps.md, Superuser access): every project and sandbox on the
-    // instance, for the admin pages, and superusers only. The fixtures schedule none for deletion.
+    const sort = query.get("sort") ?? "name";
+    const field = sort.replace(/^-/, "");
+    if (!Object.hasOwn(projectSorts, field)) return badSort(field);
+    // Root projects you're a member of and not scheduled for deletion, a superuser too; with the planned depth=all,
+    // every sandbox you can open too. scope=all is ahead of the API (docs/api-gaps.md, Superuser access): every project
+    // and sandbox on the instance, scheduled ones included, for the admin pages, and superusers only. Only it takes q.
     const tree = query.get("depth") === "all";
     const everything = query.get("scope") === "all";
     if (everything && currentUser().role !== "superuser") return forbidden();
+    const q = everything ? (query.get("q") ?? "") : "";
     const rows = projects
-      .filter((p) => everything || (canOpen(p) && (tree || p.parentId === null)))
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((p) => projectEntry(p, { members: false, stats, tree }));
+      .filter((p) => everything || (canOpen(p) && !scheduled.has(p.id) && (tree || p.parentId === null)))
+      .filter((p) => {
+        const owner = ownerOf(p);
+        return matchesQuery(q, p.name, p.description, owner && fullName(owner));
+      })
+      .sort(compareBy(projectSorts[field]!, sort.startsWith("-") ? "desc" : "asc"))
+      .map((p) => projectEntry(p, { members: false, stats, tree, admin: everything }));
     return json(200, paged("/api/projects", rows, query));
   },
   // api/workflows.md "List workflows". sort, include=stats (only last_work_order here) and paging are planned.
@@ -182,7 +221,8 @@ export const projectRoutes: Record<string, Handler> = {
     if (!project && currentUser().role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
     return forbidden();
   },
-  // Creates the project under :id, the caller its owner, or replaces the name and description.
+  // Creates the project under :id, or replaces the name and description. A new project's owner is the caller, unless a
+  // superuser sends its `members`. `notify` is accepted and ignored: the fake sends no email.
   "PUT /api/projects/:id": ({ id }, body) => {
     if (!isUuid(id!)) return forbidden();
     const existing = projects.find((p) => p.id === id);
@@ -199,6 +239,10 @@ export const projectRoutes: Record<string, Handler> = {
       errors.push({ code: "too_long", detail: "should be at most 240 character(s)", pointer: "#/description" });
     }
     if (body["id"] !== undefined && body["id"] !== id) errors.push({ code: "mismatch", detail: "does not match the path", pointer: "#/id" });
+    const members =
+      !existing && body["members"] !== undefined && currentUser().role === "superuser"
+        ? membersOf(body["members"], errors)
+        : [{ userId: currentUser().id, role: "owner" as const, failureAlert: true, digest: "never" as const }];
     if (errors.length) return invalid(errors);
     const fields = { name: name as string, description: (description as string | null) ?? "" };
     if (existing) {
@@ -216,11 +260,26 @@ export const projectRoutes: Record<string, Handler> = {
       historyRetentionPeriod: null,
       dataclipRetentionPeriod: null,
       requiresMfa: false,
-      members: [{ userId: currentUser().id, role: "owner", failureAlert: true, digest: "never" }],
+      members,
       lastUpdatedAt: at,
       insertedAt: at,
     };
     projects = [...projects, created];
     return json(201, { data: projectEntry(created), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
+  },
+  "DELETE /api/projects/:id": ({ id }) => {
+    const project = deletable(id);
+    if (project instanceof Response) return project;
+    if (scheduled.has(project.id)) {
+      return problem({ status: 409, code: "scheduled_for_deletion", detail: "This project is already scheduled for deletion." });
+    }
+    scheduled.set(project.id, now(PURGE_DELETED_AFTER_DAYS * DAY_MS));
+    return noContent();
+  },
+  "DELETE /api/projects/:id/scheduled_deletion": ({ id }) => {
+    const project = deletable(id);
+    if (project instanceof Response) return project;
+    if (!scheduled.delete(project.id)) return problem({ status: 404, code: "not_found", detail: "This project isn't scheduled for deletion." });
+    return json(200, { data: projectEntry(project), included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
   },
 };
