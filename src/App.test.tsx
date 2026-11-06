@@ -34,9 +34,10 @@ describe("App", () => {
     vi.unstubAllGlobals();
   });
 
-  it("logs out to the log in page", async () => {
+  it("logs out to the log in page, saying so", async () => {
     renderAt("/users/log_out");
-    expect(await screen.findByRole("button", { name: "Log in" }, wait)).toBeTruthy();
+    expect((await screen.findByText("Logged out successfully.", {}, wait)).closest('[role="status"]')).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Log in" })).toBeTruthy();
   });
 
   it("opens the projects list for the signed-in user", async () => {

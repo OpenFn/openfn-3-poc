@@ -8,7 +8,7 @@
   "Raw <input>/<select>/<textarea> in features + pages": 3,
   "Raw <table> in features + pages": 1,
   "Raw palette classes in features + pages": 0,
-  "debt: lines in src": 153,
+  "debt: lines in src": 150,
   "Colour roles in theme/tokens.css": 108,
   "Palette classes in src (any scale, any file)": 0,
   "Colour alpha or faded disabled in src": 0,

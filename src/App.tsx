@@ -7,12 +7,12 @@ import LogOut from "./components/shell/LogOut.query";
 import UserSettings from "./components/shell/UserSettings.query";
 
 import AuthLoginPage from "./pages/auth/login/AuthLoginPage.query";
-import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
-import AuthResetPasswordPage from "./pages/auth/AuthResetPasswordPage";
+import AuthRegisterPage from "./pages/auth/register/AuthRegisterPage.query";
+import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPasswordPage.query";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
-import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
-import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage.replica";
-import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
+import AuthConfirmAccountPage from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
+import AuthConfirmationRequiredPage from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage.query";
+import FirstSetupPage from "./pages/auth/first-setup/FirstSetupPage.query";
 
 import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.query";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";

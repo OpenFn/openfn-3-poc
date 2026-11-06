@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate, type InitialEntry } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { request } from "@/api/client";
@@ -8,6 +9,9 @@ import { useTokenSaves } from "@/api/tokens";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import { useCurrentUser } from "@/session/session";
 import Button from "@/components/primitives/Button";
+import { ToastProvider } from "@/components/primitives/Toast";
+import AuthLoginPageQuery from "@/pages/auth/login/AuthLoginPage.query";
+import type { Flash } from "@/types/auth";
 import LogOut from "./LogOut.query";
 import SessionGate from "./SessionGate.query";
 
@@ -21,30 +25,40 @@ function Where() {
 function Private() {
   const user = useCurrentUser();
   const { remove } = useTokenSaves();
+  const navigate = useNavigate();
+  const flash: Flash = { tone: "info", message: "Moved on." };
   return (
-    <>
+    <main tabIndex={-1}>
       <p>Signed in as {user.email}</p>
       <Button onClick={() => void remove("any").catch(() => undefined)}>Delete a token</Button>
-    </>
+      <Button onClick={() => void navigate("/projects/next", { state: { flash } })}>Move on</Button>
+    </main>
   );
 }
 
-function renderAt(path: string) {
-  render(
+// `logIn` puts the real login page at /users/log_in; `strict` renders twice, as main.tsx's StrictMode does.
+function renderAt(path: InitialEntry, { logIn = false, strict = false } = {}) {
+  const toast = vi.fn();
+  const app = (
     <ApiProvider retry={false}>
       <MemoryRouter initialEntries={[path]}>
         <ReactRouterAdapter>
-          <Routes>
-            <Route path="/users/log_out" element={<LogOut />} />
-            <Route element={<SessionGate />}>
-              <Route path="/projects/:id" element={<Private />} />
-            </Route>
-            <Route path="*" element={<Where />} />
-          </Routes>
+          <ToastProvider show={toast}>
+            <Routes>
+              <Route path="/users/log_out" element={<LogOut />} />
+              {logIn && <Route path="/users/log_in" element={<AuthLoginPageQuery />} />}
+              <Route element={<SessionGate />}>
+                <Route path="/projects/:id" element={<Private />} />
+              </Route>
+              <Route path="*" element={<Where />} />
+            </Routes>
+          </ToastProvider>
         </ReactRouterAdapter>
       </MemoryRouter>
     </ApiProvider>
   );
+  render(strict ? <StrictMode>{app}</StrictMode> : app);
+  return toast;
 }
 
 describe("SessionGate", () => {
@@ -61,6 +75,41 @@ describe("SessionGate", () => {
   it("shows the page to the signed-in user, from the API", async () => {
     renderAt("/projects/abc");
     expect(await screen.findByText("Signed in as demo@openfn.org", {}, wait)).toBeTruthy();
+  });
+
+  it("toasts each message a redirect carries into the app, once", async () => {
+    const flash: Flash = { tone: "info", message: "User confirmed successfully." };
+    const toast = renderAt({ pathname: "/projects/abc", state: { flash } }, { strict: true });
+    await screen.findByText("Signed in as demo@openfn.org", {}, wait);
+    expect(toast.mock.calls).toEqual([["User confirmed successfully.", "info"]]);
+    // The gate stays mounted, and takes the next one as it arrives.
+    fireEvent.click(screen.getByRole("button", { name: "Move on" }));
+    await waitFor(() => expect(toast.mock.calls).toEqual([["User confirmed successfully.", "info"], ["Moved on.", "info"]]));
+  });
+
+  it("leaves focus alone on opening the app, or reloading a page it had visited", async () => {
+    // A reload keeps the entry's key, so this is a visited entry opened again.
+    renderAt({ pathname: "/projects/abc", key: "visited" });
+    await screen.findByText("Signed in as demo@openfn.org", {}, wait);
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("drops a carried message when it sends the person to log in", async () => {
+    await request("DELETE", "/api/session");
+    const flash: Flash = { tone: "info", message: "User confirmed successfully." };
+    const toast = renderAt({ pathname: "/projects/abc", state: { flash } });
+    expect(await screen.findByText(/At \/users\/log_in/, {}, wait)).toBeTruthy();
+    expect(toast).not.toHaveBeenCalled();
+  });
+
+  it("gives focus to the page after signing in", async () => {
+    await request("DELETE", "/api/session");
+    renderAt(`/users/log_in?return_to=${encodeURIComponent("/projects/abc")}`, { logIn: true });
+    fireEvent.change(await screen.findByRole("textbox", { name: /^Email/ }, wait), { target: { value: "demo@openfn.org" } });
+    fireEvent.change(screen.getByLabelText(/^Password/), { target: { value: FAKE_PASSWORD } });
+    fireEvent.click(screen.getByRole("button", { name: "Log in" }));
+    await screen.findByText("Signed in as demo@openfn.org", {}, wait);
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("main")));
   });
 
   it("sends a deep link to log in when signed out, keeping where it was going", async () => {

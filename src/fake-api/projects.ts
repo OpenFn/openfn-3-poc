@@ -9,7 +9,7 @@ import type { Project, ProjectAction } from "@/types/projects";
 import type { WorkflowSortKey } from "@/types/workflows";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { badInclude, forbidden, invalid, isUuid, json, notFound, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
 import { currentUser } from "./session";
 
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
@@ -177,7 +177,7 @@ export const projectRoutes: Record<string, Handler> = {
       const entry = projectEntry(project);
       return json(200, { data: { ...entry, attributes: { ...entry.attributes, permissions: permissionsIn(project) } }, included: [], links: { self: `${ORIGIN}/api/projects/${id}` } });
     }
-    if (!project && currentUser().role === "superuser") return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!project && currentUser().role === "superuser") return notFound();
     return forbidden();
   },
   // Creates the project under :id, the caller its owner, or replaces the name and description.

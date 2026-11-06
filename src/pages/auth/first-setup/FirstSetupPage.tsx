@@ -4,39 +4,32 @@ import Form from "@/components/primitives/Form";
 import { PasswordInput, TextInput } from "@/components/primitives/Inputs";
 import { Centered, PageContent } from "@/components/primitives/PageContent";
 import { Stack } from "@/components/primitives/Stack";
+import type { FirstSetupValues } from "@/types/auth";
 import { useForm } from "@/utils/useForm";
-import { blank, isValidEmail } from "@/utils/validate";
+import { blank } from "@/utils/validate";
 
-export interface FirstSetupValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  passwordConfirmation: string;
-}
-
-/** The contract between this page and whatever feeds it (the replica wrapper, later Lightning). */
+/** The contract between this page and whatever feeds it. */
 export interface FirstSetupPageProps {
-  /** Creates the superuser. Resolves when the host accepts (it then signs the user in); rejects with field errors or a message. */
+  /** Creates the superuser. Resolves when the host has signed them in and sent them on; rejects with field errors or a message. */
   onSave: (values: FirstSetupValues) => Promise<void>;
 }
 
 /**
  * Inventory view `first-setup` (first_setup_live/superuser.html.heex): the
  * form that creates the first superuser on a fresh install. The page checks
- * what Lightning's changeset checks (names, email, a 12-character password
- * that matches its confirmation) before a save, and shows the host's field
- * errors on their fields. Props only: the shell around it is the host's.
+ * only for blanks and that the confirmation matches; the server checks the
+ * rest, and its field errors show on their fields. Props only: the shell
+ * around it is the host's.
  */
 export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
   const form = useForm<FirstSetupValues>({
-    initial: { firstName: "", lastName: "", email: "", password: "", passwordConfirmation: "" },
-    validate: ({ firstName, lastName, email, password, passwordConfirmation }) => ({
-      firstName: blank(firstName),
-      lastName: blank(lastName),
-      email: email.trim() && !isValidEmail(email) ? ["must be a valid email address"] : blank(email),
-      password: password.length < 12 ? ["Password minimum length is 12 characters."] : [],
-      passwordConfirmation: passwordConfirmation !== password ? ["does not match confirmation"] : [],
+    initial: { first_name: "", last_name: "", email: "", password: "", passwordConfirmation: "" },
+    validate: ({ first_name, last_name, email, password, passwordConfirmation }) => ({
+      first_name: blank(first_name),
+      last_name: blank(last_name),
+      email: blank(email),
+      password: blank(password),
+      passwordConfirmation: passwordConfirmation === password ? [] : ["does not match confirmation"],
     }),
   });
 
@@ -58,9 +51,9 @@ export default function FirstSetupPage({ onSave }: FirstSetupPageProps) {
               </Button>
             }
           >
-            <TextInput id="first_name" name="first_name" label="First name" {...form.fieldProps("firstName")} />
-            <TextInput id="last_name" name="last_name" label="Last name" {...form.fieldProps("lastName")} />
-            <TextInput id="email" name="email" type="email" label="Email" {...form.fieldProps("email")} />
+            <TextInput id="first_name" name="first_name" label="First name" autoComplete="given-name" {...form.fieldProps("first_name")} />
+            <TextInput id="last_name" name="last_name" label="Last name" autoComplete="family-name" {...form.fieldProps("last_name")} />
+            <TextInput id="email" name="email" type="email" label="Email" autoComplete="email" {...form.fieldProps("email")} />
             <PasswordInput id="password" name="password" label="Password" autoComplete="new-password" {...form.fieldProps("password")} />
             <PasswordInput
               id="password_confirmation"
