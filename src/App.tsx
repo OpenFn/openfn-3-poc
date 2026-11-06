@@ -7,7 +7,7 @@ import LogOut from "./components/shell/LogOut.query";
 import UserSettings from "./components/shell/UserSettings.query";
 
 import AuthLoginPage from "./pages/auth/login/AuthLoginPage.query";
-import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
+import AuthRegisterPageQuery from "./pages/auth/register/AuthRegisterPage.query";
 import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPasswordPage.query";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
 import AuthConfirmAccountPageQuery from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
@@ -55,7 +55,7 @@ export default function App() {
       {/* Auth and onboarding: no side menu. */}
       <Route path="/users/log_in" element={<AuthLoginPage />} /> {/* auth-login */}
       <Route path="/users/log_out" element={<LogOut />} />
-      <Route path="/users/register" element={<AuthRegisterPage />} /> {/* auth-register */}
+      <Route path="/users/register" element={<AuthRegisterPageQuery />} /> {/* auth-register */}
       <Route path="/users/reset_password" element={<AuthResetPasswordPage />} /> {/* auth-reset-password */}
       <Route path="/users/reset_password/:token" element={<AuthResetPasswordPage />} />
       <Route path="/users/two-factor" element={<AuthTwoFactorPage />} /> {/* auth-two-factor */}

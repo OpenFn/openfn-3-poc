@@ -10,7 +10,7 @@ import { hasActivityInProjects } from "@/mock-data/profile";
 import { users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { invalid, json, noContent, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
-import { instanceRoutes, setNeedsSetup } from "./instance";
+import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { lockedOut, openWhileLockedOut, resetResends, spendResend } from "./lockout";
 import { spendBackupCode } from "./mfa";
 
@@ -96,6 +96,7 @@ export function resetSession() {
   resetResends();
   resetTokenUsed = false;
   setNeedsSetup(false);
+  setAllowSignup(false);
 }
 
 /** Signs this browser in as the user, replacing any session, as a create that signs the person in does. */

@@ -7,7 +7,7 @@ import { FAKE_PASSWORD, failNext, resetFakeApi, setNeedsSetup } from "@/api/test
 import { ToastProvider } from "@/components/primitives/Toast";
 import LogOut from "@/components/shell/LogOut.query";
 import SessionGate from "@/components/shell/SessionGate.query";
-import AuthRegisterPage from "@/pages/auth/AuthRegisterPage";
+import AuthRegisterPageQuery from "@/pages/auth/register/AuthRegisterPage.query";
 import AuthLoginPageQuery from "@/pages/auth/login/AuthLoginPage.query";
 import AuthResetPasswordPageQuery from "@/pages/auth/reset-password/AuthResetPasswordPage.query";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
@@ -33,7 +33,7 @@ function renderAt(path: string) {
               <Route path="/first_setup" element={<FirstSetupPageQuery />} />
               <Route path="/users/log_in" element={<AuthLoginPageQuery />} />
               <Route path="/users/log_out" element={<LogOut />} />
-              <Route path="/users/register" element={<AuthRegisterPage />} />
+              <Route path="/users/register" element={<AuthRegisterPageQuery />} />
               <Route path="/users/reset_password" element={<AuthResetPasswordPageQuery />} />
               <Route element={<SessionGate />}>
                 <Route path="/projects" element={<Link to="/users/log_out">Log out</Link>} />
@@ -130,7 +130,6 @@ describe("FirstSetupPageQuery", () => {
     expect((await screen.findByRole("alert", {}, wait)).textContent).toContain("Something went wrong in Lightning.");
   });
 
-  // Register has no .query yet: its case holds the line for when it gets one.
   it.each(["/users/reset_password", "/users/register"])("leaves %s where it is", async (path) => {
     renderAt(path);
     // Asked after the page's own request, so answered after it; then the page's answer reaches it.

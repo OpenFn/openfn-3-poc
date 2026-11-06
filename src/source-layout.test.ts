@@ -93,7 +93,6 @@ describe("every page and component can be seen and checked", () => {
       .filter((path) => !/\.(query|replica)\.tsx$/.test(path));
     expectOnlyKnown(direct, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
-      "./pages/auth/AuthRegisterPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/workflow-editor/WorkflowEditorPage.tsx",
     ]);

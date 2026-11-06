@@ -13,6 +13,7 @@ export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFac
 export { default as AuthResetPasswordPage } from "./pages/auth/reset-password/AuthResetPasswordPage";
 export { default as AuthConfirmationRequiredPage } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/first-setup/FirstSetupPage";
+export { default as AuthRegisterPage } from "./pages/auth/register/AuthRegisterPage";
 export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
@@ -43,6 +44,7 @@ export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFact
 export type { AuthResetPasswordPageProps } from "./pages/auth/reset-password/AuthResetPasswordPage";
 export type { AuthConfirmationRequiredPageProps } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/first-setup/FirstSetupPage";
+export type { AuthRegisterPageProps } from "./pages/auth/register/AuthRegisterPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
@@ -176,7 +178,7 @@ export type {
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";
-export type { FirstSetupValues, Flash, ResetPasswordValues, SsoProvider, TwoFactorMethod } from "./types/auth";
+export type { FirstSetupValues, Flash, RegisterValues, ResetPasswordValues, SsoProvider, TwoFactorMethod } from "./types/auth";
 export type { ApiToken, BackupCode } from "./types/tokens";
 export type { ProjectOverview, WorkflowListItem, WorkflowSortKey } from "./types/workflows";
 

@@ -14,13 +14,21 @@ export function setNeedsSetup(on = true) {
   if (on) endSession();
 }
 
+/** Whether anyone may sign up. Only tests turn it on. */
+let signupAllowed = false;
+// ponytail: also reads the fixture, which reset's and confirm's tests still set by hand; auth-cleanup drops it.
+export const allowSignup = () => signupAllowed || authConfig.allowSignup;
+export function setAllowSignup(on = true) {
+  signupAllowed = on;
+}
+
 export const instanceRoutes: Record<string, Handler> = {
   "GET /api/instance": () => {
     const provider = authConfig.ssoProvider;
     return json(200, {
       data: {
         needs_setup: setupNeeded,
-        allow_signup: authConfig.allowSignup,
+        allow_signup: allowSignup(),
         url: ORIGIN,
         release: { label: sessionFixture.instance.releaseLabel, commit: null, image_tag: null, branch: null },
         admin_email: isSignedIn() ? sessionFixture.instance.adminEmail : null,
