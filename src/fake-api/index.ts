@@ -12,6 +12,7 @@ import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
 import { sandboxRoutes } from "./sandboxes";
 import { auditRoutes } from "./audit";
+import { authProviderRoutes, resetAuthProvider } from "./authProvider";
 import { collectionRoutes, resetCollections } from "./collections";
 import { mfaRoutes, resetMfa } from "./mfa";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
@@ -59,6 +60,7 @@ const routes: Record<string, Handler> = {
   ...sandboxRoutes,
   ...auditRoutes,
   ...collectionRoutes,
+  ...authProviderRoutes,
   ...mfaRoutes,
   ...userRoutes,
 };
@@ -105,6 +107,7 @@ export function resetFakeApi() {
   tokens = seed();
   resetProjects();
   resetCollections();
+  resetAuthProvider();
   resetCredentials();
   resetChannels();
   resetSession();

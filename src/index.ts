@@ -1,7 +1,7 @@
 // The package's public surface: anything a consumer needs goes through here.
 
 export { default as AdminAuditPage } from "./pages/admin/audit/AdminAuditPage";
-export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvidersPage";
+export { default as AdminAuthProvidersPage } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
 export { default as AdminCollectionsPage } from "./pages/admin/collections/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
 export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
@@ -30,7 +30,7 @@ export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPa
 export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { AdminAuditPageProps } from "./pages/admin/audit/AdminAuditPage";
-export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
+export type { AdminAuthProvidersPageProps } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
 export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
 export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";

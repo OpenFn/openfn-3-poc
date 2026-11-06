@@ -5,6 +5,7 @@
  * Static fixtures only: nothing here talks to a backend.
  */
 import { fullName } from "@/utils/format";
+import { authRedirectUri } from "@/utils/urls";
 import { users } from "./users";
 import { projects } from "./projects";
 import type { Project } from "@/types/projects";
@@ -149,28 +150,15 @@ export const auditPageSize = 10;
 // ---------------------------------------------------------------------------
 // Authentication (OpenID Connect provider)
 
-/** LightningWeb.Endpoint.struct_url(), the default redirect host. */
+/** LightningWeb.Endpoint.struct_url(), the instance's own URL. */
 export const instanceUrl = "http://localhost:4000";
 
-/** The configured provider; null means none is set up yet. */
-export const authProvider: AuthProvider | null = {
-  id: "auth-provider-google",
+/** The provider the fake server starts with; the fake holds its secret. */
+export const authProvider: AuthProvider = {
   name: "google",
   discoveryUrl: "https://accounts.google.com/.well-known/openid-configuration",
   clientId: "1081234567890-abc123def456.apps.googleusercontent.com",
-  hasClientSecret: true,
-  redirectHost: instanceUrl,
-  allowUnverifiedEmail: false,
-};
-
-export const emptyAuthProvider: AuthProvider = {
-  id: null,
-  name: "",
-  discoveryUrl: "",
-  clientId: "",
-  hasClientSecret: false,
-  redirectHost: instanceUrl,
-  allowUnverifiedEmail: false,
+  redirectUri: authRedirectUri(instanceUrl, "google"),
 };
 
 // ---------------------------------------------------------------------------
