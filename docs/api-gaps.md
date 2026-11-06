@@ -105,13 +105,37 @@ apart.
   `support_user` on Create a user. Replica: two requests; if the second
   fails, the list shows an error toast saying the user was created without
   support access.
-- **Admin users: a superuser editing their own account.** `api/users.md`
-  doesn't say whether a superuser's own id follows the rules for your own
-  account (no change to `role`, `support_user` or `disabled`; email and
-  password stepped up, the email confirmed by link) or the superuser scope
-  (everything, at once). Would need it stated. Replica: the fake keeps the
-  rules for your own account, and the user form greys those fields, with
-  email and password left to Profile.
+- **Credentials: editing one secret wipes the others.** The app never sees
+  a credential's saved secrets, so when you edit one, it can only send the
+  fields you typed. The API replaces the whole set with what it's sent, so
+  any field you left blank would be saved blank, and changing only the name
+  would be refused. The API needs to keep any field that isn't sent, as it
+  already does for an OAuth client's secret. Until then, only the fake does
+  that, so this works in the app but not against Lightning yet.
+  (`PUT /api/credentials/:id`, `credential_bodies`)
+- **Credentials: an external ID can't be saved.** A credential shows its
+  external ID, but creating or editing one can't set it. The API needs to
+  accept it when saving. Until then the app sends it anyway, and the fake
+  accepts it; Lightning would refuse the save. (`external_id` on
+  `POST`/`PUT /api/credentials`)
+- **Credentials: no way to sign in to an OAuth provider.** An OAuth
+  credential gets its token when you sign in to Google, Salesforce and so
+  on. The API has no way to start that sign-in or hear how it ended. It
+  needs one: start a sign-in and get back the provider's page to open, then
+  find out whether it worked. Until then, the Credentials page can't add or
+  edit OAuth credentials.
+- **Credentials: a refused transfer tells you who has an account.** When
+  you hand a credential to someone, the API says either "no such user" or
+  "not in these projects", so anyone can find out whether an email has an
+  account. It should give one answer for both: "They need an account and a
+  role in every project this credential is shared with". Until then, the
+  fake gives that one answer. (`not_found` and `no_access` at
+  `#/recipient`)
+- **Projects: the app has to guess where you may share a credential.**
+  Sharing a credential with a project needs editor or above there, but the
+  project list doesn't say where you may. The app guesses from your role
+  in each project, which PRINCIPLES says it shouldn't. The list needs a
+  "can share credentials here" on each project. (`create_project_credential`)
 
 ## Superuser access (api/projects.md, api/collections.md, api/users.md)
 
@@ -144,6 +168,13 @@ apart.
   need a superuser's session token on each, and a stated step-up rule.
   Replica: the fake lets a superuser's session do them all without stepping
   up.
+- **Admin users: a superuser editing their own account.** `api/users.md`
+  doesn't say whether a superuser's own id follows the rules for your own
+  account (no change to `role`, `support_user` or `disabled`; email and
+  password stepped up, the email confirmed by link) or the superuser scope
+  (everything, at once). Would need it stated. Replica: the fake keeps the
+  rules for your own account, and the user form greys those fields, with
+  email and password left to Profile.
 
 ## Changed, and that's fine
 
@@ -196,3 +227,15 @@ The replica shows less, or shows it another way, and nothing breaks.
   OpenFn account", naming who created it. Would need an option on Create a
   user to send it. Replica: the account is created unconfirmed and nobody is
   emailed.
+- **Credentials: no warning before unsharing a credential that's in use.**
+  Lightning names the workflows that would lose a credential before you
+  take a project away from it. The credentials list doesn't say which
+  workflows use one; asking takes one extra request per project. Until the
+  list says, there's no warning. (`GET /api/workflows?credential_id=…`)
+- **Credentials: a pending transfer doesn't say who it's for.**
+  openfn-ia-demo shows "Waiting for <email> to accept"; the API only says
+  a transfer is pending. Until it sends the email, the row shows "Transfer
+  pending" without it.
+- **OAuth clients: projects come without names.** A credential lists its
+  projects by name; an OAuth client only by id. The app looks the names up
+  in the project list, so the OAuth clients table waits for that list too.

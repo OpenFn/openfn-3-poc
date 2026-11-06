@@ -187,7 +187,7 @@ export const userRoutes: Record<string, Handler> = {
     // Lightning refuses to schedule a superuser (User.scheduled_deletion_changeset); api/ doesn't say how (docs/api-gaps.md).
     if (user.role === "superuser") return problem({ status: 403, code: "forbidden", detail: "You can't delete a superuser account." });
     if (user.scheduledDeletion) return problem({ status: 409, code: "scheduled_for_deletion", detail: "This account is already scheduled for deletion." });
-    user.scheduledDeletion = now(PURGE_DELETED_AFTER_DAYS * DAY_MS);
+    user.scheduledDeletion = now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS));
     // Disabled, so they can't sign back in. ponytail: the fake has one session, so only your own ends, and tokens
     // aren't revoked; add both if a test signs in as the target after.
     user.disabled = true;

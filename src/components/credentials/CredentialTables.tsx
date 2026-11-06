@@ -7,6 +7,7 @@ import { Row } from "@/components/primitives/Stack";
 import { Table, Td, Th, Tr, Truncated } from "@/components/primitives/Table";
 import type { CredentialRow, KeychainCredentialRow, OauthClientRow } from "@/types/credentials";
 import Tooltip from "@/components/primitives/Tooltip";
+import { formatCredentialType } from "@/utils/format";
 
 /**
  * The three tables of the credential index (live/components/data_tables.ex):
@@ -25,23 +26,15 @@ function ProjectBadges({ names }: { names: string[] }) {
   );
 }
 
-
-/** The Type column (data_tables.ex `credential_type`): the client's name for OAuth. */
-function credentialType(credential: CredentialRow): string {
-  if (credential.schema === "oauth") return credential.oauthClient ? credential.oauthClient.name.toLowerCase() : "oauth";
-  return credential.schema;
-}
-
 interface TableProps<T> {
   rows: T[];
-  showOwner?: boolean;
   /** Rendered instead of the table when there are no rows. */
   emptyState: ReactNode;
   /** Last-column content per row (the Actions dropdown). */
   actions?: (row: T) => ReactNode;
 }
 
-export function OauthClientsTable({ rows, showOwner = false, emptyState, actions }: TableProps<OauthClientRow>) {
+export function OauthClientsTable({ rows, emptyState, actions }: TableProps<OauthClientRow>) {
   return (
     <Section id="oauth-clients-table-container" title="OAuth Clients">
       {rows.length === 0 ? (
@@ -52,7 +45,7 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
           header={
             <Tr>
               <Th>Name</Th>
-              {showOwner && <Th>Owner</Th>}
+              <Th>Owner</Th>
               <Th>Projects With Access</Th>
               <Th>Authorization URL</Th>
               <Th actions />
@@ -62,7 +55,7 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
           {rows.map((client) => (
             <Tr key={client.id} id={`oauth-clients-${client.id}`}>
               <Td truncate maxWidth={60}>{client.name}</Td>
-              {showOwner && <Td truncate maxWidth={60}>{client.global ? "GLOBAL" : client.ownerEmail}</Td>}
+              <Td truncate maxWidth={60}>{client.global ? "GLOBAL" : client.ownerEmail}</Td>
               <Td wrap maxWidth={80}>
                 <ProjectBadges names={client.global ? ["GLOBAL"] : client.projects.map((p) => p.name)} />
               </Td>
@@ -76,7 +69,7 @@ export function OauthClientsTable({ rows, showOwner = false, emptyState, actions
   );
 }
 
-export function CredentialsTable({ rows, showOwner = false, emptyState, actions }: TableProps<CredentialRow>) {
+export function CredentialsTable({ rows, emptyState, actions }: TableProps<CredentialRow>) {
   return (
     <Section id="credentials-table-container" title="Credentials">
       {rows.length === 0 ? (
@@ -88,7 +81,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
             <Tr>
               <Th>Name</Th>
               <Th>Type</Th>
-              {showOwner && <Th>Owner</Th>}
+              <Th>Owner</Th>
               <Th>Projects with access</Th>
               <Th>External ID</Th>
               <Th>Environments</Th>
@@ -107,8 +100,8 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
                   )}
                 </Row>
               </Td>
-              <Td truncate maxWidth={40}>{credentialType(credential)}</Td>
-              {showOwner && <Td truncate maxWidth={60}>{credential.ownerEmail}</Td>}
+              <Td truncate maxWidth={40}>{formatCredentialType(credential)}</Td>
+              <Td truncate maxWidth={60}>{credential.ownerEmail}</Td>
               <Td wrap maxWidth={100}>
                 <ProjectBadges names={credential.projects.map((p) => p.name)} />
               </Td>
@@ -129,7 +122,7 @@ export function CredentialsTable({ rows, showOwner = false, emptyState, actions 
   );
 }
 
-export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, actions }: TableProps<KeychainCredentialRow>) {
+export function KeychainCredentialsTable({ rows, emptyState, actions }: TableProps<KeychainCredentialRow>) {
   return (
     <Section id="keychain-credentials-table-container" title="Keychain Credentials">
       {rows.length === 0 ? (
@@ -142,7 +135,7 @@ export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, a
               <Th>Name</Th>
               <Th>Path</Th>
               <Th>Default Credential</Th>
-              {showOwner && <Th>Owner</Th>}
+              <Th>Owner</Th>
               <Th actions />
             </Tr>
           }
@@ -156,7 +149,7 @@ export function KeychainCredentialsTable({ rows, showOwner = true, emptyState, a
               <Td truncate maxWidth={60}>
                 {kc.defaultCredential ? kc.defaultCredential.name : <span className="text-faint">None</span>}
               </Td>
-              {showOwner && <Td truncate maxWidth={60}>{kc.ownerEmail}</Td>}
+              <Td truncate maxWidth={60}>{kc.ownerEmail}</Td>
               <Td actions>{actions?.(kc)}</Td>
             </Tr>
           ))}

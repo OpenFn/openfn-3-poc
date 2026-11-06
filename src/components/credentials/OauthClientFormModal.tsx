@@ -13,8 +13,9 @@ import { Stack } from "@/components/primitives/Stack";
 interface Props {
   open: boolean;
   onClose: () => void;
-  /** Set to edit an existing client, with its id and secret from the host. */
+  /** Set to edit an existing client. */
   client?: OauthClientRow | undefined;
+  /** Its saved secret, from a host that sends it. Without one, a blank secret keeps the saved one. */
   secrets?: OauthClientSecretsResult | undefined;
   projects: CredentialProjectRef[];
   defaultProjectIds?: string[];
@@ -29,6 +30,7 @@ interface Props {
  * endpoints, client id and secret, scopes, and project access.
  */
 export default function OauthClientFormModal({ open, onClose, client, secrets, projects, defaultProjectIds = [], allowGlobal, onSave }: Props) {
+  const keepsSecret = !!client && !secrets;
   const form = useForm<OauthClientValues>({
     initial: {
       name: client?.name ?? "",
@@ -37,7 +39,7 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
       revocationEndpoint: client?.revocationEndpoint ?? "",
       introspectionEndpoint: client?.introspectionEndpoint ?? "",
       userinfoEndpoint: client?.userinfoEndpoint ?? "",
-      clientId: secrets?.clientId ?? "",
+      clientId: secrets?.clientId ?? client?.clientId ?? "",
       clientSecret: secrets?.clientSecret ?? "",
       mandatoryScopes: client?.mandatoryScopes ?? [],
       optionalScopes: client?.optionalScopes ?? [],
@@ -50,7 +52,7 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
       authorizationEndpoint: blank(v.authorizationEndpoint),
       tokenEndpoint: blank(v.tokenEndpoint),
       clientId: blank(v.clientId),
-      clientSecret: blank(v.clientSecret),
+      clientSecret: keepsSecret ? [] : blank(v.clientSecret),
     }),
   });
   const { values } = form;
@@ -59,48 +61,55 @@ export default function OauthClientFormModal({ open, onClose, client, secrets, p
     <FormModal
       open={open}
       onClose={onClose}
-      title={client ? "Edit OAuth Client" : "Add an OAuth Client"}
+      title={client ? "Edit OAuth client" : "Add an OAuth client"}
       size="xl"
       formId={`oauth-client-form-${client?.id ?? "new"}`}
       onSubmit={form.modalSubmit(async (v) => {
         await onSave({ ...v, name: v.name.trim(), projectIds: v.global ? [] : v.projectIds });
         onClose();
       })}
-      submitLabel={client ? "Save Changes" : "Add OAuth Client"}
+      submitLabel={client ? "Save changes" : "Add OAuth client"}
     >
       <TextInput id="oauth-client-name" label="Name" required {...form.fieldProps("name")} />
-      <TextInput label="Authorization Endpoint" required {...form.fieldProps("authorizationEndpoint")} />
-      <TextInput label="Token Endpoint" required {...form.fieldProps("tokenEndpoint")} />
-      <TextInput label="Revocation Endpoint" {...form.fieldProps("revocationEndpoint")} />
-      <TextInput label="Introspection Endpoint" {...form.fieldProps("introspectionEndpoint")} />
-      <TextInput label="UserInfo Endpoint" {...form.fieldProps("userinfoEndpoint")} />
+      <TextInput label="Authorization endpoint" required {...form.fieldProps("authorizationEndpoint")} />
+      <TextInput label="Token endpoint" required {...form.fieldProps("tokenEndpoint")} />
+      <TextInput label="Revocation endpoint" {...form.fieldProps("revocationEndpoint")} />
+      <TextInput label="Introspection endpoint" {...form.fieldProps("introspectionEndpoint")} />
+      <TextInput label="UserInfo endpoint" {...form.fieldProps("userinfoEndpoint")} />
       <PasswordInput label="Client ID" required {...form.fieldProps("clientId")} />
-      <PasswordInput label="Client Secret" required autoComplete="new-password" {...form.fieldProps("clientSecret")} />
+      <PasswordInput
+        label="Client secret"
+        required={!keepsSecret}
+        hint={keepsSecret ? "Saved. Leave blank to keep it." : undefined}
+        autoComplete="new-password"
+        {...form.fieldProps("clientSecret")}
+      />
 
-      <Card as="section" title="Manage Scopes" description="Type the names of the scopes and separate them using comma">
+      <Card as="section" title="Scopes" description="Type the names of the scopes and separate them with commas.">
         <ScopesInput
           id={`mandatory-scopes-${client?.id ?? "new"}`}
-          label="Mandatory Scopes"
+          label="Mandatory scopes"
           scopes={values.mandatoryScopes}
           errors={form.errors.mandatoryScopes}
           onChange={(s) => form.set("mandatoryScopes", s)}
         />
         <ScopesInput
           id={`optional-scopes-${client?.id ?? "new"}`}
-          label="Optional Scopes"
+          label="Optional scopes"
           scopes={values.optionalScopes}
           errors={form.errors.optionalScopes}
           onChange={(s) => form.set("optionalScopes", s)}
         />
-        <TextInput label="Scopes Documentation URL" {...form.fieldProps("scopesDocUrl")} />
+        <TextInput label="Scopes documentation URL" {...form.fieldProps("scopesDocUrl")} />
       </Card>
 
-      <Card as="section" title="Manage Project Access" description="Control which projects have access to this OAuth client">
+      <Card as="section" title="Project access" description="Control which projects have access to this OAuth client.">
         {allowGlobal && (
           <Alert tone="warning">
             <Field errors={form.errors.global}>
               <Checkbox
-                label="Make client global (allow any project in this instance to use this client)"
+                label="Make client global"
+                hint="Allow any project in this instance to use this client."
                 checked={values.global}
                 onChange={(e) => form.set("global", e.target.checked)}
               />

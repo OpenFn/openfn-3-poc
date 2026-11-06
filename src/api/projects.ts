@@ -155,13 +155,27 @@ export function useRefusedForMfa(id: string, refused: boolean): boolean | "check
   return query.data ?? false;
 }
 
+// Your projects, never a sandbox, with your role in each.
+const overviewsQuery = queryOptions({
+  queryKey: [...projectKeys.all, "stats"],
+  queryFn: () => listAll<ApiProject>("/api/projects?include=stats", "data"),
+});
+
 /** The signed-in person's projects with their counts and last activity, and where loading them stands. */
 export function useProjectOverviews(): { status: ResourceStatus; projects: ProjectOverview[] } {
-  const query = useQuery({
-    queryKey: [...projectKeys.all, "stats"],
-    queryFn: () => listAll<ApiProject>("/api/projects?include=stats", "data"),
-    select: (rows) => rows.map(projectOverview),
-  });
+  const query = useQuery({ ...overviewsQuery, select: (rows) => rows.map(projectOverview) });
+  return { status: statusOf(query), projects: query.data ?? [] };
+}
+
+const shareable = (rows: ApiProject[]) =>
+  rows.filter((p) => ["owner", "admin", "editor"].includes(p.attributes.role ?? "")).map((p) => ({ id: p.id, name: p.attributes.name }));
+
+/**
+ * The projects you can share a credential or OAuth client with: those you
+ * edit or own. A sandbox gets a share through its parent, as in Lightning.
+ */
+export function useShareableProjects(): { status: ResourceStatus; projects: { id: string; name: string }[] } {
+  const query = useQuery({ ...overviewsQuery, select: shareable });
   return { status: statusOf(query), projects: query.data ?? [] };
 }
 

@@ -151,6 +151,20 @@ export function toApiError(status: number, body: unknown): ApiError {
 }
 
 
+/**
+ * A refusal with each pointer's field renamed (`#/project_credentials/0/project_id` → `#/projectIds`),
+ * so it lands on a form field with another name: the forms project settings
+ * shares keep their own names until it moves to the API.
+ */
+export function renameFields(error: unknown, names: Record<string, string>): unknown {
+  if (!isApiError(error)) return error;
+  const errors = error.errors.map((e) => {
+    const field = e.pointer?.replace(/^#\//, "").split("/")[0];
+    return field && names[field] ? { ...e, pointer: `#/${names[field]}` } : e;
+  });
+  return new ApiError(error.status ?? 0, error.code, error.message, errors);
+}
+
 /** Lightning refused it, with this `code` if one is given (`isApiError(error, "step_up_required")`). */
 export const isApiError = (error: unknown, code?: string): error is ApiError =>
   error instanceof ApiError && (code === undefined || error.code === code);

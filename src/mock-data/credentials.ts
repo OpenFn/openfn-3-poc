@@ -330,6 +330,7 @@ export function credentialIndexDataFor(fixture: CredentialsFixture, project: Pro
     oauthClients: byName(clients).map((c) => ({
       id: c.id,
       name: c.name,
+      clientId: clientSecretsFor(fixture, c.id).clientId,
       ownerEmail: ownerEmail(c.ownerId),
       global: c.global,
       projects: projectRefs(c.projectIds),

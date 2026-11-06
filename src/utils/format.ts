@@ -265,6 +265,12 @@ export function fullName(user: { firstName: string; lastName: string }): string 
   return [user.firstName, user.lastName].filter(Boolean).join(" ");
 }
 
+/** A credential's Type column (data_tables.ex `credential_type`): its adaptor, or the client's name for OAuth. */
+export function formatCredentialType(credential: { schema: string; oauthClient: { name: string } | null }): string {
+  if (credential.schema === "oauth") return credential.oauthClient ? credential.oauthClient.name.toLowerCase() : "oauth";
+  return credential.schema;
+}
+
 /** Lightning's `format_schema_name`: "dhis2" → "Dhis2", "aws-s3" → "Aws-s3". */
 export function formatSchemaName(schema: string): string {
   if (schema === "raw") return "Raw JSON";

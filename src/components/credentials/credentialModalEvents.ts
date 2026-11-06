@@ -29,12 +29,6 @@ export interface NewCredentialOption {
   disabled?: boolean;
 }
 
-/** /credentials: Credential and OAuth Client (credential_live/index.html.heex). */
-export const userCredentialMenuOptions: NewCredentialOption[] = [
-  { target: "new_credential", label: "Credential" },
-  { target: "new_oauth_client", label: "OAuth Client", badge: "Advanced" },
-];
-
 /** Project settings › Credentials adds Keychain (project_live/settings.html.heex:315-348). */
 export function projectCredentialMenuOptions(canCreate: boolean, canCreateKeychain: boolean): NewCredentialOption[] {
   return [

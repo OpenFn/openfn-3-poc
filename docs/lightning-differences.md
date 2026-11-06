@@ -141,10 +141,47 @@ goes back to Lightning's way.
   - His amber "Copy your token now" warning: the new-token banner keeps
     Lightning's blue info alert and words until a second page needs a
     warning tone.
-  - "New credential" and "New OAuth client" buttons: Credentials keeps
-    Lightning's one "Add new" menu, which covers both. His "Organization
-    credentials live in Systems" note: the API has no organisations or
-    systems yet.
+  - His "Organization credentials live in Systems" note on Credentials:
+    the API has no organisations or systems yet.
+- **Credentials has two tables, each with its own create button.**
+  "New credential" and "New OAuth client", as in openfn-ia-demo, where
+  Lightning has one "Add new" menu. The tables take openfn-ia-demo's
+  columns: the external ID sits under the name, projects are listed as
+  text, and each environment is named, where Lightning has an External ID
+  column, project pills and a count of environments.
+- **You can see a pending transfer or a scheduled deletion on the row.** A
+  badge says "Transfer pending" or "Scheduled for deletion", and a pending
+  transfer says "Confirm it from the email we sent you." In Lightning the
+  only sign is the wording in the row's menu.
+- **A credential scheduled for deletion offers only Cancel deletion and
+  Delete now.** Lightning also offers Transfer and Edit, but the API refuses
+  both until the deletion is cancelled.
+- **The result of an action shows above its table, not in a toast.**
+  Success fades after five seconds, like a toast; a refusal stays until the
+  next result.
+- **openfn-ia-demo's words, where it has the screen.** The empty tables say
+  "No credentials yet" and "No OAuth clients yet". Results say "OAuth client
+  created successfully" and "`<name>` deleted". The transfer, delete and
+  OAuth client dialogs use its titles, labels and buttons, in sentence case,
+  here and in project settings, which shares them; the delete dialog says
+  "steps" where Lightning says "jobs".
+- **Editing never shows a saved secret.** Lightning loads a credential's
+  values, and an OAuth client's secret, into the edit form. Here they start
+  blank and a blank one keeps what's saved, because the API never sends
+  them.
+- **For now, the credential form can only change `main`, and can't take
+  a project away.** Saving says so instead of doing it. This goes when the
+  form moves to the API's environment and project routes.
+- **For now, OAuth credentials can't be added or edited here.** Edit says
+  why. Transfer and delete still work. The API has no way to sign in to the
+  provider yet.
+- **A refused transfer doesn't say whether the email has an account.**
+  Lightning says "User does not exist", or names the projects the person
+  isn't in, which tells anyone who has an account. Here both get "They need
+  an account and a role in every project this credential is shared with".
+- **Sharing offers only the projects you edit or own.** Lightning offers
+  every project you belong to, but the API only lets editors and above
+  share there.
 - **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
   step after setting up MFA, not a section.
 
