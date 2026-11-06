@@ -71,6 +71,14 @@ describe("AdminCollectionsPage", () => {
     expect(host.calls("onCreate")).toEqual([]);
   });
 
+  it("while the projects load, the create modal says so in place of the form and Create is off", () => {
+    render({ projectOptions: [], projectOptionsStatus: { state: "loading" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create collection" }));
+    expect(within(dialog()).getByRole("status", { name: "Loading" })).toBeTruthy();
+    expect(within(dialog()).queryByLabelText(/Name/)).toBeNull();
+    expect(within(dialog()).getByRole("button", { name: "Create collection" }).hasAttribute("disabled")).toBe(true);
+  });
+
   it("closes the create form on Cancel without saving", () => {
     const host = render();
     fireEvent.click(screen.getByRole("button", { name: "Create collection" }));

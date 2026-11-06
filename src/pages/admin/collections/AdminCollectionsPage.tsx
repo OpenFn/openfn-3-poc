@@ -20,7 +20,7 @@ export interface AdminCollectionsPageProps {
   onSort: (sort: SortState<CollectionSortKey>) => void;
   /** Every project a collection can go in, as [label, id], in the order to offer them. */
   projectOptions: [label: string, value: string][];
-  /** Where loading `projectOptions` stands. A failure shows in the create and edit modal; the list stays. Left out, they are ready. */
+  /** Where loading `projectOptions` stands. The create and edit modal waits for them, or shows their failure; the list stays. Left out, they are ready. */
   projectOptionsStatus?: ResourceStatus;
   /** Creates a collection. */
   onCreate: (values: CollectionFormValues) => Promise<void>;
@@ -67,7 +67,7 @@ export default function AdminCollectionsPage({
           key={editing?.id ?? "new"}
           collection={editing}
           projectOptions={projectOptions}
-          projectsStatus={projectOptionsStatus}
+          projectOptionsStatus={projectOptionsStatus}
           onCancel={close}
           onSave={async (values) => {
             if (editing) await onUpdate(editing.id, values);

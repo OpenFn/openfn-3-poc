@@ -157,7 +157,7 @@ describe("AdminCollectionsPageQuery", () => {
     expect(screen.queryByText("one-too-many", { selector: "td" })).toBeNull();
   });
 
-  it("keeps the list when the projects fail to load, and says so in the create modal", async () => {
+  it("keeps the list when the projects fail to load, and says so in the create modal in place of the form", async () => {
     failNext("GET /api/projects", { status: 500, code: "internal", detail: "Something went wrong in Lightning." });
     renderAt();
     await screen.findByRole("table", {}, wait);
@@ -165,6 +165,8 @@ describe("AdminCollectionsPageQuery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create collection" }));
     expect(within(dialog()).getByText("The projects couldn't be loaded")).toBeTruthy();
     expect(within(dialog()).getByText("Something went wrong in Lightning.")).toBeTruthy();
+    expect(within(dialog()).queryByLabelText(/Name/)).toBeNull();
+    expect(within(dialog()).getByRole("button", { name: "Create collection" }).hasAttribute("disabled")).toBe(true);
   });
 
   it("shows No Access to someone who isn't a superuser", async () => {
