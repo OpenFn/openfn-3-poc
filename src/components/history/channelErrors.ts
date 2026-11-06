@@ -31,9 +31,3 @@ export function humanizeError(code: string): string {
   }
   return code;
 }
-
-export function errorCategory(code: string): "transport" | "credential" | null {
-  if (transportErrors[code]) return "transport";
-  if (credentialErrors[code] || code.startsWith("unsupported_credential_schema:")) return "credential";
-  return null;
-}

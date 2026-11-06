@@ -1,7 +1,6 @@
-import type { ChannelEvent } from "@/types/channels";
+import type { ChannelRequestDetail } from "@/types/channels";
 import Disclosure from "@/components/primitives/Disclosure";
 import { cn } from "@/utils/cn";
-import Pill from "@/components/primitives/Pill";
 import { formatUs } from "@/utils/format";
 import Text from "@/components/primitives/Text";
 import Tooltip from "@/components/primitives/Tooltip";
@@ -11,7 +10,6 @@ interface Segment {
   us: number;
   color: string;
   textColor: string;
-  badge?: string;
 }
 
 interface TimingData {
@@ -22,24 +20,20 @@ interface TimingData {
 }
 
 /** channel_request_live/timing.ex `compute_timing_segments`. */
-function computeTiming(event: ChannelEvent | undefined): TimingData | null {
-  if (!event || event.latencyUs == null) return null;
-  const { latencyUs, ttfbUs } = event;
-  if (event.requestSendUs != null && ttfbUs != null && event.responseDurationUs != null) {
-    const queue = event.queueUs ?? 0;
-    const connect = event.connectUs ?? 0;
-    const wait = Math.max(ttfbUs - queue - connect - event.requestSendUs, 0);
-    const reused = event.reusedConnection && !connect;
+function computeTiming(timing: ChannelRequestDetail["timing"]): TimingData | null {
+  if (!timing || timing.latencyUs == null) return null;
+  const { latencyUs, ttfbUs } = timing;
+  if (timing.requestSendUs != null && ttfbUs != null && timing.responseDurationUs != null) {
+    const queue = timing.queueUs ?? 0;
+    const connect = timing.connectUs ?? 0;
+    const wait = Math.max(ttfbUs - queue - connect - timing.requestSendUs, 0);
     const segments: Segment[] = [];
     if (queue > 0) segments.push({ label: "Queue", us: queue, color: "bg-tag-yellow", textColor: "text-tag-yellow" });
-    if (reused)
-      segments.push({ label: "Connect", us: 0, color: "bg-tag-orange", textColor: "text-tag-orange", badge: "(reused)" });
-    else if (connect > 0)
-      segments.push({ label: "Connect", us: connect, color: "bg-tag-orange", textColor: "text-tag-orange" });
+    if (connect > 0) segments.push({ label: "Connect", us: connect, color: "bg-tag-orange", textColor: "text-tag-orange" });
     segments.push(
-      { label: "Send", us: event.requestSendUs, color: "bg-tag-blue", textColor: "text-tag-blue" },
+      { label: "Send", us: timing.requestSendUs, color: "bg-tag-blue", textColor: "text-tag-blue" },
       { label: "Processing", us: wait, color: "bg-sunken", textColor: "text-body" },
-      { label: "Recv", us: event.responseDurationUs, color: "bg-tag-green", textColor: "text-tag-green" }
+      { label: "Recv", us: timing.responseDurationUs, color: "bg-tag-green", textColor: "text-tag-green" }
     );
     return { segments, totalUs: latencyUs, ttfbUs, tier: "full" };
   }
@@ -68,7 +62,7 @@ const stripeB = "color-mix(in oklab, var(--border-color-strong) 55%, transparent
 const hatch = `repeating-linear-gradient(-45deg, ${stripeA} 0px, ${stripeA} 3px, ${stripeB} 3px, ${stripeB} 6px)`;
 
 function segmentLabel(s: Segment) {
-  if (s.badge || s.us === 0) return "";
+  if (s.us === 0) return "";
   const ms = s.us / 1000;
   // timing.ex: whole seconds keep one decimal ("30.0s").
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${formatUs(s.us)}ms`;
@@ -78,8 +72,8 @@ function segmentLabel(s: Segment) {
  * The channel request Timing section (channel_request_live/timing.ex): a
  * waterfall bar of the request's phases with a TTFB marker, and a legend.
  */
-export default function ChannelTiming({ event }: { event: ChannelEvent | undefined }) {
-  const data = computeTiming(event);
+export default function ChannelTiming({ timing }: { timing: ChannelRequestDetail["timing"] }) {
+  const data = computeTiming(timing);
   if (!data) return null;
   const inner = data.segments.reduce((a, s) => a + s.us, 0) || 1;
   const segs = data.segments.map((s) => ({ ...s, pct: Math.max(Math.round((s.us / inner) * 1000) / 10, 0.5) }));
@@ -101,15 +95,9 @@ export default function ChannelTiming({ event }: { event: ChannelEvent | undefin
               {segs.map((s) => (
                 <Tooltip key={s.label} content={`${s.label}: ${formatUs(s.us)} ms`}>
                   <div
-                    className={cn("relative flex items-center justify-center first:rounded-l last:rounded-r", s.color)}
+                    className={cn("flex items-center justify-center first:rounded-l last:rounded-r", s.color)}
                     style={{ width: `${s.pct}%`, minWidth: 20 }}
                   >
-                    {s.badge && (
-                      // eslint-disable-next-line local/primitive-classname -- debt: state, box (-translate-x-1/2 px-1 py-0)
-                      <Pill color="orange" variant="square" className="absolute -top-5 left-1/2 -translate-x-1/2 px-1 py-0">
-                        {s.badge}
-                      </Pill>
-                    )}
                     <span className={cn("truncate px-0.5 font-medium", s.textColor)}>{segmentLabel(s)}</span>
                   </div>
                 </Tooltip>

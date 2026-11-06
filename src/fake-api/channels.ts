@@ -1,8 +1,10 @@
-/** Channels and the webhook auth methods they check, on the pretend server (api/channels.md, api/webhooks.md). */
+/** Channels, the requests made through them, and the webhook auth methods they check, on the pretend server (api/channels.md, api/webhooks.md). */
+import { channelRequests as requestFixtures } from "@/mock-data/channel-requests";
 import { channels as fixtures } from "@/mock-data/channels";
-import { webhookAuthMethodsIn } from "@/mock-data/project-settings";
+import type { ChannelRequest } from "@/mock-data/models/channels";
+import { webhookAuthMethods, webhookAuthMethodsIn } from "@/mock-data/project-settings";
 import { SEEDED_AT, forbidden, invalid, isUrl, json, noContent, notFound, now, ORIGIN, paged, problem, type Body, type Handler, type Problem } from "./answers";
-import { isCredentialIn } from "./credentials";
+import { credentialName, isCredentialIn } from "./credentials";
 import { permissionsIn } from "./permissions";
 import { canEnter, findProject } from "./projects";
 
@@ -77,7 +79,91 @@ function check(projectId: string, id: string, body: Body): NonNullable<Problem["
   return errors;
 }
 
+// Nothing writes requests, so the fake's copy is the fixtures plus two of its own on SHR proxy: a wiped
+// request, and one whose client auth method and destination credential have since been deleted.
+const shr = requestFixtures[0]!;
+const requests: ChannelRequest[] = [
+  ...requestFixtures,
+  { ...shr, id: "e5b1c7d3-0a9f-4b2e-8d6c-3f1a5e7b9c02", requestId: "1a3c5e7f-9b2d-4f6a-8c0e-2d4f6b8a0c13", isWiped: true },
+  { ...shr, id: "b8d4f0a2-6c1e-4a3b-9f7d-5e2c8a0b4d61", requestId: "7e9a1c3b-5d2f-4b8e-a6c0-9f1d3b5e7a24", clientWebhookAuthMethodId: "wam-deleted", destinationCredentialId: "cred-deleted" },
+];
+
+const SECRET_HEADERS = ["authorization", "x-api-key", "cookie", "set-cookie"];
+const redact = (headers: [string, string][] | null) =>
+  headers?.map(([name, value]) => [name, SECRET_HEADERS.includes(name.toLowerCase()) ? "[REDACTED]" : value]) ?? null;
+
+// The fake's copy of Lightning's error_category (channel_request_live/helpers.ex).
+const TRANSPORT_ERRORS = ["nxdomain", "econnrefused", "ehostunreach", "enetunreach", "closed", "econnreset", "econnaborted", "epipe", "connect_timeout", "response_timeout", "timeout"];
+const CREDENTIAL_ERRORS = ["credential_missing_auth_fields", "credential_environment_not_found", "oauth_refresh_failed", "oauth_reauthorization_required"];
+const errorCategory = (code: string) => {
+  if (TRANSPORT_ERRORS.includes(code)) return "transport";
+  if (CREDENTIAL_ERRORS.includes(code) || code.startsWith("unsupported_credential_schema:")) return "credential";
+  return null;
+};
+
+// The detail's fields under Lightning's column names.
+function channelRequestJson(r: ChannelRequest) {
+  const event = r.events.find((e) => e.type === "destination_response") ?? r.events.find((e) => e.type === "error");
+  const kept = <T,>(value: T) => (r.isWiped ? null : value);
+  return {
+    type: "channel_requests",
+    id: r.id,
+    attributes: {
+      channel_id: r.channelId,
+      request_id: r.requestId,
+      state: r.state,
+      path: kept(event?.requestPath ?? null),
+      error_message: event?.errorMessage ?? null,
+      started_at: r.startedAt,
+      completed_at: r.completedAt,
+      client_identity: kept(r.clientIdentity),
+      client_auth: {
+        type: r.clientAuthType,
+        method_id: r.clientWebhookAuthMethodId,
+        method_name: webhookAuthMethods.find((m) => m.id === r.clientWebhookAuthMethodId)?.name ?? null,
+      },
+      destination_credential: r.destinationCredentialId && { id: r.destinationCredentialId, name: credentialName(r.destinationCredentialId) },
+      channel_snapshot: { name: r.snapshot.name, destination_url: r.snapshot.destinationUrl, lock_version: r.snapshot.lockVersion },
+      request: event ? {
+        method: event.requestMethod,
+        path: kept(event.requestPath),
+        query_string: kept(event.requestQueryString),
+        headers: kept(redact(event.requestHeaders)),
+        body: kept(event.requestBodyPreview),
+        body_size: event.requestBodySize,
+      } : null,
+      response: event?.responseStatus == null ? null : {
+        status: event.responseStatus,
+        headers: kept(redact(event.responseHeaders)),
+        body: kept(event.responseBodyPreview),
+        body_size: event.responseBodySize,
+      },
+      error_category: event?.errorMessage ? errorCategory(event.errorMessage) : null,
+      timing: event ? {
+        latency_us: event.latencyUs,
+        queue_us: event.queueUs,
+        connect_us: event.connectUs,
+        request_send_us: event.requestSendUs,
+        ttfb_us: event.ttfbUs,
+        response_duration_us: event.responseDurationUs,
+      } : null,
+      wiped: r.isWiped,
+    },
+    relationships: {},
+    links: { self: `${ORIGIN}/api/channel_requests/${r.id}` },
+  };
+}
+
 export const channelRoutes: Record<string, Handler> = {
+  // Private. An id it doesn't hold, malformed included, is 403 like a project the caller can't enter:
+  // nobody hears 404 on a top-level record (api/errors.md).
+  "GET /api/channel_requests/:id": ({ id }) => {
+    const found = requests.find((r) => r.id === id);
+    const project = findProject(found?.projectId);
+    if (!found || !project || !canEnter(project)) return forbidden();
+    const data = channelRequestJson(found);
+    return json(200, { data, included: [], links: data.links });
+  },
   // Paged, by name; meta has the whole project's totals on every page.
   "GET /api/projects/:project_id/channels": ({ project_id }, _body, query) => {
     const project = findProject(project_id);

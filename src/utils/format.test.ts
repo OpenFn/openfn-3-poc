@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatChipDate, formatChipDateRange, formatQueryDate, formatRunRange, hourIn, prettyJson } from "./format";
+import { formatChipDate, formatChipDateRange, formatClientAuth, formatDestinationAuth, formatQueryDate, formatRunRange, hourIn, prettyJson } from "./format";
 
 describe("prettyJson", () => {
   it("indents a JSON object or array, and leaves anything else as it was", () => {
@@ -43,5 +43,22 @@ describe("hourIn", () => {
     expect(hourIn("2026-10-14T23:30:00Z", "UTC")).toBe(23);
     expect(hourIn("2026-10-14T23:30:00Z", "Africa/Nairobi")).toBe(2);
     expect(hourIn("2026-10-14T00:15:00Z", "UTC")).toBe(0);
+  });
+});
+
+describe("formatClientAuth", () => {
+  it("names the method and its type, says when the method is gone, and says None for an open channel", () => {
+    expect(formatClientAuth({ type: "api", methodName: "Partner API key" })).toBe("Partner API key (API key)");
+    expect(formatClientAuth({ type: "basic", methodName: "CommCare forwarder" })).toBe("CommCare forwarder (Basic auth)");
+    expect(formatClientAuth({ type: "api", methodName: null })).toBe("(deleted) (API key)");
+    expect(formatClientAuth({ type: null, methodName: null })).toBe("None");
+  });
+});
+
+describe("formatDestinationAuth", () => {
+  it("names the credential, says when it's gone, and says None when there was none", () => {
+    expect(formatDestinationAuth({ name: "OpenHIE HAPI FHIR" })).toBe("OpenHIE HAPI FHIR");
+    expect(formatDestinationAuth({ name: null })).toBe("(deleted)");
+    expect(formatDestinationAuth(null)).toBe("None");
   });
 });

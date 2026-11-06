@@ -2,7 +2,7 @@
 import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AdminProjectFormValues, AdminProjectRow, AdminProjectSortKey } from "@/types/admin";
 import type { PageLinks, SortState } from "@/types/lists";
-import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
+import type { ProjectAction, ProjectInput, ProjectNode, ProjectRole } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { fullName } from "@/utils/format";
@@ -31,6 +31,8 @@ export interface ApiProject {
     permissions?: Partial<Record<ProjectAction, boolean>>;
     /** Planned, on `GET /api/projects/:id`: whether the plan allows more, and why not. */
     limits?: { sandboxes?: { allowed: true; message: null } | { allowed: false; message: string } };
+    /** On `GET /api/projects/:id`; the list leaves them out. */
+    members?: { email: string | null; role: ProjectRole }[];
   };
 }
 
@@ -248,4 +250,13 @@ export function useProjectSaves() {
 export function useProjectPermissions(id: string): (action: ProjectAction) => boolean {
   const { data } = useQuery({ ...projectQuery(id), select: (p) => p.attributes.permissions ?? {} });
   return (action) => data?.[action] ?? false;
+}
+
+/** The emails of the project's owner and admins, from the same `GET /api/projects/:id` and cache as useProject. Empty until it has loaded. */
+export function useProjectAdminEmails(id: string): string[] {
+  const { data } = useQuery({
+    ...projectQuery(id),
+    select: (p) => (p.attributes.members ?? []).flatMap((m) => ((m.role === "owner" || m.role === "admin") && m.email ? [m.email] : [])),
+  });
+  return data ?? [];
 }
