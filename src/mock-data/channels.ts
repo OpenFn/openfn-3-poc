@@ -1,7 +1,7 @@
 /**
  * Channels (Lightning's experimental HTTP proxy): a channel forwards requests
- * made to its proxy URL on to a destination service. Static fixtures for the
- * channels index (`Channels.list_channels_for_project_with_stats/1`).
+ * made to its proxy URL on to a destination service. The fake API's channels
+ * start from these, and the stories use them.
  */
 
 import { credentials } from "./credentials";

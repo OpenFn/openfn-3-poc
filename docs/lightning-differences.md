@@ -539,9 +539,10 @@ goes back to Lightning's way.
   for a channel this project doesn't have, go to the list with no message.**
   Lightning flashes "You are not authorized to create channels." or
   "Channel not found"; nothing here carries a message across a redirect yet.
-- **A save refused for a stale version, or for a credential or auth method
-  outside the project, shows the server's message in the form.** Lightning's
-  form shows nothing (annotation 6.1), so the save seems to do nothing.
+- **A save refused for a stale version shows the server's message in the
+  form; one refused for a credential or auth method outside the project shows
+  it under that field.** Lightning's form shows nothing (annotation 6.1), so
+  the save seems to do nothing.
 - **openfn-ia-demo's words and form order, where it has the screen.** "New
   channel" with a plus, the line under the title, "No channels yet.", "New
   channel" / "Edit <name>", "Create channel" on create, "Created <name>.",
