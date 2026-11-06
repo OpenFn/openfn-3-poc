@@ -42,8 +42,8 @@ export async function request<T>(method: Method, path: string, body?: unknown): 
     if (isApiError(error, "forbidden")) csrfToken = null;
     throw error;
   } finally {
-    // Signing in or out starts a new session, with a new token.
-    if (path === "/api/session") csrfToken = null;
+    // A new session (sign in, sign out, or a create that signs in) has a new token.
+    if (path === "/api/session" || (method === "POST" && path === "/api/users")) csrfToken = null;
   }
 }
 

@@ -119,6 +119,7 @@ export const authMessages = {
   confirmInvalid: "User confirmation link is invalid or it has expired.",
   confirmSent:
     "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly.",
+  superuserCreated: "Superuser account created.",
   invalidTwoFactorCode: "Invalid two-factor authentication code",
   invalidPassword: "Invalid password! Try again.",
   invalidOtp: "Invalid OTP code! Try again.",

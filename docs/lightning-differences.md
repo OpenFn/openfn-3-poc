@@ -245,10 +245,35 @@ goes back to Lightning's way.
   can't check a link without using it (docs/api-gaps.md), so the replica
   shows the form and finds out when it's submitted. It then goes to the
   request page with the same words, where a new link can be asked for.
-- **Opening a reset or confirm link on a fresh install doesn't go to first setup.**
-  Lightning sends every page to `/first_setup` until the first user exists.
-  The replica has no redirect to first setup yet; when it gets one, it
-  leaves the reset and confirm pages out.
+- **On a fresh install, only signed-in pages and log in go to first setup.**
+  Lightning sends every browser page to `/first_setup` until the first
+  superuser exists. The replica sends them from SessionGate and the login
+  page only; reset, register, confirm, confirm-required and two-factor
+  opened directly stay put, with no new gate in the shell. Two-factor and
+  confirm-required need a session a fresh install doesn't have; reset and
+  confirm only send or use emailed links, and a fresh install has no
+  account to email; register has no `.query` yet, so
+  it can't create anyone, and when it gets one it shares first setup's
+  create (docs/api-gaps.md).
+- **First setup checks the email's format and the password's length after
+  Save, in the server's words.** Lightning checks while typing and shows
+  "Password minimum length is 12 characters." twice, next to an 8-character
+  version of the same rule. The replica checks only for blanks and that the
+  confirmation matches; the server's 422 brings the rest ("must be a valid
+  email address", "should be at least 12 character(s)").
+- **A second superuser can't be made from a stale first-setup tab, and the
+  confirmation is checked on every save.** Lightning's save doesn't check
+  again that setup is still needed, and checks the confirmation only while
+  typing, so a quick submit can save a password that doesn't match. Once
+  `needs_setup` is false the replica's server refuses the create, and the
+  page checks the match on every Save.
+- **A browser already signed in as someone else is signed in as the new
+  superuser.** Lightning keeps the old session and drops the handoff token,
+  so the new superuser isn't signed in. The API's create signs the person
+  in.
+- **A closed instance sends `/first_setup` to the projects list** rather
+  than answering a plain-text 404. `needs_setup` can't say why setup is
+  closed (docs/api-gaps.md).
 - **A dead confirm link shows its error after pressing "Confirm my
   account".** Lightning checks the link when it's opened and sends the person to
   `/projects` with "User confirmation link is invalid or it has expired."
@@ -272,9 +297,10 @@ goes back to Lightning's way.
   screen.** Lightning keeps the earlier "sent" message beside the new
   warning. The replica shows only the latest answer.
 
-- **Save stays pressable in the collaborator and YAML import modals.**
-  Lightning disables Save until every row has an email and a role, and
-  disables Create until the YAML looks right. The replica keeps them
+- **Save stays pressable in the collaborator and YAML import modals, and
+  on first setup.** Lightning disables Save until every row has an email
+  and a role, disables Create until the YAML looks right, and disables
+  first setup's Save until the form is valid. The replica keeps them
   pressable and says what's missing when pressed ("can't be blank", "Enter
   YAML content to create workflow"), and shows a row's email error only
   then, not while typing.

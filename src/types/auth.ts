@@ -16,6 +16,15 @@ export interface Flash {
   message: string;
 }
 
+/** What the first-setup form holds, in the API's names. Only the first four are sent: the confirmation is the page's own check. */
+export interface FirstSetupValues {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
 /** What the reset-password form holds. Only `password` is sent: the confirmation is the page's own check. */
 export interface ResetPasswordValues {
   password: string;

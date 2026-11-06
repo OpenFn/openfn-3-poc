@@ -15,11 +15,13 @@ import AuthLoginPage from "./AuthLoginPage";
 export default function AuthLoginPageQuery() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { status, allowSignup, ssoProvider } = useSignInOptions();
+  const { status, allowSignup, ssoProvider, needsSetup } = useSignInOptions();
   const { state } = useSession();
   const { signIn } = useSessionSaves();
   const flash = useFlash();
 
+  // A fresh install: log in goes to first setup (docs/lightning-differences.md).
+  if (needsSetup) return <Navigate to="/first_setup" replace />;
   // Already signed in: Lightning sends you on from the login page.
   if (state === "signed_in") return <Navigate to={returnTo(params)} replace />;
   return (
