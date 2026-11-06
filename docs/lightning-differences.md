@@ -202,9 +202,9 @@ goes back to Lightning's way.
   description" without one) and "Made from <parent>". Lightning lists the
   root, then the sandboxes, with env badges and an "active" badge; the API
   sends no env, and openfn-ia-demo shows none.
-- **A card's name opens its project, not the whole card.** The card also
-  holds the ••• menu, and a button can't hold another; Lightning makes the
-  card's body a `role="button"`. The card you're in opens nothing.
+- **The whole card is a link to its project**, where Lightning makes the
+  card's body a `role="button"`, so it also opens in a new tab. The •••
+  menu sits above the link. The card you're in opens nothing.
 - **The three action icons are one ••• menu**, "Actions for <name>", with
   Edit, Merge and Delete last in red, each greyed with Lightning's reason
   (PRINCIPLES, Row actions). Lightning shows three icon buttons.
