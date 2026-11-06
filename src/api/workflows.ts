@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import type { WorkflowListItem, WorkflowSortKey, WorkOrderDisplayState } from "@/types/workflows";
-import { listAll, statusOf } from "./client";
+import { listAll, sortParam, statusOf } from "./client";
 
 /** A workflow as `GET /api/projects/:id/workflows` lists it. `stats` comes with `include=stats`, which is planned. */
 export interface ApiWorkflow {
@@ -21,7 +21,7 @@ export function workflowListItem(w: ApiWorkflow): WorkflowListItem {
 
 /** The `sort` fields the list takes, so a query can check what the URL asks for. */
 const SORT_KEYS: Record<WorkflowSortKey, true> = { name: true, updated_at: true, last_work_order_updated_at: true };
-export const isWorkflowSortKey = (key: string | undefined): key is WorkflowSortKey => key !== undefined && key in SORT_KEYS;
+export const isWorkflowSortKey = (key: string | undefined): key is WorkflowSortKey => key !== undefined && Object.hasOwn(SORT_KEYS, key);
 
 export const workflowKeys = { inProject: (projectId: string) => ["projects", projectId, "workflows"] as const };
 
@@ -34,7 +34,7 @@ export function useWorkflows(
   projectId: string,
   sort: SortState<WorkflowSortKey>
 ): { status: ResourceStatus; workflows: WorkflowListItem[] } {
-  const param = `${sort.direction === "desc" ? "-" : ""}${sort.key}`;
+  const param = sortParam(sort);
   const query = useQuery({
     queryKey: [...workflowKeys.inProject(projectId), "stats", param],
     queryFn: () => listAll<ApiWorkflow>(`/api/projects/${projectId}/workflows?include=stats&sort=${param}`, "workflows"),

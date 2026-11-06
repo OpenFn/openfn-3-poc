@@ -49,6 +49,18 @@ export function paged<T>(path: string, rows: T[], query: URLSearchParams, key = 
   };
 }
 
+/**
+ * A list's `sort` parameter (api/conventions.md, `-` first for descending,
+ * `fallback` when absent) as its field and direction. `key` is the field when
+ * `sorts` has it, so a field the route doesn't take (or `constructor`) is null.
+ */
+export function parseSort<K extends string>(query: URLSearchParams, sorts: Record<K, unknown>, fallback: K) {
+  const sort = query.get("sort") ?? fallback;
+  const field = sort.replace(/^-/, "");
+  const direction: "asc" | "desc" = sort.startsWith("-") ? "desc" : "asc";
+  return { field, key: Object.hasOwn(sorts, field) ? (field as K) : null, direction };
+}
+
 /** A 400 for a `sort` field the route doesn't take (api/conventions.md). */
 export const badSort = (field: string) =>
   problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: `${field} is not a sort field`, parameter: "sort" }] });

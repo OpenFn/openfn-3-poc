@@ -48,3 +48,8 @@ export const Blank: Story = { play: submit };
 
 /** Save is still out: the button shows pending. */
 export const Saving: Story = { args: { ...Edit.args, onSave: () => new Promise(() => {}) }, play: submit };
+
+/** The project picker couldn't load: the failure shows above the form. */
+export const ProjectsFailed: Story = {
+  args: { projectOptions: [], projectsStatus: { state: "error", message: "Something went wrong in Lightning." } },
+};

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { canRetry, combinedStatus, isApiError, request, toApiError } from "./client";
+import { canRetry, isApiError, request, toApiError } from "./client";
 import { FAKE_MFA_CODE, FAKE_PASSWORD, failNext, resetFakeApi } from "./testing";
 import { stepUp } from "./session";
 import type { ApiTokenEntry } from "./tokens";
@@ -23,21 +23,6 @@ describe("toApiError", () => {
   it("names the code from the status when the body isn't a problem document", () => {
     expect(toApiError(403, undefined)).toMatchObject({ code: "forbidden", message: "Lightning answered 403." });
     expect(toApiError(502, "Bad Gateway")).toMatchObject({ code: "internal" });
-  });
-});
-
-describe("combinedStatus", () => {
-  const ready = { state: "ready" } as const;
-  const loading = { state: "loading" } as const;
-  const failed = { state: "error", message: "Something went wrong in Lightning." } as const;
-
-  it.each([
-    ["both ready", [ready, ready], ready],
-    ["one still loading", [ready, loading], loading],
-    ["a failure, even while the other loads", [loading, failed], failed],
-    ["no access from either", [ready, { state: "forbidden" } as const], { state: "forbidden" }],
-  ])("%s", (_, statuses, expected) => {
-    expect(combinedStatus(...statuses)).toEqual(expected);
   });
 });
 

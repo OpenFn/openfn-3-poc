@@ -189,9 +189,15 @@ export function adminCollectionRows(): AdminCollectionRow[] {
   return collections.map((c) => ({ ...c, projectName: projects.find((p) => p.id === c.projectId)?.name ?? "" }));
 }
 
-/** Project options for the collection form's select. */
+// A sandbox's name with its parents', "parent/sandbox", as the API's display_name has it.
+const displayName = (p: Project): string => {
+  const parent = projects.find((q) => q.id === p.parentId);
+  return parent ? `${displayName(parent)}/${p.name}` : p.name;
+};
+
+/** Project options for the collection form's select, sandboxes as "parent/sandbox". */
 export const collectionProjectOptions: [label: string, value: string][] = projects
-  .map((p): [string, string] => [p.name, p.id])
+  .map((p): [string, string] => [displayName(p), p.id])
   .sort((a, b) => a[0].localeCompare(b[0]));
 
 // ---------------------------------------------------------------------------

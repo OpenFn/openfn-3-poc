@@ -1,6 +1,7 @@
 import type { AdminCollectionRow, CollectionSortKey } from "@/types/admin";
 import type { SortState } from "@/types/lists";
 import { formatBytes } from "@/utils/format";
+import { serverSortThProps } from "@/utils/useTableSort";
 import Button from "@/components/primitives/Button";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
 
@@ -19,13 +20,7 @@ interface Props {
  * lets a superuser delete any collection. Ids are Lightning's.
  */
 export default function AdminCollectionsTable({ collections, sort, onSort, onEdit }: Props) {
-  const thProps = (key: CollectionSortKey) => {
-    const current = sort.key === key;
-    return {
-      sortDirection: current ? sort.direction : null,
-      onSort: () => onSort({ key, direction: current && sort.direction === "asc" ? "desc" : "asc" }),
-    };
-  };
+  const thProps = serverSortThProps(sort, onSort);
 
   return (
     <Table

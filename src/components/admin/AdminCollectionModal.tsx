@@ -1,7 +1,9 @@
 import type { CollectionFormValues } from "@/types/admin";
+import type { ResourceStatus } from "@/types/resource";
 import { urlSafeName } from "@/utils/format";
 import { useForm } from "@/utils/useForm";
 import { blank } from "@/utils/validate";
+import Alert from "@/components/primitives/Alert";
 import FormModal from "@/components/primitives/FormModal";
 import { Select } from "@/components/primitives/Inputs";
 import NameField from "@/components/primitives/NameField";
@@ -11,6 +13,8 @@ interface Props {
   collection?: { id: string; name: string; projectId: string } | undefined;
   /** The projects it can go in, as [label, id], in the order to offer them. */
   projectOptions: [label: string, value: string][];
+  /** Where loading `projectOptions` stands; an error shows above the form. Left out, they are ready. */
+  projectsStatus?: ResourceStatus | undefined;
   onCancel: () => void;
   /** Saves with the URL-safe name. Rejects with field errors keyed `name`, or a message; either keeps the modal open. */
   onSave: (values: CollectionFormValues) => Promise<void>;
@@ -23,7 +27,7 @@ interface Props {
  * another project. Server field errors show on their fields; the page closes
  * the modal and announces success.
  */
-export default function AdminCollectionModal({ collection, projectOptions, onCancel, onSave }: Props) {
+export default function AdminCollectionModal({ collection, projectOptions, projectsStatus, onCancel, onSave }: Props) {
   const key = collection?.id ?? "new";
   const form = useForm<CollectionFormValues>({
     initial: { name: collection?.name ?? "", project_id: collection?.projectId ?? "" },
@@ -41,6 +45,13 @@ export default function AdminCollectionModal({ collection, projectOptions, onCan
       submitLabel={collection ? "Save changes" : "Create collection"}
       submitId={`save-collection-${key}`}
       cancelId={`cancel-collection-creation-${key}`}
+      before={
+        projectsStatus?.state === "error" && (
+          <Alert tone="danger" header="The projects couldn't be loaded" id="collection-projects-error">
+            {projectsStatus.message}
+          </Alert>
+        )
+      }
     >
       <NameField
         id="collection_raw_name"

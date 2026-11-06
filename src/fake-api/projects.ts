@@ -9,7 +9,7 @@ import type { Project, ProjectAction } from "@/types/projects";
 import type { WorkflowSortKey } from "@/types/workflows";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, forbidden, parseSort, invalid, isUuid, json, now, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
 import { currentUser } from "./session";
 
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
@@ -51,16 +51,16 @@ const canOpen = (p: Project) => !!roleOf(p);
 // A member without MFA is refused every route on a project that requires it; the list still shows it.
 const canEnter = (p: Project) => canOpen(p) && (!p.requiresMfa || currentUser().mfaEnabled);
 const rootOf = (p: Project): Project => {
-  const parent = projects.find((q) => q.id === p.parentId);
+  const parent = findProject(p.parentId ?? undefined);
   return parent ? rootOf(parent) : p;
 };
 const displayName = (p: Project): string => {
-  const parent = projects.find((q) => q.id === p.parentId);
+  const parent = findProject(p.parentId ?? undefined);
   return parent ? `${displayName(parent)}/${p.name}` : p.name;
 };
 // The nearest project above that you can open, or null (api/projects.md, depth=all).
 const openParentId = (p: Project): string | null => {
-  const parent = projects.find((q) => q.id === p.parentId);
+  const parent = findProject(p.parentId ?? undefined);
   return !parent ? null : canOpen(parent) ? parent.id : openParentId(parent);
 };
 const projectStats = (p: Project) => {
@@ -116,7 +116,6 @@ const workflowSorts: Record<WorkflowSortKey | "work_orders_count" | "failed_work
   work_orders_count: (s) => s.workordersCount,
   failed_work_orders_count: (s) => s.failedWorkordersCount,
 };
-const isWorkflowSort = (field: string): field is keyof typeof workflowSorts => field in workflowSorts;
 
 // A workflow as the list answers it. jobs, triggers and edges are left out: no page reads them from here yet.
 const workflowEntry = (s: WorkflowStatsRow, stats: boolean) => ({
@@ -159,13 +158,11 @@ export const projectRoutes: Record<string, Handler> = {
     const refused = badInclude(query, ["stats"]);
     if (refused) return refused;
     const stats = query.get("include") === "stats";
-    const sort = query.get("sort") ?? "name";
-    const field = sort.replace(/^-/, "");
-    if (!isWorkflowSort(field) || (!stats && field !== "name" && field !== "updated_at")) return badSort(field);
-    const desc = sort.startsWith("-");
+    const { field, key, direction } = parseSort(query, workflowSorts, "name");
+    if (!key || (!stats && key !== "name" && key !== "updated_at")) return badSort(field);
     // Nulls last either way: compareBy reverses them along with everything else when descending.
     const rows = workflowStatsFor(project.id)
-      .sort(compareBy(workflowSorts[field], desc ? "desc" : "asc", desc ? "first" : "last"))
+      .sort(compareBy(workflowSorts[key], direction, direction === "desc" ? "first" : "last"))
       .map((s) => workflowEntry(s, stats));
     return json(200, paged(`/api/projects/${id}/workflows`, rows, query, "workflows"));
   },

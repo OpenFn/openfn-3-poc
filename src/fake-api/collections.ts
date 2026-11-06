@@ -2,7 +2,7 @@
 import { collections as fixtures } from "@/mock-data/project-settings";
 import type { CollectionSortKey } from "@/types/admin";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
-import { badSort, forbidden, invalid, json, paged, problem, type Handler, type Problem } from "./answers";
+import { badSort, forbidden, parseSort, invalid, json, paged, problem, type Handler, type Problem } from "./answers";
 import { findProject } from "./projects";
 import { currentUser } from "./session";
 
@@ -32,12 +32,10 @@ export const collectionRoutes: Record<string, Handler> = {
   // Private. Superusers only: Lightning's list_collections checks nothing, so the route has to.
   "GET /api/collections": (_params, _body, query) => {
     if (currentUser().role !== "superuser") return forbidden();
-    const sort = query.get("sort") ?? "name";
-    const field = sort.replace(/^-/, "");
-    const by = Object.hasOwn(sorts, field) ? sorts[field as CollectionSortKey] : undefined;
-    if (!by) return badSort(field);
+    const { field, key, direction } = parseSort(query, sorts, "name");
+    if (!key) return badSort(field);
     const rows = [...collections]
-      .sort(compareBy(by, sort.startsWith("-") ? "desc" : "asc"))
+      .sort(compareBy(sorts[key], direction))
       .map((c) => ({ ...c, project_name: findProject(c.project_id)!.name }));
     return json(200, paged("/api/collections", rows, query));
   },

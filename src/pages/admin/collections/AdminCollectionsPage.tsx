@@ -10,7 +10,7 @@ import type { ResourceStatus } from "@/types/resource";
 
 /** What its .query file passes in: data and the actions that change it. */
 export interface AdminCollectionsPageProps {
-  /** Where loading the collections and the projects stands. Left out, they are ready. */
+  /** Where loading the collections stands. Left out, they are ready. */
   status?: ResourceStatus;
   /** Every collection on the instance, in the order the server sorted them. */
   collections: AdminCollectionRow[];
@@ -20,6 +20,8 @@ export interface AdminCollectionsPageProps {
   onSort: (sort: SortState<CollectionSortKey>) => void;
   /** Every project a collection can go in, as [label, id], in the order to offer them. */
   projectOptions: [label: string, value: string][];
+  /** Where loading `projectOptions` stands. A failure shows in the create and edit modal; the list stays. Left out, they are ready. */
+  projectOptionsStatus?: ResourceStatus;
   /** Creates a collection. */
   onCreate: (values: CollectionFormValues) => Promise<void>;
   /** Renames a collection, or moves it to the project in `values`. */
@@ -36,6 +38,7 @@ export default function AdminCollectionsPage({
   sort,
   onSort,
   projectOptions,
+  projectOptionsStatus,
   onCreate,
   onUpdate,
 }: AdminCollectionsPageProps) {
@@ -64,6 +67,7 @@ export default function AdminCollectionsPage({
           key={editing?.id ?? "new"}
           collection={editing}
           projectOptions={projectOptions}
+          projectsStatus={projectOptionsStatus}
           onCancel={close}
           onSave={async (values) => {
             if (editing) await onUpdate(editing.id, values);
