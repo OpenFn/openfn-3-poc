@@ -25,6 +25,7 @@ its stories; read the component before using it.
 | A name that becomes a URL-safe slug | `NameField` |
 | A dialog / one form in a dialog / confirming one action | `Modal` / `FormModal` / `ConfirmModal` |
 | A list of actions or choices | `Menu` with `MenuItem`, `MenuSection`, `MenuDivider` |
+| A table row's ••• menu | `RowMenu` |
 | A floating panel (filters, details) | `Popover` |
 | A searchable list you pick from with the keyboard | `SearchList` |
 | A command palette that jumps to a page (Cmd/Ctrl+P) | `Picker` |
@@ -198,7 +199,7 @@ Lightning's wording wins wherever Lightning has the screen.
   `breadcrumbs` (`ProjectBreadcrumbs`). Don't repeat the title in the body;
   a settings tab opens with `SectionHeader size="lg"`.
 - Row actions go in `<Td actions>` as `Button size="xs" variant="secondary"`
-  with Lightning's verb. More than two go in one ••• menu (PRINCIPLES, One
+  with Lightning's verb. More than two go in one `RowMenu` (PRINCIPLES, One
   way to do each thing); older pages still use a `ButtonMenu` labelled
   "Actions" until they're worked on. A
   page with several tables puts each in a `Section`.
@@ -209,7 +210,8 @@ Lightning's wording wins wherever Lightning has the screen.
   click. A value they need to read to check (a URL): `<Td wrap>`, shown in
   full. Never hide what Lightning shows unless it is visible somewhere else.
 - A titled block with a body is a `Section` (`size`, `variant="eyebrow"`
-  for a group of facts inside a card); it owns the gaps. A bare
+  for a group of facts inside a card); it owns the gaps. A result shown
+  where it happened goes in its `notice`. A bare
   `SectionHeader` only when there is no body or the parent already owns
   the gap.
 - An empty list is `EmptyState` with Lightning's message. If the list has a

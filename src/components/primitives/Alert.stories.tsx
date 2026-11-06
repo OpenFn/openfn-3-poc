@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import Alert from "./Alert";
+import Button from "./Button";
+import { Stack } from "./Stack";
 
 const meta: Meta<typeof Alert> = {
   title: "Primitives/Alert",
@@ -27,5 +30,25 @@ export const LongTitle: Story = {
   args: {
     tone: "danger",
     header: "3 channels in Kenya MoH community health referrals to DHIS2 aggregate sync (sandbox) will accept unauthenticated requests",
+  },
+};
+
+/** Each press shows the result again under a new key. */
+export const ShownByAnAction: Story = {
+  render: function ShownByAnAction() {
+    const [presses, setPresses] = useState(0);
+    return (
+      <Stack>
+        <Button onClick={() => setPresses((n) => n + 1)}>Delete credential</Button>
+        {presses > 0 && (
+          <Alert key={presses} tone="success">
+            Credential scheduled for deletion
+          </Alert>
+        )}
+      </Stack>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector("button")?.click();
   },
 };

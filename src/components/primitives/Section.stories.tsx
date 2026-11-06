@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import Alert from "./Alert";
 import Section from "./Section";
 import Button from "./Button";
 import Text from "./Text";
@@ -30,3 +31,6 @@ export const Small: Story = {
   args: { size: "sm", title: "Concurrency", description: "Control how many of this workflow's runs are executed at the same time" },
 };
 export const Eyebrow: Story = { args: { variant: "eyebrow", title: "Client" } };
+export const WithNotice: Story = {
+  args: { notice: <Alert tone="success">Credential scheduled for deletion</Alert> },
+};

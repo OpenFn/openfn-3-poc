@@ -201,9 +201,9 @@ goes back to Lightning's way.
 - **For now, the credential form can only change `main`, and can't take a
   project away.** Saving says so instead of doing it. This goes when the form
   moves to the API's environment and project routes.
-- **For now, OAuth credentials can't be added or edited here.** Edit says
-  why. Transfer and delete still work. The API has no way to sign in to the
-  provider yet.
+- **For now, OAuth credentials can't be added or edited here.** Edit is
+  disabled and says why. Transfer and delete still work. The API has no way
+  to sign in to the provider yet.
 - **A refused transfer doesn't say whether the email has an account.**
   Lightning says "User does not exist", or names the projects the person
   isn't in, which tells anyone whether they have an account. Here both get
@@ -276,6 +276,10 @@ goes back to Lightning's way.
   reason from the keyboard. Here they ignore presses but stay focusable
   (`aria-disabled`). A disabled button with no reason is disabled outright in
   both.
+- **Disabled menu items stay reachable with the arrow keys**, for the same
+  reason, and read out why. Lightning's blocked Delete on a superuser is a
+  plain span the keyboard never reaches. Here the item is `aria-disabled` and
+  ignores clicks, Enter and Space.
 - **An error toast stays until you close it.** Lightning hides every toast
   after 5 seconds, so a failure is easy to miss. Success toasts still fade
   after 5 seconds.

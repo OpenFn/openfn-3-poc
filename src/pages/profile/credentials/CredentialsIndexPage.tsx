@@ -89,12 +89,6 @@ export default function CredentialsIndexPage({
 }: CredentialsIndexPageProps) {
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const { notice, say } = useNotice<SectionKey>();
-  const noticeIn = (where: SectionKey) =>
-    notice?.where === where && (
-      <Alert key={notice.key} tone={notice.tone}>
-        {notice.message}
-      </Alert>
-    );
   // Where focus goes when the row it came from is gone.
   const newCredentialButton = useRef<HTMLButtonElement>(null);
   const newClientButton = useRef<HTMLButtonElement>(null);
@@ -110,7 +104,6 @@ export default function CredentialsIndexPage({
   });
 
   const editCredential = (c: CredentialRow) => {
-    if (c.schema === "oauth") return say("credentials", "info", "OAuth credentials can't be edited here yet.");
     void rowAction.run(c.id, async () => {
       const loaded = c.schema === "raw" ? undefined : await on.onLoadCredentialSchema(c.schema);
       // A blank field keeps what's saved, so none is required.
@@ -138,55 +131,51 @@ export default function CredentialsIndexPage({
         size="lg"
         title="Credentials"
         description="Credentials you own. Share them with any project you collaborate on."
+        notice={notice?.where === "credentials" && <Alert key={notice.key} tone={notice.tone}>{notice.message}</Alert>}
         action={
           <Button ref={newCredentialButton} icon="hero-plus" onClick={() => setDialog({ kind: "new-credential" })}>
             New credential
           </Button>
         }
       >
-        <Stack gap="md">
-          {noticeIn("credentials")}
-          <AsyncBoundary status={status}>
-            {credentials.length ? (
-              <OwnedCredentialsTable
-                credentials={credentials}
-                isPending={rowAction.pending}
-                onEdit={editCredential}
-                onTransfer={(c) => setDialog({ kind: "transfer", id: c.id })}
-                onCancelDeletion={cancelDeletion}
-                onDelete={(c) => setDialog({ kind: "delete-credential", id: c.id })}
-              />
-            ) : (
-              <EmptyState icon="hero-key" title="No credentials yet" message="Credentials hold the logins and keys your workflows use to reach other systems." />
-            )}
-          </AsyncBoundary>
-        </Stack>
+        <AsyncBoundary status={status}>
+          {credentials.length ? (
+            <OwnedCredentialsTable
+              credentials={credentials}
+              isPending={rowAction.pending}
+              onEdit={editCredential}
+              onTransfer={(c) => setDialog({ kind: "transfer", id: c.id })}
+              onCancelDeletion={cancelDeletion}
+              onDelete={(c) => setDialog({ kind: "delete-credential", id: c.id })}
+            />
+          ) : (
+            <EmptyState icon="hero-key" title="No credentials yet" message="Credentials hold the logins and keys your workflows use to reach other systems." />
+          )}
+        </AsyncBoundary>
       </Section>
 
       <Section
         size="lg"
         title="OAuth clients"
         description="Apps registered with external systems so credentials can sign in with OAuth."
+        notice={notice?.where === "oauth" && <Alert key={notice.key} tone={notice.tone}>{notice.message}</Alert>}
         action={
           <Button ref={newClientButton} variant="secondary" icon="hero-plus" onClick={() => setDialog({ kind: "new-oauth" })}>
             New OAuth client
           </Button>
         }
       >
-        <Stack gap="md">
-          {noticeIn("oauth")}
-          <AsyncBoundary status={oauthClientsStatus}>
-            {oauthClients.length ? (
-              <OwnedOauthClientsTable
-                clients={oauthClients}
-                onEdit={(c) => setDialog({ kind: "edit-oauth", id: c.id })}
-                onDelete={(c) => setDialog({ kind: "delete-oauth", id: c.id })}
-              />
-            ) : (
-              <EmptyState icon="hero-window" title="No OAuth clients yet" message="Register an app to let credentials sign in with OAuth." />
-            )}
-          </AsyncBoundary>
-        </Stack>
+        <AsyncBoundary status={oauthClientsStatus}>
+          {oauthClients.length ? (
+            <OwnedOauthClientsTable
+              clients={oauthClients}
+              onEdit={(c) => setDialog({ kind: "edit-oauth", id: c.id })}
+              onDelete={(c) => setDialog({ kind: "delete-oauth", id: c.id })}
+            />
+          ) : (
+            <EmptyState icon="hero-window" title="No OAuth clients yet" message="Register an app to let credentials sign in with OAuth." />
+          )}
+        </AsyncBoundary>
       </Section>
 
       {dialog?.kind === "new-credential" && (

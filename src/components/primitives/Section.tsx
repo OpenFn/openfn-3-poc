@@ -13,14 +13,16 @@ interface Props {
   variant?: "default" | "eyebrow";
   permissionsSection?: string | undefined;
   id?: string | undefined;
+  /** A result shown where it happened, between the header and the body: usually an `Alert`. */
+  notice?: ReactNode;
   /** Layout and sizing only. */
   className?: string | undefined;
   children: ReactNode;
 }
 
 /**
- * A titled block: a `SectionHeader`, then its body. It owns the gaps, between
- * the header and the body and between the body's children: 16px (Card's) for
+ * A titled block: a `SectionHeader`, any `notice`, then its body. It owns the
+ * gaps, between those and between the body's children: 16px (Card's) for
  * `lg` and `md`, 8px for `sm` and `eyebrow`. Use a bare `SectionHeader` only
  * when there's no body or the parent already owns the gap.
  */
@@ -32,6 +34,7 @@ export default function Section({
   variant = "default",
   permissionsSection,
   id,
+  notice,
   className,
   children,
 }: Props) {
@@ -46,6 +49,7 @@ export default function Section({
         variant={variant}
         permissionsSection={permissionsSection}
       />
+      {notice}
       {children}
     </section>
   );
