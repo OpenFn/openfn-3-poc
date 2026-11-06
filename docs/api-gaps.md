@@ -218,6 +218,10 @@ The replica shows less, or shows it another way, and nothing breaks.
   `ProjectLive.Index`). The planned `sort` on `GET /api/projects` takes
   `name`, `inserted_at` and `last_activity`. Lightning sorts every column.
   Replica: Owner and Members are plain headers.
+- **Admin projects: the new project's member picker comes in email order.**
+  `GET /api/users` promises no order, and its `sort` is only planned. Would
+  need the planned `sort=first_name` live. Replica: the picker keeps the
+  order the fake server sends, which is by email.
 - **Admin users: no Last login** (Lightning's `UserLive.Index`). The
   design's users table shows when each user last signed in; the user object
   has no such field. Would need a `last_login_at` on the user. Replica:
