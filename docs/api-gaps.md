@@ -160,6 +160,20 @@ apart.
   wasn't measured. Lightning marks the Connect bar "(reused)". Would need
   the flag in `timing`. Replica: no "(reused)" badge; a zero connect is
   left out of the bar.
+- **Dataclips: large integers are rounded** (api/dataclips.md, Get a
+  dataclip). `body` comes as a JSON object, so the browser's JSON parser
+  rounds integers past 2^53: an id such as 12345678901234567890 shows and
+  copies as 12345678901234567000, a value the source never sent.
+  Lightning's function already has the body as text (`body_json`). Would
+  need the body as a string beside or instead of the object. Replica: shows
+  the parsed body, rounded, as Lightning's viewer does today.
+- **Dataclips: one that doesn't exist reads No Access.**
+  `GET /api/dataclips/:id` is top level, so a member following a stale link
+  hears 403, the same as a refusal; the app can't tell "gone" from "not
+  yours". `project_id` lets it check the URL's project itself. Would need
+  `GET /api/projects/:project_id/dataclips/:id` (404 to members,
+  api/errors.md). Replica: No Access for a 403, Not Found when `project_id`
+  isn't the URL's project.
 
 ## Superuser access (api/projects.md, api/collections.md)
 

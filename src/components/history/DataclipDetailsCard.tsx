@@ -5,14 +5,15 @@ import DateTime from "@/components/primitives/DateTime";
 import { DetailItem, DetailList } from "@/components/primitives/DetailList";
 import DataclipTypePill from "@/components/domain/DataclipTypePill";
 
-/** The "Dataclip Details" metadata card (dataclip_live/show.ex). */
+/** The "Dataclip details" metadata card (dataclip_live/show.ex). */
 export default function DataclipDetailsCard({ dataclip }: { dataclip: DataclipDetail }) {
   return (
-    <Card title="Dataclip Details" padding="lg">
+    <Card title="Dataclip details" padding="lg">
       <DetailList layout="grid">
         <DetailItem label="ID" variant="code">
           {dataclip.id}
         </DetailItem>
+        {dataclip.name && <DetailItem label="Name">{dataclip.name}</DetailItem>}
         <DetailItem label="Type">
           <DataclipTypePill type={dataclip.type} />
         </DetailItem>
@@ -32,7 +33,7 @@ export default function DataclipDetailsCard({ dataclip }: { dataclip: DataclipDe
   );
 }
 
-/** The dataclip page's body card: a fixed-height frame for the JSON viewer or "No Data Available". */
+/** The dataclip page's body card: a fixed-height frame for the JSON viewer or "No data available". */
 export function DataclipBodyCard({ children }: { children: ReactNode }) {
   return (
     <Card padding="none" className="h-96 overflow-hidden">
