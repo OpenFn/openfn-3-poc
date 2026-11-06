@@ -4,6 +4,9 @@ import { useRouter } from "@/routing/router";
 /** Query params to set (a string) or remove (`null`); others are left alone. */
 export type ParamPatch = Record<string, string | null>;
 
+/** A `?page=` param as a page number: a whole number from 1, and 1 when it's missing or not a number. */
+export const pageParam = (page: string | undefined) => Math.max(1, Math.trunc(Number(page)) || 1);
+
 /**
  * The URL's query params as a plain object, and `update(patch)` to set or
  * remove some of them without touching the rest. `href(patch)` is the URL

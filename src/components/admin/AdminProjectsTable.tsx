@@ -1,6 +1,7 @@
 import type { AdminProjectRow, AdminProjectSortKey } from "@/types/admin";
 import type { PageLinks, SortState } from "@/types/lists";
 import { formatUtcDate } from "@/utils/format";
+import { serverSortThProps } from "@/utils/useTableSort";
 import Button from "@/components/primitives/Button";
 import IconButton from "@/components/primitives/IconButton";
 import Menu, { MenuItem } from "@/components/primitives/Menu";
@@ -30,13 +31,7 @@ interface Props {
  * now in its ••• menu, disabled until the API can purge a project.
  */
 export default function AdminProjectsTable({ projects, page, sort, onSort, deleteHref, onCancelDeletion, cancelling }: Props) {
-  const thProps = (key: AdminProjectSortKey) => {
-    const current = sort.key === key;
-    return {
-      sortDirection: current ? sort.direction : null,
-      onSort: () => onSort({ key, direction: current && sort.direction === "asc" ? "desc" : "asc" }),
-    };
-  };
+  const thProps = serverSortThProps(sort, onSort);
 
   return (
     <Table

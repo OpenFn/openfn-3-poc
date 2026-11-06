@@ -5,7 +5,7 @@ import { usePurgeDeletedAfterDays } from "@/api/session";
 import { useActiveUsers } from "@/api/users";
 import type { AdminProjectSortKey } from "@/types/admin";
 import type { SortState } from "@/types/lists";
-import { useUrlParams } from "@/utils/useUrlParams";
+import { pageParam, useUrlParams } from "@/utils/useUrlParams";
 import AdminProjectsPage from "./AdminProjectsPage";
 
 /**
@@ -23,7 +23,7 @@ export default function AdminProjectsPageQuery() {
     key: isAdminProjectSortKey(params.sort) ? params.sort : "name",
     direction: params.dir === "desc" ? "desc" : "asc",
   };
-  const list = useAdminProjects({ q: params.q ?? "", sort, page: Math.max(1, Math.trunc(Number(params.page)) || 1) });
+  const list = useAdminProjects({ q: params.q ?? "", sort, page: pageParam(params.page) });
   const purge = usePurgeDeletedAfterDays();
   const creating = pathname.endsWith("/new");
   const users = useActiveUsers(creating);

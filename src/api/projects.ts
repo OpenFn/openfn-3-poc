@@ -6,7 +6,7 @@ import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects"
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { fullName } from "@/utils/format";
-import { isApiError, listAll, pageLinks, request, statusOf } from "./client";
+import { isApiError, listAll, pageLinks, request, sortParam, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -177,7 +177,7 @@ export function useAdminProjects({ q, sort, page }: { q: string; sort: SortState
   projects: AdminProjectRow[];
   page: PageLinks;
 } {
-  const params = new URLSearchParams({ scope: "all", include: "stats", sort: `${sort.direction === "desc" ? "-" : ""}${sort.key}`, page: String(page), page_size: String(PAGE_SIZE) });
+  const params = new URLSearchParams({ scope: "all", include: "stats", sort: sortParam(sort), page: String(page), page_size: String(PAGE_SIZE) });
   if (q) params.set("q", q);
   const query = useQuery({
     queryKey: [...projectKeys.all, "admin", String(params)],

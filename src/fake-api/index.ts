@@ -7,7 +7,7 @@
  */
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
-import { json, noContent, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { json, noContent, notFound, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
 import { collectionRoutes, resetCollections } from "./collections";
@@ -46,7 +46,7 @@ const routes: Record<string, Handler> = {
     return json(201, { data: created });
   },
   "DELETE /api/me/tokens/:id": ({ id }) => {
-    if (!tokens.some((t) => t.id === id)) return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!tokens.some((t) => t.id === id)) return notFound();
     tokens = tokens.filter((t) => t.id !== id);
     return noContent();
   },

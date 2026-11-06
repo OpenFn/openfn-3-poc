@@ -6,7 +6,7 @@
  * knows the fake exists. A refused request throws an `ApiError`: show its
  * `message`, branch on its `code`.
  */
-import type { PageLinks } from "@/types/lists";
+import type { PageLinks, SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { RequestError } from "@/utils/errors";
 // Decided when the app is built, so a build for real Lightning leaves the fake out entirely.
@@ -83,6 +83,9 @@ export async function listAll<T>(path: string, key: string): Promise<T[]> {
   }
   return rows;
 }
+
+/** A list's `sort` parameter (api/conventions.md): the field, `-` first for descending. */
+export const sortParam = (sort: SortState) => `${sort.direction === "desc" ? "-" : ""}${sort.key}`;
 
 /**
  * Where one page of a list stands, from its links (api/conventions.md sends no

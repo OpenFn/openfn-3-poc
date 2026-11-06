@@ -3,7 +3,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import type { AdminCollectionRow, CollectionFormValues, CollectionSortKey } from "@/types/admin";
 import type { SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
-import { listAll, request, statusOf } from "./client";
+import { listAll, request, sortParam, statusOf } from "./client";
 
 /** A collection as `GET /api/collections` lists it. */
 export interface ApiCollection {
@@ -30,7 +30,7 @@ export const collectionKeys = { all: ["collections"] as const };
  * sorts them (`-` for descending), and where loading them stands. Superusers only.
  */
 export function useAllCollections(sort: SortState<CollectionSortKey>): { status: ResourceStatus; collections: AdminCollectionRow[] } {
-  const param = `${sort.direction === "desc" ? "-" : ""}${sort.key}`;
+  const param = sortParam(sort);
   const query = useQuery({
     queryKey: [...collectionKeys.all, param],
     queryFn: () => listAll<ApiCollection>(`/api/collections?sort=${param}`, "data"),

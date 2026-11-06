@@ -124,7 +124,15 @@ goes back to Lightning's way.
   authentication", "GitHub access" and "Delete account" ("Deleting your
   account is irreversible, and your credentials go with it.") (Lightning:
   "Change basic information", "Enable multi-factor authentication",
-  "GitHub Access", and no line under the forms). The two columns stay Lightning's for now.
+  "GitHub Access", and no line under the forms).
+- **Profile is one column, in Brandon's layout.** Lightning's left column
+  (the name, "Change name, email, password, and request deletion.", then
+  "Created:" and "Email:") is gone: the name heads the section, with
+  "<email> · Member since <date>" under it, and the cards stack below. The
+  line about what the page does is dropped; the card titles say it.
+  "Delete account" stays a card with his line rather than his red callout:
+  our danger alert is announced to screen readers as an alert, which suits a
+  message, not a standing section.
 - **Parts of his screen we leave out, and why.**
   - His breadcrumb ("User settings › API tokens"): Lightning has none here,
     and the menu already marks the page.
@@ -137,10 +145,8 @@ goes back to Lightning's way.
     Lightning's one "Add new" menu, which covers both. His "Organization
     credentials live in Systems" note: the API has no organisations or
     systems yet.
-- **Layout.** Profile's two columns start when its section is wide enough,
-  not at a screen size, so they fit beside the menu. Backup codes stays a
-  page of its own, as in Lightning: it is a step after setting up MFA, not a
-  section.
+- **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
+  step after setting up MFA, not a section.
 
 ## Tags
 
@@ -365,7 +371,7 @@ goes back to Lightning's way.
 - **Delete is disabled, with "Not available in the API yet".** Lightning
   lets a superuser delete any collection (`collection_live/index.ex:48-62`);
   the API's delete needs a project owner or admin, with no superuser scope
-  planned (docs/api-gaps.md, Superuser access).
+  planned (docs/api-gaps.md, We clearly need these).
 - **The name hint says names are unique within their project.** Lightning
   says "across all projects within this instance"
   (`collection_creation_modal.ex:135`), which has been false since names
@@ -404,7 +410,7 @@ goes back to Lightning's way.
 - **No Edit.** Lightning's superuser can rename any project and change its
   members (`project_live/index.ex:56-67`). The API refuses a superuser who
   isn't a member on every route that reads or changes one project, with no
-  superuser scope planned (docs/api-gaps.md, Superuser access), so the row
+  superuser scope planned (docs/api-gaps.md, We clearly need these), so the row
   has no Edit and `/settings/projects/:id` goes to the list.
 - **Delete now is disabled, with "Not available in the API yet".** Lightning
   purges a scheduled project at once from the row's menu; the API only

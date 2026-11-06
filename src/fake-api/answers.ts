@@ -22,6 +22,7 @@ export const noContent = () => new Response(null, { status: 204 });
 export const stepUpRequired = () =>
   problem({ status: 403, code: "step_up_required", detail: "Enter your password or an MFA code again to do this." });
 export const forbidden = () => problem({ status: 403, code: "forbidden", detail: "You are not allowed to do that." });
+export const notFound = () => problem({ status: 404, code: "not_found", detail: "Not found." });
 // One 422 for every problem with a body (api/errors.md).
 export const invalid = (errors: NonNullable<Problem["errors"]>) =>
   problem({ status: 422, code: "invalid", detail: "The request body is not valid.", errors });
@@ -47,6 +48,18 @@ export function paged<T>(path: string, rows: T[], query: URLSearchParams, key = 
     [key]: rows.slice((page - 1) * size, page * size),
     links: { self: link(page), first: link(1), last: link(last), next: page < last ? link(page + 1) : null, prev: page > 1 ? link(page - 1) : null },
   };
+}
+
+/**
+ * A list's `sort` parameter (api/conventions.md, `-` first for descending,
+ * `fallback` when absent) as its field and direction. `key` is the field when
+ * `sorts` has it, so a field the route doesn't take (or `constructor`) is null.
+ */
+export function parseSort<K extends string>(query: URLSearchParams, sorts: Record<K, unknown>, fallback: K) {
+  const sort = query.get("sort") ?? fallback;
+  const field = sort.replace(/^-/, "");
+  const direction: "asc" | "desc" = sort.startsWith("-") ? "desc" : "asc";
+  return { field, key: Object.hasOwn(sorts, field) ? (field as K) : null, direction };
 }
 
 /** A 400 for a `sort` field the route doesn't take (api/conventions.md). */

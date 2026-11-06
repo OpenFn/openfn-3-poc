@@ -37,7 +37,7 @@ export const DuplicateName: Story = {
   play: submit,
 };
 
-/** The server refuses for another reason (a plan limit): its message shows above the form. */
+/** The server refuses for another reason (a plan limit): its message shows below the fields. */
 export const Refused: Story = {
   args: { ...Edit.args, onSave: () => Promise.reject(new RequestError("You have reached the limit of collections for this project.")) },
   play: submit,
@@ -48,3 +48,11 @@ export const Blank: Story = { play: submit };
 
 /** Save is still out: the button shows pending. */
 export const Saving: Story = { args: { ...Edit.args, onSave: () => new Promise(() => {}) }, play: submit };
+
+/** The projects are still loading: the modal shows a spinner and Save is off. */
+export const LoadingProjects: Story = { args: { projectOptions: [], projectOptionsStatus: { state: "loading" } } };
+
+/** The projects couldn't load: the failure shows instead of the form, and Save is off. */
+export const ProjectsFailed: Story = {
+  args: { projectOptions: [], projectOptionsStatus: { state: "error", message: "Something went wrong in Lightning." } },
+};

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { listAll, request } from "./client";
 import { resetFakeApi } from "./testing";
-import type { ApiWorkflow } from "./workflows";
+import { isWorkflowSortKey, type ApiWorkflow } from "./workflows";
 
 const PROJECT = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 const refusal = (promise: Promise<unknown>) => promise.then(() => null, (error: unknown) => error);
@@ -23,8 +23,17 @@ describe("GET /api/projects/:id/workflows, on the fake server", () => {
     expect(runs).toEqual([...[...ran].sort().reverse(), ...runs.filter((r) => r === null)]);
   });
 
-  it("refuses an unknown sort with 400, and a project you can't open with 403", async () => {
-    expect(await refusal(request("GET", `/api/projects/${PROJECT}/workflows?sort=enabled`))).toMatchObject({ status: 400, code: "invalid_parameter" });
+  it("refuses an unknown sort with 400, an inherited name like constructor too, and a project you can't open with 403", async () => {
+    for (const sort of ["enabled", "constructor", "-toString"]) {
+      expect(await refusal(request("GET", `/api/projects/${PROJECT}/workflows?include=stats&sort=${sort}`))).toMatchObject({ status: 400, code: "invalid_parameter" });
+    }
     expect(await refusal(request("GET", `/api/projects/nope/workflows`))).toMatchObject({ status: 403, code: "forbidden" });
+  });
+});
+
+describe("isWorkflowSortKey", () => {
+  it("takes the list's sort fields and nothing else, not even an inherited name like constructor", () => {
+    expect(["name", "updated_at", "last_work_order_updated_at"].every(isWorkflowSortKey)).toBe(true);
+    for (const key of ["enabled", "constructor", "toString", undefined]) expect(isWorkflowSortKey(key)).toBe(false);
   });
 });

@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { projects } from "@/mock-data/projects";
 import ApiProvider from "./ApiProvider";
-import { useRefusedForMfa } from "./projects";
+import { request } from "./client";
+import { isAdminProjectSortKey, useRefusedForMfa } from "./projects";
 import { resetFakeApi } from "./testing";
 
 // One more project that requires MFA, with Sizwe its only member: the signed-in superuser, Amy, isn't one.
@@ -26,5 +27,23 @@ describe("useRefusedForMfa", () => {
   ])("on a refused project that requires MFA: %s", async (_, id, expected) => {
     const { result } = renderHook(() => useRefusedForMfa(id, true), { wrapper });
     await waitFor(() => expect(result.current).toBe(expected), { timeout: 3000 });
+  });
+});
+
+describe("GET /api/projects, on the fake server", () => {
+  beforeEach(resetFakeApi);
+
+  it("refuses an unknown sort with 400, an inherited name like constructor too", async () => {
+    for (const sort of ["owner", "constructor", "-toString"]) {
+      const refusal = await request("GET", `/api/projects?scope=all&sort=${sort}`).then(() => null, (error: unknown) => error);
+      expect(refusal).toMatchObject({ status: 400, code: "invalid_parameter" });
+    }
+  });
+});
+
+describe("isAdminProjectSortKey", () => {
+  it("takes the admin list's sort fields and nothing else, not even an inherited name like constructor", () => {
+    expect(["name", "inserted_at"].every(isAdminProjectSortKey)).toBe(true);
+    for (const key of ["owner", "constructor", "toString", undefined]) expect(isAdminProjectSortKey(key)).toBe(false);
   });
 });
