@@ -40,6 +40,8 @@ link works straight away: dhis2-project requires MFA, which Amy hasn't set up. T
 | viewer@openfn.org | Vikram | `welcome12345` | |
 | super@openfn.org | Sizwe, superuser | `welcome12345` | `123456`, or the backup code `fakebackup01` |
 
+To reset a password, log out first, then open `/#/users/reset_password/fake-reset-token`: it sets Esther's, once per page load.
+
 Signing in as someone else shows their projects and what they may do there.
 dhis2-project requires MFA, so only Sizwe opens it; Amy and Esther are sent
 to set up MFA.

@@ -69,6 +69,17 @@ doesn't.
   to set. Would need a `remember_me` boolean on sign in. Replica: checkbox
   left out (docs/lightning-differences.md).
 
+## Reset password (Lightning's `auth-reset-password`)
+
+- **No way to check a reset link before the form.** Lightning checks the
+  token when the link is opened, without using it up, and refuses a used,
+  expired or unknown one at once. The API can only refuse on
+  `PUT /api/password_resets/:token`, so the person types a new password
+  before learning the link is dead. Would need
+  `GET /api/password_resets/:token` answering 204 or 404 without using the
+  link. Replica: finds out on submit, then sends the person to ask for a new
+  link (docs/lightning-differences.md).
+
 ## Session tokens (api/authentication.md, api/errors.md)
 
 - **No error code for a missing or wrong CSRF token.** Writes on a session

@@ -113,6 +113,7 @@ export const authMessages = {
   loggedOut: "Logged out successfully.",
   resetSent:
     "If your email is in our system, you will receive instructions to reset your password shortly.",
+  resetDone: "Password reset successfully.",
   resetInvalid: "Reset password link is invalid or it has expired.",
   confirmInvalid: "User confirmation link is invalid or it has expired.",
   confirmSent:
