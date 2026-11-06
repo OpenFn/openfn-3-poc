@@ -258,6 +258,19 @@ goes back to Lightning's way.
 - **The confirm page has no "Log in" or "Register" links.** Only someone
   signed in reaches it, so neither leads anywhere useful. The resend page
   keeps both.
+- **Confirm-required doesn't show the address.** It says "your email
+  address". A locked-out person can't change the address there (no route
+  for it, docs/api-gaps.md), and showing it would need `/api/me`, which a
+  locked-out session can't read.
+- **Confirm-required has no "Change email address" form.** The API has no
+  route for it while locked out (docs/api-gaps.md), so a mistyped address
+  needs an administrator.
+- **Arriving at confirm-required shows no "Your account is blocked…"
+  message.** Lightning's redirect flashes it above a body that says the same
+  thing, so the replica leaves the flash out.
+- **A throttled or failed resend no longer leaves "We have sent…" on
+  screen.** Lightning keeps the earlier "sent" message beside the new
+  warning. The replica shows only the latest answer.
 
 - **Save stays pressable in the collaborator and YAML import modals.**
   Lightning disables Save until every row has an email and a role, and

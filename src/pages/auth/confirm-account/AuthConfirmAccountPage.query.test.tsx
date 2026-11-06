@@ -70,8 +70,9 @@ describe("AuthConfirmAccountPageQuery", () => {
     expect(screen.getByRole("status").textContent).toContain(authMessages.confirmSent);
   });
 
+  // Una is locked out, so a signed-in resend uses Amy.
   it("resending signed in goes to the projects list and toasts the message", async () => {
-    await signIn("unconfirmed@openfn.org");
+    await signIn("demo@openfn.org");
     const toast = renderAt("/users/confirm");
     // The session says where to go.
     await settle();

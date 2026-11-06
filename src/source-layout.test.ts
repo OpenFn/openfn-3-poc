@@ -74,7 +74,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/admin/AdminProjectsPage.replica.tsx",
       "./pages/admin/AdminUserEditPage.replica.tsx",
       "./pages/admin/AdminUsersPage.replica.tsx",
-      "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
       "./pages/auth/FirstSetupPage.replica.tsx",
       "./pages/history/ChannelRequestShowPage.replica.tsx",
       "./pages/history/DataclipShowPage.replica.tsx",

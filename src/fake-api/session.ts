@@ -11,6 +11,7 @@ import { hasActivityInProjects } from "@/mock-data/profile";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { invalid, json, noContent, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
+import { lockedOut, openWhileLockedOut, resetResends, spendResend } from "./lockout";
 import { spendBackupCode } from "./mfa";
 
 /**
@@ -92,6 +93,7 @@ export function resetSession() {
   people = seedPeople();
   pendingEmails.clear();
   passwords.clear();
+  resetResends();
   resetTokenUsed = false;
 }
 
@@ -115,7 +117,7 @@ const sessionData = () => {
   const { userId, mfaPendingId, csrf } = read();
   return {
     data: {
-      state: userId ? "signed_in" : "mfa_required",
+      state: userId ? (lockedOut(currentUser()) ? "confirmation_required" : "signed_in") : "mfa_required",
       user_id: userId ?? mfaPendingId,
       stepped_up_until: isSteppedUp() ? new Date(steppedUpUntil).toISOString() : null,
       csrf_token: csrf,
@@ -168,9 +170,9 @@ function stepUp(body: Record<string, unknown>) {
 
 /**
  * What every request answers before its route, or nothing to go on: 401
- * without a session (except the routes for signing in), and 403 for a write
- * whose `x-csrf-token` isn't the session's. api/errors.md has no code of its
- * own for a bad CSRF token, so it's `forbidden`.
+ * without a session (except the routes for signing in) or while locked out
+ * (except `openWhileLockedOut`), and 403 for a write whose `x-csrf-token`
+ * isn't the session's (api/errors.md has no code for it, so `forbidden`).
  */
 export function refuse(route: string, headers: Headers): Response | undefined {
   const { userId, mfaPendingId, csrf } = read();
@@ -188,6 +190,7 @@ export function refuse(route: string, headers: Headers): Response | undefined {
   }
   // Waiting for an MFA code: only the session routes and the tokenless ones answer.
   if (!userId && !route.endsWith(" /api/session") && !tokenless) return unauthenticated();
+  if (userId && !openWhileLockedOut.has(route) && lockedOut(currentUser())) return unauthenticated();
   return undefined;
 }
 
@@ -252,8 +255,17 @@ export const sessionRoutes: Record<string, Handler> = {
     return noContent();
   },
 
-  // Answers the same whether or not the email has an account. The fake sends nothing.
-  "POST /api/confirmations": () => new Response(null, { status: 202 }),
+  // By email it always answers 202. Signed in without one, the fourth in 15 minutes is refused.
+  "POST /api/confirmations": (_params, body) => {
+    const { userId } = read();
+    if (body["email"] !== undefined) {
+      const user = people.find((u) => u.email === body["email"]);
+      if (user) spendResend(user.id);
+    } else if (userId && !spendResend(userId)) {
+      return problem({ status: 429, code: "too_many_requests", detail: "Too many requests. Try again later." });
+    }
+    return new Response(null, { status: 202 });
+  },
   // ponytail: only the account link is faked; email-change and credential-transfer tokens answer 404 until a page needs them.
   "PUT /api/confirmations/:token": ({ token }) => {
     const user = currentUser();

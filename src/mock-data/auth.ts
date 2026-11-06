@@ -15,6 +15,7 @@ export const authConfig: AuthConfig = {
   allowSignup: false,
   ssoProvider: null,
   allowFirstSetup: true,
+  requireEmailVerification: true,
 };
 
 /** A configured provider, used when `?sso=1` is set on a page not yet on the API, and in stories. */
@@ -34,7 +35,7 @@ export function authFlags(search: string): AuthConfig {
   };
 }
 
-/** The signed-in but unconfirmed user shown on /users/confirm-required. */
+/** Unused since /users/confirm-required moved to the API (the fake's Una is in users.ts); auth clean-up removes it. */
 export const unconfirmedUser = {
   firstName: "Una",
   lastName: "Confirmed",

@@ -43,6 +43,8 @@ link works straight away: dhis2-project requires MFA, which Amy hasn't set up. T
 
 To reset a password, log out first, then open `/#/users/reset_password/fake-reset-token`: it sets Esther's, once per page load.
 
+Signing in as Una lands on `/#/users/confirm-required`: her account is locked until she confirms it.
+
 To confirm an account, sign in as Una, then open `/#/users/confirm/fake-confirm-token`: it confirms hers, once per page load.
 
 Signing in as someone else shows their projects and what they may do there.

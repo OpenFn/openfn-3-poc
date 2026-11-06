@@ -87,14 +87,37 @@ doesn't.
   except `POST /api/confirmations`. Lightning's lockout also lets it open and
   submit `/users/confirm/:token` (`confirmation_lockout.ex:18-33`), or a
   locked-out person could never confirm. The contract should list
-  `PUT /api/confirmations/:token` too. Replica: the fake has no lockout yet,
-  so nothing is refused.
+  `PUT /api/confirmations/:token` too. Replica: confirm-required's fake
+  allows it.
 - **No way to check a confirm link before pressing.** Lightning checks the
   token when the link is opened (`verify_confirmation_token` on `:edit`). The
   API only refuses on `PUT /api/confirmations/:token`, which uses the link.
   Would need `GET /api/confirmations/:token` answering 204 or 404 without
   using it. Replica: finds out when "Confirm my account" is pressed, and says
   so in the card (docs/lightning-differences.md).
+
+## Confirm required (Lightning's `auth-confirmation-required`)
+
+- **When `confirmation_required` starts is unclear.** api/account.md says the
+  state means "unconfirmed and the instance requires it", and that routes
+  answer 401 "from 48 hours after sign-up". Its implementation note maps it
+  to `Accounts.locked_out?/1`, which includes the 48 hours. Read the first
+  way, every fresh sign-up would be sent here at once, and a client can't
+  tell the grace period from the lockout without `/api/me`, which is locked
+  too. The spec should say the state starts at 48 hours. Replica: the fake
+  does that.
+- **The locked-out 401 has no code of its own.** It answers
+  `unauthenticated`, like a signed-out one, so a client has to reload the
+  session to tell them apart. Replica: ApiProvider already reloads it on a
+  401.
+
+Changed, and that's fine:
+
+- **No way to correct a mistyped address while locked out.** Lightning's
+  page has a "Change email address" form (`request_email_correction/2`); no
+  route covers it, and the implementation note says so. A locked-out person
+  can't change anything else either, so the replica drops the form and a
+  mistyped address needs an administrator.
 
 ## Session tokens (api/authentication.md, api/errors.md)
 

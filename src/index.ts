@@ -11,7 +11,7 @@ export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/Au
 export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
 export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export { default as AuthResetPasswordPage } from "./pages/auth/reset-password/AuthResetPasswordPage";
-export { default as AuthConfirmationRequiredPage } from "./pages/auth/AuthConfirmationRequiredPage";
+export { default as AuthConfirmationRequiredPage } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
 export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/DataclipShowPage";
@@ -41,7 +41,7 @@ export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/Aut
 export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
 export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export type { AuthResetPasswordPageProps } from "./pages/auth/reset-password/AuthResetPasswordPage";
-export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { AuthConfirmationRequiredPageProps } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
 export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/DataclipShowPage";
@@ -59,7 +59,7 @@ export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPag
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
-export type { ChangeEmailResult, ResendResult } from "./pages/auth/AuthConfirmationRequiredPage";
+export type { ResendResult } from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage";
 export type { ConfirmAccessValues } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export type { FirstSetupValues } from "./pages/auth/FirstSetupPage";
 export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-health";

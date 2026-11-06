@@ -123,9 +123,9 @@ export function useSession(): { status: ResourceStatus; state: GateState | undef
     queryKey: sessionKeys.all,
     queryFn: () => request<{ data: ApiSession }>("GET", "/api/session").then((answer) => answer.data),
   });
-  // Side by side with the session: /api/me answers 401 too when there isn't one, and then isn't asked for again.
+  // Only once signed in: in any other state /api/me answers 401.
   // `select` only maps again when the answer changes, so an unchanged answer keeps the same objects.
-  const me = useQuery({ ...meQuery, select: userFromMe });
+  const me = useQuery({ ...meQuery, select: userFromMe, enabled: session.data?.state === "signed_in" });
   const instance = useQuery(instanceQuery);
   const user = me.data;
   const info = instance.data;

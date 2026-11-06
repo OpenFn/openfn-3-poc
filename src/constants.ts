@@ -124,4 +124,6 @@ export const authMessages = {
   invalidOtp: "Invalid OTP code! Try again.",
   resendThrottled:
     "You've asked for this a few times recently. Check your inbox and spam folder; you can request another in a few minutes.",
+  resendFailed:
+    "We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance administrator.",
 };

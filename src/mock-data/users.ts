@@ -43,7 +43,7 @@ export const users: User[] = [
     lastName: "Viewer",
     email: "viewer@openfn.org",
     role: "user",
-    confirmedAt: null,
+    confirmedAt: "2024-05-02",
     insertedAt: "2024-05-02",
     mfaEnabled: false,
     githubConnected: false,

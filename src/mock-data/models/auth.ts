@@ -8,4 +8,6 @@ export interface AuthConfig {
   ssoProvider: SsoProvider | null;
   /** `:allow_first_setup`: true only on a fresh install with no superuser. */
   allowFirstSetup: boolean;
+  /** `:require_email_verification`: an account unconfirmed 48 hours after sign-up can only reach /users/confirm-required. */
+  requireEmailVerification: boolean;
 }
