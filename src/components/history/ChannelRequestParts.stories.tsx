@@ -31,7 +31,6 @@ export const RequestSection: Story = {
       <Disclosure variant="section" title="Body" titleRight={<SectionSizeBadge size={152} />}>
         <BodyViewer
           preview={event.requestBodyPreview}
-          hash={event.requestBodyHash}
           size={event.requestBodySize}
           headers={event.requestHeaders}
         />
@@ -51,7 +50,7 @@ export const Badges: Story = {
       <MethodBadge method="POST" />
       <MethodBadge method="GET" />
       <MethodBadge method="DELETE" />
-      <RequestPathDisplay event={channelRequests[1]!.events[0]!} />
+      <RequestPathDisplay request={{ path: "/fhir/Patient/99999", queryString: "_format=json" }} />
       <StatusCodeBadge status={201} />
       <StatusCodeBadge status={302} />
       <StatusCodeBadge status={404} />
@@ -68,7 +67,6 @@ export const NoResponse: Story = {
       <ResponseEmpty
         type="transport"
         errorCode="econnrefused"
-        humanMessage="Connection refused — the destination server is not accepting connections on this port"
       />
     </Disclosure>
   ),
@@ -81,7 +79,6 @@ export const CredentialError: Story = {
       <ResponseEmpty
         type="credential"
         errorCode="oauth_refresh_failed"
-        humanMessage="OAuth token refresh failed — the destination credential could not be renewed"
       />
     </Disclosure>
   ),
@@ -110,7 +107,7 @@ const body = (props: Parameters<typeof BodyViewer>[0]): Story => ({
     </Disclosure>
   ),
 });
-export const NoBody = body({ preview: null, hash: null, size: 0, headers: json });
-export const BinaryBody = body({ preview: null, hash: "9f86d081884c7d659a2feaa0c55ad015", size: 48_213, headers: [["content-type", "application/pdf"]] });
-export const BodyNotCaptured = body({ preview: null, hash: null, size: 2_048, headers: json });
-export const BodyPreviewTruncated = body({ preview: '{"entry":[{"resource":', hash: null, size: 120_000, headers: json });
+export const NoBody = body({ preview: null, size: 0, headers: json });
+export const BinaryBody = body({ preview: null, size: 48_213, headers: [["content-type", "application/pdf"]] });
+export const BodyNotCaptured = body({ preview: null, size: 2_048, headers: json });
+export const BodyPreviewTruncated = body({ preview: '{"entry":[{"resource":', size: 120_000, headers: json });

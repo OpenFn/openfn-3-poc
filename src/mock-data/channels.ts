@@ -55,10 +55,6 @@ export function channelsIn(projectId: string): Channel[] {
   return channels.filter((c) => c.projectId === projectId);
 }
 
-export function findChannel(id: string | undefined): Channel | undefined {
-  return channels.find((c) => c.id === id);
-}
-
 /** A project's channels as the Channels list shows them, for stories. */
 export function channelRowsFor(projectId: string): ChannelRow[] {
   return channelsIn(projectId).map((c) => ({ ...c, proxyUrl: channelProxyUrl(c.id) }));

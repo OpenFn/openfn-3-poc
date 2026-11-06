@@ -1,4 +1,3 @@
-import type { ChannelEvent } from "@/types/channels";
 import { cn } from "@/utils/cn";
 import Card from "@/components/primitives/Card";
 import { DetailItem, DetailList } from "@/components/primitives/DetailList";
@@ -9,6 +8,7 @@ import CopyButton from "@/components/primitives/CopyButton";
 import EmptyState from "@/components/primitives/EmptyState";
 import Text from "@/components/primitives/Text";
 import { Stack } from "@/components/primitives/Stack";
+import { humanizeError } from "./channelErrors";
 
 /*
  * Building blocks of the channel request page
@@ -32,11 +32,11 @@ export function MethodBadge({ method }: { method: string | null | undefined }) {
   );
 }
 
-export function RequestPathDisplay({ event }: { event: ChannelEvent | undefined }) {
+export function RequestPathDisplay({ request }: { request: { path: string | null; queryString: string | null } | null }) {
   return (
     <Text variant="code-md" tone="strong" className="break-all">
-      {event?.requestPath}
-      {event?.requestQueryString && <span className="text-muted">?{event.requestQueryString}</span>}
+      {request?.path}
+      {request?.queryString && <span className="text-muted">?{request.queryString}</span>}
     </Text>
   );
 }
@@ -93,12 +93,10 @@ const isText = (ct: string) => ["text/", "json", "xml", "javascript", "html"].so
 /** A request or response body preview (`body_viewer`). */
 export function BodyViewer({
   preview,
-  hash,
   size,
   headers,
 }: {
   preview: string | null;
-  hash: string | null;
   size: number | null;
   headers: [string, string][] | null;
 }) {
@@ -116,7 +114,6 @@ export function BodyViewer({
           <code>{contentTypeLabel(ct)}</code>
         </Pill>
         {size != null && <span>{formatBytes(size)}</span>}
-        {hash && <Text variant="code-sm" tone="faint">SHA256: {hash}</Text>}
       </Text>
     );
   }
@@ -147,12 +144,6 @@ export function BodyViewer({
           </div>
           <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all p-3 pr-20 font-mono text-body">{preview}</pre>
         </Card>
-        {hash && (
-          <div className="flex items-center gap-2 pt-1">
-            <span className="font-mono">SHA256: {hash.slice(0, 16)}...</span>
-            <CopyButton value={hash} label="Copy hash" size="xs" />
-          </div>
-        )}
         {size != null && size > previewBytes && (
           <div>
             Preview: {formatBytes(previewBytes)} of {formatBytes(size)}
@@ -164,22 +155,17 @@ export function BodyViewer({
 }
 
 /** The Response section's placeholder when no response came back (`response_empty`). */
-export function ResponseEmpty({
-  type,
-  errorCode,
-  humanMessage,
-}: {
-  type: "transport" | "credential";
-  errorCode: string;
-  humanMessage: string;
-}) {
+export function ResponseEmpty({ type, errorCode }: { type: "transport" | "credential"; errorCode: string }) {
   const [icon, label] =
     type === "transport"
       ? ["hero-exclamation-triangle", "No response received"]
       : ["hero-lock-closed", "Request not sent — credential error"];
+  // An unknown code has no explanation of its own (humanizeError passes it through), so it shows once, as the code.
+  const explained = humanizeError(errorCode);
+  const message = explained === errorCode ? undefined : explained;
   return (
     // eslint-disable-next-line local/primitive-classname -- debt: box (border-t border-subtle)
-    <EmptyState variant="plain" icon={icon} title={label} message={humanMessage} className="border-t border-subtle">
+    <EmptyState variant="plain" icon={icon} title={label} message={message} className="border-t border-subtle">
       <Pill variant="square">
         <code>{errorCode}</code>
       </Pill>
