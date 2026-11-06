@@ -18,7 +18,7 @@ function deletionTooltip(iso: string) {
 /**
  * A project on the sandboxes page: its colour strip, its name with the
  * "Selected" and "Main" badges, a line about it and what it was made from.
- * With `href` the name opens that project. A sandbox scheduled for deletion
+ * With `href` the whole card opens that project, its actions aside. A sandbox scheduled for deletion
  * is struck through, says when it goes on hover, and opens nothing.
  */
 export default function WorkspaceCard({
@@ -41,7 +41,7 @@ export default function WorkspaceCard({
   const description = isMain ? "The live version of this project. Sandboxes merge back into main." : sandbox.description;
   const name = deleted ? <s>{sandbox.name}</s> : sandbox.name;
   return (
-    <Card as="article" aria-labelledby={headingId} padding="none" variant={deleted ? "muted" : "default"} className="flex overflow-hidden">
+    <Card as="article" aria-labelledby={headingId} padding="none" variant={deleted ? "muted" : "default"} className="relative flex overflow-hidden">
       <div className="w-3 shrink-0" style={{ backgroundColor: (!isMain && sandbox.color) || "var(--background-color-brand)" }} />
       <div className="flex min-w-0 flex-1 flex-col gap-1 p-4" {...(deleted && { "aria-description": deletionTooltip(deleted) })}>
         <Row wrap>
@@ -51,7 +51,7 @@ export default function WorkspaceCard({
               {/* A heading wraps a long name rather than cutting it off (PRINCIPLES, Look and behaviour). */}
               <Heading id={headingId} size="sm" as="h3" className="wrap-break-word">
                 {href ? (
-                  <TextLink variant="plain" to={href} className="block">
+                  <TextLink variant="plain" to={href} className="block after:absolute after:inset-0">
                     {name}
                   </TextLink>
                 ) : (
@@ -72,7 +72,8 @@ export default function WorkspaceCard({
           </Text>
         )}
       </div>
-      {actions && <div className="flex items-center pr-4">{actions}</div>}
+      {/* Above the name's link, which stretches over the whole card so anywhere on it opens the project. */}
+      {actions && <div className="relative flex items-center pr-4">{actions}</div>}
     </Card>
   );
 }
