@@ -81,7 +81,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
-      "./pages/profile/CredentialsIndexPage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
       "./pages/projects/ChannelsIndexPage.replica.tsx",
       "./pages/projects/SandboxesIndexPage.replica.tsx",

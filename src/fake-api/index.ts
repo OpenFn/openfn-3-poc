@@ -6,8 +6,8 @@
  * database. Only src/api/client.ts imports this folder; going real deletes it.
  */
 import { apiTokens } from "@/mock-data/tokens";
-import credentials from "./recorded/credentials.json";
 import { json, noContent, notFound, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
 import { collectionRoutes, resetCollections } from "./collections";
@@ -51,9 +51,7 @@ const routes: Record<string, Handler> = {
     return noContent();
   },
 
-  // Answers recorded from a real Lightning, replayed as they are.
-  "GET /api/credentials": () => json(200, credentials),
-
+  ...credentialRoutes,
   ...projectRoutes,
   ...auditRoutes,
   ...collectionRoutes,
@@ -103,6 +101,7 @@ export function resetFakeApi() {
   tokens = seed();
   resetProjects();
   resetCollections();
+  resetCredentials();
   resetSession();
   resetMfa();
   failures.clear();

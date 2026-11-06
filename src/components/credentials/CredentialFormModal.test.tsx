@@ -28,6 +28,7 @@ const secrets: CredentialSecretsResult = {
 const google: OauthClientRow = {
   id: "oc1",
   name: "Google Workspace",
+  clientId: "google-client-id",
   ownerEmail: "amy@example.org",
   global: false,
   projects: [],

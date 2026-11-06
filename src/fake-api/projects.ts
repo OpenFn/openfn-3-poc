@@ -26,6 +26,13 @@ let projects = seedProjects();
 // When each scheduled project is purged, by id. None to start with.
 const scheduled = new Map<string, string>();
 
+/** The projects as the fake holds them now. */
+export const fakeProjects = () => projects;
+export const isMemberOf = (projectId: string, userId: string) => !!projects.find((p) => p.id === projectId)?.members.some((m) => m.userId === userId);
+/** Whether the signed-in user is an editor or above in a project, as sharing a credential or client there needs. */
+export const isEditorIn = (projectId: string) =>
+  ["owner", "admin", "editor"].includes(projects.find((p) => p.id === projectId)?.members.find((m) => m.userId === currentUser().id)?.role ?? "");
+
 /** For stories and tests: the starting projects. */
 export const resetProjects = () => {
   projects = seedProjects();
@@ -269,7 +276,7 @@ export const projectRoutes: Record<string, Handler> = {
     if (scheduled.has(project.id)) {
       return problem({ status: 409, code: "scheduled_for_deletion", detail: "This project is already scheduled for deletion." });
     }
-    scheduled.set(project.id, now(PURGE_DELETED_AFTER_DAYS * DAY_MS));
+    scheduled.set(project.id, now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS)));
     return noContent();
   },
   "DELETE /api/projects/:id/scheduled_deletion": ({ id }) => {

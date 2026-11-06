@@ -630,7 +630,7 @@ function SchemaInput({
         />
       );
     case "password":
-      return <PasswordInput id={id} label={f.label} required={f.required} placeholder={placeholder} value={text} onChange={(e) => onChange(e.target.value)} />;
+      return <PasswordInput id={id} label={f.label} required={f.required} placeholder={placeholder} hint={f.hint} value={text} onChange={(e) => onChange(e.target.value)} />;
     case "integer":
       return (
         <TextInput
