@@ -7,7 +7,7 @@ export interface Channel {
   name: string;
   enabled: boolean;
   destinationUrl: string;
-  /** Project credential used to authenticate with the destination. */
+  /** A credential linked to the project, used to sign in to the destination. */
   destinationCredentialId: string | null;
   /** Webhook auth methods clients use to call the channel. */
   clientAuthMethodIds: string[];
