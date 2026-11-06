@@ -1,6 +1,6 @@
-import { useState } from "react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard, { AuthFooterLinks } from "@/components/auth/AuthCard";
+import { useCarriedFlash } from "@/components/auth/useCarriedFlash";
 import SsoLogin from "@/components/auth/SsoLogin";
 import Button from "@/components/primitives/Button";
 import Form from "@/components/primitives/Form";
@@ -45,19 +45,13 @@ export default function AuthLoginPage({ onLogIn, allowSignup, ssoProvider, flash
   // The refusal shows at the top of the card, where Lightning's flash is, not under the button.
   const { error, ...formProps } = form.formProps(onLogIn);
   const cardError = error ? errorMessage(error) : status?.state === "error" ? status.message : undefined;
-  // Once refused, the carried message stays gone, as Lightning re-renders with only the new flash.
-  const [replaced, setReplaced] = useState(false);
-  if (error && !replaced) setReplaced(true);
-  const carried = replaced ? null : flash;
+  const card = useCarriedFlash(flash, !!error, cardError);
 
   return (
     <AuthLayout title="Log in">
       <div id="login">
         <Form {...formProps}>
-          <AuthCard
-            error={cardError ?? (carried?.tone === "danger" ? carried.message : undefined)}
-            info={carried?.tone === "info" ? carried.message : undefined}
-          >
+          <AuthCard {...card}>
             <TextInput id="user_email" name="email" type="email" label="Email" required autoComplete="email" {...form.fieldProps("email")} />
             <PasswordInput id="user_password" name="password" label="Password" required autoComplete="current-password" {...form.fieldProps("password")} />
             <Button type="submit">Log in</Button>

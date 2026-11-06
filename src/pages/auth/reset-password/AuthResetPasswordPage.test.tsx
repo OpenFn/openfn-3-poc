@@ -39,6 +39,12 @@ describe("AuthResetPasswordPage", () => {
     expect(screen.queryByText("Reset password link is invalid or it has expired.")).toBeNull();
   });
 
+  it("shows a carried danger message as an error", () => {
+    open({ flash: { tone: "danger", message: "Reset password link is invalid or it has expired." } });
+    expect(screen.getByRole("alert").textContent).toContain("Reset password link is invalid or it has expired.");
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
   it("needs a new password, and a confirmation that matches it, before sending", () => {
     const page = open({ step: "reset" });
     resetPassword();

@@ -4,6 +4,7 @@ import { usePasswordResetSaves } from "@/api/passwordResets";
 import { useSession, useSignInOptions } from "@/api/session";
 import { authMessages } from "@/constants";
 import { useFlash } from "@/routing/flash";
+import type { Flash } from "@/types/auth";
 import AuthResetPasswordPage from "./AuthResetPasswordPage";
 
 /**
@@ -33,17 +34,20 @@ export default function AuthResetPasswordPageQuery() {
       flash={flash}
       onRequest={async ({ email }) => {
         await request(email);
-        void navigate("/users/log_in", { state: { flash: { tone: "info", message: authMessages.resetSent } } });
+        const carried: Flash = { tone: "info", message: authMessages.resetSent };
+        void navigate("/users/log_in", { state: { flash: carried } });
       }}
       onReset={async (values) => {
         try {
           await reset(token!, values);
         } catch (error) {
           if (!isApiError(error, "not_found")) throw error;
-          void navigate("/users/reset_password", { replace: true, state: { flash: { tone: "info", message: authMessages.resetInvalid } } });
+          const carried: Flash = { tone: "info", message: authMessages.resetInvalid };
+          void navigate("/users/reset_password", { replace: true, state: { flash: carried } });
           return;
         }
-        void navigate("/users/log_in", { state: { flash: { tone: "info", message: authMessages.resetDone } } });
+        const carried: Flash = { tone: "info", message: authMessages.resetDone };
+        void navigate("/users/log_in", { state: { flash: carried } });
       }}
     />
   );
