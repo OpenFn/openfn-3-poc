@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import AuthConfirmationRequiredPage from "./AuthConfirmationRequiredPage";
-import { authMessages } from "@/constants";
 import { RequestError } from "@/utils/errors";
 import { withCanvas, withRouter } from "@/stories/decorators";
 
@@ -23,7 +22,7 @@ export const Default: Story = {};
 export const Sent: Story = { play: resend };
 /** Three resends in 15 minutes: the server refuses a fourth. */
 export const Throttled: Story = {
-  args: { onResend: async () => ({ status: "throttled", message: authMessages.resendThrottled }) },
+  args: { onResend: async () => ({ status: "throttled" }) },
   play: resend,
 };
 export const Failed: Story = { args: { onResend: async () => ({ status: "failed" }) }, play: resend };

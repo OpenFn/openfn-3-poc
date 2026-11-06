@@ -16,8 +16,7 @@ export function setNeedsSetup(on = true) {
 
 /** Whether anyone may sign up. Only tests turn it on. */
 let signupAllowed = false;
-// ponytail: also reads the fixture, which reset's and confirm's tests still set by hand; auth-cleanup drops it.
-export const allowSignup = () => signupAllowed || authConfig.allowSignup;
+export const allowSignup = () => signupAllowed;
 export function setAllowSignup(on = true) {
   signupAllowed = on;
 }

@@ -7,6 +7,9 @@ export interface SsoProvider {
   handlerUrl: string;
 }
 
+/** The session states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */
+export type GateState = "signed_in" | "mfa_required" | "confirmation_required" | "signed_out";
+
 /** Which method the two-factor page asks for (`?authentication_type=`). */
 export type TwoFactorMethod = "totp" | "backup_code";
 

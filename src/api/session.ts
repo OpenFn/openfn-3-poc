@@ -1,7 +1,7 @@
 /** The signed-in session on Lightning's API (api/account.md: Get the instance, Sessions, Get the current user). */
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { FirstSetupValues, RegisterValues, SsoProvider } from "@/types/auth";
+import type { FirstSetupValues, GateState, RegisterValues, SsoProvider } from "@/types/auth";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues, ProfilePageData } from "@/types/profile";
 import type { ResourceStatus } from "@/types/resource";
 import type { Session, User } from "@/types/users";
@@ -86,13 +86,14 @@ export function profileOf({ id, attributes: a }: ApiMe, instance: ApiInstance): 
   };
 }
 
-/** What the login page offers: Register, and the first external provider (Lightning shows only one). */
-export function signInOptions(instance: ApiInstance | undefined): { allowSignup: boolean; ssoProvider: SsoProvider | null; needsSetup: boolean } {
+/** What the signed-out pages offer, from the instance. The first external provider only: Lightning shows one. */
+export function signInOptions(instance: ApiInstance | undefined): { allowSignup: boolean; ssoProvider: SsoProvider | null; needsSetup: boolean; releaseLabel: string } {
   const provider = instance?.sign_in_providers.find((p) => p.kind === "external");
   return {
     allowSignup: instance?.allow_signup ?? false,
     ssoProvider: provider ? { name: provider.name, handlerUrl: provider.start_url } : null,
     needsSetup: instance?.needs_setup ?? false,
+    releaseLabel: instance?.release.label ?? "",
   };
 }
 
@@ -109,20 +110,11 @@ const meQuery = queryOptions({
   queryFn: () => request<{ data: ApiMe }>("GET", "/api/me").then((answer) => answer.data),
 });
 
-/** The instance's sign-in options, before anyone signs in, and where loading them stands. Nothing extra until they load. */
-export function useSignInOptions(): { status: ResourceStatus; allowSignup: boolean; ssoProvider: SsoProvider | null; needsSetup: boolean } {
+/** What the signed-out pages read from the instance, and where loading it stands. Nothing extra until it loads. */
+export function useSignInOptions(): { status: ResourceStatus } & ReturnType<typeof signInOptions> {
   const query = useQuery(instanceQuery);
   return { status: statusOf(query), ...signInOptions(query.data) };
 }
-
-/** First setup's instance: whether it's a fresh install, and the release label the shell shows. Both are only meaningful once `status` is ready. */
-export function useFirstSetup(): { status: ResourceStatus; needsSetup: boolean; releaseLabel: string } {
-  const query = useQuery(instanceQuery);
-  return { status: statusOf(query), needsSetup: query.data?.needs_setup ?? false, releaseLabel: query.data?.release.label ?? "" };
-}
-
-/** The states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */
-type GateState = "signed_in" | "mfa_required" | "confirmation_required" | "signed_out";
 
 /**
  * Who is signed in, for the gate. `state` is the session's, or `signed_out`

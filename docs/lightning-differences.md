@@ -245,6 +245,7 @@ goes back to Lightning's way.
   can't check a link without using it (docs/api-gaps.md), so the replica
   shows the form and finds out when it's submitted. It then goes to the
   request page with the same words, where a new link can be asked for.
+- **`return_to` keeps the hash.** Lightning stores the path and query; a browser never sends it the `#…`. The replica keeps the in-app path, query and hash.
 - **On a fresh install, only signed-in pages and log in go to first setup.**
   Lightning sends every browser page to `/first_setup` until the first
   superuser exists. The replica sends them from SessionGate and the login
