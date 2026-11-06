@@ -69,6 +69,22 @@ export const users: User[] = [
     scheduledDeletion: null,
     contactPreference: "critical",
   },
+  {
+    id: "user-una",
+    firstName: "Una",
+    lastName: "Confirmed",
+    email: "unconfirmed@openfn.org",
+    role: "user",
+    confirmedAt: null,
+    insertedAt: "2024-06-20",
+    mfaEnabled: false,
+    githubConnected: false,
+    experimentalFeatures: false,
+    supportUser: false,
+    disabled: false,
+    scheduledDeletion: null,
+    contactPreference: "critical",
+  },
 ];
 
 /**

@@ -10,7 +10,7 @@ import { backupCodes } from "@/mock-data/tokens";
 import { hasActivityInProjects } from "@/mock-data/profile";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
-import { invalid, json, noContent, problem, ORIGIN, type Handler, type Problem } from "./answers";
+import { invalid, json, noContent, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
 import { spendBackupCode } from "./mfa";
 
 /**
@@ -24,6 +24,8 @@ export const FAKE_MFA_CODE = "123456";
 export const FAKE_BACKUP_CODE = backupCodes[0]!.code;
 /** The one reset link the fake knows: it sets Esther's (editor@openfn.org) password, once until a reload or reset. */
 export const FAKE_RESET_TOKEN = "fake-reset-token";
+/** The one confirm link the fake knows: it confirms Una's account (unconfirmed@openfn.org), once until a reload or reset. */
+export const FAKE_CONFIRM_TOKEN = "fake-confirm-token";
 
 /** How long a step-up lasts (api/authentication.md, session tokens). */
 const STEP_UP_MS = 5 * 60_000;
@@ -173,7 +175,11 @@ function stepUp(body: Record<string, unknown>) {
 export function refuse(route: string, headers: Headers): Response | undefined {
   const { userId, mfaPendingId, csrf } = read();
   // Need no token (api/account.md): they answer signed out and while an MFA code is owed.
-  const tokenless = route === "GET /api/instance" || route === "POST /api/password_resets" || route === "PUT /api/password_resets/:token";
+  const tokenless =
+    route === "GET /api/instance" ||
+    route === "POST /api/password_resets" ||
+    route === "PUT /api/password_resets/:token" ||
+    route === "POST /api/confirmations";
   const open = tokenless || route === "POST /api/session" || route === "DELETE /api/session";
   const hasSession = Boolean(userId || mfaPendingId);
   if (!hasSession) return open ? undefined : unauthenticated();
@@ -244,6 +250,18 @@ export const sessionRoutes: Record<string, Handler> = {
     resetTokenUsed = true;
     setPassword(people.find((u) => u.email === "editor@openfn.org")!.id, body["password"] as string);
     return noContent();
+  },
+
+  // Answers the same whether or not the email has an account. The fake sends nothing.
+  "POST /api/confirmations": () => new Response(null, { status: 202 }),
+  // ponytail: only the account link is faked; email-change and credential-transfer tokens answer 404 until a page needs them.
+  "PUT /api/confirmations/:token": ({ token }) => {
+    const user = currentUser();
+    if (token !== FAKE_CONFIRM_TOKEN || user.email !== "unconfirmed@openfn.org" || user.confirmedAt) {
+      return problem({ status: 404, code: "not_found", detail: "Not found." });
+    }
+    user.confirmedAt = now();
+    return json(200, { data: { confirmed: "account" } });
   },
 
   "GET /api/me": () => json(200, meJson(currentUser())),

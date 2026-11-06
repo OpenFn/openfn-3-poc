@@ -115,6 +115,7 @@ export const authMessages = {
     "If your email is in our system, you will receive instructions to reset your password shortly.",
   resetDone: "Password reset successfully.",
   resetInvalid: "Reset password link is invalid or it has expired.",
+  confirmDone: "User confirmed successfully.",
   confirmInvalid: "User confirmation link is invalid or it has expired.",
   confirmSent:
     "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly.",

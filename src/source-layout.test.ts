@@ -60,7 +60,6 @@ describe("every page and component can be seen and checked", () => {
     const missing = pages.filter((path) => !sources[path.replace(".tsx", ".test.tsx")]);
     expectOnlyKnown(missing, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
-      "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
     ]);
   });
@@ -96,7 +95,6 @@ describe("every page and component can be seen and checked", () => {
       .filter((path) => !/\.(query|replica)\.tsx$/.test(path));
     expectOnlyKnown(direct, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
-      "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/auth/AuthRegisterPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/workflow-editor/WorkflowEditorPage.tsx",
