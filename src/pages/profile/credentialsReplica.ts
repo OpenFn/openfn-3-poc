@@ -21,8 +21,7 @@ import { fullName } from "@/utils/format";
 type Change = (f: CredentialsFixture) => Partial<CredentialsFixture>;
 
 /**
- * The replica's side of the credential index, shared by the user's
- * Credentials page and project settings: each action changes the fixture as
+ * The replica's side of project settings' credential index: each action changes the fixture as
  * Lightning's credential_index_component.ex would, and toasts its flash.
  * `fixture` is the state as last rendered; `update` applies a change to the latest.
  */
