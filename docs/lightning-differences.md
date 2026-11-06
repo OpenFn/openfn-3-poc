@@ -280,10 +280,12 @@ goes back to Lightning's way.
   fails, the replica says so and stays, rather than showing the login page
   while the session may still be live.
 
-- **Save stays pressable in the collaborator, YAML import and admin
-  collection modals.** Lightning disables Save until every row has an email
-  and a role, disables Create until the YAML looks right, and disables the
-  collection's Save until its name is URL safe. The replica keeps them
+- **Save stays pressable in the collaborator, YAML import, admin collection
+  and admin user modals.** Lightning disables Save until every row has an
+  email and a role, disables Create until the YAML looks right, disables the
+  collection's Save until its name is URL safe, and disables the user form's
+  Save with "All fields are required", even on edit, where the password is
+  optional (annotation 6.1). The replica keeps them
   pressable and says what's missing when pressed ("can't be blank", "Enter
   YAML content to create workflow"), and shows a row's email error only
   then, not while typing.
@@ -441,6 +443,100 @@ goes back to Lightning's way.
   collection found." (`index.ex:89-90`). His design has this screen
   (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
   its words win.
+
+## Admin users
+
+- **The columns.** Name (the full name, "(you)" on your row, the email under
+  it), Role ("User" or "Superuser", and "Support" for a support user) and
+  Status ("Enabled" or "Disabled", and a red "Deletes 21 Oct 2026" when one is
+  scheduled), all as badges. Lightning has First name, Last name, Email,
+  "Role*", "Enabled?", "Support?" and "Scheduled Deletion", with ticks and
+  the raw role (`user_live/components.ex`). The design has this screen and
+  these columns, so they win. It has a Last login column too, which the API
+  can't fill (docs/api-gaps.md, Changed, and that's fine).
+- **The deletion date is a day and year, in UTC**: "Deletes 21 Oct 2026".
+  Lightning shows "21 Oct  09:30", in UTC with no year and no label
+  (`user_live/components.ex:131-134`, annotation 6.2), so a reader can't tell
+  the year or the time zone. The time of day says nothing useful about a
+  purge that runs nightly.
+- **Only Name, Role and Status sort, and Name is the default.** Lightning
+  sorts every column and starts on email. The design has three columns,
+  each sorted by a field the API's planned `sort` takes.
+- **The server searches, sorts and pages the list**, 25 to a page, the search
+  300 ms after the last key, and all of it in the URL (`?q`, `?sort`, `?dir`,
+  `?page`). Lightning loads every user and filters and sorts them in memory,
+  with no paging, and loses both on reload or after opening the dialog
+  (annotation 6.2, 6.4).
+- **Row actions are buttons.** Every row has Edit; a live user has Delete; a
+  scheduled one has Cancel deletion and a ••• menu holding Delete now.
+  Lightning puts them all in one Actions menu (`user_live/components.ex`).
+  Two quiet buttons, the rest in a menu, is the rule for every list
+  (PRINCIPLES.md, Row actions).
+- **A superuser's Delete is disabled with why**: "You can't delete your own
+  account" on your row, "Superusers can't be deleted" on the others.
+  Lightning shows a plain span with no explanation
+  (`user_live/components.ex:172-187`). A blocked control stays visible and
+  says why (PRINCIPLES.md, Everyone can use it).
+- **Delete now is disabled, with "Not available in the API yet".** Lightning
+  purges a scheduled user at once from the row's menu; the API only
+  schedules deletions (`api/misfits.md`), so the item stays in the ••• menu,
+  disabled, with the reason under it.
+- **The words.** "New user", in sentence case, with the user-plus icon
+  (Lightning: "New User"); "Filter users" (Lightning: "Filter users...");
+  a line under the title and a footnote under the table in place of
+  Lightning's "*Note that a superuser can access everything…"; "No users
+  match." when nothing does, where Lightning shows the header with no rows.
+  The design has this screen, so its words win.
+- **A stale or unknown `/settings/users/:id/delete` goes to the list.**
+  Lightning raises on an unknown id (`user_live/index.ex:28-32`, annotation
+  6.2). A superuser's, or one already scheduled for deletion, goes to the
+  list too, since neither can be scheduled.
+- **Cancelling the deletion of a user who has already gone shows an error
+  toast with the server's reason.** Lightning crashes and reloads the page,
+  and its "Cancel user deletion failed" never says why
+  (`user_live/index.ex:40-50`, annotation 6.1, 6.2).
+
+## Admin user form
+
+- **New user and Edit open in a dialog over the users list**, at the same
+  URLs (`/settings/users/new`, `/settings/users/:id`). Lightning opens a
+  page titled "New User" or "Edit User".
+- **Format, length and taken-email errors appear on Save, from the
+  server.** Lightning checks them as you type, hashing the password on each
+  keystroke (annotation 6.4). The form checks only for blanks itself.
+- **No Scheduled Deletion field.** A deletion is scheduled from the list's
+  dialog. Lightning's form has a free-text date that revokes tokens without
+  disabling the user or emailing them (annotation 6.2).
+- **No confirmation email on create**, and so no "User created, but the
+  confirmation email could not be sent". The API emails nobody it creates
+  (docs/api-gaps.md, Changed, and that's fine; annotation S02, S03).
+- **Creating a user with support access is two requests.** The API can't
+  create one with it (docs/api-gaps.md), so the app creates the account,
+  then turns support access on; if that fails, an error toast says the user
+  was created without it.
+- **Your own account: Role, Support user, Disabled and Email are greyed,
+  each saying why, and there's no Password.** Email and password are changed
+  in Profile, which links from the Email hint. Lightning lets you change all
+  of them here and signs you out partway through the save (annotation 6.1).
+- **The last superuser can't be demoted or disabled.** The server's refusal
+  shows under Role or Disabled. Lightning lets one save lock everyone out of
+  admin (annotation 6.1).
+- **The heads-up shows whenever Support user is ticked**, including on
+  opening an account that already has it. Lightning shows it only after a
+  click (annotation 6.2).
+- **The Disabled checkbox has a label**, "Disabled", with "A disabled user
+  can't log in." under it. Lightning's checkbox has no label of its own
+  (annotation 6.1).
+- **The words.** The design's, in sentence case: "New user", "Edit" and the
+  user's name, "Create user", "First name", "Last name", "Support user", and
+  "Heads up" with "This user will be able to open every project that has
+  support access turned on.", plus hints under Password and Role. Lightning
+  has "New User", "Edit User", "Save", "First Name", "Last Name", "Support
+  User", "Heads Up!" and "access ALL projects that have support access
+  enabled" (annotation 6.2). Role lists User first; Lightning lists
+  Superuser first.
+- **An unknown `/settings/users/:id` goes to the list.** Lightning raises
+  (annotation 6.2).
 
 ## Admin projects
 

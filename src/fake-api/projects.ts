@@ -11,7 +11,7 @@ import { fullName } from "@/utils/format";
 import { matchesQuery } from "@/utils/search";
 import { compareBy, type SortValue } from "@/utils/useTableSort";
 import { FAILURE_STATES } from "@/types/workflow-health";
-import { badInclude, badSort, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, type Handler, type Problem } from "./answers";
+import { badInclude, badSort, DAY_MS, forbidden, invalid, isUuid, json, noContent, notFound, now, ORIGIN, paged, parseSort, problem, type Handler, type Problem } from "./answers";
 import { membersOf } from "./members";
 import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
 
@@ -63,7 +63,6 @@ const projectEntry = (p: Project, { members = true, stats = false, tree = true, 
   links: { self: `${ORIGIN}/api/projects/${p.id}` },
 });
 
-const DAY_MS = 86_400_000;
 const roleOf = (p: Project) => p.members.find((m) => m.userId === currentUser().id)?.role;
 const ownerOf = (p: Project) => people.find((u) => u.id === p.members.find((m) => m.role === "owner")?.userId);
 const ownerJson = (p: Project) => {

@@ -7,7 +7,7 @@
  */
 import { authConfig } from "@/mock-data/auth";
 import { backupCodes } from "@/mock-data/tokens";
-import { hasActivityInProjects } from "@/mock-data/profile";
+import { hasCreatedRun } from "@/mock-data/history";
 import { session as sessionFixture, users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { json, noContent, problem, ORIGIN, type Handler } from "./answers";
@@ -185,6 +185,7 @@ export const userJson = (u: User) => ({
       support_user: u.supportUser,
       disabled: u.disabled,
       scheduled_deletion: u.scheduledDeletion,
+      has_activity_in_projects: hasCreatedRun(u.id),
     },
     links: { self: `${ORIGIN}/api/users/${u.id}` },
   },
@@ -196,7 +197,6 @@ export const meJson = (u: User) => ({
     ...userJson(u).data,
     attributes: {
       ...userJson(u).data.attributes,
-      has_activity_in_projects: hasActivityInProjects,
       mfa_enabled: u.mfaEnabled,
       has_password: true,
       inserted_at: u.insertedAt,

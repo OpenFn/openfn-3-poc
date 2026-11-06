@@ -72,8 +72,6 @@ describe("every page and component can be seen and checked", () => {
     expectOnlyKnown(replicas, [
       "./pages/admin/AdminAuthProvidersPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",
-      "./pages/admin/AdminUserEditPage.replica.tsx",
-      "./pages/admin/AdminUsersPage.replica.tsx",
       "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
       "./pages/auth/FirstSetupPage.replica.tsx",
       "./pages/history/ChannelRequestShowPage.replica.tsx",
@@ -166,8 +164,6 @@ describe("every page and component can be seen and checked", () => {
       "./components/auth/AuthLayout.tsx",
       "./pages/admin/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
-      "./pages/admin/AdminUserEditPage.tsx",
-      "./pages/admin/AdminUsersPage.tsx",
       "./pages/auth/FirstSetupPage.tsx",
       "./pages/history/ChannelRequestShowPage.tsx",
       "./pages/history/DataclipShowPage.tsx",
