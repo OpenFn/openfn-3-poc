@@ -79,7 +79,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
       "./pages/project-settings/ProjectSettingsPage.replica.tsx",
-      "./pages/projects/SandboxesIndexPage.replica.tsx",
       "./pages/projects/WorkflowHealthPage.replica.tsx",
     ]);
   });
@@ -172,7 +171,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/profile/backup-codes/BackupCodesPage.tsx",
       "./pages/project-settings/ProjectSettingsPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
-      "./pages/projects/SandboxesIndexPage.tsx",
       "./pages/projects/WorkflowHealthPage.tsx",
     ]);
   });

@@ -25,7 +25,7 @@ export { default as TokensPage } from "./pages/profile/tokens/TokensPage";
 export { default as ChannelsIndexPage } from "./pages/projects/channels/ChannelsIndexPage";
 export { default as MfaRequiredPage } from "./pages/projects/MfaRequiredPage";
 export { default as ProjectsDashboardPage } from "./pages/projects/dashboard/ProjectsDashboardPage";
-export { default as SandboxesIndexPage } from "./pages/projects/SandboxesIndexPage";
+export { default as SandboxesIndexPage } from "./pages/projects/sandboxes/SandboxesIndexPage";
 export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPage";
 export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
@@ -53,7 +53,7 @@ export type { CredentialsIndexPageProps } from "./pages/profile/credentials/Cred
 export type { TokensPageProps } from "./pages/profile/tokens/TokensPage";
 export type { ChannelsIndexPageProps } from "./pages/projects/channels/ChannelsIndexPage";
 export type { ProjectsDashboardPageProps } from "./pages/projects/dashboard/ProjectsDashboardPage";
-export type { SandboxesIndexPageProps } from "./pages/projects/SandboxesIndexPage";
+export type { SandboxesIndexPageProps } from "./pages/projects/sandboxes/SandboxesIndexPage";
 export type { WorkflowHealthPageProps } from "./pages/projects/WorkflowHealthPage";
 export type { WorkflowsIndexPageProps } from "./pages/projects/workflows/WorkflowsIndexPage";
 
@@ -173,7 +173,6 @@ export type {
   MergeTargetRef,
   MergeValues,
   MergeWorkflowRow,
-  SandboxForm,
   SandboxRow,
   SandboxValues,
 } from "./types/sandboxes";

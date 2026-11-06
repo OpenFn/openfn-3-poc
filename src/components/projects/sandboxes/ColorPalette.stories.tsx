@@ -15,3 +15,5 @@ export default meta;
 type Story = StoryObj<typeof ColorPalette>;
 
 export const Default: Story = {};
+/** A sandbox saved without a colour: no swatch is ticked until one is picked. */
+export const NoColour: Story = { args: { value: null } };

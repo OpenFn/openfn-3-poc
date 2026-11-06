@@ -1,30 +1,36 @@
-import type { SandboxForm, SandboxValues } from "@/types/sandboxes";
+import type { SandboxRow, SandboxValues } from "@/types/sandboxes";
 import { urlSafeName } from "@/utils/format";
 import { useForm } from "@/utils/useForm";
+import { blank } from "@/utils/validate";
 import FormModal from "@/components/primitives/FormModal";
 import NameField from "@/components/primitives/NameField";
 import ColorPalette from "./ColorPalette";
 
 /**
- * Create / edit a sandbox (SandboxLive.FormComponent): Name, the URL-safe
- * name it will get, and a colour. New sandboxes say which project they'll
- * sit under. `onSave` rejects with field errors (`rawName`) that show on the
- * field, or a message that shows above the form; on success the host moves
- * the user on, which closes the form.
+ * New sandbox, or rename and recolour one (SandboxLive.FormComponent): a
+ * name, shown as the URL-safe name it becomes, and a colour. Only a blank
+ * name is checked here; the server checks the rest, and its field errors
+ * (`name`) land on the field.
  */
 export default function SandboxFormModal({
-  form,
+  sandbox,
+  parent,
+  initialColor,
   onClose,
   onSave,
 }: {
-  form: SandboxForm;
+  /** The sandbox to edit; left out, the form makes a new one. */
+  sandbox?: SandboxRow | undefined;
+  /** Where a new sandbox goes: "created under the … project". */
+  parent: { name: string; isSandbox: boolean };
+  /** A new sandbox's colour until another is picked. */
+  initialColor: string;
   onClose: () => void;
   onSave: (values: SandboxValues) => Promise<void>;
 }) {
-  const isNew = form.mode === "new";
   const f = useForm<SandboxValues>({
-    initial: isNew ? { rawName: "", color: form.initialColor } : form.initial,
-    validate: (v) => (urlSafeName(v.rawName) === "" ? { rawName: ["can't be blank"] } : {}),
+    initial: sandbox ? { name: sandbox.name, color: sandbox.color } : { name: "", color: initialColor },
+    validate: ({ name }) => ({ name: blank(urlSafeName(name)) }),
   });
 
   return (
@@ -32,27 +38,26 @@ export default function SandboxFormModal({
       open
       onClose={onClose}
       size="md"
-      title={isNew ? "Create a new sandbox" : "Edit sandbox"}
+      title={sandbox ? `Edit ${sandbox.name}` : "New sandbox"}
       description={
-        isNew && (
+        !sandbox && (
           <>
-            This sandbox will be created under the <span className="font-medium">{form.parentName}</span>{" "}
-            {form.parentIsSandbox ? "sandbox" : "project"}.
+            This sandbox will be created under the <span className="font-medium">{parent.name}</span> {parent.isSandbox ? "sandbox" : "project"}.
           </>
         )
       }
       formId="sandbox-form"
-      onSubmit={f.modalSubmit(onSave)}
-      submitLabel={isNew ? "Create sandbox" : "Save changes"}
+      onSubmit={f.modalSubmit(({ name, color }) => onSave({ name: urlSafeName(name), color }))}
+      submitLabel={sandbox ? "Save" : "Create sandbox"}
+      errorHeader="The sandbox wasn't saved"
     >
-      {/* Lightning hides the hint while the name has errors. */}
       <NameField
         id="sandbox_raw_name"
         required
-        placeholder="My Sandbox"
-        {...f.fieldProps("rawName")}
+        placeholder="My sandbox"
+        {...f.fieldProps("name")}
         exampleName="my-sandbox"
-        badgeLabel={isNew ? "Your sandbox will be named" : "The sandbox will be named"}
+        badgeLabel="Your sandbox will be named"
       />
       <ColorPalette value={f.values.color} onChange={(hex) => f.set("color", hex)} />
     </FormModal>

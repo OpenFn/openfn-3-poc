@@ -10,6 +10,7 @@ import { json, noContent, notFound, now, problem, stepUpRequired, type Body, typ
 import { channelRoutes, resetChannels } from "./channels";
 import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
+import { sandboxRoutes } from "./sandboxes";
 import { auditRoutes } from "./audit";
 import { authProviderRoutes, resetAuthProvider } from "./authProvider";
 import { collectionRoutes, resetCollections } from "./collections";
@@ -57,6 +58,7 @@ const routes: Record<string, Handler> = {
   ...credentialRoutes,
   ...channelRoutes,
   ...projectRoutes,
+  ...sandboxRoutes,
   ...auditRoutes,
   ...collectionRoutes,
   ...dataclipRoutes,

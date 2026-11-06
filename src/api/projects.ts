@@ -29,6 +29,8 @@ export interface ApiProject {
     requires_mfa?: boolean;
     /** Planned, on `GET /api/projects/:id`: what the caller may do here (`create_workflow`, …). */
     permissions?: Partial<Record<ProjectAction, boolean>>;
+    /** Planned, on `GET /api/projects/:id`: whether the plan allows more, and why not. */
+    limits?: { sandboxes?: { allowed: true; message: null } | { allowed: false; message: string } };
     /** On `GET /api/projects/:id`; the list leaves them out. */
     members?: { email: string | null; role: ProjectRole }[];
   };
@@ -81,7 +83,7 @@ function projectNode({ id, attributes: a }: ApiProject): ProjectNode {
 }
 
 // `GET /api/projects/:id`, one cache entry for useProject and useProjectPermissions.
-const projectQuery = (id: string | undefined) =>
+export const projectQuery = (id: string | undefined) =>
   queryOptions({
     queryKey: projectKeys.one(id ?? ""),
     // No id (a page outside any project): nothing to load.
@@ -223,11 +225,18 @@ export function useProjectSaves() {
       request<{ data: ApiProject }>("PUT", `/api/projects/${crypto.randomUUID()}`, project),
     onSuccess: reload,
   });
-  const scheduleDeletion = useMutation({ mutationFn: (id: string) => request<void>("DELETE", `/api/projects/${id}`), onSuccess: reload });
+  // `leave` runs once the server has agreed and before the lists reload, so a page about to lose its project can go first.
+  const scheduleDeletion = useMutation({
+    mutationFn: ({ id }: { id: string; leave?: (() => void) | undefined }) => request<void>("DELETE", `/api/projects/${id}`),
+    onSuccess: (_answer, { leave }) => {
+      leave?.();
+      return reload();
+    },
+  });
   const cancelDeletion = useMutation({ mutationFn: (id: string) => request<unknown>("DELETE", `/api/projects/${id}/scheduled_deletion`), onSuccess: reload });
   return {
     create: async (project: NewProject) => void (await create.mutateAsync(project)),
-    scheduleDeletion: async (id: string) => void (await scheduleDeletion.mutateAsync(id)),
+    scheduleDeletion: async (id: string, leave?: () => void) => void (await scheduleDeletion.mutateAsync({ id, leave })),
     cancelDeletion: async (id: string) => void (await cancelDeletion.mutateAsync(id)),
   };
 }

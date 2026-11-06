@@ -1,54 +1,35 @@
-/** The sandboxes page's shapes. Types only: no data, no behaviour. */
+/** The sandboxes page's shapes, written by hand from Lightning's sandbox_live/ and api/projects.md. Types only. */
 
-// ---------------------------------------------------------------------------
-// The sandboxes page's contract (SandboxesIndexPageProps), written by hand
-// from Lightning's sandbox_live/. The shapes that cross the page boundary.
-
-/** A project in the workspace tree, as a card on the sandboxes page. */
+/** A project in the workspace, as a card on the sandboxes page. */
 export interface SandboxRow {
   id: string;
   name: string;
-  /** The card's colour strip; null uses the primary colour. Ignored for a root that isn't a sandbox (always indigo). */
+  description: string | null;
+  /** The card's colour strip; null uses the brand colour. */
   color: string | null;
-  /** The environment badge ("staging"); null for none. A root that isn't a sandbox shows "main" instead. */
-  env: string | null;
+  /** The nearest project above it the viewer can open, or null at the top of what they can see. */
+  parentId: string | null;
+  /** That project's name, for "Made from …". */
+  parentName: string | null;
   /** When it will be purged, or null while it's live. A scheduled card is struck through and offers Restore. */
   scheduledDeletion: string | null;
-  /** Where clicking a live card goes: the project's workflows. */
-  workflowsHref: string;
-  /** The route that opens the edit form (Lightning's is under the sandbox's parent). Null for a root that isn't a sandbox. */
-  editHref: string | null;
-  /** Each false greys its button with Lightning's "not authorized" tooltip. All false once scheduled. */
+  /** The server's answers for the viewer; each false greys its menu item with Lightning's reason. All false at the top of the workspace. */
   canEdit: boolean;
   canDelete: boolean;
   canMerge: boolean;
   /** Restore. False on a live sandbox. */
   canCancelDeletion: boolean;
-  /** Why Restore is blocked (the plan's sandbox limit), or null. */
-  restoreBlockedReason: string | null;
-  /** Live sandboxes under this one, which deleting it takes with it. */
-  activeDescendantCount: number;
+  /** Live listed sandboxes below it, which deleting or merging it takes too. */
+  descendantCount: number;
+  /** Whether the page's own project is this one or below it, so deleting it leaves the page. */
+  holdsCurrent: boolean;
+  /** The live projects in the workspace it could merge into: not itself, not its own sandboxes, its parent first. */
+  mergeTargets: MergeTargetRef[];
 }
 
-/** The create or edit form, open when the route says so (/sandboxes/new, /sandboxes/:id/edit). */
-export type SandboxForm =
-  | {
-      mode: "new";
-      /** The project (or sandbox) the new sandbox goes under: "created under the X project". */
-      parentName: string;
-      parentIsSandbox: boolean;
-      /** Lightning picks a random palette colour for a new sandbox. */
-      initialColor: string;
-    }
-  | {
-      mode: "edit";
-      sandboxId: string;
-      initial: SandboxValues;
-    };
-
-/** What the form saves: the name as typed (the host derives the URL-safe name) and a palette colour, or null when none is picked. */
+/** What the create and edit form saves: `name` as typed until it's sent URL-safe, and a palette colour, or null when none is picked. */
 export interface SandboxValues {
-  rawName: string;
+  name: string;
   color: string | null;
 }
 
@@ -58,57 +39,37 @@ export interface MergeTargetRef {
   name: string;
 }
 
-/** A workflow in the merge list, with Lightning's badges. */
+/** A workflow a merge would change, with Lightning's badges. */
 export interface MergeWorkflowRow {
+  /** The sandbox's workflow, or the target's for a deleted one. */
   id: string;
   name: string;
-  /** Changed in the sandbox, or new. Changed ones start selected. */
-  isChanged: boolean;
-  /** Also changed in the target since the fork: merging loses that change. */
+  /** Also changed in the target since the sandbox was made: merging loses that change. */
   isDiverged: boolean;
-  /** Not in the target; merging creates it. */
-  isNew: boolean;
-  /** Deleted in the sandbox; selecting it deletes it from the target. Starts unselected. */
+  /** Deleted in the sandbox; ticking it deletes it from the target. Starts unticked. */
   isDeleted: boolean;
 }
 
-/** A credential only the sandbox has, which the merge can add to the target. */
+/** A credential only the sandbox has, which the merge can bring into the target. */
 export interface MergeCredentialRow {
   /** The sandbox's project credential id. */
   id: string;
   name: string;
 }
 
-/** The host's answer to "what would merging into this target do". */
+/** What merging into one target would do. */
 export interface MergePreviewResult {
-  /**
-   * Projects in the workspace the viewer may merge into: live, not the sandbox, not under it, and where the
-   * viewer is owner, admin or editor (index.ex `get_merge_target_options`). Merging into any other is refused.
-   */
-  targets: MergeTargetRef[];
-  /** The target this preview is for (the sandbox's parent by default), or null when there's none to pick. */
-  targetId: string | null;
+  targetId: string;
   workflows: MergeWorkflowRow[];
   credentials: MergeCredentialRow[];
-  /** Collections only the sandbox has, which the merge creates in the target. */
-  collectionsToAdd: string[];
 }
 
-/** What "Merge" sends. The host re-checks every id. */
+/** What "Merge into …" sends. The server checks every id against its own preview. */
 export interface MergeValues {
   targetId: string;
-  /**
-   * The ticked workflows to carry over: the sandbox workflow ids of the preview's rows that aren't `isDeleted`.
-   * The host keeps only ids its own latest preview for `targetId` lists, as Lightning's
-   * `resolve_selected_workflow_ids` splits against the preview it holds (Sandboxes.merge's `selected_workflow_ids`).
-   */
+  /** The ticked rows that aren't `isDeleted`: sandbox workflow ids. */
   workflowIds: string[];
-  /**
-   * The ticked `isDeleted` rows: target workflow ids to delete from the target. The host keeps only ids from its
-   * own latest preview's `isDeleted` rows (Sandboxes.merge's `deleted_target_workflow_ids`).
-   */
+  /** The ticked `isDeleted` rows: target workflow ids to delete from the target. */
   deletedWorkflowIds: string[];
   credentialIds: string[];
-  /** Previewed collections the user unticked. Any other sandbox-only collection is still created. */
-  skippedCollectionNames: string[];
 }

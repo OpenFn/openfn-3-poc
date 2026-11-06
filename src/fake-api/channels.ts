@@ -5,7 +5,8 @@ import type { ChannelRequest } from "@/mock-data/models/channels";
 import { webhookAuthMethods, webhookAuthMethodsIn } from "@/mock-data/project-settings";
 import { SEEDED_AT, forbidden, invalid, isUrl, json, noContent, notFound, now, ORIGIN, paged, problem, type Body, type Handler, type Problem } from "./answers";
 import { credentialName, isCredentialIn } from "./credentials";
-import { canEnter, findProject, permissionsIn } from "./projects";
+import { permissionsIn } from "./permissions";
+import { canEnter, findProject } from "./projects";
 
 interface StoredChannel {
   id: string;
