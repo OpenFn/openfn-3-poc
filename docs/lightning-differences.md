@@ -442,6 +442,41 @@ goes back to Lightning's way.
   (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
   its words win.
 
+## Admin authentication
+
+- **No Test button.** Lightning tests the discovery URL without saving,
+  and Save doesn't wait for a passing test, so a plaintext `http://` URL
+  can be saved and then fails every sign-in (`form_component.ex:196-203`).
+  Here Save does the check and refuses a discovery document it can't use,
+  under Discovery URL. The API has no way to check without saving
+  (api/misfits.md, Form helpers). Lightning's scenarios S05 to S07 don't
+  apply.
+- **No Redirect host field.** Lightning lets the superuser type the host
+  the redirect URI starts with (`auth_config_form.ex:47-49`); here it starts
+  with the instance's own URL, as the API builds `redirect_uri`.
+- **No "Trust unverified emails from this provider" checkbox**, until the
+  API has the field (docs/api-gaps.md, We clearly need these).
+- **/settings/authentication/new shows the provider when one exists.**
+  Lightning shows a blank form there, and saving it adds a second provider,
+  after which the edit page crashes (`index.ex:42-48`). The side menu links
+  to /new, so it was easy to hit.
+- **Remove asks first**, in a dialog that names the provider. Lightning
+  removes at once, though its copy says it turns off external
+  authentication (`form_component.ex:272-289`).
+- **The stored client secret never reaches the browser.** Lightning writes
+  it into the edit page's HTML as the input's value
+  (`form_component.ex:168-174`); here the box is blank and a blank secret
+  keeps the stored one.
+- **Save is never disabled, and the name's format and the https rule come
+  back from the server on Save.** Lightning disables Save while the form is
+  invalid and checks the name and URL as you type (`auth_config_form.ex`);
+  here the client checks only blanks (PRINCIPLES.md, Forms).
+- **The page's words and layout are openfn-ia-demo's**: one column, the line
+  under the title, the "No provider set up" notice, sentence-case labels
+  ("Client secret"), the redirect URI with a copy button, and the "Remove
+  provider" card. Lightning's Google help paragraphs and links go, since
+  they named one provider only (`form_component.ex:214-234`, `:260-270`).
+
 ## Admin projects
 
 - **No Edit.** Lightning's superuser can rename any project and change its

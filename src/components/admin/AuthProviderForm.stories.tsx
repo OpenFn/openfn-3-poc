@@ -1,55 +1,73 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { userEvent, within } from "storybook/test";
 import AuthProviderForm from "./AuthProviderForm";
-import { authProvider, emptyAuthProvider } from "@/mock-data/admin";
+import { authProvider, instanceUrl } from "@/mock-data/admin";
+import { RequestError } from "@/utils/errors";
 
 const resolve = async () => {};
 
 const meta: Meta<typeof AuthProviderForm> = {
   title: "Admin/AuthProviderForm",
   component: AuthProviderForm,
-  args: { provider: emptyAuthProvider, onSave: resolve, onTest: resolve, onRemove: resolve },
+  args: { provider: null, instanceUrl, onSave: resolve, onRemove: resolve },
 };
 export default meta;
 type Story = StoryObj<typeof AuthProviderForm>;
 
-export const New: Story = {};
-export const Existing: Story = { args: { provider: authProvider ?? emptyAuthProvider } };
-export const TestSucceeded: Story = { args: { provider: authProvider ?? emptyAuthProvider, initialTestState: "success" } };
-export const TestFailed: Story = { args: { provider: authProvider ?? emptyAuthProvider, initialTestState: "failed" } };
-
-const existing = authProvider ?? emptyAuthProvider;
-const click =
-  (selector: string): NonNullable<Story["play"]> =>
+const press = (name: string): NonNullable<Story["play"]> =>
   async ({ canvasElement }) => {
-    canvasElement.querySelector<HTMLButtonElement>(selector)?.click();
+    await userEvent.click(within(canvasElement.ownerDocument.body).getByRole("button", { name }));
   };
-const submit = click('button[type="submit"]');
 
-/** Save pressed with a bad name and URL and the rest blank: each field says why. */
-export const InvalidFields: Story = {
-  args: { provider: { ...emptyAuthProvider, name: "My Provider", discoveryUrl: "not-a-url" } },
-  play: submit,
-};
+export const New: Story = {};
+export const Existing: Story = { args: { provider: authProvider } };
 
-/** The host refuses the save with a message. */
-export const SaveRefused: Story = {
-  args: { provider: existing, onSave: () => Promise.reject(new Error("The provider could not be saved.")) },
-  play: submit,
-};
+/** Save pressed on a blank form: each field says it can't be blank, and focus goes to the first. */
+export const BlankFields: Story = { play: press("Save") };
 
-/** The host refuses Remove: the reason shows above the button. */
-export const RemoveFailed: Story = {
-  args: { provider: existing, onRemove: () => Promise.reject(new Error("The provider could not be removed.")) },
-  play: async ({ canvasElement }) => {
-    [...canvasElement.querySelectorAll("button")].find((b) => b.textContent?.trim() === "Remove")?.click();
+/** The server refuses the name's format and the discovery URL: each error under its field. */
+export const ServerFieldErrors: Story = {
+  args: {
+    provider: authProvider,
+    onSave: () =>
+      Promise.reject(
+        new RequestError("The request body is not valid.", {
+          fieldErrors: {
+            name: ["must be lower-case and only contain alphanumeric, dash and underscore characters"],
+            discovery_url: ["could not connect to discovery endpoint"],
+          },
+        })
+      ),
   },
+  play: press("Save"),
+};
+
+/** Any other refusal shows above the buttons. */
+export const SaveRefused: Story = {
+  args: { provider: authProvider, onSave: () => Promise.reject(new Error("Couldn't reach Lightning.")) },
+  play: press("Save"),
 };
 
 /** Save is still out: the button shows pending. */
-export const SavePending: Story = { args: { provider: existing, onSave: () => new Promise(() => {}) }, play: submit };
+export const SavePending: Story = { args: { provider: authProvider, onSave: () => new Promise(() => {}) }, play: press("Save") };
 
-/** Test is still out: the button shows pending. */
-export const TestPending: Story = {
-  args: { provider: existing, onTest: () => new Promise(() => {}) },
-  play: click("#test-button"),
+/** Remove asks first, naming the provider. */
+export const ConfirmRemove: Story = { args: { provider: authProvider }, play: press("Remove") };
+
+/** Remove is still out: the dialog's button shows pending. */
+export const RemovePending: Story = {
+  args: { provider: authProvider, onRemove: () => new Promise(() => {}) },
+  play: async (context) => {
+    await press("Remove")(context);
+    await press("Remove provider")(context);
+  },
+};
+
+/** The server refuses Remove: its words stay in the dialog. */
+export const RemoveRefused: Story = {
+  args: { provider: authProvider, onRemove: () => Promise.reject(new Error("Not found.")) },
+  play: async (context) => {
+    await press("Remove")(context);
+    await press("Remove provider")(context);
+  },
 };
