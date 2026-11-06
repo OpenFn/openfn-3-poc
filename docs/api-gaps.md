@@ -81,40 +81,37 @@ apart.
   Would need a stated refusal, such as 422 on `role` or `disabled`.
   Replica: on your own account Role and Disabled are greyed out, and the
   fake answers that 422.
-- **Credentials: a body field left out keeps its saved value**
-  (api/credentials.md). `PUT /api/credentials/:id` replaces the `main`
-  body whole. The app never sees saved secrets, so an edit form can't send
-  them back: it sends only the fields that were filled in. Would need a
-  replace to keep any field the body leaves out, as `client_secret` already
-  does for OAuth clients and the planned `refresh_token` does for OAuth
-  credentials. The same goes for a replace that sends no body at all, such
-  as a rename. Replica: the fake keeps them for an adaptor's schema, and
-  keeps the body when none is sent; a raw body sent is replaced whole.
-  Against Lightning as it is, a blank field would be saved blank, and a
-  rename alone refused.
-- **Credentials: no way to set an external ID** (api/credentials.md). The
-  credential object has `external_id`, but `POST` and `PUT
-  /api/credentials` don't take it (`unknown_key`). Would need
-  `external_id` on both. Replica: sends it, `null` for none, and the
-  fake accepts it.
-- **Credentials: no route for signing in to an OAuth provider**
-  (api/credentials.md). An `oauth` credential gets its token through
-  Lightning's sign-in callback, and the API has nothing to start one or say
-  how it ended. Would need a route that starts a sign-in and answers the
-  provider's URL, with the result as data. Replica: the Credentials page
-  doesn't add or edit OAuth credentials yet.
-- **Credentials: a transfer's refusal tells who has an account**
-  (api/credentials.md, Start a transfer). `not_found` at `#/recipient`
-  says the email has no account; `no_access` says it has one. Would need
-  one answer for both, such as `no_access` "They need an account and a role
-  in every project this credential is shared with". Replica: the fake
-  answers that.
-- **Projects: where you can link a credential** (api/projects.md,
-  api/credentials.md). Linking needs editor or above, but the project list
-  sends no `create_project_credential`; only the planned `role` under
-  `include=stats`. Would need that permission on each listed project.
-  Replica: the share pickers offer the projects whose role is owner, admin
-  or editor, which works out a permission from a role.
+- **Credentials: editing one secret wipes the others.** The app never sees
+  a credential's saved secrets, so when you edit one, it can only send the
+  fields you typed. The API replaces the whole set with what it's sent, so
+  any field you left blank would be saved blank, and changing only the name
+  would be refused. The API needs to keep any field that isn't sent, as it
+  already does for an OAuth client's secret. Until then, only the fake does
+  that, so this works in the app but not against Lightning yet.
+  (`PUT /api/credentials/:id`, `credential_bodies`)
+- **Credentials: an external ID can't be saved.** A credential shows its
+  external ID, but creating or editing one can't set it. The API needs to
+  accept it when saving. Until then the app sends it anyway, and the fake
+  accepts it; Lightning would refuse the save. (`external_id` on
+  `POST`/`PUT /api/credentials`)
+- **Credentials: no way to sign in to an OAuth provider.** An OAuth
+  credential gets its token when you sign in to Google, Salesforce and so
+  on. The API has no way to start that sign-in or hear how it ended. It
+  needs one: start a sign-in and get back the provider's page to open, then
+  find out whether it worked. Until then, the Credentials page can't add or
+  edit OAuth credentials.
+- **Credentials: a refused transfer tells you who has an account.** When
+  you hand a credential to someone, the API says either "no such user" or
+  "not in these projects", so anyone can find out whether an email has an
+  account. It should give one answer for both: "They need an account and a
+  role in every project this credential is shared with". Until then, the
+  fake gives that one answer. (`not_found` and `no_access` at
+  `#/recipient`)
+- **Projects: the app has to guess where you may share a credential.**
+  Sharing a credential with a project needs editor or above there, but the
+  project list doesn't say where you may. The app guesses from your role
+  in each project, which PRINCIPLES says it shouldn't. The list needs a
+  "can share credentials here" on each project. (`create_project_credential`)
 
 ## Changed, and that's fine
 
@@ -149,15 +146,15 @@ The replica shows less, or shows it another way, and nothing breaks.
   `remember_me` field, and the session cookie's lifetime is Lightning's to
   set. Would need a `remember_me` boolean on sign in. Replica: checkbox left
   out (docs/lightning-differences.md).
-- **Credentials: which workflows use a credential** (api/credentials.md).
-  Lightning warns before unsharing a credential from a project whose
-  workflows use it, naming them. The list doesn't say;
-  `GET /api/workflows?credential_id=…&project_id=…` does, one request per
-  project. Replica: no warning.
-- **Credentials: who a transfer is waiting on** (api/credentials.md).
-  Brandon's design shows "Waiting for <email> to accept"; `transfer_status`
-  says only `pending`. Replica: the badge without the name.
-- **OAuth clients: projects come as ids** (api/credentials.md, OAuth
-  clients). A client sends `project_ids`, where a credential sends
-  `projects` with names. Replica: names them from the project list, so the
-  OAuth clients table waits for that list too.
+- **Credentials: no warning before unsharing a credential that's in use.**
+  Lightning names the workflows that would lose a credential before you
+  take a project away from it. The credentials list doesn't say which
+  workflows use one; asking takes one extra request per project. Until the
+  list says, there's no warning. (`GET /api/workflows?credential_id=…`)
+- **Credentials: a pending transfer doesn't say who it's for.**
+  openfn-ia-demo shows "Waiting for <email> to accept"; the API only says
+  a transfer is pending. Until it sends the email, the row shows "Transfer
+  pending" without it.
+- **OAuth clients: projects come without names.** A credential lists its
+  projects by name; an OAuth client only by id. The app looks the names up
+  in the project list, so the OAuth clients table waits for that list too.
