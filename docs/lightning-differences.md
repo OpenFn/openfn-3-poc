@@ -1,555 +1,352 @@
 # Where we differ from Lightning on purpose
 
 What a page does starts from Lightning: the scenario tests check each page
-against it. Looks and words come from Brandon's design where he has the
-screen (PRINCIPLES.md, Where the design comes from). Every place this app
-does or says something different from Lightning, or drops something, is
-listed here, so a failing test or a comparison run can be told apart from a
-mistake. Each entry says what Lightning does, where, and why we differ.
+against it. Looks and words come from openfn-ia-demo's design where it has
+the screen (PRINCIPLES.md, Where the design comes from). This file lists
+every place where this app does or says something different from Lightning,
+or drops something, so a failing test or a comparison run can tell a
+deliberate difference from a mistake.
 
-Looks that come from Brandon's design don't need an entry. The older entries
-below are mostly where Lightning styles the same thing two ways and the
-replica picked one.
+Looks need no entry: a look that comes from openfn-ia-demo or from a
+primitive (sizes, shades, spacing, focus rings) is expected to differ, and
+the comparison run ignores it. Colours are darker than Lightning's in many
+places so text passes contrast; docs/colour.md says how.
 
-Add an entry in the PR that makes the difference; delete it if the replica
+Add an entry in the PR that makes the difference, saying what's different
+for the person using it, what Lightning does, and why. Delete it if the app
 goes back to Lightning's way.
 
-## Buttons
+## Signing in
 
-- **Pending buttons, and disabled buttons that say why, keep keyboard focus.**
-  They're `aria-disabled` and ignore presses, so focus isn't lost when a
-  button goes pending and Tab reaches the tooltip's reason. Lightning
-  disables them natively (`new_inputs.ex:268-280`, `phx-disable-with`), which
-  drops focus and hides the reason from the keyboard. A disabled button with
-  no reason is natively disabled in both.
-- **Disabled buttons take their own colours, the same family as Lightning's.**
-  Primary, danger and success fill with their 300 shade, as Lightning does
-  (`new_inputs.ex:232-247`), and secondary and plain buttons go grey
-  (`bg-disabled`, `text-disabled`). They are roles, not a fade, so a theme can
-  change them (docs/colour.md).
-- **One focus ring colour.** Lightning's danger and success buttons draw a
-  red or green focus outline (`new_inputs.ex:244,249`); the replica uses the
-  focus colour on every button, so focus always looks the same.
-- **A pending button's spinner replaces its icon.** Lightning's Run button
-  swaps its play icon for a spinning `hero-arrow-path`
-  (`collaborative-editor/components/NewRunButton.tsx:62`); the replica uses
-  Button's own spinner, as every pending button does. The "Processing" label
-  is Lightning's.
-- **Icons in medium buttons are 16px.** Lightning draws 20px in two places
-  (Generate New Token in the empty tokens list, Add Additional Collaborator)
-  and 16px in the rest.
-- **Icon buttons share Button's heights**: a square of 28, 32, 36 or
-  40px, so an icon lines up with the text buttons beside it. Lightning sizes
-  each one by hand, from a bare 20px modal X to 28px editor buttons.
-- **The AI chat's send button is a primary button, at half strength when disabled.**
-  Lightning turns it grey (`collaborative-editor/components/ChatInput.tsx:368`).
-- **The cancel-run X is grey, darker on hover**. Lightning turns it
-  red on hover (`run_live/workorder_component.ex:262,422`). Red is kept for
-  what can't be undone, like deleting a token
-  (`tokens_live/index.html.heex:104`); a cancelled run can be retried.
-- **Icon buttons have no hover background.** Hover darkens the icon only, so
-  it looks the same on white and grey surfaces. Some Lightning icon buttons
-  add a grey square on hover, others don't.
+- **The password is required on the login form.** An empty one says "can't
+  be blank". Lightning marks only the email as required, though it needs
+  both, so here an empty password is caught before the form is sent.
+- **Login has no Remember me checkbox.** Lightning's keeps you signed in for
+  60 days. The API's sign-in has no such option yet (docs/api-gaps.md).
+- **A failed log out says so and stays.** Lightning always lands on the
+  login page with "Logged out successfully.", as this app does when logging
+  out works. If it fails, the page says so rather than showing the login
+  page while the session may still be live.
+- **A signed-out page's message is a status, not an alert.** Lightning marks
+  its info message `role="alert"` on log in and reset password. Here it is
+  `role="status"`, so a screen reader reads it in turn rather than
+  interrupting.
+- **A dead reset link is found on submit, not on opening it.** Lightning
+  checks the link when it's opened, says "Reset password link is invalid or
+  it has expired." and sends the person to log in. The API can't check a
+  link without using it (docs/api-gaps.md), so here the form shows and,
+  once submitted, goes to the request page with the same words.
+- **A dead confirm link shows its error after "Confirm my account" is
+  pressed.** Lightning checks the link when it's opened and goes to
+  /projects with "User confirmation link is invalid or it has expired."
+  Here the page shows, and the same words appear in the card once the
+  button is pressed, for the same reason as reset.
+- **The confirm page has no "Log in" or "Register" links.** Only someone
+  signed in reaches it, so neither leads anywhere useful. The resend page
+  keeps both.
+- **The confirm-your-email page says "your email address" and has no
+  "Change email address" form.** Lightning shows the address and a form to
+  change it. The API has no route for either while locked out
+  (docs/api-gaps.md), so a mistyped address needs an administrator.
+- **Arriving at the confirm-your-email page shows no "Your account is
+  blocked…" message.** Lightning shows it above a body that says the same
+  thing.
+- **A throttled or failed resend replaces "We have sent…".** Lightning keeps
+  the earlier message beside the new warning; here only the latest shows.
+- **On a fresh install, only log in and signed-in pages go to first setup.**
+  Lightning sends every page to /first_setup until the first superuser
+  exists. Here reset, register, confirm, confirm-your-email and two-factor
+  opened directly stay put: none of them can do anything without an account.
+  Register, with sign-up on, shows its form and its create makes the
+  superuser, as first setup's does.
+- **Once set up, /first_setup goes to the projects list**, where Lightning
+  answers a plain-text 404. The API can't say why setup is closed
+  (docs/api-gaps.md).
+- **First setup and register check the email's format and the password's
+  length after Save or Register, in the server's words.** Lightning checks
+  while typing, and first setup shows "Password minimum length is 12
+  characters." twice. Here the page checks only for blanks, the matching
+  confirmation and the terms box, and the server brings the rest ("must be
+  a valid email address", "should be at least 12 character(s)").
+- **A signed-in visitor to register goes to the projects list, even with
+  sign-up off.** Lightning answers with the plain-text "Self-signup has been
+  disabled" 404. The signed-in check comes first, as on reset password.
+- **A new user always lands on the projects list.** Lightning can make a
+  starter project and open its new workflow page. The API can't say a
+  project was made (docs/api-gaps.md).
+- **The two-factor and confirm-access boxes have a label, not a heading.**
+  Lightning heads the panel "Authentication Code" or "Password" and puts the
+  help text under the button. Here the same words are the field's label,
+  with the help text as its hint, so a screen reader reads them with the
+  box.
 
-## Page header
+## Moving around
 
-- **A page inside a project names itself under the bar.** Lightning's bar
-  holds the breadcrumb and, on some pages, the main button, and the page name
-  is only the last crumb (`LayoutComponents.header`). The replica keeps the
-  bar with the breadcrumb, and adds a row under it with the page title, its
-  count and the main button or search: "Workflows (3)" with "Create new
-  workflow". Lightning put those in the body's `table_title` on Workflows,
-  Sandboxes and Channels, so every page now names itself in one place.
-- **Top-level pages keep their title in the bar, and their main button moves
-  up beside it.** Lightning puts "Create project" and "Create collection"
-  under a second "Projects (3)" / "Collections (3)" title in the body
-  (`dashboard_live/user_projects_section.ex:74`, `collection_live/index.ex:99`);
-  the replica shows the count in the bar title and drops the repeat.
-- **History's Work Orders / Channel Logs tabs sit beside its title.**
-  Lightning puts them in the bar (`run_live/index.html.heex:22`).
-- **A detail page's short id is in its title, as plain text.** Lightning
-  ends the breadcrumb with "Run" and a light short id (or a mono one for a
-  channel request); the replica's breadcrumb ends with "Run" and the title
-  row reads "Run 5e9a1c2b". How a short id looks is still open. A
-  run's snapshot chip ("latest") sits beside the workflow's name in the
-  run's details, since it names that workflow's version; Lightning puts it
-  after the id in the breadcrumb.
-- **A workflow's Health page names the workflow in the header**, with the
-  range picker beside it; Lightning puts both at the top of the page body.
-- **A `>` follows the project picker in the breadcrumb**, the workflow
-  editor's included, and a project page's breadcrumb ends with the page's
-  name ("Workflows"). Lightning shows no `>` after the picker, and the
-  Workflows page shows the picker alone.
-- **Channels' last crumb stays "Channels" while its form is open.**
-  Lightning changes it to "New Channel" or "Edit Channel"; the replica's
-  form is a modal over the list, so the page underneath hasn't changed.
-- **"Create new workflow" is a link**, since it opens a page; disabled, it's a
-  disabled button with the reason, as in Lightning, where it's always a
-  button.
-- **Workflows is Brandon's list** (D40, D44, D45): a line under the title,
+- **The project menu has Build and Maintain groups, and an "All projects"
+  link.** Lightning lists a project's pages in one flat list. Here, following
+  openfn-ia-demo's design: "All projects", then Workflows, Channels and
+  Sandboxes under Build, and History and Settings under Maintain.
+- **A project page names itself in a row under the top bar.** In Lightning the
+  page name is only the last crumb, and Workflows, Sandboxes and Channels
+  repeat it in the body with the count and main button. Here the title row
+  holds the title, its count and the main button or search ("Workflows (3)"
+  with "Create new workflow"), so every page names itself in one place.
+  Lightning's Workflows breadcrumb has only the project picker; here it ends
+  with "Workflows".
+- **History's tabs and a Health page's workflow name sit in the title row
+  too.** Lightning puts History's Work Orders / Channel Logs tabs in the bar,
+  and a Health page's workflow name and range picker in the page body. Here
+  they join the row where the page names itself.
+- **Projects and Collections keep their title and count in the bar, with
+  Create beside it.** Lightning puts Create under a second "Projects (3)" /
+  "Collections (3)" title in the body. Here the bar's title carries the
+  count, so a second title would only repeat it.
+- **A detail page puts its short id in the title.** Lightning ends the
+  breadcrumb with the id. Here it ends with "Run", and the title reads "Run
+  5e9a1c2b", as every page names itself in the title row. A run's
+  "latest" chip sits beside the workflow's name in the run's details, since
+  it names that version. Lightning puts it after the id in the breadcrumb.
+- **A project you can't open shows Not Found or No Access in place**, with
+  the side menu still there (the home menu, not the project's). Lightning
+  sends you to /projects and shows Not Found there. The API says No Access
+  to a non-member whether or not the project exists, so only a superuser
+  sees Not Found (`ProjectGate`).
+- **An admin page shows No Access in place to anyone but a superuser**, with
+  the side menu still there. Lightning sends you to /projects and shows "No
+  Access" there. /dashboard, which has no menu, still goes to /projects,
+  without a message, because Lightning's is a whole No Access screen
+  (`AdminGate`).
+
+## Lists
+
+- **A list page's create button stays in the header, and its empty state is
+  words only.** Lightning's projects dashboard and admin collections move
+  Create into a dashed "Create a new one." box when the list is empty, and
+  API tokens shows the table's header with a second Generate button. Here the
+  button stays in the header while the list loads, fails or is empty, so it
+  never moves (`ListPage`).
+- **Clickable rows can be reached from the keyboard.** Lightning's clickable
+  rows only answer a click. Here each holds a link (projects, workflows) or a
+  toggle (history work orders) that Tab reaches, and a click on the row
+  clicks it.
+
+## Workflows
+
+- **Workflows follows openfn-ia-demo's design.** A line under the title says
   "Workflows move data between your connected systems.", then Name, Latest
-  run and Last updated, sorted by the server from the column headers. Search,
-  the four metric cards, the work order counts, the on/off switch, Health
-  and Delete are gone until his design or the API calls for them. The empty
-  state keeps Lightning's words without the "Create one" link, since Create
-  stays in the header.
-- **A workflow panel's title stays on one line.** A long node name ends
-  in "…", with the full title on hover. Lightning wraps it
-  (`collaborative-editor/components/inspector/InspectorLayout.tsx`), which
-  makes the header a different height for each node.
+  run and Last updated, sorted by the server from the column headers.
+  Lightning also has search, four metric cards, work order counts, an on/off
+  switch, Health and Delete; those wait until the design or the API calls for
+  them. The button and empty state keep Lightning's words ("Create new
+  workflow", "No workflows found. Create one to start automating.") without
+  its "Create one" link.
+- **"Create new workflow" is a link.** Lightning's is always a button. Here
+  it opens a page, so it's a link; disabled, it's a button that says why.
+
+## Workflow editor
+
+- **Picking a step or path with the keyboard moves focus into its
+  inspector.** In Lightning, Enter selects the node and focus stays on it, so
+  the inspector is only reached by tabbing past the rest of the diagram. Here
+  focus goes to the inspector's first field, and back to the step when the
+  inspector closes. A click leaves focus where it is, as in Lightning.
+- **Escape closes the inspector from inside one of its fields.** Lightning
+  ignores Escape in inputs, which leaves a keyboard user no way back to the
+  diagram. Elsewhere in the editor, Escape in an input still does nothing.
+- **A disabled Run says why on hover.** When the manual run's JSON doesn't
+  parse, "Run From Here" shows "Fix the JSON input to run". Lightning gives
+  no reason.
+
+## Channels
+
+- **The last crumb stays "Channels" while the form is open.** Lightning
+  changes it to "New Channel" or "Edit Channel". Here the form is a dialog
+  over the list, so the page underneath hasn't changed.
+
+## Project settings
+
+- **Disable parallel execution saves when you switch it, after a confirm.**
+  Lightning puts the switch in a form with its own Save and shows the "Heads
+  Up!" warning once switched. Here it asks first, with the same words, and
+  saves on confirm; switching it back saves at once. Where the plan doesn't
+  allow it, the switch is disabled with the plan's reason under it ("Not
+  allowed on Free plans"); Lightning shows whatever control the hosted plan
+  provides.
 
 ## User settings
 
 - **Profile, Credentials and API tokens are one settings page, as in
-  Brandon's UserSettingsPage** (openfn-ia-demo `src/pages/UserSettingsPage.tsx`,
-  `components/patterns/SettingsLayout.tsx`). The header says "User
-  settings" with his line under it, a menu of the three sits on the left,
-  and each page's own title becomes its section's heading. Lightning gives
-  each its own page title ("User Profile", "Credentials", "Personal Access
-  Tokens") and reaches them only from the side menu (`menu.ex:105-108`).
-  Like his, the side menu no longer lists them and the account menu has one
-  "User settings" item (Lightning lists Projects, User Profile, Credentials
-  and API Tokens in both, `layout_components.ex:165-170`); the settings menu
-  lists the three. The URLs and everything each page does stay Lightning's.
-- **The sections use his words.** "API tokens" with "Personal access tokens
-  let the OpenFn CLI and API act as you.", a "Generate new token" button
-  and "No personal access tokens" when there are none (Lightning:
-  "Personal Access Tokens", "Generate New Token",
-  `tokens_live/index.html.heex:13-18`). Credentials gains his line
-  "Credentials you own. Share them with any project you collaborate on."
-  Profile's section is headed by the user's name, as in his design, with
-  its cards as subheadings under it. The cards take his titles and the line
-  under each: "Basic information" ("Change your name and how often we
-  contact you."), "Change email", "Change password", "Multi-factor
-  authentication", "GitHub access" and "Delete account" ("Deleting your
-  account is irreversible, and your credentials go with it.") (Lightning:
-  "Change basic information", "Enable multi-factor authentication",
-  "GitHub Access", and no line under the forms).
-- **Profile is one column, in Brandon's layout.** Lightning's left column
-  (the name, "Change name, email, password, and request deletion.", then
-  "Created:" and "Email:") is gone: the name heads the section, with
-  "<email> · Member since <date>" under it, and the cards stack below. The
-  line about what the page does is dropped; the card titles say it.
-  "Delete account" stays a card with his line rather than his red callout:
-  our danger alert is announced to screen readers as an alert, which suits a
-  message, not a standing section.
-- **Parts of his screen we leave out, and why.**
-  - His breadcrumb ("User settings › API tokens"): Lightning has none here,
-    and the menu already marks the page.
-  - A "Generate new token" button in the empty state: one create button on
-    screen, as on every list page, and it stays in the section's header.
-  - His amber "Copy your token now" warning: the new-token banner keeps
-    Lightning's blue info alert and words until a second page needs a
-    warning tone.
-  - "New credential" and "New OAuth client" buttons: Credentials keeps
-    Lightning's one "Add new" menu, which covers both. His "Organization
-    credentials live in Systems" note: the API has no organisations or
-    systems yet.
-- **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
-  step after setting up MFA, not a section.
-
-## Tags
-
-- **A timed-out channel request is a warning (yellow).** Lightning draws the
-  Timeout state pill orange (`channel_state_pill`); the replica puts channel
-  states on Pill's tones, which have no orange.
-- **Exception and Lost run states are pale grey.** Lightning draws them dark
-  grey with white text (`state_pill`); the replica keeps every status pill
-  pale, so a list never mixes pale and solid.
-
-## Fields
-
-- **A name field hides "will be named …" while the name has an error.**
-  Lightning does this only in the sandbox form; its project and collection
-  forms keep the badge, so "Your project will be named my_project." sits
-  under "has invalid format" (`settings.html.heex:124-128`, `project.ex:108`).
-  The annotations mark that a bug to fix.
-- **A field with an error turns the typed text red too.** Lightning only
-  reddens the border (`new_inputs.ex`). Red text makes the wrong value easy
-  to spot. A dropdown's prompt stays dark; only a chosen value turns red.
-- **The manual run's JSON error sits under the editor.** Lightning puts it
-  above (`manual-run-panel/views/CustomView.tsx:91`). Every field in the
-  replica reads label, hint, control, error.
-- **The landing screen's "Recommended" badge sits at the right end of the
-  label row.** Lightning puts it next to "Build with AI". Every field keeps
-  its label, star and info icon on the left and one link or badge on the
-  right, as Lightning does for "New Credential".
-- **A picked option card has a primary border; the focus outline only shows
-  for the keyboard.** Lightning's webhook auth type cards draw the focus
-  outline round the picked card, so picked and focused look the same.
-
-- **Info icons are a grey outline everywhere.** Lightning's LiveView pages
-  draw a faded primary icon (`Common.tooltip`, `common.ex`); the
-  collaborative editor draws a grey outline (`ConfigureAdaptorModal.tsx`).
-  The replica uses the grey outline.
-
-
-- **Contact preference explains itself in a hint.** Lightning hides the
-  explanation in an info tooltip. The replica shows a shorter version under
-  the label, so people see what "Critical" means before they choose.
-
-- **A form's buttons sit on the right, the main action last.** Lightning's
-  settings and admin forms put Save on the left, before Cancel (profile,
-  project setup, data storage, MFA, the admin user, project and auth
-  provider forms, first setup); its modals put it on the right. The replica
-  uses the modal's order everywhere: Cancel, then Save. The auth provider's
-  Test sits before Save.
-- **No browser validation bubbles.** Lightning's forms let the browser show
-  "Please fill in this field" for a required field. The replica turns that
-  off, so only the field's own error shows, in the same red as every other.
-  Our checks cover what the browser did: blank required fields, and an email
-  without an @ ("must have the @ sign and no spaces", Lightning's own words).
-- **After a refused Save, focus moves to the first field with an error.**
-  Lightning leaves focus on the button.
-
-- **Data storage shows one card per setting.** Lightning puts its three
-  settings in one card, each with a heading, a paragraph and a divider
-  (`settings.html.heex:862-1053`). The replica gives each its own card with
-  a title and description, like every other settings tab, and one Save below
-  them. The plan's limit note is the History dropdown's hint. When the
-  Input/Output retention period doesn't apply, its dropdown is disabled;
-  Lightning also fades that section's title and description.
-
-- **A setting that waits for Save is a checkbox, not a switch.** Lightning
-  uses switches for the admin user's Support User and a channel's Enabled,
-  though neither applies until you press Save. The replica keeps switches for
-  things that take effect at once (enabling from a table, requiring MFA,
-  support access, experimental features), and for on/off settings in the
-  workflow editor (PRINCIPLES.md).
-- **Profile MFA has "Set up MFA" and "Disable MFA" buttons.** Lightning's
-  switch looks instant but starts a set-up form or asks to confirm, so the
-  replica shows the action it is.
-
-- **Disable parallel execution saves as you switch it, after a confirm.**
-  Lightning puts the switch in a form with its own Save and shows the "Heads
-  Up!" warning once switched. The replica asks first, with the same words,
-  and saves on confirm; switching it back off saves at once.
-  Lightning lets the hosted plan swap in its own control here; the replica
-  keeps the switch and shows the plan's reason ("Not allowed on Free plans")
-  under it, disabled.
-
-- **The login password is required.** Lightning marks only the email as
-  required on the login form. The replica marks both, and says "can't be
-  blank" for an empty password.
-- **Login has no Remember me checkbox.** Lightning's keeps you signed in for
-  60 days (`user_session_html/new.html.heex`, `UserAuth.log_in_user/3`).
-  `POST /api/session` has no `remember_me` field (api/account.md), so the
-  replica leaves the box out until it does (docs/api-gaps.md).
-- **Being sent to log in says nothing; logging out says so.** Logging out
-  shows Lightning's "Logged out successfully." on the login page. Being sent
-  to log in says nothing, which is what Lightning does too now
-  (`require_authenticated_user` in `user_auth.ex` dropped its "You must log
-  in" flash). If signing out fails, the replica says so and stays, rather
-  than showing the login page while the session may still be live.
-- **A signed-out page's message is polite.** Lightning marks its info
-  flash `role="alert"` on log in and reset password. Here it is Alert's
-  `role="status"`, so a screen reader reads it in turn rather than
-  interrupting.
-- **A dead reset link is found on submit, not on opening it.** Lightning
-  checks the link when it's opened (`UserResetPasswordController`), flashes
-  "Reset password link is invalid or it has expired." and sends the person
-  to `/projects`, which bounces a signed-out browser to log in. The API
-  can't check a link without using it (docs/api-gaps.md), so the replica
-  shows the form and finds out when it's submitted. It then goes to the
-  request page with the same words, where a new link can be asked for.
-- **`return_to` keeps the hash.** Lightning stores the path and query; a browser never sends it the `#…`. The replica keeps the in-app path, query and hash.
-- **On a fresh install, only signed-in pages and log in go to first setup.**
-  Lightning sends every browser page to `/first_setup` until the first
-  superuser exists. The replica sends them from SessionGate and the login
-  page only; reset, register, confirm, confirm-required and two-factor
-  opened directly stay put, with no new gate in the shell. Two-factor and
-  confirm-required need a session a fresh install doesn't have; reset and
-  confirm only send or use emailed links, and a fresh install has no
-  account to email. Register shows its form with sign-up on, and its create
-  then shares first setup's and makes the superuser; with sign-up off it
-  shows Lightning's plain-text answer (docs/api-gaps.md).
-- **First setup checks the email's format and the password's length after
-  Save, in the server's words.** Lightning checks while typing and shows
-  "Password minimum length is 12 characters." twice, next to an 8-character
-  version of the same rule. The replica checks only for blanks and that the
-  confirmation matches; the server's 422 brings the rest ("must be a valid
-  email address", "should be at least 12 character(s)").
-- **Register checks the email's format and the password's length after
-  Register, in the server's words**, as first setup does. Lightning checks
-  both while typing; the replica checks for blanks and the terms box, and
-  the server's 422 brings the rest.
-- **A signed-in visitor to register goes to the projects list, even when
-  sign-up is off.** Lightning answers that visit with the plain-text "Self-signup
-  has been disabled" 404. The signed-in check comes first, as on reset
-  password, so a signed-in person isn't shown a message about signing up.
-- **No starter project for a new user.** Lightning's
-  `init_project_for_new_user` can make one and land the user on its
-  new-workflow page. The API has no way to say a project was made
-  (docs/api-gaps.md), so every new user lands on the projects list.
-- **The terms are required even when a request leaves them out.**
-  Lightning only refuses `terms_accepted` when it's sent false, so a
-  hand-built request without it registers with no recorded acceptance of
-  the host's terms (`user.ex` checks the change, never that it's there).
-  The replica's server refuses a missing one too.
-- **A second superuser can't be made from a stale first-setup tab, and the
-  confirmation is checked on every save.** Lightning's save doesn't check
-  again that setup is still needed, and checks the confirmation only while
-  typing, so a quick submit can save a password that doesn't match. Once
-  `needs_setup` is false the replica's server refuses the create, and the
-  page checks the match on every Save.
-- **A browser already signed in as someone else is signed in as the new
-  superuser.** Lightning keeps the old session and drops the handoff token,
-  so the new superuser isn't signed in. The API's create signs the person
-  in.
-- **A closed instance sends `/first_setup` to the projects list** rather
-  than answering a plain-text 404. `needs_setup` can't say why setup is
-  closed (docs/api-gaps.md).
-- **A dead confirm link shows its error after pressing "Confirm my
-  account".** Lightning checks the link when it's opened and sends the person to
-  `/projects` with "User confirmation link is invalid or it has expired."
-  The API can't check a link without using it (docs/api-gaps.md), so the
-  replica shows the page and, when "Confirm my account" is pressed, the same
-  words in the card.
-- **The confirm page has no "Log in" or "Register" links.** Only someone
-  signed in reaches it, so neither leads anywhere useful. The resend page
-  keeps both.
-- **Confirm-required doesn't show the address.** It says "your email
-  address". A locked-out person can't change the address there (no route
-  for it, docs/api-gaps.md), and showing it would need `/api/me`, which a
-  locked-out session can't read.
-- **Confirm-required has no "Change email address" form.** The API has no
-  route for it while locked out (docs/api-gaps.md), so a mistyped address
-  needs an administrator.
-- **Arriving at confirm-required shows no "Your account is blocked…"
-  message.** Lightning's redirect flashes it above a body that says the same
-  thing, so the replica leaves the flash out.
-- **A throttled or failed resend no longer leaves "We have sent…" on
-  screen.** Lightning keeps the earlier "sent" message beside the new
-  warning. The replica shows only the latest answer.
-
-- **Save stays pressable in the collaborator and YAML import modals, on
-  first setup and on register.** Lightning disables Save until every row
-  has an email and a role, disables Create until the YAML looks right, and
-  disables first setup's Save and register's Register until the form is
-  valid. The replica keeps them
-  pressable and says what's missing when pressed ("can't be blank", "Enter
-  YAML content to create workflow"), and shows a row's email error only
-  then, not while typing.
-- **A disabled Run says why on hover.** When the manual run's JSON doesn't
-  parse, "Run From Here" shows "Fix the JSON input to run".
-
-- **Two-factor and confirm access are ordinary fields.** Lightning gives the
-  panel a large heading ("Password", "Authentication Code") and puts the help
-  text under the Verify or Confirm button. The replica uses a field label,
-  then the help text as its hint, then the box, as on every other form.
+  openfn-ia-demo's design.** The header says "User settings" with the
+  design's line under it, a menu of the three sits on the left, and each
+  page's title becomes its section's heading. Lightning gives each its own
+  page ("User Profile", "Credentials", "Personal Access Tokens") and lists
+  them in the side menu and the account menu. Here the side menu doesn't list
+  them and the account menu has one "User settings" item. The URLs and what
+  each page does stay Lightning's.
+- **API tokens and Credentials use openfn-ia-demo's words.** "API tokens",
+  "Personal access tokens let the OpenFn CLI and API act as you.", "Generate
+  new token" and "No personal access tokens", where Lightning says "Personal
+  Access Tokens" and "Generate New Token". Credentials gains "Credentials you
+  own. Share them with any project you collaborate on."
+- **Profile's cards use openfn-ia-demo's titles, with a line under each.**
+  "Basic information" ("Change your name and how often we contact you."),
+  "Change email" ("We'll send a confirmation link to the new address."),
+  "Change password" ("Confirm your current password to set a new one."),
+  "Multi-factor authentication", "GitHub access" and "Delete account"
+  ("Deleting your account is irreversible, and your credentials go with
+  it."). Lightning says "Change basic information", "Enable multi-factor
+  authentication" and "GitHub Access", with no line under the forms.
+- **Profile drops Lightning's left column**, following openfn-ia-demo's
+  one-column layout, and with it "Change name, email, password, and request
+  deletion.", "Created:" and "Email:". The name heads the section with
+  "<email> · Member since <date>" under it, and the cards stack below.
+- **Contact preference explains itself under the label.** Lightning hides
+  the explanation in an info tooltip. Here a shorter version shows as the
+  field's hint, so people see what "Critical" means before they choose.
+- **MFA has "Set up MFA" and "Disable MFA" buttons.** Lightning's switch looks
+  instant but opens a setup form or asks to confirm, so here each button
+  names what it does.
 - **Profile's first Save says why it's disabled.** Until something changes,
-  hovering or focusing it shows "No changes to save".
+  hovering or focusing it shows "No changes to save". Lightning's is
+  disabled with no reason.
+- **A new password keeps this session.** Lightning signs this browser in
+  again with a fresh session; the API ends only the other sessions. Both land
+  on /projects.
+- **Someone else's delete URL stays put.** Lightning answers
+  `/profile/:id/delete` for another user with a message and goes back to
+  /profile. Here the page shows the same words, "You can't perform this
+  action", in an alert at the top and opens no dialog.
+
+## Credentials
+
+- **Credentials has two tables, each with its own create button**, "New
+  credential" and "New OAuth client", as in openfn-ia-demo's design.
+  Lightning has one "Add new" menu. The tables take the design's columns:
+  the external ID sits under the name, projects are listed as text, and each
+  environment is named, where Lightning has an External ID column, project
+  pills and a count of environments.
+- **A pending transfer or a scheduled deletion shows on the row.** A badge
+  says "Transfer pending" or "Scheduled for deletion", and a pending transfer
+  says "Confirm it from the email we sent you." In Lightning the only sign is
+  the wording in the row's menu.
+- **A credential scheduled for deletion offers only Cancel deletion and
+  Delete now.** Lightning also offers Transfer and Edit, but the API refuses
+  both until the deletion is cancelled.
+- **The result of an action shows above its table, not in a toast.** Success
+  fades after five seconds, like a toast; a refusal stays until the next
+  result.
+- **Credentials uses openfn-ia-demo's words.** The empty tables say "No
+  credentials yet" and "No OAuth clients yet". Results say "OAuth client
+  created successfully" and "`<name>` deleted". The transfer, delete and
+  OAuth client dialogs use the design's titles, labels and buttons, in
+  sentence case, here and in project settings, which shares them; the delete
+  dialog says "steps" where Lightning says "jobs".
+- **Editing never shows a saved secret.** Lightning loads a credential's
+  values, and an OAuth client's secret, into the edit form. Here they start
+  blank and a blank one keeps what's saved, because the API never sends them.
+- **For now, the credential form can only change `main`, and can't take a
+  project away.** Saving says so instead of doing it. This goes when the form
+  moves to the API's environment and project routes.
+- **For now, OAuth credentials can't be added or edited here.** Edit says
+  why. Transfer and delete still work. The API has no way to sign in to the
+  provider yet.
+- **A refused transfer doesn't say whether the email has an account.**
+  Lightning says "User does not exist", or names the projects the person
+  isn't in, which tells anyone whether they have an account. Here both get
+  "They need an account and a role in every project this credential is shared
+  with".
+- **Sharing offers only the projects you edit or own.** Lightning offers
+  every project you belong to, but the API only lets editors and above share
+  there.
+
+## Confirming it's you
+
+- **Confirming access is a pop-up over the page, not a trip to another
+  page.** Lightning sends you to `/auth/confirm_access` and back. Here every
+  action that needs it opens one dialog with that page's words, then runs the
+  action again once you've confirmed, so nothing you were doing is lost. A
+  wrong password shows on the field rather than above the form. So there is
+  no `/auth/confirm_access` route (`StepUpDialog`).
+- **Turning MFA off and deleting your account ask for your password.**
+  Lightning asks for neither; its Delete account only asks you to type your
+  email. The API needs a freshly confirmed session for both, so the pop-up
+  opens after you press Disable or Delete account, unless you confirmed in the
+  last five minutes.
+- **Backup codes ask for your password on the page.** Lightning sends you to
+  confirm access first. Here the server holds the codes back, so the page
+  opens the pop-up over itself. Closing it leaves "Confirm it's you to see
+  your backup codes." and a "Confirm access" button where the codes go.
+
+## Admin
+
+- **The live dashboard at /dashboard is a static picture.** Lightning serves
+  Phoenix's LiveDashboard there, a third-party page this app can't run.
+- **The audit trail doesn't show which credential environments an event
+  recorded.** Lightning lists them under a credential event. The API leaves
+  them out, so there's nothing to show.
+- **The audit trail's pages say "Page 2 of 3"**, not "Showing 11 to 20 of 24
+  total results", and the actor is one line ("Amy Admin (demo@openfn.org)")
+  with a short id under it, where Lightning puts the email under the name.
+  The API sends no total and joins the actor into one string
+  (docs/api-gaps.md, Audit trail: the total, and the actor).
+
+## Forms everywhere
+
+- **No browser validation bubbles.** Lightning's forms let the browser say
+  "Please fill in this field". Here that's off, so only the field's own error
+  shows. Our checks cover what the browser did: blank required fields, and an
+  email without an @ ("must have the @ sign and no spaces", Lightning's own
+  words).
+- **After a refused Save, focus moves to the first field with an error**, so
+  keyboard and screen reader users land on the problem. Lightning leaves
+  focus on the button.
+- **A form's buttons sit on the right, the main action last.** Lightning's
+  settings and admin forms put Save first, on the left; its dialogs put it on
+  the right. Here every form uses the dialog's order, Cancel then Save, so
+  Save is in the same place everywhere.
+- **A setting that only applies on Save is a checkbox, not a switch**:
+  Channels' Enabled and the admin user form's Support User. Lightning uses a
+  switch for both, which looks like it takes effect at once.
+- **Save and Create stay pressable until the form is right.** Lightning
+  disables Save in the collaborator dialogs until every row has an email and
+  a role, Create in the YAML import until the YAML looks right, and first
+  setup's Save and register's Register until the form is valid. Here
+  pressing them says what's missing ("can't be blank", "Enter YAML content to
+  create workflow"), so nobody faces a dead button without knowing why. A
+  row's email error shows only then, not while typing.
+- **"Will be named …" hides while the name has an error.** Lightning does
+  this only in the sandbox form; its project and collection forms show "Your
+  project will be named my_project." under "has invalid format". The
+  annotations call Lightning's way a bug.
+- **Pending buttons, and disabled buttons that say why, keep keyboard
+  focus.** Lightning disables them outright, which drops focus and hides the
+  reason from the keyboard. Here they ignore presses but stay focusable
+  (`aria-disabled`). A disabled button with no reason is disabled outright in
+  both.
+- **An error toast stays until you close it.** Lightning hides every toast
+  after 5 seconds, so a failure is easy to miss. Success toasts still fade
+  after 5 seconds.
 
 ## File uploads
 
-- **One drop zone for both uploads.** Lightning styles the manual run upload
-  (`manual-run-panel/FileUploader.tsx`) and the YAML import
-  (`yaml-import/YAMLFileDropzone.tsx`) differently: a link-coloured "Upload a
-  file" in one, a grey icon tile and primary "YML"/"YAML" in the other. The
-  replica uses one look for both.
-- **An error shows inside the zone and stays.** Lightning's manual run error
-  is a red box that vanishes after 3.5 seconds, and its YAML error is red text
-  under a grey zone. The replica tints the zone red, puts the message in place
-  of the hint, and keeps it until a valid file comes in, so nobody misses it.
+The manual run's upload and the YAML import share one drop zone, and so one
+set of rules (`FileDropZone`).
+
+- **An error shows inside the zone and stays until a valid file comes in.**
+  Lightning's manual run error vanishes after 3.5 seconds, which is easy to
+  miss.
 - **File types are checked by extension.** Lightning's manual run checks the
-  type the browser reports, which some systems leave empty; the replica checks
-  the extension in both, as Lightning's YAML import does.
-- **The 8MB limit applies to both.** Lightning only enforces it on YAML import;
-  the manual run hint promises it but never checks.
-- **"Only 1 file can be uploaded".** Lightning's manual run says "Only 1 files
-  can be uploaded".
-
-## Toasts
-
-- **An error toast stays until dismissed.** Lightning hides every toast
-  after 5 seconds, so a failure reported after a redirect is easy to miss
-  (its own audit flags this: `shared-flash-messages.md`, section 6.2).
-  Success toasts still fade after 5 seconds.
-
-## Empty states
-
-- **One look for "nothing here" and "loading".** Lightning builds them a
-  dozen ways: the table's dashed `empty_state` (`table.ex:313`), History's
-  `async_filler` row, centred muted text in the run viewer and manual run
-  panel, its own blocks in MiniHistory and the sandboxes list. The replica
-  uses `EmptyState` for all of them, and `Table`'s `state` for a list that
-  is loading or failed. History's loading and error messages sit under the
-  table's header, not in a row of the body.
-- **No header-only table when a list is empty.** Lightning's API tokens page
-  shows the table's header, then the empty state with a second Generate New
-  Token button (`tokens_live/index.html.heex`); the replica shows only the
-  empty state, as every other list does, and the button stays in the header.
-- **A list page's create button stays in the header, and its empty state is
-  words only.** Lightning's projects dashboard and admin collections take
-  Create out of the header when the list is empty and put it in a dashed
-  "Create a new one." box (`DashboardLive.Components.user_projects_table`);
-  most of its other lists keep it in the header. The replica keeps it in the
-  header on every list page, while the list loads, fails or is empty, so
-  there's one rule and the button never moves (`ListPage`).
-- **14px text.** Lightning's dashed `empty_state` is 12px (`text-xs`); its
-  other empty states are 14px. The replica uses 14px in every one.
-- **24px icon.** Lightning's dashed `empty_state` icon is 48px (`w-12 h-12`)
-  and its other empty states use 32px; the replica uses 24px in every one.
-
-## Project access
-
-- **A project you can't open shows Not Found or No Access in place**, with
-  the sidebar still there. Lightning redirects to /projects and shows Not
-  Found there. ProjectGate shows the API's answer where the page would be:
-  the API says No Access (403) to a non-member whether or not the project
-  exists, and only a superuser hears Not Found.
-- **An admin page shows No Access in place to anyone but a superuser**, with
-  the sidebar still there. Lightning redirects to /projects and shows "No
-  Access" there. AdminGate shows the same words where the page would be.
-  /dashboard, which has no sidebar, still redirects to /projects without a
-  message, because Lightning's is a whole No Access screen, not a message
-  to carry.
-
-## Side menu
-
-- **The project menu has Build and Maintain groups and an "All projects"
-  link.** Lightning lists the project's pages in one flat run
-  (`Menu.project_items`, from `layout_components.ex:221`). The replica
-  follows Brandon's design: "All projects" (to /projects), then Workflows,
-  Channels and Sandboxes under Build, and History and Settings under
-  Maintain. Collapsed, the group names are hidden and only screen readers
-  get them.
-
-## Confirm access
-
-- **Confirming access is a pop-up on the page, not a trip to a page.**
-  Lightning sends the person to `/auth/confirm_access` and back
-  (`user_auth.ex:397-410`). Every action that needs it opens one dialog,
-  `StepUpDialog`, with that page's words, and runs the action again once the
-  person has confirmed, so nothing they were doing is lost. A wrong password
-  shows on the field rather than above the form.
-- **Turning MFA off and deleting your account ask for your password.**
-  Lightning asks for neither: `/profile` isn't a sudo route, and deleting
-  only asks you to type your email. The API needs a stepped-up session for
-  both (`api/account.md`, Turn off MFA; `api/users.md`, Delete a user), so
-  the popup opens after you press Disable or Delete account, unless you
-  confirmed in the last five minutes.
-- **A new password keeps this session.** Lightning signs this browser in
-  again with a fresh session after a password change; the API ends only the
-  other sessions (`api/users.md`, Update a user). Both land on /projects.
-- **Someone else's delete URL stays put.** Lightning answers
-  `/profile/:id/delete` for another user with a flash and goes back to
-  /profile. The page shows the same words, "You can't perform this action",
-  in an alert at the top and opens no dialog.
-- **Backup codes ask for your password on the page.** Lightning sends you
-  to Confirm access first. Here the server holds the codes back, so the page
-  opens the same pop-up over itself. Closing it leaves "Confirm it's you to
-  see your backup codes." and a "Confirm access" button where the codes go.
-- **The replica has no `/auth/confirm_access` route.** Nothing sends anyone
-  there, and on the API confirming is one `POST /api/session` the dialog
-  already sends. The page itself (`src/pages/auth/confirm-access/`) stays,
-  with its stories, because Lightning's design-system port renders it on its
-  own confirm-access screen.
-
-## Audit
-
-- **The audit trail no longer shows which credential environments an event
-  recorded.** Lightning's page lists the encrypted bodies under a credential
-  event (`audit_live/index.html.heex`). The API leaves them out of
-  `GET /api/audit_events` (api/audit-events.md), so the page has none to show.
-- **The audit trail's pagination says "Page 2 of 3", not "Showing 11 to 20 of
-  24 total results"**, and the actor is one line ("Amy Admin
-  (demo@openfn.org)") with the actor's short id under it, where Lightning puts
-  the email under the name. The API sends no total and joins the actor into
-  one string (docs/api-gaps.md, Audit trail).
-
-## Type
-
-- **The waiting messages in the log and dataclip viewers stay 12px.**
-  Lightning grows them to 16px when the panel is wide
-  (`viewers.ex:106,277`), the only text it sizes by panel width. In the
-  replica every piece of text has one size, from `Text`.
-- **A modal's title has a normal line height.** Lightning squeezes it to
-  20px (`modal.ex:109`); the replica uses `Heading size="lg"` as it is, so
-  the title lines up with the close button.
-- **Workflow Health's "Triage - grouped by failure type" is a normal
-  section heading.** Lightning makes it a small grey uppercase label
-  (`assets/js/health/WorkflowHealth.tsx:172`), unlike the card titles
-  beside it; the replica uses `Section`'s heading, so it matches Outcomes
-  and Failure breakdown.
-
-## Spacing
-
-- **The run page's details and step list have a gap when side by side.**
-  Below the wide layout (main area under 64rem), Lightning puts them in a row
-  with only a vertical gap (`run_live/show.ex:103`), so the step list touches
-  the details' values. The replica uses the same 24px gap both ways.
-
-## Colour
-
-- **Muted, faint and link text are a shade darker.** Lightning uses
-  gray-500 for muted text, gray-400 for faint and primary-400 for links;
-  the replica uses gray-600, gray-500 and primary-600, so text meets WCAG AA
-  contrast on white and on the grey page (`npm run test:stories` checks it).
-- **The release version under the sidebar logo is full strength.** Lightning
-  fades it to half (`opacity-50`), which falls below AA contrast on the
-  sidebar.
-- **Work-order states, field errors and the success button are darker.**
-  Lightning writes work-order states in the 500 shades next to their dot,
-  field errors in danger-600, and fills the success button with
-  success-600; the replica uses the 700s (success text 800), which meet AA.
-- **A sandbox chip on a light colour has dark text.** Lightning always writes
-  white on the sandbox's colour, which is unreadable on amber or green; the
-  replica picks dark or white text by the colour's luminance
-  (`prefersDarkText` in `src/utils/colour.ts`).
-- **Faded text is solid instead.** Lightning fades the read-only adaptor
-  (`AdaptorDisplay.tsx:197`, `opacity-50`) and the admin project form's
-  users with no role (`opacity-60`); the replica writes them in muted or
-  faint text, which reads as quieter but meets AA.
-- **The channel timing bars use the tag colours.** Lightning draws them in
-  the 300s and 400s behind 900 text (`timing.ex:277-388`); the replica uses
-  each hue's tag pair (a 100 fill, 700 text), the same colours as a tag of
-  that hue, so the text meets AA in every theme.
-- **A run state is one colour everywhere.** Lightning draws a state in
-  different shades in its pill, dot, text, step icon and canvas node (a
-  crash is orange-800 as an icon and orange-500 as text), and its health
-  charts use another set again (crashed pink, killed purple, lost teal,
-  exception blue). The replica gives each state a tone (docs/colour.md, Run
-  states) and draws its roles in every place: crashed is orange, killed
-  yellow, and pending, cancelled, lost and exception grey, in the charts
-  too.
-- **The selected item is one colour.** The current page, active filter chip,
-  chosen row and tab underline share `bg-selected`, `text-selected` and
-  `border-selected` (primary-50, 600 and 600). Lightning varies the edge
-  between 500 and 600 and an active chip's text between 600 and 700.
-- **Tooltips are dark grey, not dark indigo** (`bg-inverse`), like the
-  replica's other dark badges.
-- **Alert and warning icons are darker.** Lightning draws alert icons in the
-  400s; the replica uses each tone's icon role, which reaches 3:1 on white
-  (the warning icon is yellow-700).
-- **The live dashboard's cards are the brand fill**, not Phoenix's
-  gradients; it is a static stand-in for a third-party page.
-- **A danger link darkens on hover.** Lightning lightens it to red-600
-  (`app.css:176`), below AA on the grey page; the replica goes to
-  danger-800, as other links go darker on hover.
+  type the browser reports, which some systems leave empty, so a good file
+  can be refused; its YAML import already checks the extension.
+- **The 8MB limit applies to both.** Lightning only enforces it on YAML
+  import; the manual run's hint promises it but never checks.
+- **"Only 1 file can be uploaded".** Lightning's manual run says "Only 1
+  files can be uploaded", a slip.
 
 ## Accessible names
 
 - **A control's hidden name contains the text it shows.** Lightning's log
-  level button has no hidden name, and its adaptor picker names each option
-  "Select <name> adaptor" (`SearchableList/ListRow.tsx:42`). The replica
-  names the log level button "Log level: info", the adaptor button "Change
-  adaptor: http" and the proxy URL "Copy proxy URL: <url>", and an adaptor
-  option by its own text, so voice control users can say what they see.
-
-## Keyboard
-
-- **Picking a step or path with the keyboard moves focus into its
-  inspector.** In Lightning, Enter selects a React Flow node and focus stays
-  on it, so the inspector is only reached by tabbing past the rest of the
-  diagram. The replica puts focus on the inspector's first field, and when
-  the inspector closes, focus goes back to the step. A click leaves focus
-  where it is, as in Lightning.
-- **Escape closes the inspector from inside one of its fields.** Lightning's
-  keyboard provider ignores Escape in inputs, so a keyboard user in the
-  inspector would have no way back to the diagram. Elsewhere in the editor,
-  Escape in an input still does nothing.
-- **Clickable table rows can be reached from the keyboard.** Lightning's
-  clickable rows only respond to a click. In the replica each one holds a link
-  (projects, workflows) or a toggle button (history work orders) that Tab
-  reaches, and a click on the row clicks it.
+  level button has no name, and it names each adaptor option "Select <name>
+  adaptor". Here they read "Log level: info", "Change adaptor: http" and
+  "Copy proxy URL: <url>", and an adaptor option by its own text, so voice
+  control users can say what they see.

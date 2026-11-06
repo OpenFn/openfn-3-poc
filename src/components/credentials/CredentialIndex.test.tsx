@@ -3,11 +3,34 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { RouterProvider, type Router } from "@/routing/router";
 import { ToastProvider } from "@/components/primitives/Toast";
-import type { CredentialRow, OauthClientRow } from "@/types/credentials";
+import type { CredentialActions, CredentialIndexData, CredentialRow, OauthClientRow } from "@/types/credentials";
 import { RequestError } from "@/utils/errors";
 import { pickOption } from "@/test/select";
-import CredentialsIndexPage, { type CredentialsIndexPageProps } from "./CredentialsIndexPage";
+import CredentialIndex from "./CredentialIndex";
+import NewCredentialMenuButton, { projectCredentialMenuOptions } from "./NewCredentialMenuButton";
 import { isDisabled } from "@/test/disabled";
+
+type Props = CredentialIndexData & CredentialActions;
+
+const project = {
+  id: "p1",
+  keychainCredentials: [],
+  canCreateKeychainCredential: false,
+  canEditKeychainCredential: false,
+  onCreateKeychainCredential: async () => {},
+  onUpdateKeychainCredential: async () => {},
+  onDeleteKeychainCredential: async () => {},
+};
+
+/** The index with its "Add new" menu, in a project with no keychain credentials. */
+function IndexWithAddMenu(props: Props) {
+  return (
+    <>
+      <NewCredentialMenuButton options={projectCredentialMenuOptions(true, false)} />
+      <CredentialIndex {...props} project={project} canCreateProjectCredential />
+    </>
+  );
+}
 
 const dhis2: CredentialRow = {
   id: "cred1",
@@ -35,6 +58,7 @@ const sheets: CredentialRow = {
 const google: OauthClientRow = {
   id: "oc1",
   name: "Google Workspace",
+  clientId: "client-1",
   ownerEmail: "amy@example.org",
   global: false,
   projects: [{ id: "p1", name: "openhie" }],
@@ -49,7 +73,7 @@ const google: OauthClientRow = {
   canEdit: true,
 };
 
-const data = (): Omit<CredentialsIndexPageProps, `on${string}`> => ({
+const data = (): Omit<Props, `on${string}`> => ({
   credentials: [dhis2, sheets],
   oauthClients: [google],
   projects: [
@@ -61,7 +85,7 @@ const data = (): Omit<CredentialsIndexPageProps, `on${string}`> => ({
   canCreateGlobalOauthClient: false,
 });
 
-function renderPage(props: Partial<CredentialsIndexPageProps> = {}) {
+function renderPage(props: Partial<Props> = {}) {
   const router: Router = { navigate: vi.fn(), useHref: (to) => to, useLocation: () => ({ pathname: "/credentials", search: "", hash: "" }) };
   const done = () => vi.fn().mockResolvedValue(undefined);
   const handlers = {
@@ -90,15 +114,15 @@ function renderPage(props: Partial<CredentialsIndexPageProps> = {}) {
     onLoadOauthClientSecrets: vi.fn().mockResolvedValue({ clientId: "client-1", clientSecret: "shh" }),
     onDeleteOauthClient: done(),
   };
-  const page = (next: Partial<CredentialsIndexPageProps>) => (
+  const page = (next: Partial<Props>) => (
     <RouterProvider value={router}>
       <ToastProvider>
-        <CredentialsIndexPage {...data()} {...handlers} {...next} />
+        <IndexWithAddMenu {...data()} {...handlers} {...next} />
       </ToastProvider>
     </RouterProvider>
   );
   const { rerender } = render(page(props));
-  return { ...handlers, rerender: (next: Partial<CredentialsIndexPageProps>) => rerender(page({ ...props, ...next })) };
+  return { ...handlers, rerender: (next: Partial<Props>) => rerender(page({ ...props, ...next })) };
 }
 
 const dialog = () => screen.getByRole("dialog");
@@ -123,15 +147,14 @@ const configure = async (type: string) => {
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("CredentialsIndexPage", () => {
-  it("lists the viewer's credentials and clients as the host sends them, without an owner column", () => {
+// Each test drives the shared modals through several steps.
+describe("CredentialIndex", { timeout: 15_000 }, () => {
+  it("lists the credentials and clients as the host sends them, with their owner", () => {
     renderPage({ credentials: [dhis2, { ...sheets, oauthClient: null }] });
     const cells = (id: string) => [...row(id).querySelectorAll("td")].map((td) => td.textContent);
-    expect(cells("credentials-cred1").slice(0, 5)).toEqual(["DHIS2 play", "dhis2", "openhie", "dhis2-01", "2"]);
+    expect(cells("credentials-cred1").slice(0, 6)).toEqual(["DHIS2 play", "dhis2", "amy@example.org", "openhie", "dhis2-01", "2"]);
     expect(cells("credentials-cred2")[1]).toBe("oauth");
     expect(within(row("credentials-cred2")).getByLabelText("OAuth client not found")).toBeTruthy();
-    expect(screen.queryByRole("columnheader", { name: "Owner" })).toBeNull();
-    expect(document.getElementById("keychain-credentials-table-container")).toBeNull();
   });
 
   it("names an OAuth credential's type after its client", () => {
@@ -160,7 +183,7 @@ describe("CredentialsIndexPage", () => {
         externalId: "",
         schema: "dhis2",
         oauthClientId: null,
-        projectIds: ["p2"],
+        projectIds: ["p1", "p2"],
         environments: [{ name: "main", previousName: null, body: '{"hostUrl":"https://dhis2.example.org"}', signInId: null }],
       })
     );
@@ -274,10 +297,10 @@ describe("CredentialsIndexPage", () => {
     expect(actions("credentials-cred2").disabled).toBe(true);
     expect(actions("oauth-clients-oc1").disabled).toBe(true);
     await addNew("OAuth Client");
-    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
+    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth client" })).toBeTruthy();
     answer({ environments: [{ name: "main", body: "{}", oauth: null }] });
     await waitFor(() => expect(isDisabled(actions("credentials-cred2"))).toBe(false));
-    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
+    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth client" })).toBeTruthy();
   });
 
   it("doesn't open a late edit form after another modal opened and closed meanwhile", async () => {
@@ -314,7 +337,7 @@ describe("CredentialsIndexPage", () => {
   it("deletes a credential after confirming", async () => {
     const { onDeleteCredential } = renderPage();
     await choose("credentials-cred1", "Delete");
-    expect(dialog().textContent).toContain("Deleting this credential will immediately remove it from all jobs and projects.");
+    expect(dialog().textContent).toContain("Deleting this credential will immediately remove it from all steps and projects.");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Delete credential" }));
     await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1", { now: false }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -472,8 +495,8 @@ describe("CredentialsIndexPage", () => {
     const { onLoadOauthClientSecrets, onUpdateOauthClient } = renderPage();
     await choose("oauth-clients-oc1", "Edit");
     expect(onLoadOauthClientSecrets).toHaveBeenCalledWith("oc1");
-    expect(((await screen.findByLabelText(/Client Secret/)) as HTMLInputElement).value).toBe("shh");
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    expect(((await screen.findByLabelText(/Client secret/)) as HTMLInputElement).value).toBe("shh");
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     await waitFor(() =>
       expect(onUpdateOauthClient).toHaveBeenCalledWith("oc1", expect.objectContaining({ clientId: "client-1", clientSecret: "shh", projectIds: ["p1"] }))
     );
@@ -483,17 +506,17 @@ describe("CredentialsIndexPage", () => {
     const fieldErrors = { mandatoryScopes: ["mandatory is wrong"], optionalScopes: ["optional is wrong"], projectIds: ["projects are wrong"] };
     renderPage({ onUpdateOauthClient: vi.fn().mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors })) });
     await choose("oauth-clients-oc1", "Edit");
-    await screen.findByLabelText(/Client Secret/);
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    await screen.findByLabelText(/Client secret/);
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     for (const message of Object.values(fieldErrors).flat()) expect(await within(dialog()).findByText(message)).toBeTruthy();
   });
 
   it("splits pasted scopes on spaces and commas, as Lightning does, and merges them with the ones there", async () => {
     const { onUpdateOauthClient } = renderPage();
     await choose("oauth-clients-oc1", "Edit");
-    const mandatory = await screen.findByLabelText("Mandatory Scopes");
+    const mandatory = await screen.findByLabelText("Mandatory scopes");
     fireEvent.change(mandatory, { target: { value: "profile email,  offline" } });
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     await waitFor(() =>
       expect(onUpdateOauthClient).toHaveBeenCalledWith("oc1", expect.objectContaining({ mandatoryScopes: ["email", "offline", "openid", "profile"] }))
     );
@@ -503,9 +526,9 @@ describe("CredentialsIndexPage", () => {
     const fieldErrors = { global: ["only superusers can make a client global"] };
     renderPage({ canCreateGlobalOauthClient: true, onUpdateOauthClient: vi.fn().mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors })) });
     await choose("oauth-clients-oc1", "Edit");
-    await screen.findByLabelText(/Client Secret/);
+    await screen.findByLabelText(/Client secret/);
     fireEvent.click(within(dialog()).getByLabelText(/Make client global/));
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     expect(await within(dialog()).findByText("only superusers can make a client global")).toBeTruthy();
   });
 

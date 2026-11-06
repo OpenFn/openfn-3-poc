@@ -38,14 +38,18 @@ const projectScope = {
   onDeleteKeychainCredential: done,
 };
 
+const projectArgs = {
+  ...credentialIndexDataFor(fixture, project, session.user),
+  project: projectScope,
+};
+
 const meta: Meta<typeof CredentialIndex> = {
   title: "Credentials/CredentialIndex",
   component: CredentialIndex,
   decorators: [withGrayPanel],
   args: {
-    ...credentialIndexDataFor(fixture, undefined, session.user),
+    ...projectArgs,
     ...actions,
-    project: null,
     canCreateProjectCredential: true,
     canCreateGlobalOauthClient: true,
   },
@@ -53,24 +57,8 @@ const meta: Meta<typeof CredentialIndex> = {
 export default meta;
 type Story = StoryObj<typeof CredentialIndex>;
 
-/** /credentials: the signed-in user's own clients and credentials. */
-export const UserCredentials: Story = {
-  render: (args) => (
-    <div className="space-y-4">
-      <div className="flex justify-end"><NewCredentialMenuButton /></div>
-      <CredentialIndex {...args} />
-    </div>
-  ),
-};
-
-const projectArgs = {
-  ...credentialIndexDataFor(fixture, project, session.user),
-  project: projectScope,
-};
-
-/** Project settings: owner column, keychains, project "Add new" options. */
+/** With project settings' "Add new" options. */
 export const ProjectCredentials: Story = {
-  args: projectArgs,
   render: (args) => (
     <div className="space-y-4">
       <div className="flex justify-end"><NewCredentialMenuButton options={projectCredentialMenuOptions(true, true)} /></div>
@@ -82,15 +70,13 @@ export const ProjectCredentials: Story = {
 /** A project viewer: no row actions on keychains, and creating is refused. */
 export const ProjectViewer: Story = {
   args: {
-    ...projectArgs,
     project: { ...projectScope, canCreateKeychainCredential: false, canEditKeychainCredential: false },
     canCreateProjectCredential: false,
   },
 };
 
-export const Empty: Story = { args: { credentials: [], oauthClients: [] } };
-export const EmptyProject: Story = {
-  args: { ...projectArgs, project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
+export const Empty: Story = {
+  args: { project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
 };
 
 /** A credential's stored values are still loading: its Actions button spins and the other rows wait. */
