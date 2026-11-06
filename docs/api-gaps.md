@@ -119,6 +119,32 @@ Changed, and that's fine:
   can't change anything else either, so the replica drops the form and a
   mistyped address needs an administrator.
 
+## First setup (Lightning's `first-setup`)
+
+- **First setup's create isn't sign-up.** api/users.md plans a create without
+  a token only "on an instance that allows sign-up", with
+  `terms_accepted: true`. Lightning's first setup works with sign-up off and
+  asks for no terms. api/account.md says the first account becomes the
+  superuser, but not that these conditions are lifted. The spec should say
+  so. Replica: the fake lifts both while `needs_setup`.
+- **Is the first superuser confirmed?** Sign-up "emails them a confirmation
+  link"; Lightning's first setup leaves `confirmed_at` unset and sends
+  nothing, so under `require_email_verification` the only administrator is
+  locked out after 48 hours. The contract should say which. Replica:
+  unconfirmed, nothing sent.
+- **A create can't say "only as first setup".** A first-setup form
+  submitted after setup is done becomes an ordinary create (a plain user
+  under sign-up, or one made with the new superuser's session). It needs a
+  refusal for "already set up". Replica: 401 signed out, 403 signed in,
+  until register and the admin create define the rest.
+
+Changed, and that's fine:
+
+- **`needs_setup` hides why setup is closed.** It is false both once a
+  superuser exists and when a service account runs the instance, so the
+  replica can't show Lightning's "First setup is disabled for this
+  instance." 404.
+
 ## Session tokens (api/authentication.md, api/errors.md)
 
 - **No error code for a missing or wrong CSRF token.** Writes on a session

@@ -12,17 +12,19 @@ import { useFocusMainAfterSwap } from "@/utils/useFocusMainAfterSwap";
  * The parent of every signed-in route. Loads the session, the user and the
  * instance, and renders the page only once they're there. Signed out, it goes
  * to log in and comes back here after (`return_to`); a session still owing an
- * MFA code or an email confirmation goes to that page instead.
+ * MFA code or an email confirmation goes to that page instead. A fresh
+ * install goes to first setup, whoever is signed in.
  */
 export default function SessionGate() {
   const { pathname, search, hash } = useLocation();
   const here = encodeURIComponent(pathname + search + hash);
-  const { status, state, session } = useSession();
+  const { status, state, session, needsSetup } = useSession();
   // Arriving from another page: sign-in, two-factor, or a signed-out page's
   // redirect. Opening, reloading and Back are POPs. (A reload keeps the
   // entry's key, so the key can't tell an arrival from a reload.)
   const arrived = useNavigationType() !== "POP";
   useFocusMainAfterSwap(status.state === "loading", arrived);
+  if (needsSetup) return <Navigate to="/first_setup" replace />;
   if (state === "signed_out") return <Navigate to={`/users/log_in?return_to=${here}`} replace />;
   if (state === "mfa_required") return <Navigate to={`/users/two-factor?return_to=${here}`} replace />;
   if (state === "confirmation_required") return <Navigate to="/users/confirm-required" replace />;

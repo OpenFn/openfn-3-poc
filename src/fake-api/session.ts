@@ -5,12 +5,12 @@
  * stored it starts signed in as the first fixture user, as if the cookie were
  * already set.
  */
-import { authConfig } from "@/mock-data/auth";
 import { backupCodes } from "@/mock-data/tokens";
 import { hasActivityInProjects } from "@/mock-data/profile";
-import { session as sessionFixture, users } from "@/mock-data/users";
+import { users } from "@/mock-data/users";
 import type { User } from "@/types/users";
 import { invalid, json, noContent, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
+import { instanceRoutes, setNeedsSetup } from "./instance";
 import { lockedOut, openWhileLockedOut, resetResends, spendResend } from "./lockout";
 import { spendBackupCode } from "./mfa";
 
@@ -95,6 +95,13 @@ export function resetSession() {
   passwords.clear();
   resetResends();
   resetTokenUsed = false;
+  setNeedsSetup(false);
+}
+
+/** Signs this browser in as the user, replacing any session, as a create that signs the person in does. */
+export function startSession(userId: string) {
+  write(signedInAs(userId));
+  steppedUpUntil = 0;
 }
 
 /** Ends this browser's session, as signing out does. */
@@ -109,6 +116,9 @@ export function currentUser(): User {
   if (!user) throw new Error("currentUser is for routes that need a session");
   return user;
 }
+
+/** Whether someone is signed in, past any MFA code. */
+export const isSignedIn = () => Boolean(read().userId);
 
 /** Whether the session was stepped up in the last five minutes. */
 export const isSteppedUp = () => steppedUpUntil > Date.now();
@@ -129,7 +139,7 @@ const sessionData = () => {
 // Every refused sign-in or step-up is the same 401, whatever was wrong.
 const invalidCredentials = () =>
   problem({ status: 401, code: "invalid_credentials", detail: "The email, password or code is not valid." });
-const unauthenticated = () => problem({ status: 401, code: "unauthenticated", detail: "You must sign in first." });
+export const unauthenticated = () => problem({ status: 401, code: "unauthenticated", detail: "You must sign in first." });
 
 const codeIsGood = (body: Record<string, unknown>) =>
   body["mfa_code"] === FAKE_MFA_CODE || (typeof body["backup_code"] === "string" && spendBackupCode(body["backup_code"]));
@@ -139,8 +149,7 @@ function signIn(body: Record<string, unknown>) {
   // The second step: only the code, for the person who passed the password.
   if (body["email"] === undefined && mfaPendingId) {
     if (!codeIsGood(body)) return invalidCredentials();
-    steppedUpUntil = 0;
-    write(signedInAs(mfaPendingId));
+    startSession(mfaPendingId);
     return json(201, sessionData());
   }
   const user = people.find((u) => u.email === body["email"]);
@@ -150,8 +159,7 @@ function signIn(body: Record<string, unknown>) {
     write({ userId: null, mfaPendingId: user.id, csrf: `fake-csrf-${crypto.randomUUID()}` });
     return problem({ status: 401, code: "mfa_required", detail: "Enter the code from your authenticator app." });
   }
-  steppedUpUntil = 0;
-  write(signedInAs(user.id));
+  startSession(user.id);
   return json(201, sessionData());
 }
 
@@ -181,7 +189,8 @@ export function refuse(route: string, headers: Headers): Response | undefined {
     route === "GET /api/instance" ||
     route === "POST /api/password_resets" ||
     route === "PUT /api/password_resets/:token" ||
-    route === "POST /api/confirmations";
+    route === "POST /api/confirmations" ||
+    route === "POST /api/users";
   const open = tokenless || route === "POST /api/session" || route === "DELETE /api/session";
   const hasSession = Boolean(userId || mfaPendingId);
   if (!hasSession) return open ? undefined : unauthenticated();
@@ -278,22 +287,5 @@ export const sessionRoutes: Record<string, Handler> = {
 
   "GET /api/me": () => json(200, meJson(currentUser())),
 
-  "GET /api/instance": () => {
-    const signedIn = Boolean(read().userId);
-    const provider = authConfig.ssoProvider;
-    return json(200, {
-      data: {
-        needs_setup: false,
-        allow_signup: authConfig.allowSignup,
-        url: ORIGIN,
-        release: { label: sessionFixture.instance.releaseLabel, commit: null, image_tag: null, branch: null },
-        admin_email: signedIn ? sessionFixture.instance.adminEmail : null,
-        purge_deleted_after_days: 7,
-        sign_in_providers: provider ? [{ name: provider.name, kind: "external", start_url: `${ORIGIN}${provider.handlerUrl}` }] : [],
-        ai_assistant: true,
-        github_sync: false,
-        github_connect_url: null,
-      },
-    });
-  },
+  ...instanceRoutes,
 };

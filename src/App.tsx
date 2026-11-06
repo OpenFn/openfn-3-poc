@@ -12,7 +12,7 @@ import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPassword
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
 import AuthConfirmAccountPageQuery from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
 import AuthConfirmationRequiredPage from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage.query";
-import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
+import FirstSetupPage from "./pages/auth/first-setup/FirstSetupPage.query";
 
 import ProjectsDashboardPage from "./pages/projects/dashboard/ProjectsDashboardPage.query";
 import MfaRequiredPage from "./pages/projects/MfaRequiredPage";

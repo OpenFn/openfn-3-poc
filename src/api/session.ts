@@ -1,7 +1,7 @@
 /** The signed-in session on Lightning's API (api/account.md: Get the instance, Sessions, Get the current user). */
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { SsoProvider } from "@/types/auth";
+import type { FirstSetupValues, SsoProvider } from "@/types/auth";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues, ProfilePageData } from "@/types/profile";
 import type { ResourceStatus } from "@/types/resource";
 import type { Session, User } from "@/types/users";
@@ -40,6 +40,8 @@ export interface ApiMe {
 
 /** `GET /api/instance`'s `data`, the fields the app reads. */
 export interface ApiInstance {
+  /** A fresh install with no superuser yet: the first account made becomes one. */
+  needs_setup: boolean;
   allow_signup: boolean;
   release: { label: string };
   /** Null without a session token. */
@@ -85,9 +87,13 @@ export function profileOf({ id, attributes: a }: ApiMe, instance: ApiInstance): 
 }
 
 /** What the login page offers: Register, and the first external provider (Lightning shows only one). */
-export function signInOptions(instance: ApiInstance | undefined): { allowSignup: boolean; ssoProvider: SsoProvider | null } {
+export function signInOptions(instance: ApiInstance | undefined): { allowSignup: boolean; ssoProvider: SsoProvider | null; needsSetup: boolean } {
   const provider = instance?.sign_in_providers.find((p) => p.kind === "external");
-  return { allowSignup: instance?.allow_signup ?? false, ssoProvider: provider ? { name: provider.name, handlerUrl: provider.start_url } : null };
+  return {
+    allowSignup: instance?.allow_signup ?? false,
+    ssoProvider: provider ? { name: provider.name, handlerUrl: provider.start_url } : null,
+    needsSetup: instance?.needs_setup ?? false,
+  };
 }
 
 /** Every key under this one is the signed-in person's; a 401 elsewhere reloads it (ApiProvider). */
@@ -104,9 +110,15 @@ const meQuery = queryOptions({
 });
 
 /** The instance's sign-in options, before anyone signs in, and where loading them stands. Nothing extra until they load. */
-export function useSignInOptions(): { status: ResourceStatus; allowSignup: boolean; ssoProvider: SsoProvider | null } {
+export function useSignInOptions(): { status: ResourceStatus; allowSignup: boolean; ssoProvider: SsoProvider | null; needsSetup: boolean } {
   const query = useQuery(instanceQuery);
   return { status: statusOf(query), ...signInOptions(query.data) };
+}
+
+/** First setup's instance: whether it's a fresh install, and the release label the shell shows. Both are only meaningful once `status` is ready. */
+export function useFirstSetup(): { status: ResourceStatus; needsSetup: boolean; releaseLabel: string } {
+  const query = useQuery(instanceQuery);
+  return { status: statusOf(query), needsSetup: query.data?.needs_setup ?? false, releaseLabel: query.data?.release.label ?? "" };
 }
 
 /** The states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */
@@ -116,9 +128,9 @@ type GateState = "signed_in" | "mfa_required" | "confirmation_required" | "signe
  * Who is signed in, for the gate. `state` is the session's, or `signed_out`
  * when Lightning answers 401; undefined while it loads. `session` is there
  * once signed in and the user and instance have loaded, the same object
- * until either changes.
+ * until either changes. `needsSetup` is false until the instance loads.
  */
-export function useSession(): { status: ResourceStatus; state: GateState | undefined; session: Session | undefined } {
+export function useSession(): { status: ResourceStatus; state: GateState | undefined; session: Session | undefined; needsSetup: boolean } {
   const session = useQuery({
     queryKey: sessionKeys.all,
     queryFn: () => request<{ data: ApiSession }>("GET", "/api/session").then((answer) => answer.data),
@@ -133,24 +145,26 @@ export function useSession(): { status: ResourceStatus; state: GateState | undef
     () => (user && info ? { user, instance: { adminEmail: info.admin_email ?? "", releaseLabel: info.release.label } } : undefined),
     [user, info]
   );
+  const needsSetup = info?.needs_setup ?? false;
 
-  if (isSignedOut(session.error)) return { status: { state: "ready" }, state: "signed_out", session: undefined };
+  if (isSignedOut(session.error)) return { status: { state: "ready" }, state: "signed_out", session: undefined, needsSetup };
   const state = session.data?.state;
   if (state === "signup_pending") {
     // ponytail: no sign-up page yet, so a provider's first sign-in can't go anywhere.
-    return { status: { state: "error", message: "Signing up through a sign-in provider isn't available yet." }, state: undefined, session: undefined };
+    return { status: { state: "error", message: "Signing up through a sign-in provider isn't available yet." }, state: undefined, session: undefined, needsSetup };
   }
-  if (state && state !== "signed_in") return { status: { state: "ready" }, state, session: undefined };
+  if (state && state !== "signed_in") return { status: { state: "ready" }, state, session: undefined, needsSetup };
   // Signed in, but the session ended before /api/me answered: signed out after all.
-  if (isSignedOut(me.error)) return { status: { state: "ready" }, state: "signed_out", session: undefined };
+  if (isSignedOut(me.error)) return { status: { state: "ready" }, state: "signed_out", session: undefined, needsSetup };
   const failed = [session, me, instance].find((q) => q.error);
   const status = failed ? statusOf(failed) : state && value ? ({ state: "ready" } as const) : ({ state: "loading" } as const);
-  return { status, state, session: state ? value : undefined };
+  return { status, state, session: state ? value : undefined, needsSetup };
 }
 
 /**
- * Sign in, the second step with an MFA code or a backup code, sign out, and
- * step up. Signing in or out drops every cached answer, the old person's.
+ * Sign in, the second step with an MFA code or a backup code, sign out, step
+ * up, and create an account (which signs the new person in). Signing in or
+ * out, or creating, drops every cached answer, the old person's.
  * Signing in rejects with 401 `invalid_credentials`, or `mfa_required` when
  * the account has MFA: then send the code with `verify`. Step-up rejects with
  * `invalid_credentials` for a wrong password or code.
@@ -171,7 +185,18 @@ export function useSessionSaves() {
     mutationFn: async (values: { password: string } | { mfaCode: string }) => void (await stepUp(values)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: sessionKeys.all }),
   });
-  return { signIn: signIn.mutateAsync, verify: verify.mutateAsync, signOut: signOut.mutateAsync, stepUp: stepUpSave.mutateAsync };
+  const createAccount = useMutation({
+    mutationFn: async ({ first_name, last_name, email, password }: FirstSetupValues) =>
+      void (await request("POST", "/api/users", { first_name, last_name, email, password })),
+    onSuccess: fresh,
+  });
+  return {
+    signIn: signIn.mutateAsync,
+    verify: verify.mutateAsync,
+    signOut: signOut.mutateAsync,
+    stepUp: stepUpSave.mutateAsync,
+    createAccount: createAccount.mutateAsync,
+  };
 }
 
 /**

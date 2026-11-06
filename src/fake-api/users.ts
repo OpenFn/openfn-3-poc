@@ -1,20 +1,37 @@
 /**
- * A person changing their own account on the pretend server: api/users.md
- * (Update a user, Delete a user) and api/account.md (GitHub). Each answer is
- * the planned scope for your own id; a superuser changing someone else isn't
- * built, so another id is refused.
+ * Users on the pretend server: api/users.md (Create, Update and Delete a
+ * user) and api/account.md (GitHub). Creating is built only for first setup.
+ * Changing is the planned scope for your own id; a superuser changing
+ * someone else isn't built, so another id is refused.
  */
-import { forbidden, invalid, json, noContent, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { forbidden, invalid, json, noContent, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import type { User } from "@/types/users";
 import { isValidEmail } from "@/utils/validate";
-import { currentUser, endSession, isSteppedUp, passwordErrors, pendingEmails, people, setPassword, userJson } from "./session";
+import { needsSetup, setNeedsSetup } from "./instance";
+import {
+  currentUser,
+  endSession,
+  isSignedIn,
+  isSteppedUp,
+  passwordErrors,
+  pendingEmails,
+  people,
+  setPassword,
+  startSession,
+  unauthenticated,
+  userJson,
+} from "./session";
 
 // Planned: what a person may change on their own account (api/users.md, Update a user).
 const OWN_KEYS = ["first_name", "last_name", "contact_preference", "email", "password", "experimental_features", "consent", "ai_disclaimer_accepted"];
 
-function check(body: Body): NonNullable<Problem["errors"]> {
-  const errors: NonNullable<Problem["errors"]> = Object.keys(body)
-    .filter((key) => !OWN_KEYS.includes(key))
+const unknownKeys = (body: Body, known: string[]): NonNullable<Problem["errors"]> =>
+  Object.keys(body)
+    .filter((key) => !known.includes(key))
     .map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` }));
+
+function check(body: Body): NonNullable<Problem["errors"]> {
+  const errors = unknownKeys(body, OWN_KEYS);
   for (const key of ["first_name", "last_name"]) {
     if (key in body && (typeof body[key] !== "string" || !(body[key] as string).trim())) {
       errors.push({ code: "required", detail: "can't be blank", pointer: `#/${key}` });
@@ -43,6 +60,47 @@ function check(body: Body): NonNullable<Problem["errors"]> {
 }
 
 export const userRoutes: Record<string, Handler> = {
+  // The shared create (api/users.md, Create a user). Only first setup is built: while `needs_setup` the first
+  // account becomes the superuser (api/account.md), with or without sign-up and with no terms. Register and the
+  // admin create extend this block; until then, any other create is refused.
+  "POST /api/users": (_params, body) => {
+    if (!needsSetup()) return isSignedIn() ? forbidden() : unauthenticated();
+    const keys = ["first_name", "last_name", "email", "password"];
+    const errors = unknownKeys(body, keys);
+    const text = (key: string) => (typeof body[key] === "string" ? (body[key] as string).trim() : "");
+    for (const key of keys) {
+      if (!text(key)) errors.push({ code: "required", detail: "can't be blank", pointer: `#/${key}` });
+    }
+    const email = text("email").toLowerCase();
+    // Lightning's validate_email_format.
+    if (email && !isValidEmail(email)) errors.push({ code: "format", detail: "must be a valid email address", pointer: "#/email" });
+    else if (email && people.some((u) => u.email.toLowerCase() === email)) errors.push({ code: "taken", detail: "has already been taken", pointer: "#/email" });
+    if (text("password")) errors.push(...passwordErrors(body["password"]));
+    if (errors.length) return invalid(errors);
+    const user: User = {
+      id: crypto.randomUUID(),
+      firstName: text("first_name"),
+      lastName: text("last_name"),
+      email,
+      role: "superuser",
+      // As Lightning: unconfirmed, and nothing is emailed.
+      confirmedAt: null,
+      insertedAt: now(),
+      mfaEnabled: false,
+      githubConnected: false,
+      experimentalFeatures: false,
+      supportUser: false,
+      disabled: false,
+      scheduledDeletion: null,
+      contactPreference: "critical",
+    };
+    people.push(user);
+    setPassword(user.id, body["password"] as string);
+    setNeedsSetup(false);
+    startSession(user.id);
+    return json(201, userJson(user));
+  },
+
   "PATCH /api/users/:id": ({ id }, body) => {
     const me = currentUser();
     if (id !== me.id) return forbidden();
