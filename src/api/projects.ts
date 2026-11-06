@@ -1,9 +1,12 @@
 /** Projects on Lightning's API (api/projects.md, JSON:API): the API's shape, its mappers, its keys, and the hooks a .query file calls. */
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AdminProjectFormValues, AdminProjectRow, AdminProjectSortKey } from "@/types/admin";
+import type { PageLinks, SortState } from "@/types/lists";
 import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects";
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
-import { isApiError, listAll, request, statusOf } from "./client";
+import { fullName } from "@/utils/format";
+import { isApiError, listAll, pageLinks, request, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -11,7 +14,7 @@ export interface ApiProject {
   attributes: {
     name: string;
     description: string | null;
-    role?: ProjectOverview["role"];
+    role?: ProjectOverview["role"] | null;
     workflows_count?: number;
     collaborators_count?: number;
     last_activity?: string | null;
@@ -29,6 +32,16 @@ export interface ApiProject {
   };
 }
 
+/** A project as a superuser's `GET /api/projects?scope=all&include=stats` lists it: every project on the instance, with its owner. */
+interface ApiAdminProject extends ApiProject {
+  attributes: ApiProject["attributes"] & {
+    inserted_at: string;
+    owner: { id: string; email: string; first_name: string; last_name: string } | null;
+    scheduled_deletion: string | null;
+    collaborators_count: number;
+  };
+}
+
 /** A row of the projects dashboard, from an entry listed with `include=stats`. */
 export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverview {
   return {
@@ -40,6 +53,24 @@ export function projectOverview({ id, attributes: a }: ApiProject): ProjectOverv
     lastUpdatedAt: a.last_activity ?? null,
   };
 }
+
+/** A row of the instance's projects table (/settings/projects). */
+export function adminProjectRow({ id, attributes: a }: ApiAdminProject): AdminProjectRow {
+  return {
+    id,
+    name: a.display_name ?? a.name,
+    ownerName: a.owner && fullName({ firstName: a.owner.first_name, lastName: a.owner.last_name }),
+    membersCount: a.collaborators_count,
+    insertedAt: a.inserted_at,
+    scheduledDeletion: a.scheduled_deletion,
+  };
+}
+
+const PAGE_SIZE = 25;
+
+/** The `sort` fields the instance's list takes, so a query can check what the URL asks for. */
+const ADMIN_SORT_KEYS: Record<AdminProjectSortKey, true> = { name: true, inserted_at: true };
+export const isAdminProjectSortKey = (key: string | undefined): key is AdminProjectSortKey => key !== undefined && Object.hasOwn(ADMIN_SORT_KEYS, key);
 
 export const projectKeys = { all: ["projects"] as const, one: (id: string) => ["projects", id] as const };
 
@@ -137,18 +168,52 @@ export function useProjectOverviews(): { status: ResourceStatus; projects: Proje
 }
 
 /**
- * Create. Resolves once the list has reloaded with the new project; rejects
- * with the `ApiError`, whose field errors are keyed `name` and `description`.
- * Creating as any user, who becomes the owner, is planned (api/projects.md).
+ * One page of every project on the instance (`scope=all`, superusers only,
+ * ahead of the API), searched by name, description or owner and sorted by the
+ * server, with each one's owner and member count; and where loading it stands.
+ */
+export function useAdminProjects({ q, sort, page }: { q: string; sort: SortState<AdminProjectSortKey>; page: number }): {
+  status: ResourceStatus;
+  projects: AdminProjectRow[];
+  page: PageLinks;
+} {
+  const params = new URLSearchParams({ scope: "all", include: "stats", sort: `${sort.direction === "desc" ? "-" : ""}${sort.key}`, page: String(page), page_size: String(PAGE_SIZE) });
+  if (q) params.set("q", q);
+  const query = useQuery({
+    queryKey: [...projectKeys.all, "admin", String(params)],
+    queryFn: () => request<{ data: ApiAdminProject[]; links: { self: string; last: string } }>("GET", `/api/projects?${params}`),
+    select: (answer) => ({ projects: answer.data.map(adminProjectRow), page: pageLinks(answer.links) }),
+    placeholderData: keepPreviousData,
+  });
+  return { status: statusOf(query), projects: query.data?.projects ?? [], page: query.data?.page ?? { number: page, size: PAGE_SIZE, totalPages: 1 } };
+}
+
+/** A new project: a superuser may send its members (planned). */
+type NewProject = ProjectInput & Partial<Pick<AdminProjectFormValues, "members">>;
+
+/**
+ * Create, schedule a deletion and cancel one. Each resolves once the lists
+ * have reloaded and rejects with the `ApiError`. A create's field errors are
+ * keyed as the body is (`name`, `description`, `members`, `members.0.email`).
+ * Creating as any user, who becomes the owner, is planned (api/projects.md);
+ * a superuser who sends `members` creates it with just those. A superuser
+ * scheduling or cancelling any project's deletion is planned too.
  */
 export function useProjectSaves() {
   const queryClient = useQueryClient();
+  const reload = () => queryClient.invalidateQueries({ queryKey: projectKeys.all });
   const create = useMutation({
-    mutationFn: (project: ProjectInput) =>
+    mutationFn: (project: NewProject) =>
       request<{ data: ApiProject }>("PUT", `/api/projects/${crypto.randomUUID()}`, project),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: projectKeys.all }),
+    onSuccess: reload,
   });
-  return { create: async (project: ProjectInput) => void (await create.mutateAsync(project)) };
+  const scheduleDeletion = useMutation({ mutationFn: (id: string) => request<void>("DELETE", `/api/projects/${id}`), onSuccess: reload });
+  const cancelDeletion = useMutation({ mutationFn: (id: string) => request<unknown>("DELETE", `/api/projects/${id}/scheduled_deletion`), onSuccess: reload });
+  return {
+    create: async (project: NewProject) => void (await create.mutateAsync(project)),
+    scheduleDeletion: async (id: string) => void (await scheduleDeletion.mutateAsync(id)),
+    cancelDeletion: async (id: string) => void (await cancelDeletion.mutateAsync(id)),
+  };
 }
 
 /**

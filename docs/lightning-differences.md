@@ -405,6 +405,80 @@ goes back to Lightning's way.
   (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
   its words win.
 
+## Admin projects
+
+- **No Edit.** Lightning's superuser can rename any project and change its
+  members (`project_live/index.ex:56-67`). The API refuses a superuser who
+  isn't a member on every route that reads or changes one project, with no
+  superuser scope planned (docs/api-gaps.md, Superuser access), so the row
+  has no Edit and `/settings/projects/:id` goes to the list.
+- **Delete now is disabled, with "Not available in the API yet".** Lightning
+  purges a scheduled project at once from the row's menu; the API only
+  schedules deletions (`api/misfits.md`), so the item stays in the ••• menu,
+  disabled, with the reason under it.
+- **New project opens in a modal over the list, at the same URL**, and the
+  title stays "Projects". Lightning swaps the list for a page titled "New
+  Project" at `/settings/projects/new` (`index.ex:72`).
+- **The columns.** Project (with a red "Deletes 10 Nov 2026" when one is
+  scheduled), Owner, Members and Created, a date with no time. Lightning has
+  Name, Created At, Description, Owner and Scheduled Deletion, with times as
+  "%d %b  %H:%M" (`index.html.heex:82-108`). The design has this screen
+  and these columns (`AdminProjectTable.tsx`), so they win. The search still
+  matches the description.
+- **Row actions are buttons.** A live project has Delete; a scheduled one has
+  Cancel deletion and a ••• menu holding Delete now. Lightning puts Edit,
+  Delete, Cancel deletion and Delete now in one Actions menu
+  (`index.html.heex`). Two quiet buttons, the rest in a menu, is the rule for
+  every list (PRINCIPLES.md, Row actions).
+- **The server searches, sorts and pages the list**, 25 to a page, the search
+  300 ms after the last key, and all of it in the URL (`?q`, `?sort`, `?dir`,
+  `?page`). Lightning loads every project and filters and sorts them in
+  memory, with no paging (annotation 6.4), so a large instance's list is slow.
+- **Only Project and Created sort.** Lightning sorts all five columns. The
+  API sorts by name and creation date only (docs/api-gaps.md, Admin
+  projects).
+- **Sandboxes show as "parent/sandbox"**, from the API's `display_name`.
+  Lightning lists them under their bare names, so a sandbox can't be told
+  from a project with the same name (annotation 6.2). They still sort and
+  search by their own name, as the API does, so `parent/sandbox` sorts
+  under "sandbox". Deleting one asks you to type that label, as the row
+  shows it.
+- **The words.** A line under the title, "Every project on this instance,
+  whoever is in it."; "New project", in sentence case, with the folder
+  icon (Lightning: "New Project"); the modal's "New project" and "Create project" (Lightning: "New
+  Project" and "Save"); "Members" (Lightning: "Manage project users");
+  "Filter projects" and "Filter users" (Lightning adds "..."); "Every project
+  must have exactly one owner." (Lightning adds "Please specify one below.").
+  The design has this screen, so its words win.
+- **The empty state is "No projects match."**, with the folder icon, with or
+  without a search. Lightning shows the table's header with no rows and no
+  words (`project_live/index.html.heex`), so nothing says the search found
+  nothing; the design's words fill that.
+- **The form has a Description field**, sent with the name; Lightning's form
+  has none though its list shows and searches descriptions (annotation 6.2).
+  The design has the field, so it stays.
+- **Each person's role is a select** ("No access", "Owner", "Admin",
+  "Editor", "Viewer"), one per row, in place of Lightning's five radio
+  columns, whose headers looked sortable and weren't (annotation 6.1).
+- **Disabled users aren't offered as members**, and someone scheduled for
+  deletion is disabled. Lightning lists every user and emails a disabled one
+  that they now have access (annotation 6.1).
+- **Two owners are refused by the server on Create**, under Members.
+  Lightning flags "A project can have only one owner." as you pick and
+  disables Save until it's fixed (`form_component.html.heex:191`); here the
+  client checks only for a name and an owner, and Create is never disabled
+  for an invalid form.
+- **The name field keeps what was typed**, with "Note that this project will
+  be named: x" under it. Lightning puts the URL-safe name back in the field
+  on re-render (`form_component.html.heex:12-17`), so what you typed changes
+  under you; every other name field here keeps it.
+- **Filtering the member grid keeps every role already given.** Lightning
+  drops the hidden rows from the form, so an owner picked before filtering
+  vanishes (annotation 6.1).
+- **A stale or unknown `/settings/projects/:id/delete` goes to the list.**
+  Lightning crashes on an unknown id (`index.html.heex:19`). One already
+  scheduled for deletion goes to the list too.
+
 ## Audit
 
 - **The audit trail no longer shows which credential environments an event

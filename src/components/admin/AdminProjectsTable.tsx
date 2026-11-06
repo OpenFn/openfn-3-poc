@@ -1,82 +1,94 @@
-import type { AdminProjectRow } from "@/types/admin";
-import SearchInput from "@/components/primitives/SearchInput";
-import { Stack } from "@/components/primitives/Stack";
-import ButtonMenu from "@/components/primitives/ButtonMenu";
-import { MenuItem } from "@/components/primitives/Menu";
+import type { AdminProjectRow, AdminProjectSortKey } from "@/types/admin";
+import type { PageLinks, SortState } from "@/types/lists";
+import { formatUtcDate } from "@/utils/format";
+import Button from "@/components/primitives/Button";
+import IconButton from "@/components/primitives/IconButton";
+import Menu, { MenuItem } from "@/components/primitives/Menu";
+import Pagination from "@/components/primitives/Pagination";
+import Pill from "@/components/primitives/Pill";
+import { Row } from "@/components/primitives/Stack";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
-import { useTableSort, type SortValue } from "@/utils/useTableSort";
-import { formatShortDateTime } from "@/utils/format";
+import Text from "@/components/primitives/Text";
 
-type SortKey = "name" | "inserted_at" | "description" | "owner" | "scheduled_deletion";
-
-const sortMap: Record<SortKey, (p: AdminProjectRow) => SortValue> = {
-  name: (p) => p.name,
-  inserted_at: (p) => p.insertedAt,
-  description: (p) => p.description,
-  owner: (p) => p.ownerName,
-  scheduled_deletion: (p) => p.scheduledDeletion,
-};
-
-const searchFields: ((p: AdminProjectRow) => string)[] = [(p) => p.name, (p) => p.description, (p) => p.ownerName];
+interface Props {
+  projects: AdminProjectRow[];
+  page: PageLinks;
+  /** The order the server listed `projects` in. */
+  sort: SortState<AdminProjectSortKey>;
+  onSort: (sort: SortState<AdminProjectSortKey>) => void;
+  /** Where a project's Delete goes. */
+  deleteHref: (id: string) => string;
+  onCancelDeletion: (id: string) => void;
+  /** Whether this project's Cancel deletion is waiting on the server. */
+  cancelling: (id: string) => boolean;
+}
 
 /**
- * The superuser projects table (project_live/index.html.heex): every project
- * in the instance, filterable and sortable, with Edit / Delete (or Cancel
- * deletion / Delete now) in each row's Actions menu.
+ * Every project on the instance, a page at a time: its owner, how many
+ * members it has, when it was made and when it's due to be deleted. A live
+ * project's row has Delete; a scheduled one's has Cancel deletion, and Delete
+ * now in its ••• menu, disabled until the API can purge a project.
  */
-export default function AdminProjectsTable({
-  projects,
-  onCancelDeletion,
-}: {
-  projects: AdminProjectRow[];
-  onCancelDeletion?: (project: AdminProjectRow) => void;
-}) {
-  const { rows, filter, setFilter, thProps } = useTableSort({
-    rows: projects,
-    initialKey: "name",
-    sortMap,
-    searchFields,
-    nulls: "last",
-  });
+export default function AdminProjectsTable({ projects, page, sort, onSort, deleteHref, onCancelDeletion, cancelling }: Props) {
+  const thProps = (key: AdminProjectSortKey) => {
+    const current = sort.key === key;
+    return {
+      sortDirection: current ? sort.direction : null,
+      onSort: () => onSort({ key, direction: current && sort.direction === "asc" ? "desc" : "asc" }),
+    };
+  };
 
   return (
-    <Stack>
-      <SearchInput value={filter} onChange={setFilter} placeholder="Filter projects..." className="max-w-sm" />
-      <Table
-        id="projects"
-        header={
-          <Tr>
-            <Th {...thProps("name")}>Name</Th>
-            <Th {...thProps("inserted_at")}>Created At</Th>
-            <Th {...thProps("description")}>Description</Th>
-            <Th {...thProps("owner")}>Owner</Th>
-            <Th {...thProps("scheduled_deletion")}>Scheduled Deletion</Th>
-            <Th actions />
-          </Tr>
-        }
-      >
-        {rows.map((project) => {
-          const owner = project.ownerName;
-          const deletion = project.scheduledDeletion;
-          return (
-            <Tr key={project.id} id={`project-row-${project.id}`}>
-              <Td wrap maxWidth={80}>{project.name}</Td>
-              <Td>{formatShortDateTime(project.insertedAt)}</Td>
-              <Td wrap maxWidth={80}>{project.description}</Td>
-              <Td wrap maxWidth={64}>{owner === "" ? "No owner" : owner}</Td>
-              <Td>{deletion && formatShortDateTime(deletion)}</Td>
-              {/* eslint-disable-next-line local/primitive-classname -- debt: box (py-0.5) */}
-              <Td actions className="py-0.5">
-                <ButtonMenu label="Actions">
-                  <MenuItem to={`/settings/projects/${project.id}`}>Edit</MenuItem>
-                  {deletion && <MenuItem onClick={() => onCancelDeletion?.(project)}>Cancel deletion</MenuItem>}
-                  <MenuItem to={`/settings/projects/${project.id}/delete`}>{deletion ? "Delete now" : "Delete"}</MenuItem>
-                </ButtonMenu>
-              </Td>
-            </Tr>
-          );
-        })}
-      </Table>
-    </Stack>
+    <Table
+      id="projects"
+      header={
+        <Tr>
+          <Th {...thProps("name")}>Project</Th>
+          <Th>Owner</Th>
+          <Th align="right">Members</Th>
+          <Th {...thProps("inserted_at")}>Created</Th>
+          <Th actions />
+        </Tr>
+      }
+      footer={<Pagination page={page} />}
+    >
+      {projects.map((project) => (
+        <Tr key={project.id} id={`project-row-${project.id}`}>
+          <Td wrap maxWidth={80}>
+            <Row wrap>
+              <Text tone="strong">{project.name}</Text>
+              {project.scheduledDeletion && <Pill tone="danger">Deletes {formatUtcDate(project.scheduledDeletion)}</Pill>}
+            </Row>
+          </Td>
+          <Td truncate>{project.ownerName ?? <Text tone="muted">No owner</Text>}</Td>
+          <Td align="right">{project.membersCount}</Td>
+          <Td>{formatUtcDate(project.insertedAt)}</Td>
+          <Td actions>
+            {project.scheduledDeletion ? (
+              <>
+                <Button
+                  variant="secondary"
+                  size="xs"
+                  aria-label={`Cancel deletion of ${project.name}`}
+                  pending={cancelling(project.id)}
+                  onClick={() => onCancelDeletion(project.id)}
+                >
+                  Cancel deletion
+                </Button>
+                <Menu trigger={<IconButton icon="hero-ellipsis-horizontal" label={`More actions for ${project.name}`} />}>
+                  <MenuItem disabled description="Not available in the API yet">
+                    Delete now
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button variant="secondary" size="xs" aria-label={`Delete ${project.name}`} to={deleteHref(project.id)}>
+                Delete
+              </Button>
+            )}
+          </Td>
+        </Tr>
+      ))}
+    </Table>
   );
 }

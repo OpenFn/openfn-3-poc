@@ -73,8 +73,16 @@ apart.
   the API yet".
 - **Admin projects: read or edit one project as a superuser.** The planned
   superuser scope covers listing and deleting projects, not reading or
-  editing one (`api/projects.md`). Would need superuser scope on get and
-  update. Replica: admin projects has no Edit.
+  editing one or its members (`api/projects.md`), though Lightning's admin
+  projects page and the design both rename any project and change its
+  members. Would need superuser scope on get, update and the member routes.
+  Replica: admin projects has no Edit, and `/settings/projects/:id` goes to
+  the list.
+- **Admin projects: no code for a new project without exactly one owner.**
+  `PUT /api/projects/:id` says "A new project needs exactly one owner" but
+  names no code or pointer. Would need one; the member routes use
+  `one_owner`. Replica: the fake answers a 422 with a `one_owner` entry at
+  `#/members`, and the form shows it under Members.
 - **Admin users: no error code for removing the last superuser.**
   Lightning lets one save demote or disable the last superuser and lock
   everyone out of admin. `api/users.md` doesn't say the API refuses it.
@@ -92,7 +100,19 @@ apart.
   up, though that wouldn't let them in. Replica: on Lucy's say-so, the fake
   answers `scope=all` ahead of the API, with every project and sandbox for a
   superuser and 403 for anyone else; this is the one place it answers ahead
-  of the API. Only the admin collections page's project picker asks for it.
+  of the API. The admin collections page's project picker and the admin
+  projects list ask for it.
+- **Whether `include=stats` applies to a superuser's list of projects they
+  aren't in.** The planned stats are written for your own projects (`role`
+  is yours), but the admin projects list's Members column needs
+  `collaborators_count` on every project. Would need the stats on
+  `scope=all`, with `role` null where you aren't a member. Replica: the
+  fake sends them.
+- **Whether cancelling a deletion takes a superuser's token.** "Tokens: as
+  for deleting the project" doesn't say whether the planned superuser scope
+  on deleting carries over to `DELETE /api/projects/:id/scheduled_deletion`.
+  Would need it to, for admin projects' Cancel deletion. Replica: the fake
+  lets a superuser cancel any project's deletion.
 
 ## Changed, and that's fine
 
@@ -132,3 +152,7 @@ The replica shows less, or shows it another way, and nothing breaks.
   (`AdminCollectionTable.tsx`); `GET /api/collections` sends only
   `byte_size_sum`. Would need an `items_count` (or similar) on each
   collection. Replica: column left out.
+- **Admin projects: no sort by owner or member count** (Lightning's
+  `ProjectLive.Index`). The planned `sort` on `GET /api/projects` takes
+  `name`, `inserted_at` and `last_activity`. Lightning sorts every column.
+  Replica: Owner and Members are plain headers.

@@ -6,7 +6,7 @@
  * knows the fake exists. A refused request throws an `ApiError`: show its
  * `message`, branch on its `code`.
  */
-import type { SortState } from "@/types/lists";
+import type { PageLinks, SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { RequestError } from "@/utils/errors";
 // Decided when the app is built, so a build for real Lightning leaves the fake out entirely.
@@ -87,6 +87,16 @@ export async function listAll<T>(path: string, key: string): Promise<T[]> {
 /** A list's `sort` parameter (api/conventions.md): the field, `-` first for descending. */
 export const sortParam = (sort: SortState) => `${sort.direction === "desc" ? "-" : ""}${sort.key}`;
 
+/**
+ * Where one page of a list stands, from its links (api/conventions.md sends no
+ * total): the page the server answered, which moves an overflow page back to
+ * the last, its size, and the last page.
+ */
+export function pageLinks(links: { self: string; last: string }): PageLinks {
+  const self = new URL(links.self).searchParams;
+  return { number: Number(self.get("page")), size: Number(self.get("page_size")), totalPages: Number(new URL(links.last).searchParams.get("page")) };
+}
+
 // Errors.
 
 /** One entry of a problem document's `errors` (api/errors.md): a `code`, a `detail` and one location. */
@@ -152,6 +162,10 @@ export const isSignedOut = (error: unknown) =>
 
 /** Whether asking again might help: not for a refusal (4xx), which won't change. */
 export const canRetry = (error: unknown) => !(error instanceof ApiError && error.status !== undefined && error.status >= 400 && error.status < 500);
+
+/** One `status` for a page that waits on several loads: any failure shows; otherwise loading until all are in. */
+export const combinedStatus = (...statuses: ResourceStatus[]): ResourceStatus =>
+  statuses.find((s) => s.state !== "ready" && s.state !== "loading") ?? statuses.find((s) => s.state === "loading") ?? { state: "ready" };
 
 /**
  * A page's `status` from its query: loading while there's no data, Lightning's
