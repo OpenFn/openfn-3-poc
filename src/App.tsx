@@ -36,7 +36,6 @@ import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 
 import AdminUsersPage from "./pages/admin/users/AdminUsersPage.query";
-import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/projects/AdminProjectsPage.query";
 import AdminAuditPage from "./pages/admin/audit/AdminAuditPage.query";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
@@ -116,8 +115,8 @@ export default function App() {
             <Route path="/settings" element={<Navigate to="/settings/projects" replace />} />
             <Route path="/settings/users" element={<AdminUsersPage />} /> {/* admin-users */}
             <Route path="/settings/users/:userId/delete" element={<AdminUsersPage />} />
-            <Route path="/settings/users/new" element={<AdminUserEditPage />} /> {/* admin-user-edit */}
-            <Route path="/settings/users/:userId" element={<AdminUserEditPage />} />
+            <Route path="/settings/users/new" element={<AdminUsersPage />} /> {/* admin-user-edit */}
+            <Route path="/settings/users/:userId" element={<AdminUsersPage />} />
             <Route path="/settings/projects" element={<AdminProjectsPage />} /> {/* admin-projects */}
             <Route path="/settings/projects/new" element={<AdminProjectsPage />} />
             <Route path="/settings/projects/:projectId" element={<AdminProjectsPage />} />

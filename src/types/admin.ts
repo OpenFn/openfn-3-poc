@@ -1,5 +1,6 @@
 /** Superuser admin views: users, projects, collections, audit trail and auth provider. Types only: no data, no behaviour. */
 import type { ProjectInput, ProjectRole } from "./projects";
+import type { ResourceStatus } from "./resource";
 import type { UserRole } from "./users";
 
 /** The account the admin user form edits: what it shows, nothing more. */
@@ -11,19 +12,19 @@ export interface AdminUserRow {
   role: UserRole;
   supportUser: boolean;
   disabled: boolean;
-  /** ISO timestamp of the pending deletion; null when none is scheduled. */
-  scheduledDeletion: string | null;
+}
+
+/** The account the open user form edits, by id; where loading it stands; and whether it's the signed-in user's. */
+export interface AdminUserEditing {
+  id: string;
+  status: ResourceStatus;
+  /** Undefined until it has loaded. */
+  user: AdminUserRow | undefined;
+  ownAccount: boolean;
 }
 
 /** A row of /settings/users. */
-export interface AdminUserListRow {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole;
-  supportUser: boolean;
-  disabled: boolean;
+export interface AdminUserListRow extends AdminUserRow {
   /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
   /** They have created runs (`hasCreatedRun`). */
@@ -35,16 +36,15 @@ export interface AdminUserListRow {
 /** The fields the users list sorts by (`?sort=`), as the API names them. */
 export type AdminUserSortKey = "first_name" | "role" | "disabled";
 
-/** What the admin user form saves. On a new account the host ignores the edit-only fields. */
+/** What the admin user form saves, named as the API names them. */
 export interface UserFormValues {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  /** Empty on edit keeps the current password. */
+  /** Blank on edit keeps the current password. */
   password: string;
   role: UserRole;
-  supportUser: boolean;
-  scheduledDeletion: string;
+  support_user: boolean;
   disabled: boolean;
 }
 

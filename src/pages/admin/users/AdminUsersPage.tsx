@@ -1,3 +1,4 @@
+import { superuserReach } from "@/constants";
 import ListPage from "@/components/patterns/ListPage";
 import Button from "@/components/primitives/Button";
 import { Stack } from "@/components/primitives/Stack";
@@ -5,13 +6,14 @@ import Text from "@/components/primitives/Text";
 import { useToast } from "@/components/primitives/Toast";
 import AdminUsersTable from "@/components/admin/AdminUsersTable";
 import ListSearch from "@/components/admin/ListSearch";
+import UserFormModal from "@/components/admin/UserFormModal";
 import UserDeletionModal from "@/components/domain/UserDeletionModal";
-import type { AdminUserListRow, AdminUserSortKey } from "@/types/admin";
+import type { AdminUserEditing, AdminUserListRow, AdminUserSortKey, UserFormValues } from "@/types/admin";
 import type { PageLinks, SortState } from "@/types/lists";
 import type { ResourceStatus } from "@/types/resource";
 import { useActions } from "@/utils/useAction";
 
-/** What its .query file passes in: data, the open dialog, and the actions that change it. */
+/** What its .query file passes in: data, the open modal or dialog, and the actions that change it. */
 export interface AdminUsersPageProps {
   /** Where loading the users stands. Left out, they are ready. */
   status?: ResourceStatus;
@@ -29,16 +31,26 @@ export interface AdminUsersPageProps {
   sort: SortState<AdminUserSortKey>;
   /** Asks for another order. */
   onSort: (sort: SortState<AdminUserSortKey>) => void;
-  /** Where New user goes. */
+  /** Where New user goes; it opens the New user form over the list. */
   createHref: string;
-  /** Where a user's Edit goes. */
+  /** Where a user's Edit goes; it opens their form over the list. */
   editHref: (id: string) => string;
   /** Where a user's Delete goes; it opens the deletion dialog over the list. */
   deleteHref: (id: string) => string;
+  /** Whether the New user form is open. */
+  creating: boolean;
+  /** The user whose form is open, or null. */
+  editing: AdminUserEditing | null;
+  /** Your profile, where you change your own email and password. */
+  profileHref: string;
   /** The user whose deletion dialog is open, or null. */
   deleting: AdminUserListRow | null;
-  /** Closes the dialog, back to the list. */
+  /** Closes the modal or dialog, back to the list. */
   onClose: () => void;
+  /** Creates a user. Answers why support access wasn't turned on, if it was asked for and wasn't: the user exists without it. */
+  onCreate: (values: Partial<UserFormValues>) => Promise<{ supportRefused: string | null }>;
+  /** Changes only the fields given. */
+  onUpdate: (id: string, changes: Partial<UserFormValues>) => Promise<void>;
   /** Schedules a user's deletion, which disables them. */
   onScheduleDeletion: (id: string) => Promise<void>;
   /** Cancels a user's scheduled deletion, which enables them again. */
@@ -47,8 +59,8 @@ export interface AdminUsersPageProps {
 
 /**
  * Inventory view `admin-users` (UserLive.Index): every account on the
- * instance, searched, sorted and paged by the server, with the deletion
- * dialog over it.
+ * instance, searched, sorted and paged by the server, with the user form and
+ * the deletion dialog over it.
  */
 export default function AdminUsersPage({
   status,
@@ -62,8 +74,13 @@ export default function AdminUsersPage({
   createHref,
   editHref,
   deleteHref,
+  creating,
+  editing,
+  profileHref,
   deleting,
   onClose,
+  onCreate,
+  onUpdate,
   onScheduleDeletion,
   onCancelDeletion,
 }: AdminUsersPageProps) {
@@ -105,11 +122,35 @@ export default function AdminUsersPage({
             cancelling={cancel.pending}
           />
           <Text as="p" tone="muted" variant="body-sm">
-            A superuser can reach everything on this instance, across every project, including these settings.
+            {superuserReach}
           </Text>
         </Stack>
       }
     >
+      {creating && (
+        <UserFormModal
+          profileHref={profileHref}
+          onCancel={onClose}
+          onSave={async (values) => {
+            const { supportRefused } = await onCreate(values);
+            onClose();
+            if (supportRefused) toast(`User created, but support access wasn't turned on. ${supportRefused}`, "danger");
+            else toast("User created successfully");
+          }}
+        />
+      )}
+      {editing && (
+        <UserFormModal
+          editing={editing}
+          profileHref={profileHref}
+          onCancel={onClose}
+          onSave={async (changes) => {
+            await onUpdate(editing.id, changes);
+            onClose();
+            toast("User updated successfully");
+          }}
+        />
+      )}
       {deleting && (
         <UserDeletionModal
           key={deleting.id}

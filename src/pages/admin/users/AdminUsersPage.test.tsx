@@ -22,7 +22,7 @@ const grace: AdminUserListRow = { ...ada, id: "u2", firstName: "Grace", lastName
 const alan: AdminUserListRow = { ...ada, id: "u3", firstName: "Alan", lastName: "Turing", email: "alan@example.com", role: "user", supportUser: true, hasActivityInProjects: true, canDelete: true };
 const kurt: AdminUserListRow = { ...alan, id: "u4", firstName: "Kurt", lastName: "Gödel", email: "kurt@example.com", supportUser: false, disabled: true, scheduledDeletion: "2026-10-21T09:30:00Z" };
 
-const actions = ["onSearch", "onSort", "onClose", "onScheduleDeletion", "onCancelDeletion"] as const;
+const actions = ["onSearch", "onSort", "onClose", "onCreate", "onUpdate", "onScheduleDeletion", "onCancelDeletion"] as const;
 
 const render = (data: Partial<Omit<AdminUsersPageProps, (typeof actions)[number]>> = {}) =>
   renderPage(
@@ -36,6 +36,9 @@ const render = (data: Partial<Omit<AdminUsersPageProps, (typeof actions)[number]
       createHref: "/settings/users/new?q=a",
       editHref: (id) => `/settings/users/${id}?q=a`,
       deleteHref: (id) => `/settings/users/${id}/delete?q=a`,
+      creating: false,
+      editing: null,
+      profileHref: "/profile",
       deleting: null,
       ...data,
     },
@@ -46,6 +49,14 @@ const rowOf = (email: string) => screen.getByText(email).closest("tr")!;
 // What one row shows, as each badge or line on its own.
 const shown = (email: string, ...texts: string[]) => texts.forEach((text) => expect(within(rowOf(email)).getByText(text)).toBeTruthy());
 const dialog = () => screen.getByRole("dialog");
+
+function createEmmyWithSupport() {
+  for (const [label, value] of [[/^First name/, "Emmy"], [/^Last name/, "Noether"], [/^Email/, "emmy@example.com"], [/^Password/, "a long enough password"]] as const) {
+    fireEvent.change(within(dialog()).getByLabelText(label), { target: { value } });
+  }
+  fireEvent.click(within(dialog()).getByRole("checkbox", { name: "Support user" }));
+  fireEvent.click(within(dialog()).getByRole("button", { name: "Create user" }));
+}
 
 describe("AdminUsersPage", () => {
   it("lists each account's name, email, role and status, with (you) on your own row", () => {
@@ -128,5 +139,37 @@ describe("AdminUsersPage", () => {
     await host.resolve("onScheduleDeletion");
     expect(host.calls("onClose")).toHaveLength(1);
     expect(screen.getByText("User scheduled for deletion")).toBeTruthy();
+  });
+
+  it("creates a user from the open New user form, then closes it and says so", async () => {
+    const host = render({ creating: true });
+    createEmmyWithSupport();
+    await waitFor(() => expect(host.calls("onCreate")).toHaveLength(1));
+    expect(host.calls("onCreate")[0]![0]).toMatchObject({ first_name: "Emmy", email: "emmy@example.com", password: "a long enough password", support_user: true });
+    expect(host.calls("onClose")).toHaveLength(0);
+    await host.resolve("onCreate", { supportRefused: null });
+    expect(host.calls("onClose")).toHaveLength(1);
+    expect(screen.getByText("User created successfully")).toBeTruthy();
+  });
+
+  it("closes the New user form with an error toast when the user is created but support access isn't turned on", async () => {
+    const host = render({ creating: true });
+    createEmmyWithSupport();
+    await waitFor(() => expect(host.calls("onCreate")).toHaveLength(1));
+    await host.resolve("onCreate", { supportRefused: "You are not allowed to do that." });
+    expect(host.calls("onClose")).toHaveLength(1);
+    expect(screen.getByRole("alert").textContent).toContain("User created, but support access wasn't turned on. You are not allowed to do that.");
+  });
+
+  it("saves the open Edit form's changes to that user, then closes and says so", async () => {
+    const host = render({ editing: { id: "u3", status: { state: "ready" }, user: alan, ownAccount: false } });
+    expect(screen.getByRole("heading", { name: "Edit Alan Turing" })).toBeTruthy();
+    fireEvent.change(within(dialog()).getByLabelText(/^Last name/), { target: { value: "Turing-Smith" } });
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(host.calls("onUpdate")).toHaveLength(1));
+    expect(host.calls("onUpdate")[0]![0]).toBe("u3");
+    await host.resolve("onUpdate");
+    expect(host.calls("onClose")).toHaveLength(1);
+    expect(screen.getByText("User updated successfully")).toBeTruthy();
   });
 });

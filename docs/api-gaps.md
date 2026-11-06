@@ -94,9 +94,24 @@ apart.
 - **Admin users: no error code for removing the last superuser.**
   Lightning lets one save demote or disable the last superuser and lock
   everyone out of admin. `api/users.md` doesn't say the API refuses it.
-  Would need a stated refusal, such as 422 on `role` or `disabled`.
-  Replica: on your own account Role and Disabled are greyed out, and the
-  fake answers that 422.
+  Would need the refusal and its code in `api/users.md` and `errors.md`.
+  Replica: the user form greys Role and Disabled on your own account, and
+  the fake answers 422 `last_superuser` at `#/role` or `#/disabled`, which
+  shows under that field.
+- **Admin users: creating a user can't give support access.** `POST
+  /api/users` takes no `support_user`, so New user with Support user
+  ticked creates the account, then changes it, and a failure in between
+  leaves an account without the access asked for. Would need the planned
+  `support_user` on Create a user. Replica: two requests; if the second
+  fails, the list shows an error toast saying the user was created without
+  support access.
+- **Admin users: a superuser editing their own account.** `api/users.md`
+  doesn't say whether a superuser's own id follows the rules for your own
+  account (no change to `role`, `support_user` or `disabled`; email and
+  password stepped up, the email confirmed by link) or the superuser scope
+  (everything, at once). Would need it stated. Replica: the fake keeps the
+  rules for your own account, and the user form greys those fields, with
+  email and password left to Profile.
 
 ## Superuser access (api/projects.md, api/collections.md, api/users.md)
 
@@ -121,12 +136,14 @@ apart.
   on deleting carries over to `DELETE /api/projects/:id/scheduled_deletion`.
   Would need it to, for admin projects' Cancel deletion. Replica: the fake
   lets a superuser cancel any project's deletion.
-- **Which tokens may delete a user or cancel a deletion.** `api/users.md`
-  plans personal access tokens for managing users in general, but Delete a
-  user and Cancel a user's deletion list only the service account, and don't
-  say whether a superuser's session must be stepped up first. Would need a
-  superuser's token on both, and a stated step-up rule. Replica: the fake
-  lets a superuser's session do both without stepping up.
+- **Which tokens may create, read, change or delete a user, or cancel a
+  deletion.** `api/users.md` plans personal access tokens for managing users
+  in general, but Delete a user and Cancel a user's deletion list only the
+  service account, and nothing says whether a superuser's session token may
+  create, read or change other users, or must be stepped up first. Would
+  need a superuser's session token on each, and a stated step-up rule.
+  Replica: the fake lets a superuser's session do them all without stepping
+  up.
 
 ## Changed, and that's fine
 
@@ -174,3 +191,8 @@ The replica shows less, or shows it another way, and nothing breaks.
   design's users table shows when each user last signed in; the user object
   has no such field. Would need a `last_login_at` on the user. Replica:
   column left out.
+- **Admin users: a new user isn't told.** `api/users.md` says Lightning
+  emails nobody it creates; Lightning's admin form sends "Confirm your
+  OpenFn account", naming who created it. Would need an option on Create a
+  user to send it. Replica: the account is created unconfirmed and nobody is
+  emailed.
