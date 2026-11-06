@@ -143,64 +143,45 @@ goes back to Lightning's way.
     warning tone.
   - His "Organization credentials live in Systems" note on Credentials:
     the API has no organisations or systems yet.
-- **Credentials is two sections, each with its own create button, as in
-  openfn-ia-demo.** "Credentials" with "New credential", and "OAuth clients" ("Apps
-  registered with external systems so credentials can sign in with OAuth.")
-  with "New OAuth client". Lightning has one "Add new" menu over both tables
-  (`credential_live/index.html.heex`). Empty, they say "No credentials yet"
-  ("Credentials hold the logins and keys your workflows use to reach other
-  systems.") and "No OAuth clients yet" (Lightning: "No credentials found."
-  and "No OAuth clients found.", each with a create button).
-- **openfn-ia-demo's columns.** A credential's name has its external ID under it and a
-  "Transfer pending" or "Scheduled for deletion" badge beside it, and a
-  pending transfer says "Confirm it from the email we sent you."; projects
-  are plain text, "None" when there are none; each environment is named.
-  Lightning has an External ID column, project pills, the number of
-  environments with their names on hover, and no badges: the only sign of a
-  pending transfer or a scheduled deletion is the menu's wording
-  (`components/data_tables.ex`). A global OAuth client says "Global" (Lightning:
-  "GLOBAL"). The Type column is the adaptor's name, without openfn-ia-demo's
-  logo.
-- **The transfer, delete and OAuth client dialogs use openfn-ia-demo's
-  words**, here and in project settings, which shares them: sentence case
-  ("Transfer credential ownership", "Add an OAuth client", "Save changes"),
-  "New owner's email", the delete dialog's "steps" for Lightning's "jobs",
-  and its section headings in the OAuth client form ("Scopes", "Project
-  access").
-- **One ••• menu per row, Delete last in red.** Lightning's is an "Actions"
-  dropdown. A credential scheduled for deletion offers only "Cancel
-  deletion" and "Delete now": Lightning also offers Transfer and Edit, which
-  the API refuses while the deletion is scheduled (409
-  `scheduled_for_deletion`, api/credentials.md).
-- **A result shows above the table it changed.** Lightning flashes a toast.
-  Success fades after five seconds, as a toast does; a failed Cancel
-  deletion shows there too and stays until the next result. The words are
-  openfn-ia-demo's where it has them: "OAuth client
-  created successfully", "OAuth client updated successfully", and
-  `"<name>" deleted` for a credential deleted now or an OAuth client
-  (Lightning: "Credential deleted successfully", "Oauth client created
-  successfully", "Oauth client deleted"). The rest stay Lightning's.
-  openfn-ia-demo's OAuth client delete dialog's words replace Lightning's, and its button
-  says "Delete OAuth client".
+- **Credentials has two tables, each with its own create button.**
+  "New credential" and "New OAuth client", as in openfn-ia-demo, where
+  Lightning has one "Add new" menu. The tables take openfn-ia-demo's
+  columns: the external ID sits under the name, projects are listed as
+  text, and each environment is named, where Lightning has an External ID
+  column, project pills and a count of environments.
+- **You can see a pending transfer or a scheduled deletion on the row.** A
+  badge says "Transfer pending" or "Scheduled for deletion", and a pending
+  transfer says "Confirm it from the email we sent you." In Lightning the
+  only sign is the wording in the row's menu.
+- **A credential scheduled for deletion offers only Cancel deletion and
+  Delete now.** Lightning also offers Transfer and Edit, but the API refuses
+  both until the deletion is cancelled.
+- **The result of an action shows above its table, not in a toast.**
+  Success fades after five seconds, like a toast; a refusal stays until the
+  next result.
+- **openfn-ia-demo's words, where it has the screen.** The empty tables say
+  "No credentials yet" and "No OAuth clients yet". Results say "OAuth client
+  created successfully" and "`<name>` deleted". The transfer, delete and
+  OAuth client dialogs use its titles, labels and buttons, in sentence case,
+  here and in project settings, which shares them; the delete dialog says
+  "steps" where Lightning says "jobs".
 - **Editing never shows a saved secret.** Lightning loads a credential's
-  values and an OAuth client's secret into the edit form. Here every field
-  starts blank, none is required, and a blank one keeps what's saved; the
-  client secret says "Saved. Leave blank to keep it." The API never sends
-  them (api/credentials.md).
-- **The credential form can change only `main`, and can't take a project
-  away, yet.** Saving refuses anything else, saying so, until the form moves
-  to the API's environment and project routes. Lightning's form does both.
-- **OAuth credentials can't be added or edited here yet.** "New credential"
-  offers no OAuth client as a type, and Edit on an OAuth credential says so
-  above the table. The API has no route for signing in to the provider yet
-  (docs/api-gaps.md). Transfer and delete still work.
+  values, and an OAuth client's secret, into the edit form. Here they start
+  blank and a blank one keeps what's saved, because the API never sends
+  them.
+- **For now, the credential form can only change `main`, and can't take
+  a project away.** Saving says so instead of doing it. This goes when the
+  form moves to the API's environment and project routes.
+- **For now, OAuth credentials can't be added or edited here.** Edit says
+  why. Transfer and delete still work. The API has no way to sign in to the
+  provider yet.
 - **A refused transfer doesn't say whether the email has an account.**
-  Lightning answers "User does not exist" or names the projects the person
-  isn't in (`transfer_credential_modal.ex`), which tells the owner who has
-  an account. Here both are "They need an account and a role in every
-  project this credential is shared with".
+  Lightning says "User does not exist", or names the projects the person
+  isn't in, which tells anyone who has an account. Here both get "They need
+  an account and a role in every project this credential is shared with".
 - **Sharing offers only the projects you edit or own.** Lightning offers
-  every project you're a member of; the API needs editor or above to link.
+  every project you belong to, but the API only lets editors and above
+  share there.
 - **Layout.** Backup codes stays a page of its own, as in Lightning: it is a
   step after setting up MFA, not a section.
 
