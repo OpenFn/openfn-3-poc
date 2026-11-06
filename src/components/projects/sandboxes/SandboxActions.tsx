@@ -1,6 +1,6 @@
 import type { SandboxRow } from "@/types/sandboxes";
 import IconButton from "@/components/primitives/IconButton";
-import Menu, { MenuItem } from "@/components/primitives/Menu";
+import Menu, { MenuDivider, MenuItem } from "@/components/primitives/Menu";
 
 /** A live sandbox's ••• menu: Edit, Merge and Delete, each greyed with Lightning's reason when the viewer can't. */
 export default function SandboxActions({
@@ -17,13 +17,14 @@ export default function SandboxActions({
   const reason = (can: boolean, action: string) => (can ? undefined : `You are not authorized to ${action} this sandbox`);
   return (
     <Menu trigger={<IconButton icon="hero-ellipsis-horizontal" label={`Actions for ${sandbox.name}`} />}>
-      <MenuItem to={editHref} disabled={!sandbox.canEdit} description={reason(sandbox.canEdit, "edit")}>
+      <MenuItem icon="hero-pencil-square" to={editHref} disabled={!sandbox.canEdit} description={reason(sandbox.canEdit, "edit")}>
         Edit
       </MenuItem>
-      <MenuItem onClick={onMerge} disabled={!sandbox.canMerge} description={reason(sandbox.canMerge, "merge")}>
+      <MenuItem icon="hero-arrows-right-left" onClick={onMerge} disabled={!sandbox.canMerge} description={reason(sandbox.canMerge, "merge")}>
         Merge
       </MenuItem>
-      <MenuItem tone="danger" onClick={onDelete} disabled={!sandbox.canDelete} description={reason(sandbox.canDelete, "delete")}>
+      <MenuDivider />
+      <MenuItem icon="hero-trash" tone="danger" onClick={onDelete} disabled={!sandbox.canDelete} description={reason(sandbox.canDelete, "delete")}>
         Delete
       </MenuItem>
     </Menu>

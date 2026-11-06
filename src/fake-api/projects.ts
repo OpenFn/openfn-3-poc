@@ -16,10 +16,10 @@ import { membersOf } from "./members";
 import { permissionsIn } from "./permissions";
 import { currentUser, people, PURGE_DELETED_AFTER_DAYS } from "./session";
 
+const DAY_MS = 86_400_000;
+const OLD_IMPORT_TEST = "2b3c4d5e-6f70-4a81-92b3-c4d5e6f70a81";
 // The fake's own copy, like tokens: a project made here is the fake's alone, so it opens only
 // on pages that load from the API.
-export const DAY_MS = 86_400_000;
-const OLD_IMPORT_TEST = "2b3c4d5e-6f70-4a81-92b3-c4d5e6f70a81";
 const seedProjects = (): Project[] => [
   ...projectFixtures.map((p) => ({ ...p, members: p.members.map((m) => ({ ...m })) })),
   // One with no owner and no members, as Lightning has once its only member's account is removed; every fixture has an owner.
@@ -48,8 +48,9 @@ export const addProject = (p: Project) => void (projects = [...projects, p]);
 export const isScheduled = (id: string) => scheduled.has(id);
 /** A project and every sandbox below it. */
 export const treeOf = (p: Project): Project[] => [p, ...projects.filter((c) => c.parentId === p.id).flatMap(treeOf)];
-/** Schedules a project and every sandbox below it with one date, or cancels them all with null, as Lightning does. */
-export const scheduleTree = (p: Project, at: string | null) => treeOf(p).forEach((x) => (at ? scheduled.set(x.id, at) : scheduled.delete(x.id)));
+/** Schedules a project for deletion, or cancels it with null; a sandbox takes every sandbox below it along, with one date, as Lightning does. */
+export const scheduleTree = (p: Project, at: string | null = now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS))) =>
+  (p.parentId === null ? [p] : treeOf(p)).forEach((x) => (at ? scheduled.set(x.id, at) : scheduled.delete(x.id)));
 
 /** A project as the fake holds it, for the routes of what lives inside one. */
 export const findProject = (id: string | undefined) => projects.find((p) => p.id === id);
@@ -268,7 +269,7 @@ export const projectRoutes: Record<string, Handler> = {
     if (scheduled.has(project.id)) {
       return problem({ status: 409, code: "scheduled_for_deletion", detail: "This project is already scheduled for deletion." });
     }
-    scheduleTree(project, now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS)));
+    scheduleTree(project);
     return noContent();
   },
   "DELETE /api/projects/:id/scheduled_deletion": ({ id }) => {

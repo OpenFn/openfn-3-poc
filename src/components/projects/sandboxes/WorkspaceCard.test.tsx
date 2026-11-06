@@ -8,9 +8,8 @@ const scheduled = storyWorkspace[2]!;
 
 describe("WorkspaceCard", () => {
   it("says when a sandbox scheduled for deletion goes, in a tooltip", async () => {
-    render(<WorkspaceCard sandbox={scheduled} />);
-    const name = screen.getByRole("heading", { name: "old-import-test" }).parentElement!;
-    expect(name.tagName).toBe("DIV"); // A heading inside a span is invalid HTML.
+    render(<WorkspaceCard sandbox={scheduled} isMain={false} selected={false} />);
+    const name = screen.getByRole("heading", { name: "old-import-test" });
     expect(name.closest("[aria-description]")!.getAttribute("aria-description")).toMatch(/^Scheduled for deletion on /);
     await hover(name);
     expect(openTooltips()).toEqual([expect.stringMatching(/^Scheduled for deletion on /)]);

@@ -623,20 +623,20 @@ goes back to Lightning's way.
 - **The delete and merge warnings count only the sandboxes you can see.**
   Lightning counts every one below (docs/api-gaps.md).
 - **Merge lists only the workflows a merge would change, has no collections
-  section, and offers projects the server may refuse.** openfn-ia-demo's
-  dialog: "Merge into", "Changed in <target> too", its warning, "Credentials
-  only in this sandbox" and "Merge into <target>". A refused merge stays in
-  the dialog with the server's message; Lightning closes it with "Couldn't
-  merge this sandbox. Please try again." Lightning offers only projects
-  where you're an editor or above, and lets you untick collections
+  section, and offers projects the server may refuse.** A refused merge
+  stays in the dialog with the server's message; Lightning closes it with
+  "Couldn't merge this sandbox. Please try again." Lightning offers only
+  projects where you're an editor or above, and lets you untick collections
   (docs/api-gaps.md).
 - **`/sandboxes/new` without permission, and an edit of a sandbox that isn't
   listed or you can't edit, go to the list with no message.** Lightning
   flashes; nothing here carries a message across a redirect yet.
 - **openfn-ia-demo's words, where it has the screen.** The line under the
   title, "New sandbox", "No other sandboxes", "New sandbox" / "Edit <name>",
-  "Create sandbox" / "Save", "My sandbox", "Colour" with its hint, and
-  "Created a sandbox from <parent>.". Lightning says "Create Sandbox",
+  "Create sandbox" / "Save", "My sandbox", "Colour" with its hint,
+  "Created a sandbox from <parent>.", and the merge dialog's "Merge into",
+  "Changed in <target> too", its warning, "Credentials only in this
+  sandbox" and "Merge into <target>". Lightning says "Create Sandbox",
   "Create a new sandbox" / "Edit sandbox", "Save changes", "Color" and
   "Sandbox created".
 

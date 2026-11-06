@@ -7,7 +7,7 @@ import type { MergePreviewResult, SandboxRow } from "@/types/sandboxes";
 import { projects } from "./projects";
 
 /** What a sandbox changed since it was made. */
-export interface MergeFixture {
+interface MergeFixture {
   /** The sandbox's workflows: `changed` in it, `diverged` when its parent changed it too. */
   workflows: { id: string; name: string; changed?: boolean; diverged?: boolean }[];
   /** Parent workflows the sandbox deleted. */

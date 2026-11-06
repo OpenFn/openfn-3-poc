@@ -40,7 +40,11 @@ export const MergeFails: Story = {
 export const Loading: Story = { args: { onPreview: () => new Promise(() => {}) } };
 export const Long: Story = {
   args: {
-    sandbox: { ...sandbox, name: "fhir-mapping-for-the-national-patient-registry-integration-v2" },
+    sandbox: {
+      ...sandbox,
+      name: "fhir-mapping-for-the-national-patient-registry-integration-v2",
+      mergeTargets: [{ id: "p1", name: "openhie-project-for-the-national-health-information-exchange" }],
+    },
     onPreview: async (targetId) => ({
       ...samplePreview,
       targetId,

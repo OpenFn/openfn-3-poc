@@ -62,15 +62,19 @@ function mergePreview(p: ApiMergePreview): MergePreviewResult {
   return {
     targetId: p.target_project_id,
     workflows: p.workflows
-      .filter((w) => w.change !== "unchanged")
-      .map((w) => ({ id: (w.change === "deleted" ? w.target_workflow_id : w.source_workflow_id) ?? "", name: w.name, isDiverged: w.diverged, isDeleted: w.change === "deleted" }))
+      // A change the page doesn't know (or "unchanged") isn't one to merge.
+      .filter((w) => ["new", "changed", "deleted"].includes(w.change))
+      .map((w) => ({ id: (w.change === "deleted" ? w.target_workflow_id : w.source_workflow_id)!, name: w.name, isDiverged: w.diverged, isDeleted: w.change === "deleted" }))
       .sort((a, b) => a.name.localeCompare(b.name)),
     credentials: p.credentials.map((c) => ({ id: c.credential_id, name: c.name })),
   };
 }
 
 // Under the project keys, so a project's save or deletion reloads its workspace too.
-export const sandboxKeys = { under: (rootId: string) => [...projectKeys.one(rootId), "sandboxes"] as const };
+export const sandboxKeys = {
+  under: (rootId: string) => [...projectKeys.one(rootId), "sandboxes"] as const,
+  mergePreview: (sandboxId: string, targetId: string) => [...projectKeys.one(sandboxId), "merge_preview", targetId] as const,
+};
 
 /**
  * The workspace a project is in, from as high up as the viewer can open (the
@@ -112,7 +116,7 @@ export function useMergePreview(): (sandbox: SandboxRow, targetId: string) => Pr
   return (sandbox, targetId) =>
     queryClient
       .query({
-        queryKey: [...projectKeys.one(sandbox.id), "merge_preview", targetId],
+        queryKey: sandboxKeys.mergePreview(sandbox.id, targetId),
         queryFn: () =>
           request<ApiMergePreview>("POST", `/api/projects/${sandbox.parentId}/sandboxes/${sandbox.id}/merge_previews`, { target_project_id: targetId }),
         staleTime: 60_000,

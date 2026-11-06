@@ -193,6 +193,8 @@ describe("SandboxesIndexPage", () => {
     await host.resolve("onDelete");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(screen.getByText("Sandbox fhir-mapping scheduled for deletion.")).toBeTruthy();
+    // Its card moves to Scheduled for deletion, so focus goes to New sandbox.
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New sandbox" })));
   });
 
   it("warns when deleting takes the page's project, naming where you'll go", async () => {
@@ -210,6 +212,7 @@ describe("SandboxesIndexPage", () => {
     expect(within(cardOf("older")).getByRole("button", { name: "Restore" }).getAttribute("aria-busy")).toBeNull();
     await host.resolve("onCancelDeletion");
     expect(screen.getByText("Cancelled deletion of sandbox old-import.")).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New sandbox" })));
   });
 
   describe("merge", () => {

@@ -13,7 +13,6 @@ import { permissionsIn } from "./permissions";
 import {
   addProject,
   canEnter,
-  DAY_MS,
   fakeProjects,
   findProject,
   isEditorIn,
@@ -26,7 +25,7 @@ import {
   scheduleTree,
   treeOf,
 } from "./projects";
-import { currentUser, PURGE_DELETED_AFTER_DAYS } from "./session";
+import { currentUser } from "./session";
 
 const SANDBOX_KEYS = ["name", "color", "env", "dataclip_ids"];
 const MERGE_KEYS = ["target_project_id", "workflow_ids", "deleted_target_workflow_ids", "credential_ids"];
@@ -55,7 +54,7 @@ function mergeable({ project_id, id }: Record<string, string>): Project | Respon
   const parent = findProject(project_id);
   if (!parent || !canEnter(parent)) return forbidden();
   const sandbox = findProject(id);
-  if (!sandbox || sandbox.id === parent.id || !treeOf(parent).includes(sandbox)) return notFound();
+  if (!sandbox || !treeOf(parent).slice(1).includes(sandbox)) return notFound();
   if (!canEnter(sandbox) || !sandboxPermissions(sandbox).merge_sandbox) return forbidden();
   return sandbox;
 }
@@ -173,7 +172,7 @@ export const sandboxRoutes: Record<string, Handler> = {
     listed("workflow_ids", rows.filter((w) => w.change !== "deleted").map((w) => w.source_workflow_id));
     listed("deleted_target_workflow_ids", rows.filter((w) => w.change === "deleted").map((w) => w.target_workflow_id));
     if (errors.length) return invalid(errors);
-    scheduleTree(sandbox, now(new Date(Date.now() + PURGE_DELETED_AFTER_DAYS * DAY_MS)));
+    scheduleTree(sandbox);
     return answer(201, target);
   },
 };

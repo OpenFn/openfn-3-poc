@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { MergePreviewResult, MergeValues, SandboxRow } from "@/types/sandboxes";
 import { errorMessage } from "@/utils/errors";
 import { formatGracePeriod } from "@/utils/format";
 import { useAction } from "@/utils/useAction";
 import Alert from "@/components/primitives/Alert";
 import FormModal from "@/components/primitives/FormModal";
-import { Checkbox, Select } from "@/components/primitives/Inputs";
+import { Checkbox, Field, Select } from "@/components/primitives/Inputs";
 import Pill from "@/components/primitives/Pill";
 import Spinner from "@/components/primitives/Spinner";
 import { Row, Stack } from "@/components/primitives/Stack";
@@ -73,7 +73,7 @@ export default function MergeSandboxModal({
   const targets = sandbox.mergeTargets;
   const [s, setS] = useState<State>({
     preview: null,
-    // The parent comes first, and is always there.
+    // The parent when it's listed; the workspace's top project is always live, so there's always one.
     targetId: targets[0]!.id,
     loading: true,
     error: null,
@@ -89,10 +89,9 @@ export default function MergeSandboxModal({
     setS((cur) => ({ ...cur, targetId, loading: true, error: null }));
     void previewing.run(targetId);
   };
-  // Once, on open, for the default target.
-  const open = useRef(() => void previewing.run(s.targetId));
   useEffect(() => {
-    open.current();
+    void previewing.run(s.targetId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on open, for the default target
   }, []);
 
   // Only the picked target's preview: none while the next one loads or after it failed.
@@ -141,15 +140,12 @@ export default function MergeSandboxModal({
           </Alert>
         )}
 
-        {s.loading ? (
-          <Spinner size="md" label="Loading the merge preview" />
-        ) : (
-          preview && (
-            <>
+        {/* Mounted throughout, so a new target's preview is read out when it arrives. */}
+        <Stack gap="lg" aria-live="polite">
+          {s.loading && <Spinner size="md" label="Loading the merge preview" />}
+          {preview && (
+            <Field group label="Workflows">
               <Stack gap="sm">
-                <Text variant="label-md" tone="strong">
-                  Workflows
-                </Text>
                 {preview.workflows.length === 0 ? (
                   <Text tone="muted">No workflow has changed in this sandbox.</Text>
                 ) : (
@@ -170,33 +166,30 @@ export default function MergeSandboxModal({
                   ))
                 )}
               </Stack>
-
-              {diverged.length > 0 && (
-                <Alert tone="warning" header={`${target} has changed since this sandbox was made`}>
-                  Merging replaces {diverged.map((w) => w.name).join(", ")} in {target} with this sandbox's version, and the changes made in{" "}
-                  {target} are lost.
-                </Alert>
-              )}
-
-              {preview.credentials.length > 0 && (
-                <Stack gap="sm">
-                  <Text variant="label-md" tone="strong">
-                    Credentials only in this sandbox
-                  </Text>
-                  {preview.credentials.map((c) => (
-                    <Checkbox
-                      key={c.id}
-                      label={c.name}
-                      hint={`Bring it into ${target} so the merged workflows can use it.`}
-                      checked={s.credentials.has(c.id)}
-                      onChange={() => setS((cur) => ({ ...cur, credentials: toggled(cur.credentials, c.id) }))}
-                    />
-                  ))}
-                </Stack>
-              )}
-            </>
-          )
-        )}
+            </Field>
+          )}
+          {diverged.length > 0 && (
+            <Alert tone="warning" header={`${target} has changed since this sandbox was made`}>
+              Merging replaces {diverged.map((w) => w.name).join(", ")} in {target} with this sandbox's version, and the changes made in{" "}
+              {target} are lost.
+            </Alert>
+          )}
+          {preview && preview.credentials.length > 0 && (
+            <Field group label="Credentials only in this sandbox">
+              <Stack gap="sm">
+                {preview.credentials.map((c) => (
+                  <Checkbox
+                    key={c.id}
+                    label={c.name}
+                    hint={`Bring it into ${target} so the merged workflows can use it.`}
+                    checked={s.credentials.has(c.id)}
+                    onChange={() => setS((cur) => ({ ...cur, credentials: toggled(cur.credentials, c.id) }))}
+                  />
+                ))}
+              </Stack>
+            </Field>
+          )}
+        </Stack>
 
         <Alert tone="warning" id="merge-deletion-warning" header="This sandbox will be deleted after merging">
           It can be restored from the sandbox list for {formatGracePeriod(gracePeriodDays)}, then permanently removed.

@@ -146,7 +146,8 @@ export default function SandboxesIndexPage({
         <SandboxFormModal
           key={editing?.id ?? "new"}
           sandbox={editing}
-          parent={{ name: current.name, isSandbox: project.parentId !== null }}
+          // Someone in only a sandbox sees it without a parent.
+          parent={{ name: current.name, isSandbox: project.parentId !== null || rootIsSandbox }}
           initialColor={sandboxColorPalette[sandboxes.length % sandboxColorPalette.length]!}
           onClose={onClose}
           onSave={async (values) => {

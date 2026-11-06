@@ -32,7 +32,7 @@ export default function SandboxesIndexPageQuery() {
   const status = combinedStatus(workspaceStatus, purge.status);
   const isNew = pathname.endsWith("/new");
   const creating = isNew && can("provision_sandbox") && limit === null;
-  const editingId = sandboxes.find((s) => s.id === sandboxId && s.canEdit && !s.scheduledDeletion)?.id ?? null;
+  const editingId = sandboxes.find((s) => s.id === sandboxId && s.canEdit)?.id ?? null;
   const leave = (isNew || sandboxId !== undefined) && status.state === "ready" && !creating && editingId === null;
 
   const listHref = `/projects/${project.id}/sandboxes`;

@@ -29,6 +29,11 @@ type Story = StoryObj<typeof WorkspaceList>;
 export const Default: Story = {};
 /** In a sandbox: it's Selected, and main is under Active. */
 export const InASandbox: Story = { args: { currentProjectId: sandboxes[0]!.id } };
+/** A Restore waiting on the server. */
+export const Restoring: Story = { args: { restoring: () => true } };
+export const Long: Story = {
+  args: { sandboxes: sandboxes.map((s) => ({ ...s, name: `${s.name}-for-the-national-patient-registry-integration-in-every-district` })) },
+};
 export const NoOtherSandboxes: Story = { args: { sandboxes: [] } };
 /** Someone who's only in a sandbox: it's the top of what they see, with no actions. */
 export const OnlyInASandbox: Story = { args: { root: { ...sandboxes[0]!, parentId: null, parentName: null }, rootIsSandbox: true, sandboxes: [], currentProjectId: sandboxes[0]!.id } };
