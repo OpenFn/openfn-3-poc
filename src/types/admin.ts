@@ -57,26 +57,21 @@ export interface AuditEvent {
   changes: { before: Record<string, AuditValue> | null; after: Record<string, AuditValue> | null };
 }
 
-/** The configured OpenID Connect provider, as the admin form shows it: the secret itself never leaves the host. */
+/** The instance's OpenID Connect provider, as the API sends it: the client secret never comes back. */
 export interface AuthProvider {
-  id: string | null;
   name: string;
   discoveryUrl: string;
   clientId: string;
-  /** A secret is stored; the form may leave the field blank to keep it. */
-  hasClientSecret: boolean;
-  redirectHost: string;
-  allowUnverifiedEmail: boolean;
+  /** Where the provider sends people back, to register with it. */
+  redirectUri: string;
 }
 
-/** What the auth provider form saves or tests. A blank secret keeps the stored one. */
+/** What the auth provider form saves, named as the API names them. A blank `client_secret` keeps the stored one. */
 export interface AuthProviderValues {
   name: string;
-  discoveryUrl: string;
-  clientId: string;
-  clientSecret: string;
-  redirectHost: string;
-  allowUnverifiedEmail: boolean;
+  discovery_url: string;
+  client_id: string;
+  client_secret: string;
 }
 
 /** A row of /settings/projects: what the table shows, with the owner joined in. */

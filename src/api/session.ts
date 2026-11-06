@@ -41,6 +41,8 @@ export interface ApiMe {
 /** `GET /api/instance`'s `data`, the fields the app reads. */
 export interface ApiInstance {
   allow_signup: boolean;
+  /** The instance's own base URL. */
+  url: string;
   release: { label: string };
   /** Null without a session token. */
   admin_email: string | null;
@@ -115,6 +117,12 @@ export function useSignInOptions(): { status: ResourceStatus; allowSignup: boole
 export function usePurgeDeletedAfterDays(): { status: ResourceStatus; days: number } {
   const query = useQuery({ ...instanceQuery, select: (instance) => instance.purge_deleted_after_days });
   return { status: statusOf(query), days: query.data ?? 0 };
+}
+
+/** The instance's own base URL, and where loading it stands. SessionGate has already loaded it. */
+export function useInstanceUrl(): { status: ResourceStatus; url: string } {
+  const query = useQuery({ ...instanceQuery, select: (instance) => instance.url });
+  return { status: statusOf(query), url: query.data ?? "" };
 }
 
 /** The states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */
