@@ -32,8 +32,7 @@ export default function ChannelsIndexPageQuery() {
   const credentials = useProjectCredentialOptions(project.id, loadOptions);
   const authMethods = useWebhookAuthMethodOptions(project.id, loadOptions);
   const formRoute = isNew || channelId !== undefined;
-  const formShows = creating || list.channels.some((c) => c.id === editingId);
-  const leave = formRoute && list.status.state === "ready" && !formShows;
+  const leave = formRoute && list.status.state === "ready" && !creating && !list.channels.some((c) => c.id === editingId);
 
   const base = `/projects/${project.id}`;
   const listHref = `${base}/channels`;

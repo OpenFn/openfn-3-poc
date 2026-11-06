@@ -1,7 +1,7 @@
 // The package's public surface: anything a consumer needs goes through here.
 
 export { default as AdminAuditPage } from "./pages/admin/audit/AdminAuditPage";
-export { default as AdminAuthProvidersPage } from "./pages/admin/AdminAuthProvidersPage";
+export { default as AdminAuthProvidersPage } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
 export { default as AdminCollectionsPage } from "./pages/admin/collections/AdminCollectionsPage";
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
 export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
@@ -12,7 +12,7 @@ export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
 export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export { default as AuthConfirmationRequiredPage } from "./pages/auth/AuthConfirmationRequiredPage";
 export { default as FirstSetupPage } from "./pages/auth/FirstSetupPage";
-export { default as ChannelRequestShowPage } from "./pages/history/ChannelRequestShowPage";
+export { default as ChannelRequestShowPage } from "./pages/history/channel-request/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/dataclip/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
 export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
@@ -30,7 +30,7 @@ export { default as WorkflowHealthPage } from "./pages/projects/WorkflowHealthPa
 export { default as WorkflowsIndexPage } from "./pages/projects/workflows/WorkflowsIndexPage";
 
 export type { AdminAuditPageProps } from "./pages/admin/audit/AdminAuditPage";
-export type { AdminAuthProvidersPageProps } from "./pages/admin/AdminAuthProvidersPage";
+export type { AdminAuthProvidersPageProps } from "./pages/admin/auth-providers/AdminAuthProvidersPage";
 export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminCollectionsPage";
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
 export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";
@@ -41,7 +41,7 @@ export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLog
 export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFactorPage";
 export type { AuthConfirmationRequiredPageProps } from "./pages/auth/AuthConfirmationRequiredPage";
 export type { FirstSetupPageProps } from "./pages/auth/FirstSetupPage";
-export type { ChannelRequestShowPageProps } from "./pages/history/ChannelRequestShowPage";
+export type { ChannelRequestShowPageProps } from "./pages/history/channel-request/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/dataclip/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
 export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrdersPage";
@@ -78,7 +78,7 @@ export type {
   CollectionSortKey,
   UserFormValues,
 } from "./types/admin";
-export type { ChannelFormValues, ChannelRow } from "./types/channels";
+export type { ChannelFormValues, ChannelRequestDetail, ChannelRow } from "./types/channels";
 export type {
   CredentialActions,
   CredentialEnvironmentSecrets,

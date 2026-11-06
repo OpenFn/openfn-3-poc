@@ -461,6 +461,41 @@ goes back to Lightning's way.
   (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
   its words win.
 
+## Admin authentication
+
+- **No Test button.** Lightning tests the discovery URL without saving,
+  and Save doesn't wait for a passing test, so a plaintext `http://` URL
+  can be saved and then fails every sign-in (`form_component.ex:196-203`).
+  Here Save does the check and refuses a discovery document it can't use,
+  under Discovery URL. The API has no way to check without saving
+  (api/misfits.md, Form helpers). Lightning's scenarios S05 to S07 don't
+  apply.
+- **No Redirect host field.** Lightning lets the superuser type the host
+  the redirect URI starts with (`auth_config_form.ex:47-49`); here it starts
+  with the instance's own URL, as the API builds `redirect_uri`.
+- **No "Trust unverified emails from this provider" checkbox**, until the
+  API has the field (docs/api-gaps.md, We clearly need these).
+- **/settings/authentication/new shows the provider when one exists.**
+  Lightning shows a blank form there, and saving it adds a second provider,
+  after which the edit page crashes (`index.ex:42-48`). The side menu links
+  to /new, so it was easy to hit.
+- **Remove asks first**, in a dialog that names the provider. Lightning
+  removes at once, though its copy says it turns off external
+  authentication (`form_component.ex:272-289`).
+- **The stored client secret never reaches the browser.** Lightning writes
+  it into the edit page's HTML as the input's value
+  (`form_component.ex:168-174`); here the box is blank and a blank secret
+  keeps the stored one.
+- **Save is never disabled, and the name's format and the https rule come
+  back from the server on Save.** Lightning disables Save while the form is
+  invalid and checks the name and URL as you type (`auth_config_form.ex`);
+  here the client checks only blanks (PRINCIPLES.md, Forms).
+- **The page's words and layout are openfn-ia-demo's**: one column, the line
+  under the title, the "No provider set up" notice, sentence-case labels
+  ("Client secret"), the redirect URI with a copy button, and the "Remove
+  provider" card. Lightning's Google help paragraphs and links go, since
+  they named one provider only (`form_component.ex:214-234`, `:260-270`).
+
 ## Admin projects
 
 - **No Edit.** Lightning's superuser can rename any project and change its
@@ -558,9 +593,10 @@ goes back to Lightning's way.
   for a channel this project doesn't have, go to the list with no message.**
   Lightning flashes "You are not authorized to create channels." or
   "Channel not found"; nothing here carries a message across a redirect yet.
-- **A save refused for a stale version, or for a credential or auth method
-  outside the project, shows the server's message in the form.** Lightning's
-  form shows nothing (annotation 6.1), so the save seems to do nothing.
+- **A save refused for a stale version shows the server's message in the
+  form; one refused for a credential or auth method outside the project shows
+  it under that field.** Lightning's form shows nothing (annotation 6.1), so
+  the save seems to do nothing.
 - **openfn-ia-demo's words and form order, where it has the screen.** "New
   channel" with a plus, the line under the title, "No channels yet.", "New
   channel" / "Edit <name>", "Create channel" on create, "Created <name>.",
@@ -570,6 +606,30 @@ goes back to Lightning's way.
 - **Opening `/channels/new` or `/channels/:id/edit` directly shows the list
   behind the form.** Lightning shows zero totals and "No channels found."
   until the form closes (annotation 6.1).
+
+## Channel request
+
+- **A request that isn't there, isn't this project's, or has a malformed id
+  shows No Access or Not Found in place.** Lightning sends you to History
+  without a word. The API answers 403 for any of them but another project's
+  (docs/api-gaps.md, Channel requests).
+- **The summary shows the channel name and destination URL the request
+  used**, from its snapshot. Lightning shows the channel's current ones, so
+  after an edit its summary names a destination the request never went to.
+- **The title and summary show the request id clients and destinations
+  see** (`x-request-id`, the one Channel logs lists). Lightning shows the
+  database id, which stays in the URL.
+- **A deleted client auth method or destination credential reads
+  "(deleted)".** Lightning's helper says so too, but its database clears the
+  reference when the record goes, so its page reads "None", as for a
+  request with no auth (annotation 6.1).
+- **An error code Lightning doesn't recognise reads "No response received"
+  with the code**, and the timing shows. Lightning shows an empty Response
+  card.
+- **No body hash or "Copy hash", and no "(reused)" on the Connect bar.** The
+  API doesn't send them (docs/api-gaps.md).
+- **Sentence case: "Channel request", "Channel name", "Config version".**
+  Lightning title-cases them.
 
 ## Audit
 

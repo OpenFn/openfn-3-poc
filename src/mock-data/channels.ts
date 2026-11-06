@@ -1,14 +1,13 @@
 /**
  * Channels (Lightning's experimental HTTP proxy): a channel forwards requests
- * made to its proxy URL on to a destination service. Static fixtures for the
- * channels index (`Channels.list_channels_for_project_with_stats/1`).
+ * made to its proxy URL on to a destination service. The fake API's channels
+ * start from these, and the stories use them.
  */
 
 import { credentials } from "./credentials";
 import { webhookAuthMethodsIn } from "./project-settings";
 import type { Channel } from "./models/channels";
 import type { ChannelRow } from "@/types/channels";
-import { channelProxyUrl } from "@/utils/urls";
 
 const OPENHIE = "4adf2644-ed4e-4f97-a24c-ab35b3cb1efa";
 
@@ -51,12 +50,13 @@ export const channels: Channel[] = [
   },
 ];
 
-export function channelsIn(projectId: string): Channel[] {
-  return channels.filter((c) => c.projectId === projectId);
+/** A channel's proxy URL, as Lightning builds it from `LightningWeb.Endpoint.url()`. The API sends it as the channel's `url`. */
+export function channelProxyUrl(channelId: string): string {
+  return `https://app.openfn.org/channels/${channelId}`;
 }
 
-export function findChannel(id: string | undefined): Channel | undefined {
-  return channels.find((c) => c.id === id);
+export function channelsIn(projectId: string): Channel[] {
+  return channels.filter((c) => c.projectId === projectId);
 }
 
 /** A project's channels as the Channels list shows them, for stories. */

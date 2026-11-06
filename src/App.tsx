@@ -24,7 +24,7 @@ import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
 import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
-import ChannelRequestShowPage from "./pages/history/ChannelRequestShowPage.replica";
+import ChannelRequestShowPage from "./pages/history/channel-request/ChannelRequestShowPage.query";
 import RunShowPage from "./pages/history/RunShowPage.replica";
 import DataclipShowPage from "./pages/history/dataclip/DataclipShowPage.query";
 
@@ -40,7 +40,7 @@ import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/projects/AdminProjectsPage.query";
 import AdminAuditPage from "./pages/admin/audit/AdminAuditPage.query";
 import AdminMaintenancePage from "./pages/admin/AdminMaintenancePage.replica";
-import AdminAuthProvidersPage from "./pages/admin/AdminAuthProvidersPage.replica";
+import AdminAuthProvidersPage from "./pages/admin/auth-providers/AdminAuthProvidersPage.query";
 import AdminCollectionsPage from "./pages/admin/collections/AdminCollectionsPage.query";
 import AdminLiveDashboardPage from "./pages/admin/AdminLiveDashboardPage";
 

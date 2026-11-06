@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { channelRequestDetail as request } from "@/mock-data/channel-requests";
 import { withRouter } from "@/stories/decorators";
-import { channelRequests } from "@/mock-data/channel-requests";
-import { findChannel } from "@/mock-data/channels";
-import { primaryEvent } from "@/utils/history";
 import ChannelRequestSummary from "./ChannelRequestSummary";
 
 const meta = {
@@ -13,11 +11,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const argsFor = (i: number) => {
-  const request = channelRequests[i]!;
-  return { request, event: primaryEvent(request), channel: findChannel(request.channelId)! };
+export const Success: Story = { args: { request, channelHref: "/projects/p1/channels/c1/edit" } };
+export const DestinationError: Story = {
+  args: { ...Success.args, request: { ...request, state: "failed", response: { status: 404, headers: null, body: null, bodySize: 96 } } },
 };
-
-export const Success: Story = { args: argsFor(0) };
-export const NotFound: Story = { args: argsFor(1) };
-export const ConnectionRefused: Story = { args: argsFor(2) };
+export const ConnectionRefused: Story = {
+  args: {
+    ...Success.args,
+    request: {
+      ...request,
+      state: "error",
+      clientAuth: { type: null, methodId: null, methodName: null },
+      destinationCredential: null,
+      response: null,
+      errorMessage: "econnrefused",
+      errorCategory: "transport",
+    },
+  },
+};

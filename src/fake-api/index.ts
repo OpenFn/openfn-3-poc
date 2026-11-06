@@ -11,6 +11,7 @@ import { channelRoutes, resetChannels } from "./channels";
 import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
+import { authProviderRoutes, resetAuthProvider } from "./authProvider";
 import { collectionRoutes, resetCollections } from "./collections";
 import { dataclipRoutes } from "./dataclips";
 import { mfaRoutes, resetMfa } from "./mfa";
@@ -59,6 +60,7 @@ const routes: Record<string, Handler> = {
   ...auditRoutes,
   ...collectionRoutes,
   ...dataclipRoutes,
+  ...authProviderRoutes,
   ...mfaRoutes,
   ...userRoutes,
 };
@@ -105,6 +107,7 @@ export function resetFakeApi() {
   tokens = seed();
   resetProjects();
   resetCollections();
+  resetAuthProvider();
   resetCredentials();
   resetChannels();
   resetSession();

@@ -1,23 +1,16 @@
 /**
- * URLs Lightning builds from the instance's own address. The host is fixed
- * here; once wired it comes from the instance config.
+ * URLs Lightning builds from the instance's own address. The webhook host is
+ * fixed here; once wired it comes from the instance config.
  */
-import type { AuthProvider } from "@/types/admin";
-
-/** Base URL the proxy URLs hang off (`LightningWeb.Endpoint.url()`). */
-export const channelProxyBase = "https://app.openfn.org";
-
-export function channelProxyUrl(channelId: string): string {
-  return `${channelProxyBase}/channels/${channelId}`;
-}
 
 /** The webhook URL Lightning shows for a trigger. */
 export function webhookUrl(triggerId: string): string {
   return `https://app.openfn.org/i/${triggerId}`;
 }
 
-export function authRedirectUri(provider: Pick<AuthProvider, "redirectHost" | "name">): string {
-  return `${provider.redirectHost.replace(/\/$/, "")}/authenticate/${provider.name}/callback`;
+/** Where a sign-in provider sends people back, from the instance's URL and the provider's name ("…" while it's blank). */
+export function authRedirectUri(baseUrl: string, name: string): string {
+  return `${baseUrl}/authenticate/${name || "…"}/callback`;
 }
 
 /** Whether a path is at `path` or below it: /profile/tokens/x is at /profile/tokens. */

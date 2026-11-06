@@ -129,6 +129,14 @@ describe("ChannelsIndexPage", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New channel" })));
   });
 
+  it("closes the delete dialog when the channel is deleted elsewhere", () => {
+    const host = render();
+    fireEvent.click(within(rowOf("idle")).getByRole("button", { name: "Delete idle" }));
+    expect(dialog()).toBeTruthy();
+    host.sendProps({ channels: [lab] });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("shows the new channel form with its options, its links to project settings, and the open-channel warning", async () => {
     render({ creating: true });
     expect(within(dialog()).getByRole("heading", { name: "New channel" })).toBeTruthy();
@@ -186,7 +194,7 @@ describe("ChannelsIndexPage", () => {
     expect(screen.getByText("Created new-channel.")).toBeTruthy();
   });
 
-  it("keeps the form open with a refusal that isn't about a field, under its heading", async () => {
+  it("keeps the form open with a refused auth method under Client credentials", async () => {
     const host = render({ creating: true });
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "new-channel" } });
     fireEvent.change(screen.getByLabelText("Destination URL"), { target: { value: "https://example.com" } });
@@ -194,11 +202,11 @@ describe("ChannelsIndexPage", () => {
     await waitFor(() => expect(host.calls("onCreate")).toHaveLength(1));
     await host.reject(
       "onCreate",
-      new RequestError("The request body is not valid.", { fieldErrors: { "client_auth_method_ids.0": ["is not one of this project's webhook auth methods"] } })
+      new RequestError("The request body is not valid.", { fieldErrors: { client_auth_method_ids: ["is not one of this project's webhook auth methods"] } })
     );
-    const alert = within(dialog()).getByRole("alert");
-    expect(alert.textContent).toContain("The channel wasn't saved");
-    expect(alert.textContent).toContain("The request body is not valid.");
+    const error = within(dialog()).getByText("is not one of this project's webhook auth methods");
+    expect(within(dialog()).getByRole("group", { name: "Client credentials" }).getAttribute("aria-describedby")).toContain(error.id);
+    expect(within(dialog()).queryByText("The request body is not valid.")).toBeNull();
     expect(host.calls("onClose")).toEqual([]);
   });
 

@@ -70,13 +70,11 @@ describe("every page and component can be seen and checked", () => {
     // The .query file feeds, the page draws and behaves (STANDARDS.md pattern 11).
     const replicas = paths.filter((path) => /^\.\/pages\/.+\.replica\.tsx$/.test(path));
     expectOnlyKnown(replicas, [
-      "./pages/admin/AdminAuthProvidersPage.replica.tsx",
       "./pages/admin/AdminMaintenancePage.replica.tsx",
       "./pages/admin/AdminUserEditPage.replica.tsx",
       "./pages/admin/AdminUsersPage.replica.tsx",
       "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
       "./pages/auth/FirstSetupPage.replica.tsx",
-      "./pages/history/ChannelRequestShowPage.replica.tsx",
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
       "./pages/history/HistoryWorkOrdersPage.replica.tsx",
       "./pages/history/RunShowPage.replica.tsx",
@@ -161,12 +159,12 @@ describe("every page and component can be seen and checked", () => {
     );
     expectOnlyKnown(builders, [
       "./components/auth/AuthLayout.tsx",
-      "./pages/admin/AdminAuthProvidersPage.tsx",
+      "./pages/admin/auth-providers/AdminAuthProvidersPage.tsx",
       "./pages/admin/AdminMaintenancePage.tsx",
       "./pages/admin/AdminUserEditPage.tsx",
       "./pages/admin/AdminUsersPage.tsx",
       "./pages/auth/FirstSetupPage.tsx",
-      "./pages/history/ChannelRequestShowPage.tsx",
+      "./pages/history/channel-request/ChannelRequestShowPage.tsx",
       "./pages/history/dataclip/DataclipShowPage.tsx",
       "./pages/history/HistoryChannelLogsPage.tsx",
       "./pages/history/HistoryWorkOrdersPage.tsx",

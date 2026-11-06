@@ -120,6 +120,13 @@ apart.
   project list doesn't say where you may. The app guesses from your role
   in each project, which PRINCIPLES says it shouldn't. The list needs a
   "can share credentials here" on each project. (`create_project_credential`)
+- **Auth provider: "trust unverified emails"** (api/authentication.md,
+  Single sign-on provider). Lightning's page and openfn-ia-demo let a
+  superuser choose whether an email the provider hasn't marked verified can
+  claim an account (`allow_unverified_email`, off by default). The API
+  neither sends nor takes it, so the app can't show a provider that trusts
+  unverified emails, or turn that off. Would need `allow_unverified_email`
+  on GET and PUT. Replica: left out.
 - **Channels: a save with `lock_version` for a channel someone deleted.**
   `api/channels.md` says `PUT` creates a channel at a new id, and a
   mismatched `lock_version` is a 409, but not what happens when the version
@@ -130,6 +137,29 @@ apart.
   the save (annotation 6.1). `api/channels.md` lists no error for it. Would
   need a 422 at `#/name` and `#/destination_url`. Until then neither the
   form nor the fake checks the length.
+- **Channel requests: a request isn't under its project.**
+  `GET /api/channel_requests/:id` is top level, so a member following a
+  stale link hears 403, the same as a refusal, and a member of two projects
+  gets the other project's request under this one's URL. The detail has no
+  `project_id` to check. Would need
+  `GET /api/projects/:project_id/channel_requests/:id` (404 to members,
+  api/errors.md), or `project_id` on the request. Replica: the page loads
+  the project's channels beside the request and shows Not Found when the
+  request's channel isn't among them.
+- **Channel requests: the detail has no shape** (api/channels.md, Get a
+  channel request). It lists the fields in prose, with no JSON example: no
+  names for the request, response and timing fields, and nothing on whether
+  headers come as pairs or an object. Its `destination_credential.id` is a
+  project credential id, where a channel's `destination_credential_id` is a
+  credential id. Replica: the fake uses Lightning's column names
+  (`query_string`, `body_size`, `latency_us`, …), headers as `[name, value]`
+  pairs, and a credential id (not a project credential id) in
+  `destination_credential.id`.
+- **Channel requests: a reused connection.** Timing has no
+  `reused_connection`, so a connect time of 0 can't be told from one that
+  wasn't measured. Lightning marks the Connect bar "(reused)". Would need
+  the flag in `timing`. Replica: no "(reused)" badge; a zero connect is
+  left out of the bar.
 - **Dataclips: large integers are rounded** (api/dataclips.md, Get a
   dataclip). `body` comes as a JSON object, so the browser's JSON parser
   rounds integers past 2^53: an id such as 12345678901234567890 shows and
@@ -172,6 +202,12 @@ apart.
 ## Changed, and that's fine
 
 The replica shows less, or shows it another way, and nothing breaks.
+
+- **Auth provider: the redirect host** (api/authentication.md, Single
+  sign-on provider). Lightning and openfn-ia-demo let the superuser type the
+  host the redirect URI starts with; the API builds `redirect_uri` from the
+  instance's `url`. Replica: no field; the URI is built from
+  `GET /api/instance`'s `url` and the typed name.
 
 - **Workflows list: Members, who edited each workflow, most recent first**
   (ia-demo `ProjectWorkflowsPage`, `WorkflowRow`; an avatar stack).
@@ -230,3 +266,5 @@ The replica shows less, or shows it another way, and nothing breaks.
   `ChannelView`). `api/channels.md` has none of them, and Lightning has no
   channel page. The list and form show what the API sends; the form has no
   Description, Kind or System.
+- **Channel requests: no body hash.** The detail sends no SHA256 of the
+  request or response body, so the page has no hash and no "Copy hash".

@@ -61,3 +61,18 @@ export const NoAccess: Story = { args: { status: { state: "forbidden" }, channel
 export const LoadFailed: Story = { args: { status: { state: "error", message: "Something went wrong in Lightning." }, channels: [] } };
 export const Creating: Story = { args: { creating: true } };
 export const Editing: Story = { args: { editingId: channels[0]!.id } };
+
+/** Clicks the first row's Delete, then the dialog's Delete channel. */
+const confirmDelete: NonNullable<Story["play"]> = async ({ canvasElement }) => {
+  const doc = canvasElement.ownerDocument;
+  [...canvasElement.querySelectorAll("button")].find((b) => b.textContent === "Delete")?.click();
+  await new Promise((r) => setTimeout(r));
+  doc.querySelector<HTMLButtonElement>('[role="dialog"] button[type="submit"]')?.click();
+};
+/** The delete is still out: the dialog shows pending. */
+export const DeletePending: Story = { args: { onDelete: () => new Promise(() => {}) }, play: confirmDelete };
+/** The server refuses: the dialog stays open with its message. */
+export const DeleteFails: Story = {
+  args: { onDelete: () => Promise.reject(new Error("A request arrived while the channel was being deleted. Try again.")) },
+  play: confirmDelete,
+};

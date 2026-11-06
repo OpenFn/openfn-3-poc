@@ -1,4 +1,4 @@
-import type { ChannelEvent, ChannelRequestChannel, ChannelRequestDetail } from "@/types/channels";
+import type { ChannelRequestDetail } from "@/types/channels";
 import Card from "@/components/primitives/Card";
 import DateTime from "@/components/primitives/DateTime";
 import { DetailItem, DetailList } from "@/components/primitives/DetailList";
@@ -9,33 +9,26 @@ import Text from "@/components/primitives/Text";
 import { MethodBadge, RequestPathDisplay, StatusCodeBadge } from "./ChannelRequestParts";
 import { ChannelStatePill } from "@/components/domain/StatePill";
 import { humanizeError } from "./channelErrors";
-import { formatUs, shortUuid } from "@/utils/format";
+import { formatClientAuth, formatDestinationAuth, formatUs, shortUuid } from "@/utils/format";
 import CopyButton from "@/components/primitives/CopyButton";
 import { Row } from "@/components/primitives/Stack";
 
 /**
  * The channel request page's summary card (channel_request_live/show.ex
  * `summary_card`): method, path, status code and state, the channel and
- * request id, then Client, Destination and Timing facts.
+ * request id, then Client, Destination and Timing facts. The channel's name
+ * and URL are the ones the request ran on, from its snapshot.
  */
-export default function ChannelRequestSummary({
-  request,
-  event,
-  channel,
-}: {
-  request: ChannelRequestDetail;
-  event: ChannelEvent | undefined;
-  channel: ChannelRequestChannel;
-}) {
+export default function ChannelRequestSummary({ request, channelHref }: { request: ChannelRequestDetail; channelHref: string }) {
   return (
     <Card padding="lg">
       <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <MethodBadge method={event?.requestMethod} />
-        <RequestPathDisplay event={event} />
-        <StatusCodeBadge status={event?.responseStatus} />
+        <MethodBadge method={request.request?.method} />
+        <RequestPathDisplay request={request.request} />
+        <StatusCodeBadge status={request.response?.status} />
         <ChannelStatePill
           state={request.state}
-          title={request.state === "timeout" && event?.errorMessage ? humanizeError(event.errorMessage) : undefined}
+          title={request.state === "timeout" && request.errorMessage ? humanizeError(request.errorMessage) : undefined}
         />
         {/* eslint-disable-next-line local/primitive-classname -- debt: margin (ml-auto) */}
         <Text as="div" variant="body-sm" className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -43,14 +36,14 @@ export default function ChannelRequestSummary({
             <Heading size="xs" as="span">
               Channel
             </Heading>
-            <TextLink to={`/projects/${channel.projectId}/channels/${channel.id}/edit`}>{channel.name}</TextLink>
+            <TextLink to={channelHref}>{request.snapshot.name}</TextLink>
           </Row>
           <Row as="span" gap="sm">
             <Heading size="xs" as="span">
               Request
             </Heading>
-            <span className="font-mono text-strong">{shortUuid(request.id)}</span>
-            <CopyButton value={request.id} label="Copy request ID" size="xs" />
+            <span className="font-mono text-strong">{shortUuid(request.requestId)}</span>
+            <CopyButton value={request.requestId} label="Copy request ID" size="xs" />
           </Row>
         </Text>
       </div>
@@ -61,18 +54,18 @@ export default function ChannelRequestSummary({
             <DetailItem label="IP">{request.clientIdentity || "—"}</DetailItem>
             <DetailItem label="Auth">
               <span className="hero-shield-check mr-1 h-4 w-4 text-faint" />
-              {request.clientAuth}
+              {formatClientAuth(request.clientAuth)}
             </DetailItem>
           </DetailList>
         </Section>
         <Section variant="eyebrow" title="Destination">
           <DetailList layout="grid" className="md:grid-cols-2">
             <DetailItem label="URL" variant="code">
-              {channel.destinationUrl}
+              {request.snapshot.destinationUrl}
             </DetailItem>
             <DetailItem label="Auth">
               <span className="hero-key mr-1 h-4 w-4 text-faint" />
-              {request.destinationAuth}
+              {formatDestinationAuth(request.destinationCredential)}
             </DetailItem>
           </DetailList>
         </Section>
@@ -85,7 +78,7 @@ export default function ChannelRequestSummary({
               <DateTime value={request.completedAt} />
             </DetailItem>
             <DetailItem label="Latency" variant="code">
-              {event?.latencyUs != null ? `${formatUs(event.latencyUs)} ms` : "—"}
+              {request.timing?.latencyUs != null ? `${formatUs(request.timing.latencyUs)} ms` : "—"}
             </DetailItem>
           </DetailList>
         </Section>

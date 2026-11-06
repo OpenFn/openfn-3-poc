@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { errorCategory, humanizeError } from "./channelErrors";
-
-const transport = ["nxdomain", "econnrefused", "ehostunreach", "enetunreach", "closed", "econnreset", "econnaborted", "epipe", "connect_timeout", "response_timeout", "timeout"];
-const credential = ["credential_missing_auth_fields", "credential_environment_not_found", "oauth_refresh_failed", "oauth_reauthorization_required"];
+import { humanizeError } from "./channelErrors";
 
 describe("humanizeError", () => {
   it("explains every transport error", () => {
@@ -31,14 +28,5 @@ describe("humanizeError", () => {
 
   it("passes an unknown code through unchanged", () => {
     expect(humanizeError("some_unknown_error")).toBe("some_unknown_error");
-  });
-});
-
-describe("errorCategory", () => {
-  it("classifies transport and credential errors, and nothing else", () => {
-    for (const code of transport) expect(errorCategory(code), code).toBe("transport");
-    for (const code of credential) expect(errorCategory(code), code).toBe("credential");
-    expect(errorCategory("unsupported_credential_schema:foo")).toBe("credential");
-    expect(errorCategory("something_else")).toBeNull();
   });
 });
