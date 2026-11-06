@@ -297,10 +297,10 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
     expect(actions("credentials-cred2").disabled).toBe(true);
     expect(actions("oauth-clients-oc1").disabled).toBe(true);
     await addNew("OAuth Client");
-    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
+    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth client" })).toBeTruthy();
     answer({ environments: [{ name: "main", body: "{}", oauth: null }] });
     await waitFor(() => expect(isDisabled(actions("credentials-cred2"))).toBe(false));
-    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth Client" })).toBeTruthy();
+    expect(within(dialog()).getByRole("heading", { name: "Add an OAuth client" })).toBeTruthy();
   });
 
   it("doesn't open a late edit form after another modal opened and closed meanwhile", async () => {
@@ -337,7 +337,7 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
   it("deletes a credential after confirming", async () => {
     const { onDeleteCredential } = renderPage();
     await choose("credentials-cred1", "Delete");
-    expect(dialog().textContent).toContain("Deleting this credential will immediately remove it from all jobs and projects.");
+    expect(dialog().textContent).toContain("Deleting this credential will immediately remove it from all steps and projects.");
     fireEvent.click(within(dialog()).getByRole("button", { name: "Delete credential" }));
     await waitFor(() => expect(onDeleteCredential).toHaveBeenCalledWith("cred1", { now: false }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -495,8 +495,8 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
     const { onLoadOauthClientSecrets, onUpdateOauthClient } = renderPage();
     await choose("oauth-clients-oc1", "Edit");
     expect(onLoadOauthClientSecrets).toHaveBeenCalledWith("oc1");
-    expect(((await screen.findByLabelText(/Client Secret/)) as HTMLInputElement).value).toBe("shh");
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    expect(((await screen.findByLabelText(/Client secret/)) as HTMLInputElement).value).toBe("shh");
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     await waitFor(() =>
       expect(onUpdateOauthClient).toHaveBeenCalledWith("oc1", expect.objectContaining({ clientId: "client-1", clientSecret: "shh", projectIds: ["p1"] }))
     );
@@ -506,17 +506,17 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
     const fieldErrors = { mandatoryScopes: ["mandatory is wrong"], optionalScopes: ["optional is wrong"], projectIds: ["projects are wrong"] };
     renderPage({ onUpdateOauthClient: vi.fn().mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors })) });
     await choose("oauth-clients-oc1", "Edit");
-    await screen.findByLabelText(/Client Secret/);
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    await screen.findByLabelText(/Client secret/);
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     for (const message of Object.values(fieldErrors).flat()) expect(await within(dialog()).findByText(message)).toBeTruthy();
   });
 
   it("splits pasted scopes on spaces and commas, as Lightning does, and merges them with the ones there", async () => {
     const { onUpdateOauthClient } = renderPage();
     await choose("oauth-clients-oc1", "Edit");
-    const mandatory = await screen.findByLabelText("Mandatory Scopes");
+    const mandatory = await screen.findByLabelText("Mandatory scopes");
     fireEvent.change(mandatory, { target: { value: "profile email,  offline" } });
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     await waitFor(() =>
       expect(onUpdateOauthClient).toHaveBeenCalledWith("oc1", expect.objectContaining({ mandatoryScopes: ["email", "offline", "openid", "profile"] }))
     );
@@ -526,9 +526,9 @@ describe("CredentialIndex", { timeout: 15_000 }, () => {
     const fieldErrors = { global: ["only superusers can make a client global"] };
     renderPage({ canCreateGlobalOauthClient: true, onUpdateOauthClient: vi.fn().mockRejectedValue(new RequestError("Please fix the errors below.", { fieldErrors })) });
     await choose("oauth-clients-oc1", "Edit");
-    await screen.findByLabelText(/Client Secret/);
+    await screen.findByLabelText(/Client secret/);
     fireEvent.click(within(dialog()).getByLabelText(/Make client global/));
-    fireEvent.click(within(dialog()).getByRole("button", { name: "Save Changes" }));
+    fireEvent.click(within(dialog()).getByRole("button", { name: "Save changes" }));
     expect(await within(dialog()).findByText("only superusers can make a client global")).toBeTruthy();
   });
 

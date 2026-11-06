@@ -31,11 +31,11 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
     <FormModal
       open={open}
       onClose={onClose}
-      title={revoke ? "Revoke Credential Transfer" : "Transfer Credential Ownership"}
+      title={revoke ? "Revoke credential transfer" : "Transfer credential ownership"}
       description={
         revoke
-          ? "A transfer of this credential is pending. Click the revoke button to cancel it."
-          : "Enter the email address of the new owner. Note: The user must be a member of all projects where this credential is used."
+          ? undefined
+          : `Enter the email address of the new owner of "${credential.name}". They must be a member of every project where this credential is used.`
       }
       size="xl"
       formId={`${modalId}-form`}
@@ -49,11 +49,10 @@ export default function TransferCredentialModal({ open, onClose, credential, onT
     >
       {revoke ? (
         <Text as="p" tone="muted">
-          Revoking this transfer will cancel the pending request. This will keep the credential under your ownership.
-          You will need to initiate a new transfer request to transfer it in the future.
+          Revoking cancels the request and keeps the credential yours. To hand it over later, start a new transfer.
         </Text>
       ) : (
-        <TextInput id="receiver_email" aria-label="Receiver email" placeholder="email@example.com" required {...form.fieldProps("receiverEmail")} />
+        <TextInput id="receiver_email" label="New owner's email" placeholder="email@example.com" required {...form.fieldProps("receiverEmail")} />
       )}
     </FormModal>
   );

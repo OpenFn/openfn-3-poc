@@ -1,4 +1,3 @@
-import { firstNotReady } from "@/api/client";
 import { useCredentialSaves, useCredentials, useCredentialSchemas } from "@/api/credentials";
 import { useOauthClients, useOauthClientSaves } from "@/api/oauthClients";
 import { useShareableProjects } from "@/api/projects";
@@ -8,8 +7,7 @@ import CredentialsIndexPage from "./CredentialsIndexPage";
 export default function CredentialsIndexPageQuery() {
   const user = useCurrentUser();
   const { canCreateGlobalOauthClient } = usePermissions();
-  // The forms share with these, so the sections wait for them too.
-  const { status: projectsStatus, projects } = useShareableProjects();
+  const { projects } = useShareableProjects();
   const { status, credentials } = useCredentials(user.email);
   const { status: oauthClientsStatus, oauthClients } = useOauthClients(user);
   const { credentialTypes, loadSchema } = useCredentialSchemas();
@@ -18,8 +16,8 @@ export default function CredentialsIndexPageQuery() {
 
   return (
     <CredentialsIndexPage
-      status={firstNotReady(status, projectsStatus)}
-      oauthClientsStatus={firstNotReady(oauthClientsStatus, projectsStatus)}
+      status={status}
+      oauthClientsStatus={oauthClientsStatus}
       credentials={credentials}
       oauthClients={oauthClients}
       projects={projects}

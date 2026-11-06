@@ -135,15 +135,15 @@ goes back to Lightning's way.
     warning tone.
   - His "Organization credentials live in Systems" note on Credentials:
     the API has no organisations or systems yet.
-- **Credentials is two sections, each with its own create button, as in his
-  design.** "Credentials" with "New credential", and "OAuth clients" ("Apps
+- **Credentials is two sections, each with its own create button, as in
+  openfn-ia-demo.** "Credentials" with "New credential", and "OAuth clients" ("Apps
   registered with external systems so credentials can sign in with OAuth.")
   with "New OAuth client". Lightning has one "Add new" menu over both tables
   (`credential_live/index.html.heex`). Empty, they say "No credentials yet"
   ("Credentials hold the logins and keys your workflows use to reach other
   systems.") and "No OAuth clients yet" (Lightning: "No credentials found."
   and "No OAuth clients found.", each with a create button).
-- **His columns.** A credential's name has its external ID under it and a
+- **openfn-ia-demo's columns.** A credential's name has its external ID under it and a
   "Transfer pending" or "Scheduled for deletion" badge beside it, and a
   pending transfer says "Confirm it from the email we sent you."; projects
   are plain text, "None" when there are none; each environment is named.
@@ -151,9 +151,14 @@ goes back to Lightning's way.
   environments with their names on hover, and no badges: the only sign of a
   pending transfer or a scheduled deletion is the menu's wording
   (`components/data_tables.ex`). A global OAuth client says "Global" (Lightning:
-  "GLOBAL"). The Type column is the adaptor's name without his logo, and
-  the delete dialog keeps Lightning's words, which project settings shares
-  and which already say the credential leaves every job and project at once.
+  "GLOBAL"). The Type column is the adaptor's name, without openfn-ia-demo's
+  logo.
+- **The transfer, delete and OAuth client dialogs use openfn-ia-demo's
+  words**, here and in project settings, which shares them: sentence case
+  ("Transfer credential ownership", "Add an OAuth client", "Save changes"),
+  "New owner's email", the delete dialog's "steps" for Lightning's "jobs",
+  and its section headings in the OAuth client form ("Scopes", "Project
+  access").
 - **One ⋮ menu per row, Delete last in red.** Lightning's is an "Actions"
   dropdown. A credential scheduled for deletion offers only "Cancel
   deletion" and "Delete now": Lightning also offers Transfer and Edit, which
@@ -162,7 +167,7 @@ goes back to Lightning's way.
 - **A result shows above the table it changed.** Lightning flashes a toast.
   Success fades after five seconds, as a toast does; a failed Cancel
   deletion shows there too and stays until the next result. The words are
-  his where he has them: "OAuth client
+  openfn-ia-demo's where it has them: "OAuth client
   created successfully", "OAuth client updated successfully", and
   `"<name>" deleted` for a credential deleted now or an OAuth client
   (Lightning: "Credential deleted successfully", "Oauth client created

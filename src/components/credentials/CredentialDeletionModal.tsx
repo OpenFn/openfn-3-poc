@@ -58,8 +58,8 @@ export default function CredentialDeletionModal({ onClose, credential, onDelete 
       onConfirm={() => onDelete({ now })}
     >
       <p>
-        Deleting this credential will immediately remove it from all jobs and projects. If you later restore it, you
-        will need to re-share it with projects and re-associate it with jobs. Are you sure you'd like to delete the
+        Deleting this credential will immediately remove it from all steps and projects. If you later restore it, you
+        will need to share it with projects and attach it to steps again. Are you sure you'd like to delete the
         credential?
       </p>
       {credential.hasActivityInProjects && <p className="italic">*{activityNote}</p>}

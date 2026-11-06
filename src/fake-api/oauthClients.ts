@@ -1,6 +1,6 @@
 /** OAuth clients on the pretend server (api/credentials.md, OAuth clients). */
 import { clientSecretsFor, credentialsFixture, oauthClients as clientFixtures } from "@/mock-data/credentials";
-import { SEEDED_AT, forbidden, invalid, json, noContent, now, paged, type Body, type Handler, type Problem } from "./answers";
+import { SEEDED_AT, forbidden, invalid, isUuid, json, noContent, now, paged, problem, type Body, type Handler, type Problem } from "./answers";
 import { isEditorIn } from "./projects";
 import { currentUser } from "./session";
 
@@ -96,6 +96,7 @@ export const oauthClientRoutes: Record<string, Handler> = {
   },
   "PUT /api/oauth_clients/:id": ({ id }, body) => {
     const existing = clients.find((c) => c.id === id);
+    if (!existing && !isUuid(id!)) return problem({ status: 400, code: "invalid_parameter", errors: [{ code: "invalid", detail: "is not a UUID", path: "id" }] });
     if (existing && existing.user_id !== currentUser().id) return forbidden();
     const errors = check(body, existing);
     if (errors.length) return invalid(errors);

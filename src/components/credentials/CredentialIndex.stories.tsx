@@ -70,15 +70,13 @@ export const ProjectCredentials: Story = {
 /** A project viewer: no row actions on keychains, and creating is refused. */
 export const ProjectViewer: Story = {
   args: {
-    ...projectArgs,
     project: { ...projectScope, canCreateKeychainCredential: false, canEditKeychainCredential: false },
     canCreateProjectCredential: false,
   },
 };
 
-export const Empty: Story = { args: { credentials: [], oauthClients: [] } };
-export const EmptyProject: Story = {
-  args: { ...projectArgs, project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
+export const Empty: Story = {
+  args: { project: { ...projectScope, keychainCredentials: [] }, credentials: [], oauthClients: [] },
 };
 
 /** A credential's stored values are still loading: its Actions button spins and the other rows wait. */

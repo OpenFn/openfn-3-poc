@@ -68,7 +68,8 @@ const menu = async (name: string) => {
 };
 const choose = async (name: string, item: string) => userEvent.click(within(await menu(name)).getByRole("menuitem", { name: new RegExp(`^${item}`) }));
 
-describe("CredentialsIndexPage", () => {
+// Several tests drive the shared form through more than one step.
+describe("CredentialsIndexPage", { timeout: 15_000 }, () => {
   it("shows each credential's type, projects, environments and what's pending on it", () => {
     render();
     expect(within(row("DHIS2 play")).getByText("dhis2-01")).toBeTruthy();
@@ -168,7 +169,7 @@ describe("CredentialsIndexPage", () => {
     const form = screen.getByRole("dialog");
     expect((within(form).getByLabelText(/^Client ID/) as HTMLInputElement).value).toBe("google-client-id");
     expect(within(form).getByText("Saved. Leave blank to keep it.")).toBeTruthy();
-    await userEvent.click(within(form).getByRole("button", { name: "Save Changes" }));
+    await userEvent.click(within(form).getByRole("button", { name: "Save changes" }));
     expect(host.calls("onUpdateOauthClient")[0]?.[1]).toMatchObject({ clientId: "google-client-id", clientSecret: "" });
     await host.resolve("onUpdateOauthClient");
     expect(screen.getByText("OAuth client updated successfully")).toBeTruthy();

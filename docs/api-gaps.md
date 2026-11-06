@@ -87,9 +87,11 @@ apart.
   them back: it sends only the fields that were filled in. Would need a
   replace to keep any field the body leaves out, as `client_secret` already
   does for OAuth clients and the planned `refresh_token` does for OAuth
-  credentials. Replica: the fake keeps them for an adaptor's schema; a raw
-  body is still replaced whole. Against Lightning as it is, a blank field
-  would be saved blank.
+  credentials. The same goes for a replace that sends no body at all, such
+  as a rename. Replica: the fake keeps them for an adaptor's schema, and
+  keeps the body when none is sent; a raw body sent is replaced whole.
+  Against Lightning as it is, a blank field would be saved blank, and a
+  rename alone refused.
 - **Credentials: no way to set an external ID** (api/credentials.md). The
   credential object has `external_id`, but `POST` and `PUT
   /api/credentials` don't take it (`unknown_key`). Would need

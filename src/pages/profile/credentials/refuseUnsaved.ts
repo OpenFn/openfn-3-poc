@@ -13,7 +13,8 @@ const isFilled = (body: string) => {
 /**
  * Refuses what today's form can change but this page can't save yet:
  * anything but `main` (an environment added, renamed, removed or given new
- * values), or a project taken away.
+ * values), or a project taken away. It goes once the form saves through the
+ * API's environment and project routes.
  */
 export function refuseUnsaved(values: CredentialValues, saved: CredentialRow | undefined) {
   const names = saved?.environments ?? ["main"];

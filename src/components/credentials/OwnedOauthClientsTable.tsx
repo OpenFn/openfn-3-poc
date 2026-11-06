@@ -30,7 +30,7 @@ export default function OwnedOauthClientsTable({ clients, onEdit, onDelete }: Pr
     >
       {clients.map((c) => (
         <Tr key={c.id}>
-          <Td truncate maxWidth={60}>
+          <Td wrap maxWidth={60}>
             <Text tone="strong">{c.name}</Text>
           </Td>
           <Td wrap maxWidth={80}>
@@ -49,7 +49,7 @@ export default function OwnedOauthClientsTable({ clients, onEdit, onDelete }: Pr
           </Td>
           <Td actions>
             {c.canEdit && (
-              <Menu trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} />}>
+              <Menu trigger={<IconButton icon="hero-ellipsis-horizontal" label={`Actions for ${c.name}`} />}>
                 <MenuItem icon="hero-pencil" onClick={() => onEdit(c)}>
                   Edit
                 </MenuItem>

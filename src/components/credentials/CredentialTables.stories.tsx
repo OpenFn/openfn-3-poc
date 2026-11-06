@@ -23,9 +23,6 @@ const actions = () => (
 export const Credentials: Story = {
   render: () => <CredentialsTable rows={credentials} emptyState={null} actions={actions} />,
 };
-export const CredentialsWithOwner: Story = {
-  render: () => <CredentialsTable rows={credentials} emptyState={null} actions={actions} />,
-};
 export const CredentialsEmpty: Story = {
   render: () => (
     <CredentialsTable

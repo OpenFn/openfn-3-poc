@@ -61,16 +61,17 @@ export const resetCredentials = () => {
 // The planned fields (api/credentials.md, "Planned additional scope") are sent too.
 const credentialJson = (c: StoredCredential) => {
   const client = fakeOauthClients().find((o) => o.id === c.oauth_client_id);
+  // Links to projects you can't see are left out.
+  const visible = c.project_ids.filter((id) => isMemberOf(id, currentUser().id));
   return {
     id: c.id,
     name: c.name,
     schema: c.schema,
     external_id: c.external_id,
     user_id: c.user_id,
-    project_credentials: c.project_ids.map((project_id) => ({ id: `${c.id}:${project_id}`, project_id, credential_id: c.id, inserted_at: c.inserted_at, updated_at: c.updated_at })),
-    // Links to projects you can't see are left out.
+    project_credentials: visible.map((project_id) => ({ id: `${c.id}:${project_id}`, project_id, credential_id: c.id, inserted_at: c.inserted_at, updated_at: c.updated_at })),
     projects: fakeProjects()
-      .filter((p) => c.project_ids.includes(p.id) && isMemberOf(p.id, currentUser().id))
+      .filter((p) => visible.includes(p.id))
       .map((p) => ({ id: p.id, name: p.name, description: p.description || null })),
     inserted_at: c.inserted_at,
     updated_at: c.updated_at,
@@ -178,7 +179,12 @@ export const credentialRoutes: Record<string, Handler> = {
       .map(credentialJson);
     return json(200, paged("/api/credentials", rows, query, "credentials"));
   },
-  "POST /api/credentials": (_params, body) => create(crypto.randomUUID(), body),
+  // POST takes no owner or id: those are PUT's.
+  "POST /api/credentials": (_params, body) => {
+    const extra = ["owner", "id"].filter((key) => key in body);
+    if (extra.length) return invalid(extra.map((key) => ({ code: "unknown_key", detail: "is not a known field", pointer: `#/${key}` })));
+    return create(crypto.randomUUID(), body);
+  },
   "PUT /api/credentials/:id": ({ id }, body) => {
     if (!credentials.some((c) => c.id === id)) {
       // Anyone may create one, so a bad id is a 400 to anyone.

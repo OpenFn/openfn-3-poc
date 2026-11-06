@@ -37,7 +37,13 @@ const choose = async (name: string, item: string) => {
   await userEvent.click(within(screen.getByRole("menu")).getByRole("menuitem", { name: new RegExp(`^${item}`) }));
 };
 const dialog = () => screen.findByRole("dialog", {}, wait);
-const notice = (text: string) => screen.findByText(text, {}, wait);
+// A result is announced: it sits in a status region.
+const notice = (text: string) =>
+  waitFor(() => {
+    const region = screen.getAllByRole("status").find((s) => s.textContent?.includes(text));
+    if (!region) throw new Error(`No status says "${text}"`);
+    return region;
+  }, wait);
 
 // Each test drives menus and dialogs through several requests to the fake server.
 describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
@@ -68,8 +74,8 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     failNext("GET /api/credentials", { status: 500, code: "internal", detail: "Lightning couldn't list credentials." });
     failNext("GET /api/oauth_clients", { status: 500, code: "internal", detail: "Lightning couldn't list OAuth clients." });
     renderRoute();
-    expect(await notice("Lightning couldn't list credentials.")).toBeTruthy();
-    expect(await notice("Lightning couldn't list OAuth clients.")).toBeTruthy();
+    expect(await screen.findByText("Lightning couldn't list credentials.", {}, wait)).toBeTruthy();
+    expect(await screen.findByText("Lightning couldn't list OAuth clients.", {}, wait)).toBeTruthy();
   });
 
   it("schedules a deletion, which unshares the credential, and cancels it again", async () => {
@@ -118,7 +124,7 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
   it("starts a transfer, which shows as pending, and puts a refusal on the email field", async () => {
     renderRoute();
     await choose("DHIS2 play", "Transfer");
-    const email = within(await dialog()).getByLabelText("Receiver email");
+    const email = within(await dialog()).getByLabelText(/^New owner.s email/);
     await userEvent.type(email, "nobody@example.org");
     await userEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Transfer" }));
     expect(await within(screen.getByRole("dialog")).findByText("They need an account and a role in every project this credential is shared with", {}, wait)).toBeTruthy();
@@ -175,11 +181,11 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     await userEvent.click(screen.getByRole("button", { name: "New OAuth client" }));
     const form = within(await dialog());
     fireEvent.change(form.getByLabelText(/^Name/), { target: { value: "Mailchimp app" } });
-    fireEvent.change(form.getByLabelText(/^Authorization Endpoint/), { target: { value: "https://login.mailchimp.com/oauth2/authorize" } });
-    fireEvent.change(form.getByLabelText(/^Token Endpoint/), { target: { value: "https://login.mailchimp.com/oauth2/token" } });
+    fireEvent.change(form.getByLabelText(/^Authorization endpoint/), { target: { value: "https://login.mailchimp.com/oauth2/authorize" } });
+    fireEvent.change(form.getByLabelText(/^Token endpoint/), { target: { value: "https://login.mailchimp.com/oauth2/token" } });
     fireEvent.change(form.getByLabelText(/^Client ID/), { target: { value: "mc-id" } });
-    fireEvent.change(form.getByLabelText(/^Client Secret/), { target: { value: "mc-secret" } });
-    fireEvent.click(form.getByRole("button", { name: "Add OAuth Client" }));
+    fireEvent.change(form.getByLabelText(/^Client secret/), { target: { value: "mc-secret" } });
+    fireEvent.click(form.getByRole("button", { name: "Add OAuth client" }));
     expect(await notice("OAuth client created successfully")).toBeTruthy();
     expect(await screen.findByRole("row", { name: /Mailchimp app/ }, wait)).toBeTruthy();
   });
@@ -188,7 +194,7 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     renderRoute();
     await choose("Google Workspace", "Edit");
     fireEvent.change(within(await dialog()).getByLabelText(/^Name/), { target: { value: "Google" } });
-    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save changes" }));
     expect(await notice("OAuth client updated successfully")).toBeTruthy();
     expect(await screen.findByRole("row", { name: /^Google / }, wait)).toBeTruthy();
   });
@@ -210,8 +216,8 @@ describe("CredentialsIndexPageQuery", { timeout: 15_000 }, () => {
     });
     renderRoute();
     await choose("Google Workspace", "Edit");
-    await userEvent.click(within(await dialog()).getByRole("button", { name: "Save Changes" }));
-    const field = within(screen.getByRole("dialog")).getByLabelText(/^Token Endpoint/);
+    await userEvent.click(within(await dialog()).getByRole("button", { name: "Save changes" }));
+    const field = within(screen.getByRole("dialog")).getByLabelText(/^Token endpoint/);
     await waitFor(() => expect(field.getAttribute("aria-invalid")).toBe("true"), wait);
     expect(within(screen.getByRole("dialog")).getByText("must be a valid URL")).toBeTruthy();
   });

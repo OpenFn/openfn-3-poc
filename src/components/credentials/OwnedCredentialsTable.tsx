@@ -5,7 +5,7 @@ import { Row, Stack } from "@/components/primitives/Stack";
 import { Table, Td, Th, Tr } from "@/components/primitives/Table";
 import Text from "@/components/primitives/Text";
 import type { CredentialRow } from "@/types/credentials";
-import { formatCredentialType } from "@/utils/format";
+import { formatCredentialType, formatSchemaName } from "@/utils/format";
 
 interface Props {
   credentials: CredentialRow[];
@@ -68,7 +68,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
             </Stack>
           </Td>
           <Td truncate maxWidth={40}>
-            {formatCredentialType(c)}
+            {c.schema === "oauth" ? formatCredentialType(c) : formatSchemaName(c.schema)}
           </Td>
           {/* Plain text, so a long project name wraps instead of pushing the table wide. */}
           <Td wrap maxWidth={80}>
@@ -85,7 +85,7 @@ export default function OwnedCredentialsTable({ credentials, onEdit, onTransfer,
           </Td>
           <Td actions>
             <Menu
-              trigger={<IconButton icon="hero-ellipsis-vertical" label={`Actions for ${c.name}`} pending={isPending(c.id)} />}
+              trigger={<IconButton icon="hero-ellipsis-horizontal" label={`Actions for ${c.name}`} pending={isPending(c.id)} />}
             >
               {c.scheduledDeletion ? (
                 <MenuItem icon="hero-arrow-uturn-left" onClick={() => onCancelDeletion(c)}>

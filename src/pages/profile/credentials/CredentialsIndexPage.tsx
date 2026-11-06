@@ -104,7 +104,7 @@ export default function CredentialsIndexPage({
     say(section, "success", message);
     if (rowGone) requestAnimationFrame(() => (section === "credentials" ? newCredentialButton : newClientButton).current?.focus());
   };
-  // Edit (loading the adaptor's fields) and Cancel deletion wait on the server with the row's menu spinning.
+  // Edit (loading the adaptor's fields) and Cancel deletion: each row's spinner and refusal, whichever it runs.
   const rowAction = useActions((_id: string, run: () => Promise<void>) => run(), {
     onError: (error) => say("credentials", "danger", error.message),
   });
@@ -114,7 +114,9 @@ export default function CredentialsIndexPage({
     void rowAction.run(c.id, async () => {
       const loaded = c.schema === "raw" ? undefined : await on.onLoadCredentialSchema(c.schema);
       // A blank field keeps what's saved, so none is required.
-      const schema = loaded && { fields: loaded.fields.map((f) => ({ ...f, required: false, placeholder: "Saved. Leave blank to keep it." })) };
+      const schema = loaded && {
+        fields: loaded.fields.map((f) => ({ ...f, required: false, ...(f.kind === "password" && { hint: "Saved. Leave blank to keep it." }) })),
+      };
       // Unless another dialog opened while the fields loaded.
       setDialog((open) => open ?? { kind: "edit-credential", id: c.id, schema });
     });

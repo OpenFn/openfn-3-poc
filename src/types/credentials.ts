@@ -17,13 +17,15 @@ export interface SchemaField {
   placeholder: string | null;
   /** The schema's type when Lightning doesn't recognise it (`Credentials.Schema.warning`); the form warns that it's stored as text. */
   unrecognizedType: string | null;
+  /** Shown under a password field, such as that a blank one keeps what's saved. */
+  hint?: string;
 }
 
 // ---------------------------------------------------------------------------
-// The credential index's contract, written by hand and shared by the user's
-// Credentials page (CredentialsIndexPageProps) and project settings'
-// Credentials tab (CredentialsSettings). Hosts send these; the replica maps
-// its models onto them.
+// The credential index's contract, written by hand: project settings'
+// Credentials tab (CredentialsSettings) takes it all, and the user's
+// Credentials page (CredentialsIndexPageProps) its rows and actions. The
+// replica and src/api map onto them.
 
 /** A project a credential or OAuth client is shared with, or can be. */
 export interface CredentialProjectRef {
