@@ -1,39 +1,34 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import WorkspaceCard from "./WorkspaceCard";
-import { findSandboxRow, sandboxRowsUnder } from "@/mock-data/sandboxes";
-import { projects } from "@/mock-data/projects";
+import { storyWorkspace } from "@/mock-data/sandboxes";
 import { withRouter } from "@/stories/decorators";
+import WorkspaceCard from "./WorkspaceCard";
 
-const rows = sandboxRowsUnder(projects[0]!.id);
+const root = storyWorkspace[0]!;
+const sandbox = storyWorkspace[1]!;
+const scheduled = storyWorkspace[2]!;
 
 const meta: Meta<typeof WorkspaceCard> = {
   title: "Projects/Sandboxes/WorkspaceCard",
   component: WorkspaceCard,
   decorators: [withRouter],
-  args: { workspace: findSandboxRow(projects[0]!.id)!, isRoot: true, isCurrent: true },
+  args: { sandbox: root, isMain: true, selected: true },
 };
 export default meta;
 type Story = StoryObj<typeof WorkspaceCard>;
 
-export const RootProject: Story = {};
-export const Sandbox: Story = { args: { workspace: rows[0]!, isRoot: false, isCurrent: false } };
-export const ScheduledForDeletion: Story = {
-  args: { workspace: rows.find((r) => r.scheduledDeletion)!, isRoot: false, isCurrent: false },
-};
-/** The sandbox you're in: the "active" badge. */
-export const Current: Story = { args: { workspace: rows[0]!, isRoot: false, isCurrent: true } };
-export const LongName: Story = {
+/** The project at the top, which you're in. */
+export const Main: Story = {};
+export const Sandbox: Story = { args: { sandbox, isMain: false, selected: false, href: `/projects/${sandbox.id}/w` } };
+export const NoDescription: Story = { args: { sandbox: { ...sandbox, description: null }, isMain: false, selected: false } };
+export const ScheduledForDeletion: Story = { args: { sandbox: scheduled, isMain: false, selected: false } };
+export const Long: Story = {
   args: {
-    workspace: { ...rows[0]!, name: "fhir-mapping-for-the-national-patient-registry-integration-v2", env: "staging-for-district-rollout" },
-    isRoot: false,
-    isCurrent: true,
-  },
-};
-/** Restore is greyed with the plan's reason. */
-export const RestoreBlocked: Story = {
-  args: {
-    workspace: { ...rows.find((r) => r.scheduledDeletion)!, canCancelDeletion: true, restoreBlockedReason: "Upgrade to restore more sandboxes" },
-    isRoot: false,
-    isCurrent: false,
+    sandbox: {
+      ...sandbox,
+      name: "fhir-mapping-for-the-national-patient-registry-integration-v2",
+      description: "Trying the FHIR R4 mappings for the national patient registry, district by district, before any of them go live.",
+      parentName: "openhie-project-for-the-national-health-information-exchange",
+    },
+    isMain: false,
   },
 };

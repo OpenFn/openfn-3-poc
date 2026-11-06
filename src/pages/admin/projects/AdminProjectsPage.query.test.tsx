@@ -57,7 +57,8 @@ const signInAs = async (email: string) => {
 
 const [openhie, dhis2] = projects;
 // The fake adds one project with no owner and no members to the fixtures.
-const everyProject = [...projects, { name: "legacy-imports", insertedAt: "2023-11-20T09:00:00Z" }];
+// The fake's own: a project with no members, and a sandbox scheduled for deletion.
+const everyProject = [...projects, { name: "legacy-imports", insertedAt: "2023-11-20T09:00:00Z" }, { name: "old-import-test", insertedAt: "2026-01-01T00:00:00Z" }];
 const inOrder = (by: (p: (typeof everyProject)[number]) => string, desc = false) =>
   [...everyProject].sort((a, b) => (desc ? -1 : 1) * by(a).localeCompare(by(b))).map((p) => expect.stringContaining(p.name));
 const amy = users.find((u) => u.id === "user-amy")!;

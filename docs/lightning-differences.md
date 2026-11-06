@@ -553,6 +553,55 @@ goes back to Lightning's way.
   behind the form.** Lightning shows zero totals and "No channels found."
   until the form closes (annotation 6.1).
 
+## Sandboxes
+
+- **Cards sit under "Selected" and "Active", as openfn-ia-demo has them.**
+  The page's project is under Selected with a "Selected" badge, the rest of
+  the workspace under Active (the top project first, with "Main"), then
+  Lightning's "Scheduled for deletion". Each card has a description ("No
+  description" without one) and "Made from <parent>". Lightning lists the
+  root, then the sandboxes, with env badges and an "active" badge; the API
+  sends no env, and openfn-ia-demo shows none.
+- **The three action icons are one ••• menu**, "Actions for <name>", with
+  Edit, Merge and Delete last in red, each greyed with Lightning's reason
+  (PRINCIPLES, Row actions). Lightning shows three icon buttons.
+- **No actions on the top sandbox of someone who's only in a sandbox.**
+  Nothing above it lists it, so nothing sends its permissions
+  (docs/api-gaps.md). Lightning lets its admins edit and delete it.
+- **A taken name shows when you press Create sandbox or Save, not as you
+  type.** The client checks only a blank name; the server checks the rest.
+- **New sandbox isn't disabled at the nesting limit.** The API doesn't say a
+  project is at it (docs/api-gaps.md), so the form shows the server's
+  "Maximum sandbox nesting depth reached". Lightning disables the button.
+- **A new sandbox's first colour follows how many sandboxes there are**, as
+  openfn-ia-demo picks it, not chance, so two in a row differ.
+- **Deleting the sandbox you're in takes you to the nearest project above it
+  you can open, and the dialog names that one.** Lightning names the root
+  and goes to the parent, which someone in only the sandbox can't open
+  (annotation 6.1).
+- **Edit links stay under the page's project.** Lightning's go under the
+  sandbox's parent, which 404s for someone in only the sandbox (annotation
+  6.1).
+- **The delete and merge warnings count only the sandboxes you can see.**
+  Lightning counts every one below (docs/api-gaps.md).
+- **Merge lists only the workflows a merge would change, has no collections
+  section, and offers projects the server may refuse.** openfn-ia-demo's
+  dialog: "Merge into", "Changed in <target> too", its warning, "Credentials
+  only in this sandbox" and "Merge into <target>". A refused merge stays in
+  the dialog with the server's message; Lightning closes it with "Couldn't
+  merge this sandbox. Please try again." Lightning offers only projects
+  where you're an editor or above, and lets you untick collections
+  (docs/api-gaps.md).
+- **`/sandboxes/new` without permission, and an edit of a sandbox that isn't
+  listed or you can't edit, go to the list with no message.** Lightning
+  flashes; nothing here carries a message across a redirect yet.
+- **openfn-ia-demo's words, where it has the screen.** The line under the
+  title, "New sandbox", "No other sandboxes", "New sandbox" / "Edit <name>",
+  "Create sandbox" / "Save", "My sandbox", "Colour" with its hint, and
+  "Created a sandbox from <parent>.". Lightning says "Create Sandbox",
+  "Create a new sandbox" / "Edit sandbox", "Save changes", "Color" and
+  "Sandbox created".
+
 ## Audit
 
 - **The audit trail no longer shows which credential environments an event

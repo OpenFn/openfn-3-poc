@@ -1,81 +1,96 @@
 import type { SandboxRow } from "@/types/sandboxes";
+import Card from "@/components/primitives/Card";
 import Section from "@/components/primitives/Section";
-import TextLink from "@/components/primitives/TextLink";
-import WorkspaceCard from "./WorkspaceCard";
-import EmptyState from "@/components/primitives/EmptyState";
 import { Stack } from "@/components/primitives/Stack";
+import Text from "@/components/primitives/Text";
+import SandboxActions from "./SandboxActions";
+import WorkspaceCard from "./WorkspaceCard";
 
 /**
- * The sandboxes page list (SandboxLive.Components.workspace_list): the root
- * card (a sandbox card when the root is a sandbox), its live sandboxes (or
- * the dashed "No sandboxes found" box), then a "Scheduled for deletion"
- * section.
+ * The sandboxes page's list, in openfn-ia-demo's sections: "Selected" (the
+ * page's project), "Active" (the rest of the workspace, its top project
+ * first), then Lightning's "Scheduled for deletion". The top project's card
+ * has no actions. The selected card isn't a link: you're already there.
  */
 export default function WorkspaceList({
   root,
-  rootIsSandbox = false,
+  rootIsSandbox,
   sandboxes,
   currentProjectId,
-  newHref,
-  createBlockedReason = null,
+  workflowsHref,
+  editHref,
+  restoreBlockedReason,
+  restoring,
   onMerge,
-  onEdit,
   onDelete,
   onRestore,
 }: {
+  /** The top of the workspace the viewer can open. */
   root: SandboxRow;
-  rootIsSandbox?: boolean;
+  rootIsSandbox: boolean;
+  /** Every sandbox below it the viewer is in, live and scheduled, by name. */
   sandboxes: SandboxRow[];
   currentProjectId: string;
-  /** "Create your first sandbox" links here. */
-  newHref: string;
-  /** Shown instead of that link when the user can't create one. */
-  createBlockedReason?: string | null;
-  onMerge?: (s: SandboxRow) => void;
-  onEdit?: (s: SandboxRow) => void;
-  onDelete?: (s: SandboxRow) => void;
-  onRestore?: (s: SandboxRow) => Promise<void>;
+  workflowsHref: (id: string) => string;
+  editHref: (id: string) => string;
+  restoreBlockedReason: string | null;
+  /** Whether this sandbox's Restore is waiting on the server. */
+  restoring: (id: string) => boolean;
+  onMerge: (sandbox: SandboxRow) => void;
+  onDelete: (sandbox: SandboxRow) => void;
+  onRestore: (sandbox: SandboxRow) => void;
 }) {
-  const active = sandboxes.filter((s) => !s.scheduledDeletion);
+  const all = [root, ...sandboxes];
+  const selected = all.find((s) => s.id === currentProjectId);
+  const active = all.filter((s) => s !== selected && !s.scheduledDeletion);
   const scheduled = sandboxes.filter((s) => s.scheduledDeletion);
-  const card = (s: SandboxRow, isRoot = false) => (
+  const card = (s: SandboxRow) => (
     <WorkspaceCard
       key={s.id}
-      workspace={s}
-      isRoot={isRoot}
-      isCurrent={s.id === currentProjectId}
-      onMerge={() => onMerge?.(s)}
-      onEdit={() => onEdit?.(s)}
-      onDelete={() => onDelete?.(s)}
-      onRestore={async () => {
-        await onRestore?.(s);
-      }}
+      sandbox={s}
+      isMain={s === root && !rootIsSandbox}
+      selected={s === selected}
+      href={s === selected || s.scheduledDeletion ? undefined : workflowsHref(s.id)}
+      actions={
+        s !== root && (
+          <SandboxActions
+            sandbox={s}
+            editHref={editHref(s.id)}
+            restoreBlockedReason={restoreBlockedReason}
+            restoring={restoring(s.id)}
+            onMerge={() => onMerge(s)}
+            onDelete={() => onDelete(s)}
+            onRestore={() => onRestore(s)}
+          />
+        )
+      }
     />
   );
 
   return (
     <Stack gap="lg">
-      <Stack gap="md">
-        {card(root, !rootIsSandbox)}
-        {active.length === 0 && scheduled.length === 0 ? (
-          <EmptyState
-            icon={null}
-            title="No sandboxes found"
-            message={
-              createBlockedReason ?? (
-                <>
-                  <TextLink to={newHref}>Create your first sandbox</TextLink> to start experimenting.
-                </>
-              )
-            }
-          />
+      {selected && (
+        <Section size="sm" title="Selected">
+          {card(selected)}
+        </Section>
+      )}
+      <Section size="sm" title="Active">
+        {active.length > 0 ? (
+          active.map(card)
         ) : (
-          active.map((s) => card(s))
+          // Words only: the header's New sandbox is the one way to make one.
+          <Card variant="dashed" className="flex flex-col items-center gap-1">
+            <span className="hero-beaker h-6 w-6 text-faint" aria-hidden="true" />
+            <Text variant="label-md" tone="strong">
+              No other sandboxes
+            </Text>
+            <Text tone="muted">Create a sandbox to try out changes without touching main.</Text>
+          </Card>
         )}
-      </Stack>
+      </Section>
       {scheduled.length > 0 && (
-        <Section id="scheduled-for-deletion-section" size="lg" title="Scheduled for deletion">
-          {scheduled.map((s) => card(s))}
+        <Section size="sm" title="Scheduled for deletion">
+          {scheduled.map(card)}
         </Section>
       )}
     </Stack>

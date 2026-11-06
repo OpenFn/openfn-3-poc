@@ -15,7 +15,7 @@ export default function ColorPalette({
   onChange: (hex: string) => void;
 }) {
   return (
-    <Field group label="Color" aria-label="Choose a color for your sandbox">
+    <Field group label="Colour" hint="Shown beside its name, so you can tell at a glance which sandbox you're in.">
       <div className="grid w-fit select-none grid-cols-4 gap-0.5 sm:grid-cols-8">
         {sandboxColorPalette.map((hex) => (
           // The radio is hidden, so the swatch shows its keyboard focus.

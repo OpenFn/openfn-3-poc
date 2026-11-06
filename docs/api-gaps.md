@@ -130,6 +130,29 @@ apart.
   the save (annotation 6.1). `api/channels.md` lists no error for it. Would
   need a 422 at `#/name` and `#/destination_url`. Until then neither the
   form nor the fake checks the length.
+- **Sandboxes: which sandboxes the list returns.** `GET
+  /api/projects/:id/sandboxes` doesn't say whether it lists only sandboxes
+  the caller is a member of. Lightning does (S03), even to the root's
+  owner. The fake lists only those.
+- **Sandboxes: how many sandboxes a delete or merge takes.** Lightning
+  counts every live sandbox below, including ones you can't see (S24, S43).
+  The API sends nothing for it, so the warning counts only the listed ones.
+  Would need a `descendants_count` (or similar) on each sandbox.
+- **Sandboxes: actions on a sandbox you can only reach from below.** Someone
+  in only a sandbox has no listing above it they can open, so nothing sends
+  its `update_sandbox`, `delete_sandbox` or `merge_sandbox`. Lightning lets
+  its admins edit and delete it. The page gives that card no menu.
+- **Sandboxes: nesting depth.** Nothing says a project is at the limit before
+  you try, and the 422 has no code or pointer. Lightning disables "Create
+  Sandbox" with "Maximum sandbox nesting depth reached" (S15). Would need a
+  code, and a field on the project or in `limits`.
+- **Sandboxes: deleting one takes its sandboxes.** `DELETE /api/projects/:id`
+  and the cancel route don't say a sandbox's own sandboxes are scheduled and
+  restored with it, as Lightning does. The fake does both.
+- **Sandboxes: whether the merge's scheduled deletion worked.** The planned
+  scope says the response says so, but not how. Lightning reports "but could
+  not schedule the sandbox for deletion" (S46). The fake always succeeds, and
+  the page shows the plain success.
 
 ## Superuser access (api/projects.md, api/collections.md)
 
@@ -216,3 +239,15 @@ The replica shows less, or shows it another way, and nothing breaks.
   `ChannelView`). `api/channels.md` has none of them, and Lightning has no
   channel page. The list and form show what the API sends; the form has no
   Description, Kind or System.
+- **Sandboxes: openfn-ia-demo's card details.** Who made a sandbox, when it
+  was last active and how many workflows it has changed aren't on the
+  sandboxes list (owner and `last_activity` come only with `scope=all` or
+  `include=stats` on `GET /api/projects`), and a change count would take one
+  merge preview per sandbox, which only its admins may ask for. Left out.
+- **Sandboxes: where you may merge.** Nothing says which projects the caller
+  may merge into. Lightning offers only those where they're an editor or
+  above (S33). The dialog offers every live project in the workspace and
+  shows the server's refusal.
+- **Sandboxes: collections in a merge.** The preview lists no collections and
+  a merge can't skip one. Lightning lets you untick them (S42). Every missing
+  collection is created.
