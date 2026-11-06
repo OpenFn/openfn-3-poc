@@ -7,6 +7,7 @@
  */
 import { apiTokens } from "@/mock-data/tokens";
 import { json, noContent, notFound, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { channelRoutes, resetChannels } from "./channels";
 import { credentialRoutes, resetCredentials } from "./credentials";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
@@ -52,6 +53,7 @@ const routes: Record<string, Handler> = {
   },
 
   ...credentialRoutes,
+  ...channelRoutes,
   ...projectRoutes,
   ...auditRoutes,
   ...collectionRoutes,
@@ -102,6 +104,7 @@ export function resetFakeApi() {
   resetProjects();
   resetCollections();
   resetCredentials();
+  resetChannels();
   resetSession();
   resetMfa();
   failures.clear();
