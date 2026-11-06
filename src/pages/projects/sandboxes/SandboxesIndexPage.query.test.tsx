@@ -179,10 +179,10 @@ describe("SandboxesIndexPageQuery", () => {
     renderAt(listOf(openhie.id));
     await loaded();
     failNext("DELETE /api/projects/:id/scheduled_deletion", { status: 403, code: "forbidden", detail: "You are not allowed to do that." });
-    fireEvent.click(within(cardOf("old-import-test")).getByRole("button", { name: "Restore" }));
+    fireEvent.click(within(cardOf("old-import-test")).getByRole("button", { name: "Restore old-import-test" }));
     expect((await screen.findByRole("alert", {}, wait)).textContent).toContain("You are not allowed to do that.");
 
-    fireEvent.click(within(cardOf("old-import-test")).getByRole("button", { name: "Restore" }));
+    fireEvent.click(within(cardOf("old-import-test")).getByRole("button", { name: "Restore old-import-test" }));
     expect(await screen.findByText("Cancelled deletion of sandbox old-import-test.", {}, wait)).toBeTruthy();
     await waitFor(() => expect(namesIn("Active")).toEqual(["fhir-mapping-v2", "lab-pilot", "old-import-test"]), wait);
   });

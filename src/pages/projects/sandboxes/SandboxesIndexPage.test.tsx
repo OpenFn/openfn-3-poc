@@ -87,7 +87,7 @@ describe("SandboxesIndexPage", () => {
     const scheduled = cardOf("old-import");
     expect(section("Scheduled for deletion").contains(scheduled)).toBe(true);
     expect(within(scheduled).queryByRole("link")).toBeNull();
-    expect(within(scheduled).getByRole("button", { name: "Restore" })).toBeTruthy();
+    expect(within(scheduled).getByRole("button", { name: "Restore old-import" })).toBeTruthy();
     expect(screen.getByRole("link", { name: "New sandbox" }).getAttribute("href")).toBe("/projects/p1/sandboxes/new");
   });
 
@@ -128,8 +128,8 @@ describe("SandboxesIndexPage", () => {
   it("at the plan's limit, greys New sandbox and Restore with its message; without permission, Restore says so", async () => {
     render({ sandboxLimit: "Upgrade to make more sandboxes", sandboxes: [gone, { ...gone, id: "s4", name: "older", canCancelDeletion: false }] });
     expect(await tooltipOf(screen.getByRole("button", { name: "New sandbox" }))).toBe("Upgrade to make more sandboxes");
-    expect(await tooltipOf(within(cardOf("old-import")).getByRole("button", { name: "Restore" }))).toBe("Upgrade to make more sandboxes");
-    expect(await tooltipOf(within(cardOf("older")).getByRole("button", { name: "Restore" }))).toBe("You are not authorized to cancel deletion of this sandbox");
+    expect(await tooltipOf(within(cardOf("old-import")).getByRole("button", { name: "Restore old-import" }))).toBe("Upgrade to make more sandboxes");
+    expect(await tooltipOf(within(cardOf("older")).getByRole("button", { name: "Restore older" }))).toBe("You are not authorized to cancel deletion of this sandbox");
   });
 
   describe("the form", () => {
@@ -205,11 +205,11 @@ describe("SandboxesIndexPage", () => {
 
   it("spins only the sandbox being restored, then says so", async () => {
     const host = render({ sandboxes: [gone, { ...gone, id: "s4", name: "older" }] });
-    const restore = within(cardOf("old-import")).getByRole("button", { name: "Restore" });
+    const restore = within(cardOf("old-import")).getByRole("button", { name: "Restore old-import" });
     fireEvent.click(restore);
     expect(host.calls("onCancelDeletion")).toEqual([["s2"]]);
     expect(restore.getAttribute("aria-busy")).toBe("true");
-    expect(within(cardOf("older")).getByRole("button", { name: "Restore" }).getAttribute("aria-busy")).toBeNull();
+    expect(within(cardOf("older")).getByRole("button", { name: "Restore older" }).getAttribute("aria-busy")).toBeNull();
     await host.resolve("onCancelDeletion");
     expect(screen.getByText("Cancelled deletion of sandbox old-import.")).toBeTruthy();
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("link", { name: "New sandbox" })));

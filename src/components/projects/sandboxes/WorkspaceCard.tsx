@@ -4,7 +4,6 @@ import { formatUtcDate } from "@/utils/format";
 import Card from "@/components/primitives/Card";
 import Heading from "@/components/primitives/Heading";
 import Pill from "@/components/primitives/Pill";
-import { Truncated } from "@/components/primitives/Table";
 import { Row } from "@/components/primitives/Stack";
 import Text from "@/components/primitives/Text";
 import TextLink from "@/components/primitives/TextLink";
@@ -39,7 +38,7 @@ export default function WorkspaceCard({
 }) {
   const deleted = sandbox.scheduledDeletion;
   const description = isMain ? "The live version of this project. Sandboxes merge back into main." : sandbox.description;
-  const name = <Truncated className="">{deleted ? <s>{sandbox.name}</s> : sandbox.name}</Truncated>;
+  const name = deleted ? <s>{sandbox.name}</s> : sandbox.name;
   return (
     <Card padding="none" variant={deleted ? "muted" : "default"} className="flex overflow-hidden">
       <div className="w-3 shrink-0" style={{ backgroundColor: (!isMain && sandbox.color) || "var(--background-color-brand)" }} />
@@ -48,7 +47,8 @@ export default function WorkspaceCard({
           <Tooltip content={deleted ? deletionTooltip(deleted) : undefined}>
             {/* Tooltip wraps its child in a span, and a heading can't sit in one. */}
             <div className="min-w-0">
-              <Heading size="lg" as="h3">
+              {/* A heading wraps a long name rather than cutting it off (PRINCIPLES, Look and behaviour). */}
+              <Heading size="lg" as="h3" className="wrap-break-word">
                 {href ? (
                   <TextLink variant="plain" to={href} className="block">
                     {name}
@@ -62,7 +62,7 @@ export default function WorkspaceCard({
           {selected && <Pill tone="info">Selected</Pill>}
           {isMain && <Pill>Main</Pill>}
         </Row>
-        <Text as="p" tone={description ? "body" : "faint"}>
+        <Text as="p" tone={description ? "body" : "muted"}>
           {description || "No description"}
         </Text>
         {sandbox.parentName && (

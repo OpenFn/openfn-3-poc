@@ -52,6 +52,7 @@ export const NoOtherSandboxes: Story = { args: { sandboxes: [] } };
 export const Long: Story = {
   args: {
     projectLabel: "openhie-project-for-the-national-health-information-exchange",
+    root: { ...root!, name: "openhie-project-for-the-national-health-information-exchange-in-every-district" },
     sandboxes: sandboxes.map((s) => ({ ...s, name: `${s.name}-for-the-national-patient-registry-integration-in-every-district` })),
   },
 };

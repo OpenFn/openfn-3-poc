@@ -168,7 +168,8 @@ export default function SandboxesIndexPage({
           sandboxName={deleting.name}
           descendantCount={deleting.descendantCount}
           isCurrent={deleting.holdsCurrent}
-          rootName={deleting.parentName ?? ""}
+          // A sandbox's parent is always listed: the workspace's top project, or a sandbox the viewer is in.
+          rootName={deleting.parentName!}
           gracePeriodDays={gracePeriodDays}
           onClose={() => setDeletingId(null)}
           onConfirm={async () => {

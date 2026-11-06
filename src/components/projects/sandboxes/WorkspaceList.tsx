@@ -58,6 +58,7 @@ export default function WorkspaceList({
         s === root ? null : s.scheduledDeletion ? (
           <Button
             variant="secondary"
+            aria-label={`Restore ${s.name}`}
             disabled={restoreBlocked(s) !== null}
             tooltip={restoreBlocked(s) ?? undefined}
             pending={restoring(s.id)}

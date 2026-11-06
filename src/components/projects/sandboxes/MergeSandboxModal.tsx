@@ -16,8 +16,6 @@ interface State {
   preview: MergePreviewResult | null;
   /** The target picked, whose preview may still be on its way. */
   targetId: string;
-  loading: boolean;
-  error: string | null;
   workflows: Set<string>;
   credentials: Set<string>;
 }
@@ -40,8 +38,6 @@ function applyPreview(s: State, next: MergePreviewResult): State {
   return {
     ...s,
     preview: next,
-    loading: false,
-    error: null,
     workflows: new Set([
       ...[...s.workflows].filter((id) => after.workflows.has(id)),
       ...next.workflows.filter((w) => !w.isDeleted && !before.workflows.has(w.id)).map((w) => w.id),
@@ -75,18 +71,15 @@ export default function MergeSandboxModal({
     preview: null,
     // The parent when it's listed; the workspace's top project is always live, so there's always one.
     targetId: targets[0]!.id,
-    loading: true,
-    error: null,
     workflows: new Set(),
     credentials: new Set(),
   });
   const previewing = useAction(onPreview, {
     onSuccess: (next) => setS((cur) => applyPreview(cur, next)),
-    onError: (e) => setS((cur) => ({ ...cur, loading: false, error: errorMessage(e) })),
     latest: true,
   });
   const ask = (targetId: string) => {
-    setS((cur) => ({ ...cur, targetId, loading: true, error: null }));
+    setS((cur) => ({ ...cur, targetId }));
     void previewing.run(targetId);
   };
   useEffect(() => {
@@ -95,10 +88,13 @@ export default function MergeSandboxModal({
   }, []);
 
   // Only the picked target's preview: none while the next one loads or after it failed.
-  const preview = s.loading || s.error ? null : s.preview;
-  const target = targets.find((t) => t.id === s.targetId)!.name;
+  const error = previewing.error && errorMessage(previewing.error);
+  const loading = !error && s.preview?.targetId !== s.targetId;
+  const preview = loading || error ? null : s.preview;
+  // A target that has gone since (deleted elsewhere) has no name; the server refuses the merge.
+  const target = targets.find((t) => t.id === s.targetId)?.name ?? "";
   const diverged = (preview?.workflows ?? []).filter((w) => w.isDiverged && s.workflows.has(w.id));
-  const blockedReason = s.loading
+  const blockedReason = loading
     ? "Loading the merge preview"
     : !preview
       ? "The merge preview didn't load"
@@ -134,15 +130,15 @@ export default function MergeSandboxModal({
           onChange={(e) => ask(e.target.value)}
         />
 
-        {s.error && (
+        {error && (
           <Alert tone="danger" id="merge-preview-error">
-            {s.error}
+            {error}
           </Alert>
         )}
 
-        {/* Mounted throughout, so a new target's preview is read out when it arrives. */}
-        <Stack gap="lg" aria-live="polite">
-          {s.loading && <Spinner size="md" label="Loading the merge preview" />}
+        {loading && <Spinner size="md" label="Loading the merge preview" />}
+        {/* Mounted throughout, so a new target's workflows are read out when they arrive. */}
+        <div aria-live="polite">
           {preview && (
             <Field group label="Workflows">
               <Stack gap="sm">
@@ -168,28 +164,28 @@ export default function MergeSandboxModal({
               </Stack>
             </Field>
           )}
-          {diverged.length > 0 && (
-            <Alert tone="warning" header={`${target} has changed since this sandbox was made`}>
-              Merging replaces {diverged.map((w) => w.name).join(", ")} in {target} with this sandbox's version, and the changes made in{" "}
-              {target} are lost.
-            </Alert>
-          )}
-          {preview && preview.credentials.length > 0 && (
-            <Field group label="Credentials only in this sandbox">
-              <Stack gap="sm">
-                {preview.credentials.map((c) => (
-                  <Checkbox
-                    key={c.id}
-                    label={c.name}
-                    hint={`Bring it into ${target} so the merged workflows can use it.`}
-                    checked={s.credentials.has(c.id)}
-                    onChange={() => setS((cur) => ({ ...cur, credentials: toggled(cur.credentials, c.id) }))}
-                  />
-                ))}
-              </Stack>
-            </Field>
-          )}
-        </Stack>
+        </div>
+        {diverged.length > 0 && (
+          <Alert tone="warning" header={`${target} has changed since this sandbox was made`}>
+            Merging replaces {diverged.map((w) => w.name).join(", ")} in {target} with this sandbox's version, and the changes made in{" "}
+            {target} are lost.
+          </Alert>
+        )}
+        {preview && preview.credentials.length > 0 && (
+          <Field group label="Credentials only in this sandbox">
+            <Stack gap="sm">
+              {preview.credentials.map((c) => (
+                <Checkbox
+                  key={c.id}
+                  label={c.name}
+                  hint={`Bring it into ${target} so the merged workflows can use it.`}
+                  checked={s.credentials.has(c.id)}
+                  onChange={() => setS((cur) => ({ ...cur, credentials: toggled(cur.credentials, c.id) }))}
+                />
+              ))}
+            </Stack>
+          </Field>
+        )}
 
         <Alert tone="warning" id="merge-deletion-warning" header="This sandbox will be deleted after merging">
           It can be restored from the sandbox list for {formatGracePeriod(gracePeriodDays)}, then permanently removed.

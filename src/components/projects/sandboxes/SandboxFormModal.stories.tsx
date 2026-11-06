@@ -40,3 +40,4 @@ export const TooDeep: Story = {
 export const Long: Story = {
   args: { parent: { name: "openhie-project-for-the-national-health-information-exchange-in-every-district", isSandbox: false } },
 };
+export const LongEdit: Story = { args: { sandbox: { ...storyWorkspace[1]!, name: "fhir-mapping-for-the-national-patient-registry-integration-in-every-district" } } };

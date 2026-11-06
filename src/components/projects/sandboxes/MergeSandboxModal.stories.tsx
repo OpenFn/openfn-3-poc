@@ -36,6 +36,8 @@ export const MergeFails: Story = {
     },
   },
 };
+/** Press Merge to see it wait on the server. */
+export const MergePending: Story = { args: { onMerge: () => new Promise(() => {}) } };
 /** The preview is still loading. */
 export const Loading: Story = { args: { onPreview: () => new Promise(() => {}) } };
 export const Long: Story = {
