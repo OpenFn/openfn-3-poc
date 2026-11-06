@@ -405,6 +405,58 @@ goes back to Lightning's way.
   (openfn-ia-demo `AdminSettingsPage.tsx`, `AdminCollectionTable.tsx`), so
   its words win.
 
+## Admin users
+
+- **The columns.** Name (the full name, "(you)" on your row, the email under
+  it), Role ("User" or "Superuser", and "Support" for a support user) and
+  Status ("Enabled" or "Disabled", and a red "Deletes 21 Oct 2026" when one is
+  scheduled), all as badges. Lightning has First name, Last name, Email,
+  "Role*", "Enabled?", "Support?" and "Scheduled Deletion", with ticks and
+  the raw role (`user_live/components.ex`). The design has this screen and
+  these columns, so they win. It has a Last login column too, which the API
+  can't fill (docs/api-gaps.md, Changed, and that's fine).
+- **The deletion date is a day and year, in UTC**: "Deletes 21 Oct 2026".
+  Lightning shows "21 Oct  09:30", in UTC with no year and no label
+  (`user_live/components.ex:131-134`, annotation 6.2), so a reader can't tell
+  the year or the time zone. The time of day says nothing useful about a
+  purge that runs nightly.
+- **Only Name, Role and Status sort, and Name is the default.** Lightning
+  sorts every column and starts on email. The design has three columns,
+  each sorted by a field the API's planned `sort` takes.
+- **The server searches, sorts and pages the list**, 25 to a page, the search
+  300 ms after the last key, and all of it in the URL (`?q`, `?sort`, `?dir`,
+  `?page`). Lightning loads every user and filters and sorts them in memory,
+  with no paging, and loses both on reload or after opening the dialog
+  (annotation 6.2, 6.4).
+- **Row actions are buttons.** Every row has Edit; a live user has Delete; a
+  scheduled one has Cancel deletion and a ••• menu holding Delete now.
+  Lightning puts them all in one Actions menu (`user_live/components.ex`).
+  Two quiet buttons, the rest in a menu, is the rule for every list
+  (PRINCIPLES.md, Row actions).
+- **A superuser's Delete is disabled with why**: "You can't delete your own
+  account" on your row, "Superusers can't be deleted" on the others.
+  Lightning shows a plain span with no explanation
+  (`user_live/components.ex:172-187`). A blocked control stays visible and
+  says why (PRINCIPLES.md, Everyone can use it).
+- **Delete now is disabled, with "Not available in the API yet".** Lightning
+  purges a scheduled user at once from the row's menu; the API only
+  schedules deletions (`api/misfits.md`), so the item stays in the ••• menu,
+  disabled, with the reason under it.
+- **The words.** "New user", in sentence case, with the user-plus icon
+  (Lightning: "New User"); "Filter users" (Lightning: "Filter users...");
+  a line under the title and a footnote under the table in place of
+  Lightning's "*Note that a superuser can access everything…"; "No users
+  match." when nothing does, where Lightning shows the header with no rows.
+  The design has this screen, so its words win.
+- **A stale or unknown `/settings/users/:id/delete` goes to the list.**
+  Lightning raises on an unknown id (`user_live/index.ex:28-32`, annotation
+  6.2). A superuser's, or one already scheduled for deletion, goes to the
+  list too, since neither can be scheduled.
+- **Cancelling the deletion of a user who has already gone shows an error
+  toast with the server's reason.** Lightning crashes and reloads the page,
+  and its "Cancel user deletion failed" never says why
+  (`user_live/index.ex:40-50`, annotation 6.1, 6.2).
+
 ## Admin projects
 
 - **No Edit.** Lightning's superuser can rename any project and change its

@@ -6,7 +6,7 @@ import type { ProjectAction, ProjectInput, ProjectNode } from "@/types/projects"
 import type { ResourceStatus } from "@/types/resource";
 import type { ProjectOverview } from "@/types/workflows";
 import { fullName } from "@/utils/format";
-import { isApiError, listAll, pageLinks, request, sortParam, statusOf } from "./client";
+import { isApiError, listAll, PAGE_SIZE, pageLinks, request, sortParam, statusOf } from "./client";
 
 /** A project as `GET /api/projects` lists it. The stats come with `include=stats`, which is planned. */
 export interface ApiProject {
@@ -65,8 +65,6 @@ export function adminProjectRow({ id, attributes: a }: ApiAdminProject): AdminPr
     scheduledDeletion: a.scheduled_deletion,
   };
 }
-
-const PAGE_SIZE = 25;
 
 /** The `sort` fields the instance's list takes, so a query can check what the URL asks for. */
 const ADMIN_SORT_KEYS: Record<AdminProjectSortKey, true> = { name: true, inserted_at: true };

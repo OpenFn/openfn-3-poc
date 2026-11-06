@@ -6,7 +6,7 @@ export { default as AdminCollectionsPage } from "./pages/admin/collections/Admin
 export { default as AdminMaintenancePage } from "./pages/admin/AdminMaintenancePage";
 export { default as AdminProjectsPage } from "./pages/admin/projects/AdminProjectsPage";
 export { default as AdminUserEditPage } from "./pages/admin/AdminUserEditPage";
-export { default as AdminUsersPage } from "./pages/admin/AdminUsersPage";
+export { default as AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
 export { default as AuthConfirmAccessPage } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export { default as AuthLoginPage } from "./pages/auth/login/AuthLoginPage";
 export { default as AuthTwoFactorPage } from "./pages/auth/two-factor/AuthTwoFactorPage";
@@ -35,7 +35,7 @@ export type { AdminCollectionsPageProps } from "./pages/admin/collections/AdminC
 export type { AdminMaintenancePageProps } from "./pages/admin/AdminMaintenancePage";
 export type { AdminProjectsPageProps } from "./pages/admin/projects/AdminProjectsPage";
 export type { AdminUserEditPageProps } from "./pages/admin/AdminUserEditPage";
-export type { AdminUsersPageProps } from "./pages/admin/AdminUsersPage";
+export type { AdminUsersPageProps } from "./pages/admin/users/AdminUsersPage";
 export type { AuthConfirmAccessPageProps } from "./pages/auth/confirm-access/AuthConfirmAccessPage";
 export type { AuthLoginPageProps, LogInValues } from "./pages/auth/login/AuthLoginPage";
 export type { AuthTwoFactorPageProps } from "./pages/auth/two-factor/AuthTwoFactorPage";
@@ -65,12 +65,13 @@ export type { ErrorSignatures, Outcomes, RunVolume } from "./types/workflow-heal
 
 export type {
   AdminCollectionRow,
-  AdminDeleteUser,
   AdminProjectFormValues,
   AdminProjectRow,
   AdminProjectSortKey,
   AdminProjectUser,
+  AdminUserListRow,
   AdminUserRow,
+  AdminUserSortKey,
   AuditEvent,
   AuthProvider,
   AuthProviderValues,

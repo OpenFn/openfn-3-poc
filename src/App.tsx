@@ -35,7 +35,7 @@ import ProfilePage from "./pages/profile/profile/ProfilePage.query";
 import TokensPage from "./pages/profile/tokens/TokensPage.query";
 import BackupCodesPage from "./pages/profile/backup-codes/BackupCodesPage.query";
 
-import AdminUsersPage from "./pages/admin/AdminUsersPage.replica";
+import AdminUsersPage from "./pages/admin/users/AdminUsersPage.query";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage.replica";
 import AdminProjectsPage from "./pages/admin/projects/AdminProjectsPage.query";
 import AdminAuditPage from "./pages/admin/audit/AdminAuditPage.query";

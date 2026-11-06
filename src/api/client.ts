@@ -87,6 +87,9 @@ export async function listAll<T>(path: string, key: string): Promise<T[]> {
 /** A list's `sort` parameter (api/conventions.md): the field, `-` first for descending. */
 export const sortParam = (sort: SortState) => `${sort.direction === "desc" ? "-" : ""}${sort.key}`;
 
+/** Rows a page of a list asks for (PRINCIPLES.md, Lists). */
+export const PAGE_SIZE = 25;
+
 /**
  * Where one page of a list stands, from its links (api/conventions.md sends no
  * total): the page the server answered, which moves an overflow page back to

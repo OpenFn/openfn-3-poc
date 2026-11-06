@@ -2,7 +2,7 @@
 import type { ProjectInput, ProjectRole } from "./projects";
 import type { UserRole } from "./users";
 
-/** A row of /settings/users, and the account the admin user form edits: what they show, nothing more. */
+/** The account the admin user form edits: what it shows, nothing more. */
 export interface AdminUserRow {
   id: string;
   firstName: string;
@@ -15,16 +15,25 @@ export interface AdminUserRow {
   scheduledDeletion: string | null;
 }
 
-/** The account whose deletion dialog is open (/settings/users/:id/delete). */
-export interface AdminDeleteUser {
+/** A row of /settings/users. */
+export interface AdminUserListRow {
   id: string;
-  /** Typed back to confirm. */
+  firstName: string;
+  lastName: string;
   email: string;
-  /** Set when a deletion is already scheduled: confirming then deletes the account at once. */
+  role: UserRole;
+  supportUser: boolean;
+  disabled: boolean;
+  /** ISO timestamp of the pending deletion; null when none is scheduled. */
   scheduledDeletion: string | null;
-  /** The account has run activity in projects: deleting it now is refused. */
+  /** They have created runs (`hasCreatedRun`). */
   hasActivityInProjects: boolean;
+  /** Whether their deletion can be scheduled. Superusers' can't. */
+  canDelete: boolean;
 }
+
+/** The fields the users list sorts by (`?sort=`), as the API names them. */
+export type AdminUserSortKey = "first_name" | "role" | "disabled";
 
 /** What the admin user form saves. On a new account the host ignores the edit-only fields. */
 export interface UserFormValues {

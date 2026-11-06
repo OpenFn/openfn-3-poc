@@ -49,11 +49,12 @@ apart.
   `has_activity_in_projects` on `GET /api/me`, which re-does a server rule.
   Would need a `deletion_blocked` (or the refusal as a stated 409). Replica:
   the mapper in `src/api/session.ts` works it out.
-- **Profile: a superuser scheduling their own deletion.** Lightning refuses
-  it (`User.scheduled_deletion_changeset`), but the planned self-deletion in
-  `api/users.md` doesn't say how. Would need a stated refusal, such as 403
-  `forbidden`. Replica: the fake answers that, and the dialog shows its
-  `detail`.
+- **Profile and admin users: scheduling a superuser's deletion.** Lightning
+  refuses it, your own or another's (`User.scheduled_deletion_changeset`).
+  `api/users.md` says Delete a user refuses superusers, but names no answer
+  for that, nor for the planned self-deletion. Would need a stated refusal,
+  such as 403 `forbidden`. Replica: the fake answers that, and the dialog
+  shows its `detail`.
 - **Audit trail: say that secrets are left out of `changes`.** We think the
   API leaves them out on purpose: the full-api-test branch drops OAuth
   client secrets and webhook auth usernames, passwords and API keys from
@@ -83,6 +84,13 @@ apart.
   names no code or pointer. Would need one; the member routes use
   `one_owner`. Replica: the fake answers a 422 with a `one_owner` entry at
   `#/members`, and the form shows it under Members.
+- **Admin users: no `can_delete`, with a reason, on a user.** The design's
+  users table disables Delete with why ("Superusers can't be deleted", "You
+  can't delete your own account"), from a `canDelete` the server decides.
+  The user object sends neither, so the app re-does Lightning's rule that
+  superusers can't be deleted. Would need `can_delete` with a reason on each
+  user in `GET /api/users`. Replica: `canDeleteUser` in `src/permissions.ts`
+  works it out, and the page's query puts it on each row.
 - **Admin users: no error code for removing the last superuser.**
   Lightning lets one save demote or disable the last superuser and lock
   everyone out of admin. `api/users.md` doesn't say the API refuses it.
@@ -90,7 +98,7 @@ apart.
   Replica: on your own account Role and Disabled are greyed out, and the
   fake answers that 422.
 
-## Superuser access (api/projects.md, api/collections.md)
+## Superuser access (api/projects.md, api/collections.md, api/users.md)
 
 - **Needed: the planned superuser scope on `GET /api/projects` must be
   opt-in** (e.g. `scope=all`); as planned, every superuser's dashboard and
@@ -113,6 +121,12 @@ apart.
   on deleting carries over to `DELETE /api/projects/:id/scheduled_deletion`.
   Would need it to, for admin projects' Cancel deletion. Replica: the fake
   lets a superuser cancel any project's deletion.
+- **Which tokens may delete a user or cancel a deletion.** `api/users.md`
+  plans personal access tokens for managing users in general, but Delete a
+  user and Cancel a user's deletion list only the service account, and don't
+  say whether a superuser's session must be stepped up first. Would need a
+  superuser's token on both, and a stated step-up rule. Replica: the fake
+  lets a superuser's session do both without stepping up.
 
 ## Changed, and that's fine
 
@@ -156,3 +170,7 @@ The replica shows less, or shows it another way, and nothing breaks.
   `ProjectLive.Index`). The planned `sort` on `GET /api/projects` takes
   `name`, `inserted_at` and `last_activity`. Lightning sorts every column.
   Replica: Owner and Members are plain headers.
+- **Admin users: no Last login** (Lightning's `UserLive.Index`). The
+  design's users table shows when each user last signed in; the user object
+  has no such field. Would need a `last_login_at` on the user. Replica:
+  column left out.
