@@ -43,9 +43,10 @@ export default function AuthConfirmAccountPageQuery() {
       allowSignup={allowSignup}
       onResend={async ({ email }) => {
         await resend(email);
-        // ponytail: the session as it was when pressed; pressing before it loads (the fake's 300 ms) goes to log in.
-        // Signed out, /projects would bounce to log in, so go there; SessionGate toasts it otherwise.
-        const to = session.state === "signed_in" ? "/projects" : "/users/log_in";
+        // Signed out (or not loaded yet), /projects would bounce to log in without the message, so go there.
+        // Anyone else goes to /projects and SessionGate sends them on (locked out to confirm-required, as
+        // Lightning) or toasts it.
+        const to = !session.state || session.state === "signed_out" ? "/users/log_in" : "/projects";
         void navigate(to, { replace: true, state: { flash: { tone: "info", message: authMessages.confirmSent } } });
       }}
       onConfirm={async () => {

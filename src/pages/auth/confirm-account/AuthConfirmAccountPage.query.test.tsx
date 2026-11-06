@@ -76,6 +76,14 @@ describe("AuthConfirmAccountPageQuery", () => {
     await waitFor(() => expect(toast).toHaveBeenCalledWith(authMessages.confirmSent, "info"));
   });
 
+  it("resending while locked out goes on to the confirm-required page, as Lightning does", async () => {
+    await signIn("unconfirmed@openfn.org");
+    renderAt("/users/confirm");
+    await settle();
+    await resendTo("unconfirmed@openfn.org");
+    expect(await screen.findByText("At /users/confirm-required", {}, wait)).toBeTruthy();
+  });
+
   it("sends a signed-out link to log in, and back to the link after signing in as Una", async () => {
     renderAt(link);
     expect(await screen.findByRole("button", { name: "Log in" }, wait)).toBeTruthy();
