@@ -127,7 +127,7 @@ const PERMISSIONS: Record<ProjectAction, keyof Permissions> = {
   manage_collection: "canCreateCollection",
   provision_sandbox: "canCreateSandbox",
 };
-const permissionsIn = (p: Project) => {
+export const permissionsIn = (p: Project) => {
   const can = permissionsFor(p, currentUser());
   return Object.fromEntries(Object.entries(PERMISSIONS).map(([name, flag]) => [name, can[flag]]));
 };

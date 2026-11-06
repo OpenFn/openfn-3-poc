@@ -1,38 +1,32 @@
 /** Channels (the HTTP proxy) and the requests made through them. Types only: no data, no behaviour. */
 
-/** One row of the channels index table: what it shows, with the links the host builds. */
+/** One row of the channels index table, and the channel the form edits. */
 export interface ChannelRow {
   id: string;
   name: string;
   enabled: boolean;
   destinationUrl: string;
-  /** The URL client systems call; the host knows its own address. */
+  /** Where client systems send requests. */
   proxyUrl: string;
   requestCount: number;
   lastActivityAt: string | null;
-  /** The channel logs, filtered to this channel. */
-  logsHref: string;
+  /** Webhook auth method ids a client must pass; none means anyone with the URL can use it. */
+  clientAuthMethodIds: string[];
+  /** A credential linked to the project, or null. */
+  destinationCredentialId: string | null;
+  /** Sent back with a save, so a change someone else made since is refused, not overwritten. */
+  lockVersion: number;
 }
 
-/** What the New / Edit Channel form edits and saves. */
+/** What the New / Edit channel form saves, named as the API names it. */
 export interface ChannelFormValues {
   name: string;
+  destination_url: string;
   enabled: boolean;
-  destinationUrl: string;
-  /** A project credential id, or "" for none. */
-  destinationCredentialId: string;
-  /** Webhook auth method ids. */
-  clientAuthMethodIds: string[];
-}
-
-/** What the form needs from the host: the options, and the channel when editing. */
-export interface ChannelForm {
-  /** Absent (or null, as JSON has it) for a new channel. */
-  channel?: (ChannelFormValues & { id: string; proxyUrl: string }) | null | undefined;
-  /** The project's credentials (Destination Credential). */
-  credentialOptions: { id: string; name: string }[];
-  /** The project's webhook auth methods (Client Credentials). */
-  authMethodOptions: { id: string; name: string }[];
+  /** A credential linked to the project, or null for none. */
+  destination_credential_id: string | null;
+  /** The project's webhook auth methods a client must pass. */
+  client_auth_method_ids: string[];
 }
 
 export type ChannelRequestState = "pending" | "success" | "failed" | "timeout" | "error";

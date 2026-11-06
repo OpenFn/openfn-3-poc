@@ -28,6 +28,7 @@ export const notFound = () => problem({ status: 404, code: "not_found", detail: 
 // One 422 for every problem with a body (api/errors.md).
 export const invalid = (errors: NonNullable<Problem["errors"]>) =>
   problem({ status: 422, code: "invalid", detail: "The request body is not valid.", errors });
+export const isUrl = (value: string) => URL.canParse(value) && /^https?:/.test(value);
 export const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
 // Links are absolute, like Lightning's; the client keeps only the path.

@@ -535,6 +535,42 @@ goes back to Lightning's way.
   Lightning crashes on an unknown id (`index.html.heex:19`). One already
   scheduled for deletion goes to the list too.
 
+## Channels
+
+- **No Total channels or Total requests cards, and no "View all".**
+  openfn-ia-demo shows none, as Workflows dropped its cards; the title still
+  counts the channels, and History's Channel Logs lists every request.
+- **A switched-off channel's name isn't greyed, and its switch has no
+  "<name> (disabled)" tooltip.** The Enabled column already says it. Row
+  Delete is a quiet button, not red, as on the admin lists.
+- **Delete asks in a dialog with openfn-ia-demo's words**, "Delete <name>?"
+  and "Delete channel", and says the request history goes too, which
+  Lightning deletes without saying (api/channels.md). Lightning uses the
+  browser's confirm: 'Delete "<name>"? This cannot be undone.'
+- **With no client credential ticked, the form warns that anyone with the
+  proxy URL can use the channel.** Lightning says nothing, and an open
+  channel forwards anyone's request with the destination credential added
+  (annotation 6.1).
+- **Switching a channel on or off shows no toast.** The switch's new
+  position is the confirmation; Lightning flashes "Channel updated". A refused
+  switch goes back and shows the server's message in a toast that stays.
+- **`/channels/new` or `/channels/:id/edit` without permission, and an edit
+  for a channel this project doesn't have, go to the list with no message.**
+  Lightning flashes "You are not authorized to create channels." or
+  "Channel not found"; nothing here carries a message across a redirect yet.
+- **A save refused for a stale version, or for a credential or auth method
+  outside the project, shows the server's message in the form.** Lightning's
+  form shows nothing (annotation 6.1), so the save seems to do nothing.
+- **openfn-ia-demo's words and form order, where it has the screen.** "New
+  channel" with a plus, the line under the title, "No channels yet.", "New
+  channel" / "Edit <name>", "Create channel" on create, "Created <name>.",
+  "Add new", its hints, and Enabled last in the form. Lightning says "New
+  Channel", "No channels found.", "New Channel" / "Edit Channel", "Save" on
+  create, "Channel created successfully." and "Add New", with Enabled second.
+- **Opening `/channels/new` or `/channels/:id/edit` directly shows the list
+  behind the form.** Lightning shows zero totals and "No channels found."
+  until the form closes (annotation 6.1).
+
 ## Audit
 
 - **The audit trail no longer shows which credential environments an event
