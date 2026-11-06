@@ -222,9 +222,11 @@ No inline role checks in components.
 of every signed-in route in `App.tsx`. It loads `GET /api/session`, `/api/me`
 and `/api/instance`, and sends the person to log in when signed out (with
 `return_to`), to `/users/two-factor` while an MFA code is owed, and to
-confirm-required when unconfirmed. Otherwise it supplies the user and
-instance through `SessionProvider`. Any request answered 401 reloads the
-session (`ApiProvider`), so a session that ends mid-use lands on login.
+confirm-required when unconfirmed. Confirm-account and confirm-required
+redirect the same way, through `signInRedirect` (`src/utils/urls.ts`).
+Otherwise it supplies the user and instance through `SessionProvider`. Any
+request answered 401 reloads the session (`ApiProvider`), so a session that
+ends mid-use lands on login.
 After a sign-in or two-factor sends someone into the app, SessionGate moves
 focus to `<main>`, as ProjectGate does after a swap
 (`useFocusMainAfterSwap`).

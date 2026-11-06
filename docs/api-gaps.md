@@ -124,3 +124,116 @@ The replica shows less, or shows it another way, and nothing breaks.
   `GET /api/password_resets/:token` answering 204 or 404 without using the
   link. Replica: finds out on submit, then sends the person to ask for a new
   link (docs/lightning-differences.md).
+
+## Confirm account (Lightning's `auth-confirm-account`)
+
+- **The lockout sentence leaves out confirming.** api/account.md (Get the
+  session) says a `confirmation_required` account gets 401 from every route
+  except `POST /api/confirmations`. Lightning's lockout also lets it open and
+  submit `/users/confirm/:token` (`confirmation_lockout.ex:18-33`), or a
+  locked-out person could never confirm. The contract should list
+  `PUT /api/confirmations/:token` too. Replica: confirm-required's fake
+  allows it.
+- **No way to check a confirm link before pressing.** Lightning checks the
+  token when the link is opened (`verify_confirmation_token` on `:edit`). The
+  API only refuses on `PUT /api/confirmations/:token`, which uses the link.
+  Would need `GET /api/confirmations/:token` answering 204 or 404 without
+  using it. Replica: finds out when "Confirm my account" is pressed, and says
+  so in the card (docs/lightning-differences.md).
+
+## Confirm required (Lightning's `auth-confirmation-required`)
+
+- **When `confirmation_required` starts is unclear.** api/account.md says the
+  state means "unconfirmed and the instance requires it", and that routes
+  answer 401 "from 48 hours after sign-up". Its implementation note maps it
+  to `Accounts.locked_out?/1`, which includes the 48 hours. Read the first
+  way, every fresh sign-up would be sent here at once, and a client can't
+  tell the grace period from the lockout without `/api/me`, which is locked
+  too. The spec should say the state starts at 48 hours. Replica: the fake
+  does that.
+- **The locked-out 401 has no code of its own.** It answers
+  `unauthenticated`, like a signed-out one, so a client has to reload the
+  session to tell them apart. Replica: ApiProvider already reloads it on a
+  401.
+
+Changed, and that's fine:
+
+- **No way to correct a mistyped address while locked out.** Lightning's
+  page has a "Change email address" form (`request_email_correction/2`); no
+  route covers it, and the implementation note says so. A locked-out person
+  can't change anything else either, so the replica drops the form and a
+  mistyped address needs an administrator.
+
+## First setup (Lightning's `first-setup`)
+
+- **First setup's create isn't sign-up.** api/users.md plans a create without
+  a token only "on an instance that allows sign-up", with
+  `terms_accepted: true`. Lightning's first setup works with sign-up off and
+  asks for no terms. api/account.md says the first account becomes the
+  superuser, but not that these conditions are lifted. The spec should say
+  so. Replica: the fake lifts both while `needs_setup`.
+- **Is the first superuser confirmed?** Sign-up "emails them a confirmation
+  link"; Lightning's first setup leaves `confirmed_at` unset and sends
+  nothing, so under `require_email_verification` the only administrator is
+  locked out after 48 hours. The contract should say which. Replica:
+  unconfirmed, nothing sent.
+- **A create can't say "only as first setup".** A first-setup form
+  submitted after setup is done becomes an ordinary create (a plain user
+  under sign-up, or one made with the new superuser's session). It needs a
+  refusal for "already set up". Replica: 401 signed out (with sign-up on,
+  a 422 for the missing terms, which the form shows only as "The request
+  body is not valid."), 403 signed in, until the admin create defines the
+  rest.
+
+Changed, and that's fine:
+
+- **`needs_setup` hides why setup is closed.** It is false both once a
+  superuser exists and when a service account runs the instance, so the
+  replica can't show Lightning's "First setup is disabled for this
+  instance." 404.
+
+## Register (Lightning's `auth-register`)
+
+- **No code says sign-up is closed.** A signed-out create on an instance
+  without sign-up answers 401 `unauthenticated`, the same as "sign in
+  first", so a register tab left open after sign-up was turned off can't
+  say why. It needs its own code. Replica: 401, shown as sent.
+- **The terms refusal isn't specified.** api/users.md asks for
+  `terms_accepted: true` but not what a missing or false one answers.
+  Replica: a `must_accept` entry at `#/terms_accepted` (api/errors.md lists
+  the code), also when the key is left out.
+- **A `role` or `confirmed` sent on sign-up.** The contract says sign-up
+  gets role `user`, but not whether a sent `role` or `confirmed` is ignored
+  or refused. Replica: ignored, as Lightning.
+- **Starter project.** Lightning's `init_project_for_new_user` makes a
+  project and lands the new user on its new-workflow page; the create's
+  answer can't say a project was made or where to go. Replica: none, so
+  every new user lands on the projects list.
+
+## Session tokens (api/authentication.md, api/errors.md)
+
+- **No error code for a missing or wrong CSRF token.** Writes on a session
+  token need `x-csrf-token`, but api/errors.md has no code for one that
+  doesn't match, so the only answer left is 403 `forbidden`, which means
+  "you may not do this". The app can't tell "your session changed in
+  another tab" from "not allowed". Would need a 403 `invalid_csrf_token` in
+  the response codes. Replica: the fake server answers `forbidden`, and
+  `client.ts` forgets its token on any refused write, so the next one asks
+  for the current token. It never resends: the new session may be someone
+  else's.
+
+## Project access (api/projects.md, api/errors.md)
+
+- **No error code for a project's MFA requirement.** A member who hasn't set
+  up MFA gets 403 `forbidden` from every route on a project that requires
+  it, the same answer as a non-member. Lightning sends that member to
+  /mfa_required to set it up; the app can't tell the two apart from the
+  answer. Would need a 403 `mfa_required` on project routes. Replica:
+  `useRefusedForMfa` (`src/api/projects.ts`) reads the project list, which
+  holds every project you're a member of: a listed project that requires
+  MFA and still refuses you is the requirement, so ProjectGate sends you to
+  /mfa_required. It leans on `requires_mfa` in the list, which is planned:
+  until Lightning sends it, everyone refused sees No Access. And it breaks
+  once the planned superuser scope lists every project: a superuser who
+  isn't a member of an MFA project would be sent to set up MFA, though that
+  wouldn't let them in.

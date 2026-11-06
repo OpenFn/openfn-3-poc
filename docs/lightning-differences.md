@@ -252,14 +252,81 @@ goes back to Lightning's way.
   can't check a link without using it (docs/api-gaps.md), so the replica
   shows the form and finds out when it's submitted. It then goes to the
   request page with the same words, where a new link can be asked for.
-- **Opening a reset link on a fresh install doesn't go to first setup.**
-  Lightning sends every page to `/first_setup` until the first user exists.
-  The replica has no redirect to first setup yet; when it gets one, it
-  leaves the reset page out.
+- **`return_to` keeps the hash.** Lightning stores the path and query; a browser never sends it the `#…`. The replica keeps the in-app path, query and hash.
+- **On a fresh install, only signed-in pages and log in go to first setup.**
+  Lightning sends every browser page to `/first_setup` until the first
+  superuser exists. The replica sends them from SessionGate and the login
+  page only; reset, register, confirm, confirm-required and two-factor
+  opened directly stay put, with no new gate in the shell. Two-factor and
+  confirm-required need a session a fresh install doesn't have; reset and
+  confirm only send or use emailed links, and a fresh install has no
+  account to email. Register shows its form with sign-up on, and its create
+  then shares first setup's and makes the superuser; with sign-up off it
+  shows Lightning's plain-text answer (docs/api-gaps.md).
+- **First setup checks the email's format and the password's length after
+  Save, in the server's words.** Lightning checks while typing and shows
+  "Password minimum length is 12 characters." twice, next to an 8-character
+  version of the same rule. The replica checks only for blanks and that the
+  confirmation matches; the server's 422 brings the rest ("must be a valid
+  email address", "should be at least 12 character(s)").
+- **Register checks the email's format and the password's length after
+  Register, in the server's words**, as first setup does. Lightning checks
+  both while typing; the replica checks for blanks and the terms box, and
+  the server's 422 brings the rest.
+- **A signed-in visitor to register goes to the projects list, even when
+  sign-up is off.** Lightning answers that visit with the plain-text "Self-signup
+  has been disabled" 404. The signed-in check comes first, as on reset
+  password, so a signed-in person isn't shown a message about signing up.
+- **No starter project for a new user.** Lightning's
+  `init_project_for_new_user` can make one and land the user on its
+  new-workflow page. The API has no way to say a project was made
+  (docs/api-gaps.md), so every new user lands on the projects list.
+- **The terms are required even when a request leaves them out.**
+  Lightning only refuses `terms_accepted` when it's sent false, so a
+  hand-built request without it registers with no recorded acceptance of
+  the host's terms (`user.ex` checks the change, never that it's there).
+  The replica's server refuses a missing one too.
+- **A second superuser can't be made from a stale first-setup tab, and the
+  confirmation is checked on every save.** Lightning's save doesn't check
+  again that setup is still needed, and checks the confirmation only while
+  typing, so a quick submit can save a password that doesn't match. Once
+  `needs_setup` is false the replica's server refuses the create, and the
+  page checks the match on every Save.
+- **A browser already signed in as someone else is signed in as the new
+  superuser.** Lightning keeps the old session and drops the handoff token,
+  so the new superuser isn't signed in. The API's create signs the person
+  in.
+- **A closed instance sends `/first_setup` to the projects list** rather
+  than answering a plain-text 404. `needs_setup` can't say why setup is
+  closed (docs/api-gaps.md).
+- **A dead confirm link shows its error after pressing "Confirm my
+  account".** Lightning checks the link when it's opened and sends the person to
+  `/projects` with "User confirmation link is invalid or it has expired."
+  The API can't check a link without using it (docs/api-gaps.md), so the
+  replica shows the page and, when "Confirm my account" is pressed, the same
+  words in the card.
+- **The confirm page has no "Log in" or "Register" links.** Only someone
+  signed in reaches it, so neither leads anywhere useful. The resend page
+  keeps both.
+- **Confirm-required doesn't show the address.** It says "your email
+  address". A locked-out person can't change the address there (no route
+  for it, docs/api-gaps.md), and showing it would need `/api/me`, which a
+  locked-out session can't read.
+- **Confirm-required has no "Change email address" form.** The API has no
+  route for it while locked out (docs/api-gaps.md), so a mistyped address
+  needs an administrator.
+- **Arriving at confirm-required shows no "Your account is blocked…"
+  message.** Lightning's redirect flashes it above a body that says the same
+  thing, so the replica leaves the flash out.
+- **A throttled or failed resend no longer leaves "We have sent…" on
+  screen.** Lightning keeps the earlier "sent" message beside the new
+  warning. The replica shows only the latest answer.
 
-- **Save stays pressable in the collaborator and YAML import modals.**
-  Lightning disables Save until every row has an email and a role, and
-  disables Create until the YAML looks right. The replica keeps them
+- **Save stays pressable in the collaborator and YAML import modals, on
+  first setup and on register.** Lightning disables Save until every row
+  has an email and a role, disables Create until the YAML looks right, and
+  disables first setup's Save and register's Register until the form is
+  valid. The replica keeps them
   pressable and says what's missing when pressed ("can't be blank", "Enter
   YAML content to create workflow"), and shows a row's email error only
   then, not while typing.

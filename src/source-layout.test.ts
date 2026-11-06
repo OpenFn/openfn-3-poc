@@ -60,7 +60,6 @@ describe("every page and component can be seen and checked", () => {
     const missing = pages.filter((path) => !sources[path.replace(".tsx", ".test.tsx")]);
     expectOnlyKnown(missing, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
-      "./pages/auth/AuthConfirmAccountPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
     ]);
   });
@@ -75,8 +74,6 @@ describe("every page and component can be seen and checked", () => {
       "./pages/admin/AdminProjectsPage.replica.tsx",
       "./pages/admin/AdminUserEditPage.replica.tsx",
       "./pages/admin/AdminUsersPage.replica.tsx",
-      "./pages/auth/AuthConfirmationRequiredPage.replica.tsx",
-      "./pages/auth/FirstSetupPage.replica.tsx",
       "./pages/history/ChannelRequestShowPage.replica.tsx",
       "./pages/history/DataclipShowPage.replica.tsx",
       "./pages/history/HistoryChannelLogsPage.replica.tsx",
@@ -96,8 +93,6 @@ describe("every page and component can be seen and checked", () => {
       .filter((path) => !/\.(query|replica)\.tsx$/.test(path));
     expectOnlyKnown(direct, [
       "./pages/admin/AdminLiveDashboardPage.tsx",
-      "./pages/auth/AuthConfirmAccountPage.tsx",
-      "./pages/auth/AuthRegisterPage.tsx",
       "./pages/projects/MfaRequiredPage.tsx",
       "./pages/workflow-editor/WorkflowEditorPage.tsx",
     ]);
@@ -172,7 +167,7 @@ describe("every page and component can be seen and checked", () => {
       "./pages/admin/AdminProjectsPage.tsx",
       "./pages/admin/AdminUserEditPage.tsx",
       "./pages/admin/AdminUsersPage.tsx",
-      "./pages/auth/FirstSetupPage.tsx",
+      "./pages/auth/first-setup/FirstSetupPage.tsx",
       "./pages/history/ChannelRequestShowPage.tsx",
       "./pages/history/DataclipShowPage.tsx",
       "./pages/history/HistoryChannelLogsPage.tsx",

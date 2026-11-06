@@ -7,6 +7,9 @@ export interface SsoProvider {
   handlerUrl: string;
 }
 
+/** The session states the gate knows what to do with. Anything else (`signup_pending`) is shown as an error. */
+export type GateState = "signed_in" | "mfa_required" | "confirmation_required" | "signed_out";
+
 /** Which method the two-factor page asks for (`?authentication_type=`). */
 export type TwoFactorMethod = "totp" | "backup_code";
 
@@ -14,6 +17,24 @@ export type TwoFactorMethod = "totp" | "backup_code";
 export interface Flash {
   tone: "info" | "danger";
   message: string;
+}
+
+/** What the first-setup form holds, in the API's names. Only the first four are sent: the confirmation is the page's own check. */
+export interface FirstSetupValues {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
+/** What the register form sends, in the API's names. */
+export interface RegisterValues {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  terms_accepted: boolean;
 }
 
 /** What the reset-password form holds. Only `password` is sent: the confirmation is the page's own check. */

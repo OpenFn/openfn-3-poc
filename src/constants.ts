@@ -115,12 +115,17 @@ export const authMessages = {
     "If your email is in our system, you will receive instructions to reset your password shortly.",
   resetDone: "Password reset successfully.",
   resetInvalid: "Reset password link is invalid or it has expired.",
+  confirmDone: "User confirmed successfully.",
   confirmInvalid: "User confirmation link is invalid or it has expired.",
   confirmSent:
     "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly.",
+  superuserCreated: "Superuser account created.",
+  userCreated: "User created successfully.",
   invalidTwoFactorCode: "Invalid two-factor authentication code",
   invalidPassword: "Invalid password! Try again.",
   invalidOtp: "Invalid OTP code! Try again.",
   resendThrottled:
     "You've asked for this a few times recently. Check your inbox and spam folder; you can request another in a few minutes.",
+  resendFailed:
+    "We could not send that email just now. Try again in a moment; if it keeps failing, contact your instance administrator.",
 };
