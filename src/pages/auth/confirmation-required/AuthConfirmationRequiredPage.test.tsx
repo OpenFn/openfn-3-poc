@@ -33,7 +33,7 @@ describe("AuthConfirmationRequiredPage", () => {
     const onResend = vi
       .fn()
       .mockResolvedValueOnce({ status: "sent" })
-      .mockResolvedValueOnce({ status: "throttled", message: authMessages.resendThrottled })
+      .mockResolvedValueOnce({ status: "throttled" })
       .mockResolvedValueOnce({ status: "failed" });
     renderPage(onResend);
     fireEvent.click(resend());

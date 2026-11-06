@@ -1,19 +1,17 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { request } from "@/api/client";
-import { FAKE_CONFIRM_TOKEN, FAKE_PASSWORD, failNext, resetFakeApi } from "@/api/testing";
+import { FAKE_CONFIRM_TOKEN, FAKE_PASSWORD, failNext, resetFakeApi, setAllowSignup } from "@/api/testing";
 import { ToastProvider } from "@/components/primitives/Toast";
 import SessionGate from "@/components/shell/SessionGate.query";
 import { authMessages } from "@/constants";
-import { authConfig } from "@/mock-data/auth";
 import AuthLoginPageQuery from "@/pages/auth/login/AuthLoginPage.query";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import AuthConfirmAccountPageQuery from "./AuthConfirmAccountPage.query";
 
 const wait = { timeout: 3000 };
-const { allowSignup } = authConfig;
 const link = `/users/confirm/${FAKE_CONFIRM_TOKEN}`;
 
 function Where() {
@@ -58,9 +56,6 @@ describe("AuthConfirmAccountPageQuery", () => {
   beforeEach(async () => {
     resetFakeApi();
     await request("DELETE", "/api/session");
-  });
-  afterEach(() => {
-    authConfig.allowSignup = allowSignup;
   });
 
   it.each(["unconfirmed@openfn.org", "nobody@example.com"])("resending for %s signed out goes to log in with the same message", async (email) => {
@@ -130,7 +125,7 @@ describe("AuthConfirmAccountPageQuery", () => {
   });
 
   it("shows Register on the resend page when the instance allows sign-up, and no links on the link page", async () => {
-    authConfig.allowSignup = true;
+    setAllowSignup();
     renderAt("/users/confirm");
     expect(await screen.findByRole("link", { name: "Register" }, wait)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Log in" })).toBeTruthy();

@@ -7,10 +7,10 @@ import LogOut from "./components/shell/LogOut.query";
 import UserSettings from "./components/shell/UserSettings.query";
 
 import AuthLoginPage from "./pages/auth/login/AuthLoginPage.query";
-import AuthRegisterPageQuery from "./pages/auth/register/AuthRegisterPage.query";
+import AuthRegisterPage from "./pages/auth/register/AuthRegisterPage.query";
 import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPasswordPage.query";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
-import AuthConfirmAccountPageQuery from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
+import AuthConfirmAccountPage from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
 import AuthConfirmationRequiredPage from "./pages/auth/confirmation-required/AuthConfirmationRequiredPage.query";
 import FirstSetupPage from "./pages/auth/first-setup/FirstSetupPage.query";
 
@@ -55,12 +55,12 @@ export default function App() {
       {/* Auth and onboarding: no side menu. */}
       <Route path="/users/log_in" element={<AuthLoginPage />} /> {/* auth-login */}
       <Route path="/users/log_out" element={<LogOut />} />
-      <Route path="/users/register" element={<AuthRegisterPageQuery />} /> {/* auth-register */}
+      <Route path="/users/register" element={<AuthRegisterPage />} /> {/* auth-register */}
       <Route path="/users/reset_password" element={<AuthResetPasswordPage />} /> {/* auth-reset-password */}
       <Route path="/users/reset_password/:token" element={<AuthResetPasswordPage />} />
       <Route path="/users/two-factor" element={<AuthTwoFactorPage />} /> {/* auth-two-factor */}
-      <Route path="/users/confirm" element={<AuthConfirmAccountPageQuery />} /> {/* auth-confirm-account */}
-      <Route path="/users/confirm/:token" element={<AuthConfirmAccountPageQuery />} />
+      <Route path="/users/confirm" element={<AuthConfirmAccountPage />} /> {/* auth-confirm-account */}
+      <Route path="/users/confirm/:token" element={<AuthConfirmAccountPage />} />
       <Route path="/users/confirm-required" element={<AuthConfirmationRequiredPage />} /> {/* auth-confirmation-required */}
       <Route path="/first_setup" element={<FirstSetupPage />} /> {/* first-setup */}
 

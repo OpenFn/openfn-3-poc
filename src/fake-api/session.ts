@@ -9,8 +9,7 @@ import { backupCodes } from "@/mock-data/tokens";
 import { hasActivityInProjects } from "@/mock-data/profile";
 import { users } from "@/mock-data/users";
 import type { User } from "@/types/users";
-import { invalid, json, noContent, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
-import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
+import { accepted, invalid, json, noContent, notFound, now, problem, ORIGIN, type Handler, type Problem } from "./answers";
 import { lockedOut, openWhileLockedOut, resetResends, spendResend } from "./lockout";
 import { spendBackupCode } from "./mfa";
 
@@ -95,8 +94,6 @@ export function resetSession() {
   passwords.clear();
   resetResends();
   resetTokenUsed = false;
-  setNeedsSetup(false);
-  setAllowSignup(false);
 }
 
 /** Signs this browser in as the user, replacing any session, as a create that signs the person in does. */
@@ -254,10 +251,10 @@ export const sessionRoutes: Record<string, Handler> = {
   },
 
   // Answers the same whether or not the email has an account. The fake sends nothing.
-  "POST /api/password_resets": () => new Response(null, { status: 202 }),
+  "POST /api/password_resets": accepted,
   // ponytail: Lightning also ends the person's other sessions and API tokens; the fake keeps them.
   "PUT /api/password_resets/:token": ({ token }, body) => {
-    if (token !== FAKE_RESET_TOKEN || resetTokenUsed) return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (token !== FAKE_RESET_TOKEN || resetTokenUsed) return notFound();
     const errors = passwordErrors(body["password"]);
     if (errors.length) return invalid(errors);
     resetTokenUsed = true;
@@ -274,19 +271,17 @@ export const sessionRoutes: Record<string, Handler> = {
     } else if (userId && !spendResend(userId)) {
       return problem({ status: 429, code: "too_many_requests", detail: "Too many requests. Try again later." });
     }
-    return new Response(null, { status: 202 });
+    return accepted();
   },
   // ponytail: only the account link is faked; email-change and credential-transfer tokens answer 404 until a page needs them.
   "PUT /api/confirmations/:token": ({ token }) => {
     const user = currentUser();
     if (token !== FAKE_CONFIRM_TOKEN || user.email !== "unconfirmed@openfn.org" || user.confirmedAt) {
-      return problem({ status: 404, code: "not_found", detail: "Not found." });
+      return notFound();
     }
     user.confirmedAt = now();
     return json(200, { data: { confirmed: "account" } });
   },
 
   "GET /api/me": () => json(200, meJson(currentUser())),
-
-  ...instanceRoutes,
 };

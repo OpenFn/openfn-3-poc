@@ -3,14 +3,12 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { request } from "@/api/client";
-import { FAKE_PASSWORD, FAKE_RESET_TOKEN, failNext, resetFakeApi } from "@/api/testing";
-import { authConfig } from "@/mock-data/auth";
+import { FAKE_PASSWORD, FAKE_RESET_TOKEN, failNext, resetFakeApi, setAllowSignup } from "@/api/testing";
 import AuthLoginPageQuery from "@/pages/auth/login/AuthLoginPage.query";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import AuthResetPasswordPageQuery from "./AuthResetPasswordPage.query";
 
 const wait = { timeout: 3000 };
-const { allowSignup } = authConfig;
 const NEW_PASSWORD = "a-brand-new-password";
 
 function Where() {
@@ -58,7 +56,6 @@ describe("AuthResetPasswordPageQuery", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
-    authConfig.allowSignup = allowSignup;
   });
 
   it.each(["editor@openfn.org", "nobody@example.com"])("asking for a link for %s goes to log in with the same message", async (email) => {
@@ -121,7 +118,7 @@ describe("AuthResetPasswordPageQuery", () => {
   });
 
   it("shows Register when the instance allows sign-up", async () => {
-    authConfig.allowSignup = true;
+    setAllowSignup();
     renderAt(`/users/reset_password/${FAKE_RESET_TOKEN}`);
     expect(await screen.findByRole("link", { name: "Register" }, wait)).toBeTruthy();
   });

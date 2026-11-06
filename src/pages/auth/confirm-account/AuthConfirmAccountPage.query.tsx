@@ -3,7 +3,9 @@ import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom"
 import { isApiError } from "@/api/client";
 import { useConfirmationSaves } from "@/api/confirmations";
 import { useSession, useSignInOptions } from "@/api/session";
+import AsyncBoundary from "@/components/primitives/AsyncBoundary";
 import { authMessages } from "@/constants";
+import { signInRedirect } from "@/utils/urls";
 import AuthConfirmAccountPage from "./AuthConfirmAccountPage";
 
 /**
@@ -14,7 +16,7 @@ import AuthConfirmAccountPage from "./AuthConfirmAccountPage";
  */
 export default function AuthConfirmAccountPageQuery() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search, hash } = useLocation();
   const { token } = useParams();
   const { status, allowSignup } = useSignInOptions();
   const session = useSession();
@@ -25,10 +27,9 @@ export default function AuthConfirmAccountPageQuery() {
 
   if (token !== undefined) {
     // Wait for the session, and once signed in for the user, before deciding. A failure shows on the page.
-    if (session.status.state === "loading") return null;
-    const here = new URLSearchParams({ return_to: pathname });
-    if (session.state === "signed_out") return <Navigate to={`/users/log_in?${here}`} replace />;
-    if (session.state === "mfa_required") return <Navigate to={`/users/two-factor?${here}`} replace />;
+    if (session.status.state === "loading") return <AsyncBoundary status={session.status} titleAs="h1" />;
+    const signIn = signInRedirect(session.state, pathname + search + hash);
+    if (signIn) return <Navigate to={signIn} replace />;
     // Already confirmed: Lightning sends you on with no message.
     if (session.session?.user.confirmedAt && !pressed) return <Navigate to="/projects" replace />;
   }

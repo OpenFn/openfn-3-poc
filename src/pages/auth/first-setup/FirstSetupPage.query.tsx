@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { useFirstSetup, useSessionSaves } from "@/api/session";
+import { useSignInOptions, useSessionSaves } from "@/api/session";
 import FirstSetupShell from "@/components/auth/FirstSetupShell";
 import AsyncBoundary from "@/components/primitives/AsyncBoundary";
 import { authMessages } from "@/constants";
@@ -13,7 +13,7 @@ import FirstSetupPage from "./FirstSetupPage";
  */
 export default function FirstSetupPageQuery() {
   const navigate = useNavigate();
-  const { status, needsSetup, releaseLabel } = useFirstSetup();
+  const { status, needsSetup, releaseLabel } = useSignInOptions();
   const { createAccount } = useSessionSaves();
 
   if (status.state !== "ready") return <AsyncBoundary status={status} titleAs="h1" />;

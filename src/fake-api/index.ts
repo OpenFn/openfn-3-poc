@@ -7,16 +7,17 @@
  */
 import { apiTokens } from "@/mock-data/tokens";
 import credentials from "./recorded/credentials.json";
-import { json, noContent, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
+import { json, noContent, notFound, now, problem, stepUpRequired, type Body, type Handler, type Problem } from "./answers";
 import { projectRoutes, resetProjects } from "./projects";
 import { auditRoutes } from "./audit";
 import { mfaRoutes, resetMfa } from "./mfa";
+import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
 
 export type { Problem } from "./answers";
 export { FAKE_BACKUP_CODE, FAKE_CONFIRM_TOKEN, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
-export { setAllowSignup, setNeedsSetup } from "./instance";
+export { setAllowSignup, setNeedsSetup };
 
 const WAIT_MS = 300;
 
@@ -46,7 +47,7 @@ const routes: Record<string, Handler> = {
     return json(201, { data: created });
   },
   "DELETE /api/me/tokens/:id": ({ id }) => {
-    if (!tokens.some((t) => t.id === id)) return problem({ status: 404, code: "not_found", detail: "Not found." });
+    if (!tokens.some((t) => t.id === id)) return notFound();
     tokens = tokens.filter((t) => t.id !== id);
     return noContent();
   },
@@ -57,6 +58,7 @@ const routes: Record<string, Handler> = {
   ...projectRoutes,
   ...auditRoutes,
   ...mfaRoutes,
+  ...instanceRoutes,
   ...userRoutes,
 };
 
@@ -103,5 +105,7 @@ export function resetFakeApi() {
   resetProjects();
   resetSession();
   resetMfa();
+  setNeedsSetup(false);
+  setAllowSignup(false);
   failures.clear();
 }

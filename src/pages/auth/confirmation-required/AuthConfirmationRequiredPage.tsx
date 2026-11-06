@@ -10,7 +10,7 @@ import { errorMessage } from "@/utils/errors";
 import { useAction } from "@/utils/useAction";
 
 /** What the host answers a resend with. */
-export type ResendResult = { status: "sent" } | { status: "throttled"; message: string } | { status: "failed" };
+export type ResendResult = { status: "sent" } | { status: "throttled" } | { status: "failed" };
 
 /** The contract between this page and whatever feeds it. */
 export interface AuthConfirmationRequiredPageProps {
@@ -48,7 +48,7 @@ export default function AuthConfirmationRequiredPage({ onResend }: AuthConfirmat
             )}
             {resent?.status === "throttled" && (
               <Alert tone="warning" id="confirmation-email-throttled">
-                {resent.message}
+                {authMessages.resendThrottled}
               </Alert>
             )}
             {resent?.status === "failed" && (

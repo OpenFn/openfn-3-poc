@@ -7,6 +7,7 @@ import { useFlash } from "@/routing/flash";
 import SessionProvider from "@/session/SessionProvider";
 import type { Flash } from "@/types/auth";
 import { useFocusMainAfterSwap } from "@/utils/useFocusMainAfterSwap";
+import { signInRedirect } from "@/utils/urls";
 
 /**
  * The parent of every signed-in route. Loads the session, the user and the
@@ -17,7 +18,6 @@ import { useFocusMainAfterSwap } from "@/utils/useFocusMainAfterSwap";
  */
 export default function SessionGate() {
   const { pathname, search, hash } = useLocation();
-  const here = encodeURIComponent(pathname + search + hash);
   const { status, state, session, needsSetup } = useSession();
   // Arriving from another page: sign-in, two-factor, or a signed-out page's
   // redirect. Opening, reloading and Back are POPs. (A reload keeps the
@@ -25,8 +25,8 @@ export default function SessionGate() {
   const arrived = useNavigationType() !== "POP";
   useFocusMainAfterSwap(status.state === "loading", arrived);
   if (needsSetup) return <Navigate to="/first_setup" replace />;
-  if (state === "signed_out") return <Navigate to={`/users/log_in?return_to=${here}`} replace />;
-  if (state === "mfa_required") return <Navigate to={`/users/two-factor?return_to=${here}`} replace />;
+  const signIn = signInRedirect(state, pathname + search + hash);
+  if (signIn) return <Navigate to={signIn} replace />;
   if (state === "confirmation_required") return <Navigate to="/users/confirm-required" replace />;
   return (
     <AsyncBoundary status={status} titleAs="h1">

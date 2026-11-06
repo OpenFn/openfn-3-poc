@@ -1,43 +1,19 @@
 /**
- * Fixtures for the logged-out and onboarding views (auth-*, first-setup).
- * Lightning reads these from instance config (Lightning.Config.check_flag?,
- * the OIDC auth provider); here they are static flags. Static only: nothing
- * here authenticates anyone.
- *
- * The fake server's GET /api/instance reads `allowSignup` and `ssoProvider`
- * from here, for the login page. Pages not yet on the API can still override
- * a flag from the query string, e.g. /users/register?signup=1.
+ * Instance auth settings the fake server reads: the SSO provider for
+ * GET /api/instance, and email verification for the lockout. Sign-up and
+ * first setup are the fake's own switches (`setAllowSignup`, `setNeedsSetup`).
+ * Static only: nothing here authenticates anyone.
  */
 import type { SsoProvider } from "@/types/auth";
 import type { AuthConfig } from "./models/auth";
 
 export const authConfig: AuthConfig = {
-  allowSignup: false,
   ssoProvider: null,
-  allowFirstSetup: true,
   requireEmailVerification: true,
 };
 
-/** A configured provider, used when `?sso=1` is set on a page not yet on the API, and in stories. */
+/** A configured provider, for stories. */
 export const exampleSsoProvider: SsoProvider = {
   name: "Keycloak",
   handlerUrl: "/authenticate/keycloak",
-};
-
-/** Flags with query-string overrides applied (`sso`, `signup`). */
-export function authFlags(search: string): AuthConfig {
-  const q = new URLSearchParams(search);
-  const flag = (key: string, fallback: boolean) => (q.has(key) ? q.get(key) !== "0" : fallback);
-  return {
-    ...authConfig,
-    allowSignup: flag("signup", authConfig.allowSignup),
-    ssoProvider: flag("sso", authConfig.ssoProvider !== null) ? (authConfig.ssoProvider ?? exampleSsoProvider) : null,
-  };
-}
-
-/** Unused since /users/confirm-required moved to the API (the fake's Una is in users.ts); auth clean-up removes it. */
-export const unconfirmedUser = {
-  firstName: "Una",
-  lastName: "Confirmed",
-  email: "una@example.org",
 };
