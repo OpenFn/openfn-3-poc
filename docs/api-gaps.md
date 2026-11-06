@@ -80,6 +80,22 @@ doesn't.
   link. Replica: finds out on submit, then sends the person to ask for a new
   link (docs/lightning-differences.md).
 
+## Confirm account (Lightning's `auth-confirm-account`)
+
+- **The lockout sentence leaves out confirming.** api/account.md (Get the
+  session) says a `confirmation_required` account gets 401 from every route
+  except `POST /api/confirmations`. Lightning's lockout also lets it open and
+  submit `/users/confirm/:token` (`confirmation_lockout.ex:18-33`), or a
+  locked-out person could never confirm. The contract should list
+  `PUT /api/confirmations/:token` too. Replica: the fake has no lockout yet,
+  so nothing is refused.
+- **No way to check a confirm link before pressing.** Lightning checks the
+  token when the link is opened (`verify_confirmation_token` on `:edit`). The
+  API only refuses on `PUT /api/confirmations/:token`, which uses the link.
+  Would need `GET /api/confirmations/:token` answering 204 or 404 without
+  using it. Replica: finds out when "Confirm my account" is pressed, and says
+  so in the card (docs/lightning-differences.md).
+
 ## Session tokens (api/authentication.md, api/errors.md)
 
 - **No error code for a missing or wrong CSRF token.** Writes on a session

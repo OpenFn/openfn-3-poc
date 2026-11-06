@@ -245,10 +245,19 @@ goes back to Lightning's way.
   can't check a link without using it (docs/api-gaps.md), so the replica
   shows the form and finds out when it's submitted. It then goes to the
   request page with the same words, where a new link can be asked for.
-- **Opening a reset link on a fresh install doesn't go to first setup.**
+- **Opening a reset or confirm link on a fresh install doesn't go to first setup.**
   Lightning sends every page to `/first_setup` until the first user exists.
   The replica has no redirect to first setup yet; when it gets one, it
-  leaves the reset page out.
+  leaves the reset and confirm pages out.
+- **A dead confirm link shows its error after pressing "Confirm my
+  account".** Lightning checks the link when it's opened and sends the person to
+  `/projects` with "User confirmation link is invalid or it has expired."
+  The API can't check a link without using it (docs/api-gaps.md), so the
+  replica shows the page and, when "Confirm my account" is pressed, the same
+  words in the card.
+- **The confirm page has no "Log in" or "Register" links.** Only someone
+  signed in reaches it, so neither leads anywhere useful. The resend page
+  keeps both.
 
 - **Save stays pressable in the collaborator and YAML import modals.**
   Lightning disables Save until every row has an email and a role, and

@@ -10,7 +10,7 @@ import AuthLoginPage from "./pages/auth/login/AuthLoginPage.query";
 import AuthRegisterPage from "./pages/auth/AuthRegisterPage";
 import AuthResetPasswordPage from "./pages/auth/reset-password/AuthResetPasswordPage.query";
 import AuthTwoFactorPage from "./pages/auth/two-factor/AuthTwoFactorPage.query";
-import AuthConfirmAccountPage from "./pages/auth/AuthConfirmAccountPage";
+import AuthConfirmAccountPageQuery from "./pages/auth/confirm-account/AuthConfirmAccountPage.query";
 import AuthConfirmationRequiredPage from "./pages/auth/AuthConfirmationRequiredPage.replica";
 import FirstSetupPage from "./pages/auth/FirstSetupPage.replica";
 
@@ -59,8 +59,8 @@ export default function App() {
       <Route path="/users/reset_password" element={<AuthResetPasswordPage />} /> {/* auth-reset-password */}
       <Route path="/users/reset_password/:token" element={<AuthResetPasswordPage />} />
       <Route path="/users/two-factor" element={<AuthTwoFactorPage />} /> {/* auth-two-factor */}
-      <Route path="/users/confirm" element={<AuthConfirmAccountPage />} /> {/* auth-confirm-account */}
-      <Route path="/users/confirm/:token" element={<AuthConfirmAccountPage />} />
+      <Route path="/users/confirm" element={<AuthConfirmAccountPageQuery />} /> {/* auth-confirm-account */}
+      <Route path="/users/confirm/:token" element={<AuthConfirmAccountPageQuery />} />
       <Route path="/users/confirm-required" element={<AuthConfirmationRequiredPage />} /> {/* auth-confirmation-required */}
       <Route path="/first_setup" element={<FirstSetupPage />} /> {/* first-setup */}
 
