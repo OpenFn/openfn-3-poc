@@ -25,6 +25,15 @@ export interface FirstSetupValues {
   passwordConfirmation: string;
 }
 
+/** What the register form sends, in the API's names. */
+export interface RegisterValues {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  terms_accepted: boolean;
+}
+
 /** What the reset-password form holds. Only `password` is sent: the confirmation is the page's own check. */
 export interface ResetPasswordValues {
   password: string;

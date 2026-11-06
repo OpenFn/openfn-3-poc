@@ -135,8 +135,10 @@ Changed, and that's fine:
 - **A create can't say "only as first setup".** A first-setup form
   submitted after setup is done becomes an ordinary create (a plain user
   under sign-up, or one made with the new superuser's session). It needs a
-  refusal for "already set up". Replica: 401 signed out, 403 signed in,
-  until register and the admin create define the rest.
+  refusal for "already set up". Replica: 401 signed out (with sign-up on,
+  a 422 for the missing terms, which the form shows only as "The request
+  body is not valid."), 403 signed in, until the admin create defines the
+  rest.
 
 Changed, and that's fine:
 
@@ -144,6 +146,24 @@ Changed, and that's fine:
   superuser exists and when a service account runs the instance, so the
   replica can't show Lightning's "First setup is disabled for this
   instance." 404.
+
+## Register (Lightning's `auth-register`)
+
+- **No code says sign-up is closed.** A signed-out create on an instance
+  without sign-up answers 401 `unauthenticated`, the same as "sign in
+  first", so a register tab left open after sign-up was turned off can't
+  say why. It needs its own code. Replica: 401, shown as sent.
+- **The terms refusal isn't specified.** api/users.md asks for
+  `terms_accepted: true` but not what a missing or false one answers.
+  Replica: a `must_accept` entry at `#/terms_accepted` (api/errors.md lists
+  the code), also when the key is left out.
+- **A `role` or `confirmed` sent on sign-up.** The contract says sign-up
+  gets role `user`, but not whether a sent `role` or `confirmed` is ignored
+  or refused. Replica: ignored, as Lightning.
+- **Starter project.** Lightning's `init_project_for_new_user` makes a
+  project and lands the new user on its new-workflow page; the create's
+  answer can't say a project was made or where to go. Replica: none, so
+  every new user lands on the projects list.
 
 ## Session tokens (api/authentication.md, api/errors.md)
 

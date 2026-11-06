@@ -16,7 +16,7 @@ import { userRoutes } from "./users";
 
 export type { Problem } from "./answers";
 export { FAKE_BACKUP_CODE, FAKE_CONFIRM_TOKEN, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
-export { setNeedsSetup } from "./instance";
+export { setAllowSignup, setNeedsSetup } from "./instance";
 
 const WAIT_MS = 300;
 

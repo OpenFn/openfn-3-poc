@@ -252,15 +252,32 @@ goes back to Lightning's way.
   opened directly stay put, with no new gate in the shell. Two-factor and
   confirm-required need a session a fresh install doesn't have; reset and
   confirm only send or use emailed links, and a fresh install has no
-  account to email; register has no `.query` yet, so
-  it can't create anyone, and when it gets one it shares first setup's
-  create (docs/api-gaps.md).
+  account to email. Register shows its form with sign-up on, and its create
+  then shares first setup's and makes the superuser; with sign-up off it
+  shows Lightning's plain-text answer (docs/api-gaps.md).
 - **First setup checks the email's format and the password's length after
   Save, in the server's words.** Lightning checks while typing and shows
   "Password minimum length is 12 characters." twice, next to an 8-character
   version of the same rule. The replica checks only for blanks and that the
   confirmation matches; the server's 422 brings the rest ("must be a valid
   email address", "should be at least 12 character(s)").
+- **Register checks the email's format and the password's length after
+  Register, in the server's words**, as first setup does. Lightning checks
+  both while typing; the replica checks for blanks and the terms box, and
+  the server's 422 brings the rest.
+- **A signed-in visitor to register goes to the projects list, even when
+  sign-up is off.** Lightning answers that visit with the plain-text "Self-signup
+  has been disabled" 404. The signed-in check comes first, as on reset
+  password, so a signed-in person isn't shown a message about signing up.
+- **No starter project for a new user.** Lightning's
+  `init_project_for_new_user` can make one and land the user on its
+  new-workflow page. The API has no way to say a project was made
+  (docs/api-gaps.md), so every new user lands on the projects list.
+- **The terms are required even when a request leaves them out.**
+  Lightning only refuses `terms_accepted` when it's sent false, so a
+  hand-built request without it registers with no recorded acceptance of
+  the host's terms (`user.ex` checks the change, never that it's there).
+  The replica's server refuses a missing one too.
 - **A second superuser can't be made from a stale first-setup tab, and the
   confirmation is checked on every save.** Lightning's save doesn't check
   again that setup is still needed, and checks the confirmation only while
@@ -297,10 +314,11 @@ goes back to Lightning's way.
   screen.** Lightning keeps the earlier "sent" message beside the new
   warning. The replica shows only the latest answer.
 
-- **Save stays pressable in the collaborator and YAML import modals, and
-  on first setup.** Lightning disables Save until every row has an email
-  and a role, disables Create until the YAML looks right, and disables
-  first setup's Save until the form is valid. The replica keeps them
+- **Save stays pressable in the collaborator and YAML import modals, on
+  first setup and on register.** Lightning disables Save until every row
+  has an email and a role, disables Create until the YAML looks right, and
+  disables first setup's Save and register's Register until the form is
+  valid. The replica keeps them
   pressable and says what's missing when pressed ("can't be blank", "Enter
   YAML content to create workflow"), and shows a row's email error only
   then, not while typing.

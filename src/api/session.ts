@@ -1,7 +1,7 @@
 /** The signed-in session on Lightning's API (api/account.md: Get the instance, Sessions, Get the current user). */
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { FirstSetupValues, SsoProvider } from "@/types/auth";
+import type { FirstSetupValues, RegisterValues, SsoProvider } from "@/types/auth";
 import type { BasicInfoValues, ChangeEmailValues, ChangePasswordValues, ProfilePageData } from "@/types/profile";
 import type { ResourceStatus } from "@/types/resource";
 import type { Session, User } from "@/types/users";
@@ -186,8 +186,12 @@ export function useSessionSaves() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: sessionKeys.all }),
   });
   const createAccount = useMutation({
-    mutationFn: async ({ first_name, last_name, email, password }: FirstSetupValues) =>
-      void (await request("POST", "/api/users", { first_name, last_name, email, password })),
+    mutationFn: async (values: FirstSetupValues | RegisterValues) => {
+      // Picked by name: the confirmation is the form's own check, so it isn't sent.
+      const { first_name, last_name, email, password } = values;
+      const terms = "terms_accepted" in values ? { terms_accepted: values.terms_accepted } : {};
+      await request("POST", "/api/users", { first_name, last_name, email, password, ...terms });
+    },
     onSuccess: fresh,
   });
   return {

@@ -2,7 +2,7 @@
 import { resetFakeApi as resetServer } from "@/fake-api";
 import { forgetCsrfToken } from "./client";
 
-export { failNext, FAKE_PASSWORD, FAKE_MFA_CODE, FAKE_BACKUP_CODE, FAKE_RESET_TOKEN, FAKE_CONFIRM_TOKEN, setNeedsSetup } from "@/fake-api";
+export { failNext, FAKE_PASSWORD, FAKE_MFA_CODE, FAKE_BACKUP_CODE, FAKE_RESET_TOKEN, FAKE_CONFIRM_TOKEN, setAllowSignup, setNeedsSetup } from "@/fake-api";
 
 /** The fake server's starting data, signed in as the first fixture user, and a client that has forgotten the old session's CSRF token. */
 export function resetFakeApi() {

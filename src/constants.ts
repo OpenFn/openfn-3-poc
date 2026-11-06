@@ -120,6 +120,7 @@ export const authMessages = {
   confirmSent:
     "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly.",
   superuserCreated: "Superuser account created.",
+  userCreated: "User created successfully.",
   invalidTwoFactorCode: "Invalid two-factor authentication code",
   invalidPassword: "Invalid password! Try again.",
   invalidOtp: "Invalid OTP code! Try again.",
