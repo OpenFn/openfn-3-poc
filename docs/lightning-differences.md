@@ -638,8 +638,9 @@ goes back to Lightning's way.
   collection's Save until its name is URL safe, and the admin user's Save
   with "All fields are required", even on edit, where the password is
   optional. Here pressing them says what's missing ("can't be blank",
-  "Enter YAML content to create workflow"), so nobody faces a dead button without knowing why. A
-  row's email error shows only then, not while typing.
+  "Enter YAML content to create workflow"), so nobody faces a dead button
+  without knowing why. A row's email error shows only then, not while
+  typing.
 - **"Will be named …" hides while the name has an error.** Lightning does
   this only in the sandbox form; its project and collection forms show "Your
   project will be named my_project." under "has invalid format". The
