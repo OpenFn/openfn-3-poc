@@ -47,7 +47,7 @@ libraries, background workers, "no public endpoint" notes) are left out.
 | `POST /session/sudo` | Private | [`POST /api/session`](./account.md#sign-in) | Same route: post the password or a code again to step up. |
 | `POST /session/token_exchange` | Misfit | | [Not needed with a session cookie](./misfits.md#not-needed-with-a-session-cookie) |
 | `GET /me` | Private | [`GET /api/me`](./account.md#get-the-current-user) | Memberships come from `GET /api/projects`; permissions from `GET /api/projects/:id`. |
-| `POST /users` | Partial | [`POST /api/users`](./users.md#create-a-user) | No sign-up without a token yet. |
+| `POST /users` | Partial | [`POST /api/users`](./users.md#create-a-user), [`POST /api/users/register`](./account.md#register) | Sign-up without a token goes to `/api/users/register`, which only works where the instance has a registration extension. |
 | `POST /setup/superuser` | Partial | [`POST /api/users`](./users.md#create-a-user) | The first account on a new instance becomes the superuser. |
 | `PATCH /me` | Partial | [`PATCH /api/users/:id`](./users.md#update-a-user) | A person can't update themselves yet. |
 | `PUT /me/password` | Partial | [`PATCH /api/users/:id`](./users.md#update-a-user) | `password`, with a stepped-up session. |

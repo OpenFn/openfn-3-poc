@@ -33,8 +33,9 @@ List endpoints that page take:
 | `page` | 1 | |
 | `page_size` | 10 | At most 100. Larger values are cut to 100. |
 
-A value below 1, or one that isn't a number, is ignored and the default
-applies. Paged responses carry `links`:
+Lightning reads the number a value starts with, so `5abc` is 5 and `2.0` is
+2. A value below 1, or one that doesn't start with a number, is ignored and the
+default applies. Neither is ever refused. Paged responses carry `links`:
 
 ```json
 "links": {
@@ -46,7 +47,8 @@ applies. Paged responses carry `links`:
 }
 ```
 
-The links carry only the filters the server applied. `next` and `prev` are
+The links carry only the filters the server applied, and the page and page
+size it used. Any other query parameter is left out. `next` and `prev` are
 `null` at the ends. Runs, work orders and log lines also return a `meta` object
 with `total_entries`, `total_pages`, `page_number` and `page_size`.
 

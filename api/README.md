@@ -69,6 +69,7 @@ follows it, not the other way round.
 | `GET` | [`/.well-known/oauth-authorization-server`](./authentication.md) | Public |
 | `POST` | [`/api/oauth/token`](./authentication.md) | Public |
 | `GET` | [`/api/instance`](./account.md) | Private |
+| `POST` | [`/api/users/register`](./account.md#register) | Public |
 | `POST`, `GET`, `DELETE` | [`/api/session`](./account.md) | Private |
 | `POST` | [`/api/password_resets`](./account.md) | Private |
 | `PUT` | [`/api/password_resets/:token`](./account.md) | Private |

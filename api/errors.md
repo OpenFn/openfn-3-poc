@@ -81,7 +81,7 @@ Everyone else hears 403 `forbidden`.
 | 400 | `malformed` | The body is not valid JSON, or not a JSON object. |
 | 400 | `invalid_parameter` | A path or query parameter is not valid, such as an id that isn't a UUID. `errors` names each one. |
 | 400 | `invalid_header` | A request header is not valid. |
-| 401 | `unauthenticated` | No `Authorization` header. |
+| 401 | `unauthenticated` | No credentials: no bearer token (an `Authorization` header with another scheme, such as `Basic`, counts as none), no signed-in session on a route that takes the web app's session, or a webhook's credentials refused. |
 | 401 | `invalid_token` | The token is expired or bad, or this route doesn't accept its kind. |
 | 401 | `invalid_credentials` | Planned. Signing in failed. The same for every reason, so it can't be used to find accounts. |
 | 401 | `mfa_required` | Planned. Signing in needs an MFA code too. |
@@ -116,8 +116,13 @@ Everyone else hears 403 `forbidden`.
 A value that must be unique and is already in use is a 422 `invalid` with a
 `taken` entry pointing at it, never a 409.
 
-Every 401 carries a `WWW-Authenticate` header (the token endpoint's don't). An
-expired service account token says so in it:
+Every 401 carries a `WWW-Authenticate` header, except the token endpoint's and
+a webhook's that takes only Basic auth. A route that takes a bearer token sends
+`Bearer`, one that takes the web app's session sends
+`Session realm="Lightning"`, and a webhook that takes an API key sends
+`ApiKey header="x-api-key"`. A 400 `invalid_request` carries
+`Bearer error="invalid_request"`. An expired service account token says so in
+it:
 `error_description="The access token expired"`. A 403 `insufficient_scope`
 carries one naming the scope you need, for example
 `WWW-Authenticate: Bearer error="insufficient_scope", scope="credentials:write"`.
@@ -143,4 +148,6 @@ moving it to another status, is a breaking change.
 
 Any path under `/api` or `/collections` that doesn't exist answers a 404
 `not_found` problem document, before authentication. The problem document's
-content type follows `Accept` here too.
+content type follows `Accept` here too. The exception is a path under
+`/api/oauth/token`, such as a `GET` on the token endpoint, which gets a plain
+404 that isn't a problem document.
