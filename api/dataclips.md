@@ -33,7 +33,8 @@ Status: **Private**
 GET /api/dataclips/:id
 ```
 
-Tokens: personal access token.
+Tokens: personal access token of any project member. The service account is
+refused 403 `forbidden`: a dataclip's body is data that passed through a run.
 
 ```json
 {
@@ -61,15 +62,9 @@ Tokens: personal access token.
 For `http_request` and `kafka`, `body` is `{"data": …, "request": …}`. Once a
 dataclip has been wiped, under the project's retention policy or because the
 project doesn't save dataclips, `wiped_at` is set and the body's contents are
-`null`.
-
-> Implementation note: `Lightning.Invocation.get_dataclip_with_body!/1`, which
-> the app reaches through a session-cookie route, `GET /dataclip/body/:id`.
-> Differences: it returns the body as a JSON string (`body_json`) rather than
-> an object and raises for a missing id. The cookie route sends the bare body
-> with no wrapper, honours `If-Modified-Since`, and scrubs credential values out
-> of `step_result` and `http_request` bodies first. The API route must scrub
-> the same way.
+`null`. The values of credentials and webhook auth methods that could have
+reached the body are scrubbed out of it. An unknown or malformed id answers
+403 `forbidden`; see [who hears 404](./errors.md#who-hears-404).
 
 ## Rename a dataclip
 
@@ -79,13 +74,14 @@ Status: **Private**
 PATCH /api/dataclips/:id
 ```
 
-Tokens: personal access token of a project owner, admin or editor.
+Tokens: personal access token of a project owner, admin or editor. The service
+account is refused 403 `forbidden`.
 
 Body: `{"name": "<string or null>"}`. A name saves the dataclip so the
-retention policy doesn't wipe it, and `null` removes the name. Answers 200 with
-the dataclip.
+retention policy doesn't wipe it, and `null` removes the name. A body without
+`name` changes nothing. Answers 200 with the dataclip, as for getting one.
 
-> Implementation note: `Lightning.Invocation.update_dataclip_name/3`, through
-> a session-cookie route, `PATCH /projects/:project_id/dataclips/:dataclip_id`
-> (`LightningWeb.DataclipController.update_name/2`). Differences: the cookie
-> route answers in its own shape.
+A name is at most 255 characters. One another dataclip in the project has
+answers 422 `invalid` with a `taken` entry at `#/name`. Any other key is an
+`unknown_key` entry in the same 422. 409 `concurrent_edit` when the dataclip is
+deleted while it is renamed.

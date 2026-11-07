@@ -82,8 +82,13 @@ for one project. Not paged. The service account can access every project. A
 `project_id` you may not access answers 403 `forbidden`, whether or not the
 project exists; see [who hears 404](./errors.md#who-hears-404).
 
+Workflows marked deleted are left out of the list of every project. A
+project's list, on the nested route or with `project_id`, still includes them.
+
 Planned additional scope:
 
+- Leaving workflows marked deleted out of a project's list too (built on
+  `full-api-test`, not merged yet).
 - `credential_id`: only workflows with a job that uses this credential. Use it
   before unlinking or deleting a credential to see what would lose it.
 - `q` (a name search), `sort` (`name` or `updated_at`), and paging.
@@ -211,20 +216,15 @@ Status: **Private**
 DELETE /api/projects/:project_id/workflows/:id
 ```
 
-Tokens: personal access token of a project owner, admin or editor.
+Tokens: personal access token of a project owner, admin or editor. The
+service account is refused 403 `forbidden`, though it may create and update
+workflows: a deleted workflow can't be restored.
 
-Marks the workflow deleted. Its triggers are disabled straight away, and it no
-longer appears in lists or answers `GET`. Its run history stays until the
-project's retention policy removes it. Answers 204 with no body. A workflow
-open in the editor answers 409 `being_edited`.
-
-> Implementation note: `Lightning.Workflows.mark_for_deletion/3` soft deletes
-> the workflow, disables and unbinds its triggers, and records the audit event.
-> The policy action is `:delete_workflow` (owners, admins and editors).
-> `Lightning.Workflows.delete_workflow/1` is a separate hard delete that only
-> works once the workflow has no history. Neither checks whether the workflow
-> is open in the editor; the route has to. The project's workflow list doesn't
-> filter out soft-deleted workflows yet.
+Marks the workflow deleted. Its triggers are disabled and unbound straight
+away, and it no longer appears in lists or answers `GET`. Its run history
+stays until the project's retention policy removes it. Answers 204 with no
+body. A workflow open in the editor answers 409 `being_edited`, and one another
+request deleted first 409 `concurrent_edit`.
 
 ## Workflow snapshots
 
@@ -240,7 +240,8 @@ Status: **Private**
 GET /api/workflows/:id/snapshots
 ```
 
-Tokens: personal access token. Paged, newest first.
+Tokens: personal access token of any project member. The service account is
+refused 403 `forbidden`. Paged, newest first by `lock_version`.
 
 ```json
 {
@@ -249,17 +250,10 @@ Tokens: personal access token. Paged, newest first.
 }
 ```
 
-These are the ids `GET /api/provision/:id?snapshots[]=` takes.
-
-> Implementation note: `Lightning.Workflows.Snapshot.get_all_for/1`, reached
-> through the workflow channel's `request_versions` event, which adds the
-> `latest` flag by comparing each `lock_version` with the workflow's.
-> Differences:
->
-> - it takes a loaded workflow and checks nothing; the channel relies on the
->   join's `:access_read` check, so the route has to check project access.
-> - it returns every full snapshot, unpaged, ordered by `inserted_at`. The
->   channel reply leaves out the snapshot `id`, which the route must return.
+`latest` is `true` on the snapshot whose `lock_version` is the workflow's.
+These are the ids `GET /api/provision/:id?snapshots[]=` takes. An unknown or
+malformed workflow id answers 403 `forbidden`, as for a workflow in a project
+you can't access.
 
 ### Get a snapshot
 
@@ -269,21 +263,33 @@ Status: **Private**
 GET /api/workflows/:id/snapshots/:snapshot_id
 ```
 
-Tokens: personal access token.
+Tokens: as for listing snapshots.
 
-Returns `{"snapshot": <workflow>}`: the workflow object as it was, with its
-`lock_version`. A snapshot can't be changed.
+Returns `{"snapshot": …}`: the workflow as it was. A snapshot can't be changed.
 
-> Implementation note: `Lightning.Collaboration.WorkflowResolver.resolve/3`
-> with a `version:` option (`resolve_version/3`) builds the workflow from a
-> snapshot when the editor joins a pinned version. The channel checks
-> `:access_read` first. Differences:
->
-> - it looks the snapshot up by `lock_version`, not by id.
->   `Lightning.Workflows.Snapshot.get_all_by_ids/2` reads by id but scopes to
->   the project only, so the route has to check the snapshot's `workflow_id`.
-> - the built workflow drops `positions` and has no `concurrency` or
->   `enable_job_logs`, since a snapshot doesn't store them.
+```json
+{
+  "snapshot": {
+    "id": "…",
+    "name": "Data processing pipeline",
+    "project_id": "…",
+    "lock_version": 7,
+    "positions": null,
+    "inserted_at": "…",
+    "jobs": [],
+    "triggers": [],
+    "edges": []
+  }
+}
+```
+
+`id` is the workflow's, and `inserted_at` is when the snapshot was taken. Jobs,
+triggers and edges have the same fields as on the workflow object. A snapshot
+doesn't store `concurrency` or `enable_job_logs`, so they are left out, and it
+has no `updated_at`.
+
+A snapshot id the workflow doesn't have answers 404 `not_found`, and one that
+isn't a UUID 400 `invalid_parameter`, once you may read the workflow.
 
 ## List a workflow's versions
 
@@ -293,25 +299,20 @@ Status: **Private**
 GET /api/workflows/:id/versions
 ```
 
-Tokens: personal access token. Paged, newest first.
+Tokens: as for listing snapshots. Paged, newest first.
 
 ```json
-{ "data": [{ "hash": "a1b2c3d4e5f6", "source": "cli", "inserted_at": "…" }] }
+{
+  "data": [{ "hash": "a1b2c3d4e5f6", "source": "cli", "inserted_at": "…" }],
+  "links": { "self": "…", "first": "…", "last": "…", "next": null, "prev": null }
+}
 ```
 
 Each save records a hash of the workflow and where the save came from: `app`
 or `cli`. Comparing hashes tells a CLI whether the app and its local copy have
-moved apart. Consecutive saves from the same source keep one entry.
-
-> Implementation note: `Lightning.WorkflowVersions.history_for/1`, which the
-> provisioning API already returns as a workflow's `version_history`.
-> Differences:
->
-> - it returns `"source:hash"` strings oldest first, with no `inserted_at`,
->   and isn't paged. The route has to query `workflow_versions` itself.
-> - it does no authorisation check.
-> - `record_version/3` never squashes the first entry, so the first two
->   entries can share a source.
+moved apart. Consecutive saves from the same source keep one entry, except
+the first entry, which is never replaced, so the oldest two entries can share
+a source. An unknown or malformed workflow id answers 403 `forbidden`.
 
 ## Workflow templates
 
@@ -325,8 +326,9 @@ Status: **Private**
 GET /api/workflow_templates
 ```
 
-Tokens: personal access token. Paged. Takes `q` (name and description) and
-`tags` (comma-separated).
+Tokens: personal access token. The service account is refused 403
+`forbidden`. Paged, by name. Takes `q` (name and description) and `tags`
+(comma-separated; a template must carry every one).
 
 ```json
 {
@@ -337,16 +339,12 @@ Tokens: personal access token. Paged. Takes `q` (name and description) and
       "description": "…",
       "tags": ["dhis2", "fhir"],
       "workflow_id": "…",
-      "code": "<the workflow as YAML>"
+      "code": "<the workflow as v2 YAML>"
     }
-  ]
+  ],
+  "links": { "self": "…", "first": "…", "last": "…", "next": null, "prev": null }
 }
 ```
-
-> Implementation note: `Lightning.WorkflowTemplates.list_templates/0`, through
-> the workflow channel's `list_templates` event. Differences: it returns every
-> template ordered by name, unpaged, and takes no filters. The editor searches
-> on the client, so the route has to add `q`, `tags` and paging.
 
 ### Publish a workflow as a template
 
@@ -356,26 +354,26 @@ Status: **Private**
 PUT /api/workflows/:id/template
 ```
 
-Tokens: personal access token of a support user who can open the project.
+Tokens: personal access token of a support user who is a member of the
+project, or whose project allows support access. The service account is
+refused 403 `forbidden`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `name` | string | Required. At most 255 characters. |
 | `description` | string | Optional. At most 1000 characters. |
-| `tags` | array of strings | Optional. |
+| `tags` | array of strings | Optional. Defaults to `[]`. |
 
-Publishes the workflow as it is now. A workflow has at most one template, so
-publishing again updates it. Answers 201 when it creates and 200 when it
-updates.
+Publishes the workflow as it is saved now, as v2 YAML with its positions. A
+workflow has at most one template, so publishing again replaces it. Answers
+201 `{"template": <template>}` when it creates and 200 when it replaces, with
+the template as in the list.
 
-> Implementation note: `Lightning.WorkflowTemplates.create_template/1`, through
-> the workflow channel's `publish_template` event. The channel checks
-> `:publish_template` (support users who are members, or whose project allows
-> support access). Differences:
->
-> - the client builds `code` (v2 YAML) and `positions` and sends them, so
->   nothing on the server publishes "the workflow as it is now". The route can
->   use `Lightning.Workflows.YamlFormat.V2.serialize_workflow/1`.
-> - it returns `{:ok, template}` either way and doesn't say whether it created
->   or updated, so the route can't pick 201 or 200 from it alone.
-> - it reads `workflow_id` from a string key only.
+Notable errors:
+
+- 403 `forbidden` for an unknown or malformed workflow id, as for a workflow
+  in a project you may not publish from.
+- 422 `invalid` for a bad field, with an `unknown_key` entry for any other key.
+- 409 `export_conflict` when two items in the workflow export under the same
+  key.
+- 409 `concurrent_edit` when the workflow is deleted while publishing.

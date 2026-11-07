@@ -80,10 +80,22 @@ GET /api/provision/:id
 GET /api/provision/:id?snapshots[]=:snapshot_id
 ```
 
-Answers 200 `{"data": <project document>}`. The document includes `workflows`
-(with `lock_version`), `project_credentials` (`id`, `name`, `owner`),
-`collections` (`id`, `name`) and `channels`. Pass `snapshots[]` to get those
-workflow versions instead of the current ones.
+Answers 200 `{"data": <project document>}`. The document includes:
+
+- `workflows`, leaving out those marked deleted. Each has `id`, `name`,
+  `lock_version`, `concurrency`, `inserted_at`, `updated_at`, `deleted_at`,
+  `jobs`, `triggers`, `edges` and `version_history` (`"source:hash"` strings,
+  oldest first; see [workflow versions](./workflows.md#list-a-workflows-versions)).
+  Jobs carry `id`, `name`, `adaptor`, `body` and `project_credential_id`. Null
+  values are left out of triggers and edges.
+- `project_credentials` (`id`, `name`, `owner`, the owner's email).
+- `collections` (`id`, `name`).
+- `channels` (`id`, `name`, `destination_url`, `enabled`,
+  `destination_credential_id`).
+
+Pass `snapshots[]` to get those snapshots as the document's `workflows`, in
+place of every current workflow. A snapshot id from another project is left
+out. Snapshots have no `version_history`.
 
 Notable errors:
 
