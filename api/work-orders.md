@@ -76,8 +76,7 @@ Status: **Private**
 POST /api/projects/:project_id/workflows/:workflow_id/work_orders
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
 Starts a work order by hand, the way the app's Run button does.
 
@@ -85,31 +84,36 @@ Starts a work order by hand, the way the app's Run button does.
 | --- | --- | --- |
 | `job_id` | UUID | The job to start from. Send this or `trigger_id`. |
 | `trigger_id` | UUID | Start from the job this trigger leads to. |
-| `dataclip_id` | UUID | Optional. An existing input from this project to reuse. |
+| `dataclip_id` | UUID | Optional. An existing input to reuse. |
 | `body` | object | Optional. A new input. Send this or `dataclip_id`, not both. Defaults to `{}`. |
 
 Answers 201 with the work order, in the same shape as
 `GET /api/work_orders/:id`. Like a webhook, the response carries
 `x-meta-work-order-id` and `x-meta-run-id` headers.
 
-A workflow that isn't in the path's project, or is marked deleted, answers 404
-to a caller who may run the project's workflows. Every problem with the body
-comes back in one 422; the run limits are checked only once it is valid.
-
 Notable errors:
 
-- 422 `invalid` with a `required` entry at `#/job_id` when neither id is sent,
-  and an `exclusive` entry at `#/trigger_id` when both are.
-- 422 `invalid` with a `not_found` entry at `#/job_id` or `#/trigger_id` when
-  the id isn't in this workflow, or the trigger leads to no job.
-- 422 `invalid` with an `exclusive` entry at `#/body` when both `dataclip_id`
-  and `body` are sent, and a `type` entry when `body` isn't an object.
-- 422 `invalid` with a `not_found` entry at `#/dataclip_id` when the dataclip
-  isn't in this project, and a `dataclip_wiped` entry when its body has been
+- 422 `invalid` with an entry at `#/job_id` or `#/trigger_id` when neither or
+  both are sent, or the id isn't in this workflow.
+- 422 `invalid` with an `exclusive` entry when both `dataclip_id` and `body`
+  are sent.
+- 422 `invalid` with a `dataclip_wiped` entry when the dataclip's body has been
   wiped.
 - 429 `too_many_runs` or 402 `exceeds_limit` for run limits.
-- 409 `concurrent_edit` when the workflow is deleted while the work order is
-  made.
+
+> Implementation note: the app calls this through a session-cookie route,
+> `POST /projects/:project_id/workflows/:workflow_id/runs`
+> (`LightningWeb.WorkflowController.create_run/2`), which builds a
+> `Lightning.WorkOrders.Manual` and calls `Lightning.WorkOrders.create_for/1`.
+> Differences:
+>
+> - The input field is `custom_body`, a JSON string, not `body` as an object.
+> - It answers `{"data": {"workorder_id", "run_id", "dataclip"}}`, not the
+>   work order resource.
+> - It needs both the `:edit_workflow` and `:run_workflow` policy actions.
+> - The spec's input checks are new: today `job_id` wins if both ids are sent,
+>   a trigger starts its first edge's job, `dataclip_id` silently wins over a
+>   body, and a wiped dataclip isn't refused.
 
 ## Retry many work orders
 
@@ -119,15 +123,14 @@ Status: **Private**
 POST /api/projects/:project_id/work_orders/retries
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
 Send one of:
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `filter` | object | The filters of the list endpoint, without `project_id`. Retries every work order in the project that matches when Lightning receives the request. |
-| `work_order_ids` | array of UUIDs | At most 100. Ids outside the project match nothing. |
+| `filter` | object | The filters of the list endpoint. Retries every work order that matches when Lightning receives the request. |
+| `work_order_ids` | array of UUIDs | At most 100. |
 
 and optionally:
 
@@ -136,24 +139,35 @@ and optionally:
 | `job_id` | UUID | Retry from this job instead of each work order's start. All the work orders must be from the job's workflow. |
 
 Each work order gets a new run, as for
-[retrying a run](./runs.md#retry-a-run). Answers 202 with
-`{"enqueued": 40, "discarded": 2}`. Discarded work orders are those whose input
-has been wiped or whose workflow has been deleted, and, with a `job_id`, those
-whose last run never reached the job. Without a `job_id` the runs are made in
-the background; with one, in the request.
+[retrying a run](./runs.md#retry-a-run). Work orders whose input has been
+wiped, or whose workflow has been deleted, are skipped. Answers 202 with
+`{"enqueued": 40, "discarded": 2}`. Large sets are retried in the background.
 
 Notable errors:
 
-- 422 `invalid` with an `exclusive` entry at `#/work_order_ids` when both
-  `filter` and `work_order_ids` are sent, or a `required` entry at `#/filter`
-  when neither is.
-- 422 `invalid` with an entry at `#/filter/<name>` for a bad filter, and an
-  `unknown_key` entry for a filter the list endpoint doesn't take.
-- 422 `invalid` with a `not_found` entry at `#/job_id` when the job isn't in
-  this project, and a `mismatch` entry when it isn't in the workflow of every
-  work order.
+- 422 `invalid` with an `exclusive` entry when both `filter` and
+  `work_order_ids` are sent, or a `required` entry when neither is.
+- 422 `invalid` with a `mismatch` entry at `#/job_id` when the work orders
+  are from more than one workflow.
 - 429 `too_many_runs` or 402 `exceeds_limit` for run limits, counted on the
   work orders that can be retried.
+
+> Implementation note: the History page's `bulk-rerun` event calls
+> `Lightning.WorkOrders.retry_many/2`, or `retry_many/3` with a job. For a
+> filter it first calls `Lightning.Invocation.search_workorders_for_retry/2`.
+> Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - `retry_many` doesn't check the work orders belong to the project. The app
+>   only passes ids from its own page or search; the route must scope them.
+> - Without a job, every set goes to the background in Oban jobs of 100, and
+>   a later failure is only logged. With a job, it retries one by one, in the
+>   request.
+> - With a job, nothing checks the work orders share its workflow. A work
+>   order whose last run never reached the job is dropped from both counts.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
 
 ## Cancel a work order
 
@@ -163,19 +177,24 @@ Status: **Private**
 PATCH /api/work_orders/:id
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
-Body: `{"state": "cancelled"}`. No other field or state is accepted. Cancels
-every run of the work order that no worker has claimed yet. Answers 200 with
-the work order. An unknown or malformed id answers 403 `forbidden`.
+Body: `{"state": "cancelled"}`. Cancels every run of the work order that no
+worker has claimed yet. Answers 200 with the work order. A work order with no
+such run answers 422 `invalid` with a `not_allowed` entry at `#/state`, as for
+[cancelling a run](./runs.md#cancel-a-run).
 
-Notable errors:
-
-- 422 `invalid` with a `not_allowed` entry at `#/state` for another state, or
-  for a work order with no run waiting for a worker, as for
-  [cancelling a run](./runs.md#cancel-a-run).
-- 409 `concurrent_edit` when a worker claims the runs first.
+> Implementation note: the History page's `cancel` event calls
+> `Lightning.WorkOrders.cancel_many/2` with one work order and the project id,
+> which calls `Lightning.Runs.cancel_available_for_work_orders/3`. Differences:
+>
+> - It answers `{:ok, count}` of runs cancelled, not the work order. `0` is
+>   the spec's `not_allowed` case.
+> - It cancels at most 100 runs per call.
+> - It takes the project id and ignores runs outside it, so the route must
+>   look up the work order's project first.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
 
 ## Cancel many work orders
 
@@ -185,18 +204,26 @@ Status: **Private**
 POST /api/projects/:project_id/work_orders/cancellations
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
-Takes `filter` or `work_order_ids`, as for retrying many, with the same
-errors. Cancels the runs no worker has claimed yet. Answers 202 with
-`{"cancelled": 12}`, a number of work orders, not runs:
+Takes `filter` or `work_order_ids`, as for retrying many. Cancels the runs no
+worker has claimed yet. Answers 202 with `{"cancelled": 12}`. Large sets are
+cancelled in the background.
 
-- Work orders listed by id are cancelled in the request, at most 100 runs in
-  all. `cancelled` counts the work orders whose runs it cancelled.
-- A filter's work orders are cancelled in the background, 100 runs at a time
-  until none are left. `cancelled` counts the matching work orders that had a
-  run waiting for a worker when the request arrived.
+> Implementation note: the History page's `bulk-cancel` event. Selected work
+> orders go to `Lightning.WorkOrders.cancel_many/2`, in the request. For a
+> filter it calls `Lightning.Invocation.search_workorders_for_cancel/2`, then
+> `Lightning.WorkOrders.cancel_many_async/2`, which queues one
+> `CancelManyWorkOrdersJob` that cancels 100 runs at a time until none are
+> left. Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - The synchronous path cancels at most 100 runs and ignores the rest.
+> - The background path can only count work orders, not runs, so the app
+>   says how many work orders it is cancelling.
+> - The event needs the `:run_workflow` policy action (owner, admin, editor).
+>   Nothing is audited.
 
 ## History exports
 
@@ -238,14 +265,20 @@ POST /api/projects/:project_id/history_exports
 
 Tokens: personal access token of a project owner, admin or editor.
 
-The service account is refused 403 `forbidden` on every history export route.
+Body: `{"filter": {…}}`, the filters of the list endpoint. Answers 202 with
+the export, `state` `enqueued`. Lightning also emails you when it is ready.
 
-Body: `{"filter": {…}}`, the filters of the list endpoint, as for retrying
-many. Without `filter`, every work order in the project is exported. Any other
-key, `work_order_ids` included, is an `unknown_key` entry in a 422. Answers
-202 with the export, `state` `enqueued`. Lightning emails you when it is
-ready. A failed export is marked `failed`, with no email. 409
-`concurrent_edit` when the project is deleted while the export is asked for.
+> Implementation note: the History page's `confirm-export` event calls
+> `Lightning.Invocation.export_workorders/3`. In one transaction it records a
+> `requested` audit event, inserts a `Lightning.Projects.File` and queues
+> `Lightning.WorkOrders.ExportWorker` (one attempt), which emails the user
+> when it completes. Differences:
+>
+> - The filter is a History page `Lightning.WorkOrders.SearchParams`, not the
+>   list endpoint's filters.
+> - It does no authorisation. The event needs the `:run_workflow` policy
+>   action (owner, admin, editor).
+> - A failed export is marked `failed` but sends no email.
 
 ### List history exports
 
@@ -256,7 +289,13 @@ GET /api/projects/:project_id/history_exports
 ```
 
 Tokens: personal access token. Any project member, viewers included. Paged,
-newest first. Returns `{"data": [<export>, …], "included": [], "links": {…}}`.
+newest first.
+
+> Implementation note: `Lightning.Projects.list_project_files/2`, shown on the
+> project settings History Exports tab. It preloads `created_by`, and the tab
+> shows the basename of each file's `path` as the filename. Differences: it isn't paged and
+> doesn't filter on `type` (`:export` is the only type today). It does no
+> authorisation; the tab is shown to every project member.
 
 ### Get a history export
 
@@ -266,21 +305,15 @@ Status: **Private**
 GET /api/projects/:project_id/history_exports/:id
 ```
 
-Tokens: personal access token. Any project member, viewers included.
+Tokens: personal access token. Any project member, viewers included, can get
+an export and download it.
 
-Returns the export. One that isn't in the path's project answers 404 to a
-member.
-
-### Download a history export
-
-Status: **Private**
-
-```
-GET /api/projects/:project_id/history_exports/:id/download
-```
-
-Tokens: as for getting an export.
-
-Answers 200 with the zip. With cloud storage it answers a redirect to a signed
-storage URL instead. An export that isn't `completed` yet has no file, and
-answers 404 `not_found`, as does one that isn't in the path's project.
+> Implementation note: no function gets one export; the settings tab reads
+> it from `Lightning.Projects.list_project_files/2`. The download is the
+> session-cookie route `GET /project_files/:id/download`
+> (`LightningWeb.ProjectFileController.download/2`), authorised by
+> `Lightning.Policies.Exports` `:download`. Differences:
+>
+> - That route takes the file id alone, with no project in the URL.
+> - With cloud storage it redirects to a signed storage URL instead of
+>   serving the file.

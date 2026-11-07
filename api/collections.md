@@ -81,8 +81,12 @@ Each collection has `byte_size_sum`, the bytes its keys and values take up.
 }
 ```
 
-An unknown `sort` answers 400 `invalid_parameter` with an entry at
-`parameter` `sort`.
+> Implementation note: `Lightning.Collections.list_project_collections/2`,
+> which the project settings Collections tab
+> (`LightningWeb.ProjectLive.CollectionsComponent`) calls on load and on its
+> `sort` event. It returns whole collection records, `byte_size_sum`
+> included, and takes `order_by`, which the tab sets to `name` or
+> `byte_size_sum` in either direction. Differences: it isn't paged.
 
 ## List every collection
 
@@ -98,6 +102,17 @@ Tokens: personal access token of a superuser, or service account with
 Lists the collections of every project on the instance, in the same shape as
 the project list, with `project_name` added. Takes the same `sort`.
 
+> Implementation note: `Lightning.Collections.list_collections/1`, which the
+> superuser page at `/settings/collections` (`LightningWeb.CollectionLive.Index`)
+> calls on mount and on its `sort` event. It preloads `:project`, so the
+> project name is there, and takes `order_by`, which the page sets to `name`
+> or `byte_size_sum` in either direction. Differences:
+>
+> - it isn't paged.
+> - it does no authorisation check. The page is limited to superusers by the
+>   `:ensure_admin` hook (`:access_admin_space` in `Lightning.Policies.Users`),
+>   so the route has to check the token itself.
+
 ## Delete a collection
 
 Status: **Private**
@@ -111,9 +126,10 @@ with `collections:write`.
 
 Deletes the collection and every item in it. Answers 204 with no body.
 
-A collection another project holds, or none, answers 404 `not_found` to
-anyone permitted on the project. A collection another request deletes first
-answers 409 `concurrent_edit`.
+> Implementation note: `Lightning.Collections.delete_collection/1` takes only
+> the collection id. Differences: it takes no actor, so it records no audit
+> event, and it doesn't check the collection belongs to the path's project.
+> The route has to do both.
 
 ## Collection items
 

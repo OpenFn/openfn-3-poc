@@ -48,11 +48,10 @@ Planned additional scope:
 
 - `id` on each member, the user id, as in the
   [member list](#list-a-projects-members).
-- The project's settings as attributes: `retention_policy`,
-  `history_retention_period`, `dataclip_retention_period`, `requires_mfa`,
-  `allow_support_access` and `scheduled_deletion` (built on `full-api-test`,
-  not merged yet). Each is set through its own route, below.
-- `color`, `env`, `concurrency` and `parent_id` as attributes too. A sandbox
+- The project's settings as attributes: `color`, `env`, `concurrency`,
+  `retention_policy`, `history_retention_period`, `dataclip_retention_period`,
+  `requires_mfa`, `allow_support_access`, `parent_id` and
+  `scheduled_deletion`. Each is set through its own route, below. A sandbox
   also carries `root_id`, the project at the top of its tree, and
   `display_name`, the names from the root down joined by `/` (such as
   `malaria-programme/staging`).
@@ -165,8 +164,6 @@ instance, with the same exclusions. Each entry has the same shape as
 
 Planned additional scope:
 
-- Each entry carries the project's settings, as on `GET /api/projects/:id`
-  (built on `full-api-test`, not merged yet).
 - With a superuser's token, every project on the instance. With a service
   account or a superuser's token, sandboxes and projects scheduled for
   deletion too, and a `q` filter on name, description and owner name. Each entry also carries
@@ -196,27 +193,36 @@ with `projects:write`.
 | Field | Type | Notes |
 | --- | --- | --- |
 | `retention_policy` | string | Required. `retain_all`, `retain_with_errors` or `erase_all`: which inputs and outputs of steps are saved. |
-| `history_retention_period` | integer | Days to keep work orders, runs and logs. `null` or left out keeps them. |
-| `dataclip_retention_period` | integer | Days to keep step inputs and outputs. At most `history_retention_period`. `null` or left out keeps them. Cleared when the policy is `erase_all` or there is no history period. |
+| `history_retention_period` | integer | Days to keep work orders, runs and logs. `null` keeps them. |
+| `dataclip_retention_period` | integer | Days to keep step inputs and outputs. At most `history_retention_period`. Needs a history period, and is cleared when the policy is `erase_all`. |
 
-A `PUT` replaces all three, so a period left out of the body is set to `null`.
-Periods are one of 7, 14, 30, 90, 180 and 365, and only those the plan allows.
-Answers 200 with the project. When a period changes, every owner and admin of
-the project gets an email and an audit event is recorded; changing only
-`retention_policy` does neither. Sending the same body twice changes nothing.
-
-Any other key answers 422 with an `unknown_key` entry.
+Answers 200 with the project. Every owner and admin of the project gets an
+email about the change. Sending the same body twice changes nothing and sends
+no email.
 
 Notable errors:
 
 - 422 `invalid` with an `out_of_range` entry at `#/dataclip_retention_period`
   when it is longer than the history period.
-- 422 `invalid` with a `not_allowed` entry at the period when the plan
-  doesn't allow it. Only a period the body changes is checked, so a project
-  whose plan has shrunk can send its current settings back.
+- 422 `invalid` with a `not_allowed` entry when the plan doesn't allow a
+  period. The periods allowed are in `allowed_retention_periods` on the
+  project.
 
-Planned additional scope: `allowed_retention_periods` on the project, so a
-client can offer only the periods the plan allows.
+> Implementation note: `Lightning.Projects.update_project/3`, reached through
+> the `save_retention_settings` event in `LightningWeb.ProjectLive.Settings`,
+> which keeps only the three retention fields. Differences:
+>
+> - The policy action is `:edit_data_retention` (owners and admins), checked
+>   by the LiveView. `update_project/3` checks nothing itself.
+> - It checks periods against the fixed list in
+>   `Project.data_retention_options/0` (7, 14, 30, 90, 180 and 365), not the
+>   plan. The plan's periods come from
+>   `Lightning.Projects.ProjectLimiter.get_data_retention_periods/1`, which only
+>   the form uses to build its options.
+> - The email and the audit events follow the two periods only. Changing just
+>   `retention_policy` sends no email and records no event.
+> - `dataclip_retention_period` is cleared for `erase_all` only when a period
+>   is in the same change.
 
 ## Require MFA on a project
 
@@ -231,17 +237,27 @@ with `projects:write`.
 
 Body: `{"requires_mfa": true}` or `false`. When it is on, members who haven't
 set up MFA get 403 `forbidden` from every route on the project. Answers 200
-with the project, and records a `requires_mfa_updated` audit event. Any other
-key answers 422 with an `unknown_key` entry.
+with the project.
 
 Notable errors:
 
-- 402 `exceeds_limit` when the plan doesn't include requiring MFA, for
-  turning it off as well as on. Sending the current value changes nothing
-  and isn't refused.
-- 422 `invalid` with a `not_allowed` entry at `#/requires_mfa` for a sandbox,
-  whatever the value. A sandbox copies the setting from the project it was
-  created from, and keeps its own copy after that.
+- 402 `exceeds_limit` when the plan doesn't include requiring MFA.
+- 422 `invalid` with a `not_allowed` entry at `#/requires_mfa` for a sandbox.
+  A sandbox copies the setting from the project it was created from.
+
+> Implementation note: `Lightning.Projects.update_project/3` with
+> `%{requires_mfa: value}` and the caller as actor, which records a
+> `requires_mfa_updated` audit event. The app reaches it through the
+> `toggle-mfa` event in `LightningWeb.ProjectLive.Settings`. Differences:
+>
+> - The policy action is `:edit_project` (owners and admins), checked by the
+>   LiveView, not by `update_project/3`.
+> - The plan check is `UsageLimiter.limit_action/2` with a `:require_mfa`
+>   action, run in the `:limit_mfa` mount hook. `update_project/3` doesn't run
+>   it.
+> - Nothing refuses a sandbox. Only the form disables the switch. A sandbox
+>   copies the flag when it is provisioned and keeps its own copy after that,
+>   and `Lightning.Projects.Scope` reads the sandbox's own flag.
 
 ## Allow support access to a project
 
@@ -256,11 +272,16 @@ with `projects:write`.
 
 Body: `{"allow_support_access": true}` or `false`. When it is on, the
 instance's support users can open the project as editors without being
-members. They don't appear in the member list. A support user who is also a
-member gets their member role, not editor, and the project's MFA requirement
-applies to support users too. Answers 200 with the project, and records an
-`allow_support_access_updated` audit event. Any other key answers 422 with an
-`unknown_key` entry.
+members. They don't appear in the member list. Answers 200 with the project.
+
+> Implementation note: `Lightning.Projects.update_project/3` with
+> `%{allow_support_access: value}`, through the `toggle_support_access` event
+> in `LightningWeb.ProjectLive.Settings`. With an actor it records an
+> `allow_support_access_updated` audit event, and it broadcasts the change so
+> open sessions update. Differences: the policy action is `:edit_project`
+> (owners and admins), checked by the LiveView, not by `update_project/3`. A
+> support user who also has a membership gets that role, not editor, and the
+> project's MFA requirement applies to support users too.
 
 ## Delete a project
 
@@ -279,16 +300,23 @@ retention period. Until then every route on the project answers 409
 204 with no body. Deleting a project that is already scheduled answers 409
 `scheduled_for_deletion`.
 
-The same route deletes a sandbox, since a sandbox is a project, together with
-every sandbox below it. A sandbox's owners and admins, and the owners and
-admins of the project at the top of its tree, may delete it. The service
-account may delete any project or sandbox. Each deletion records a
-`deletion_scheduled` audit event.
-
-A project another request deletes meanwhile answers 409 `concurrent_edit`.
+The same route deletes a sandbox, since a sandbox is a project. A sandbox's
+admins, and the owners and admins of the project at the top of its tree, may
+delete it too.
 
 Planned additional scope: a superuser's personal access token can delete any
 project, as the instance's project list in the app allows.
+
+> Implementation note: `Lightning.Projects.schedule_project_deletion/1` does
+> the work today, and `Lightning.Projects.Sandboxes.schedule_sandbox_deletion/2`
+> for a sandbox. Differences:
+>
+> - `schedule_project_deletion/1` takes no actor, so it records no audit event.
+>   The route should pass the caller through as the actor.
+> - The policy action is `:delete_project` (owners only) in
+>   `Lightning.Policies.ProjectUsers`, already granted to `projects:write`.
+>   The sandbox functions take only a `User` as actor, so a service account
+>   can't delete a sandbox yet.
 
 ## Cancel a project's deletion
 
@@ -303,9 +331,13 @@ Tokens: as for deleting the project.
 Cancels a scheduled deletion. Answers 200 with the project, in the same shape as
 `GET /api/projects/:id`. This is the one route that doesn't answer 409
 `scheduled_for_deletion` for a project being deleted. A project that isn't
-scheduled answers 404 `not_found`. Cancelling a sandbox's deletion restores
-every sandbox below it too. Each cancellation records a `deletion_cancelled`
-audit event.
+scheduled answers 404 `not_found`.
+
+> Implementation note: `Lightning.Projects.cancel_scheduled_deletion/1`, and
+> `Lightning.Projects.Sandboxes.cancel_scheduled_sandbox_deletion/2` for a
+> sandbox. Differences: the project version takes an id and no actor, so it
+> does no authorisation check and records no audit event. The route has to do
+> both.
 
 ## List a project's members
 
@@ -343,8 +375,12 @@ Tokens: personal access token, or service account with `projects:write`. Paged.
 A member's `id` is their user id. `failure_alert` and `digest` are the
 notifications they get for this project (see
 [Set your notifications for a project](#set-your-notifications-for-a-project)).
-Members are sorted by first name. Anyone who can open the project may list
-them.
+Members are sorted by first name.
+
+> Implementation note: `Lightning.Projects.get_project_users!/1` loads the
+> memberships with their users, which is how the app's Collaboration tab lists
+> them. Differences: it isn't paged, and it returns an empty list for a
+> missing project rather than an error.
 
 ## Add a member or change their role
 
@@ -364,21 +400,22 @@ with `projects:write`.
 
 Adds the user to the project, or changes the role of a member. Answers 201 when
 it adds and 200 when it changes, with the member in the same shape as one entry
-of the list. Sending the same body twice changes nothing. Any other key
-answers 422 with an `unknown_key` entry.
-
-In a sandbox, this route can change the role of a member who is also an owner
-or admin of a project above it, though removing them is refused.
+of the list. Sending the same body twice changes nothing.
 
 Notable errors:
 
-- 404 `not_found` when the user doesn't exist, and 400 `invalid_parameter`
-  with a `path` entry for a `user_id` that isn't a UUID.
+- 404 `not_found` when the user doesn't exist.
 - 422 `invalid` with a `one_owner` entry at `#/role` when the body would make
   the user the owner, or change the owner's role. A project always has exactly
   one owner, and this route doesn't transfer ownership.
 - 402 `exceeds_limit` when the plan has no seat for a new member.
-- 409 `concurrent_edit` when another request removes the member meanwhile.
+
+> Implementation note: `Lightning.Projects.add_project_users/4` adds members
+> (`project, [%{user_id, role}], actor, notify`), and
+> `Lightning.Projects.update_project_with_users/4` changes roles. Differences:
+> they take lists, the actor must be a `User`, and neither stops a sandbox's
+> inherited admins being demoted. The policy action is `:add_project_user`
+> (owners and admins).
 
 ## Invite someone new to a project
 
@@ -388,8 +425,8 @@ Status: **Private**
 POST /api/projects/:project_id/invitations
 ```
 
-Tokens: personal access token of a project owner or admin. The email names the
-inviter, so the service account gets 403 `forbidden`.
+Tokens: personal access token of a project owner or admin, or service account
+with `projects:write`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -401,17 +438,28 @@ inviter, so the service account gets 403 `forbidden`.
 Creates a user and adds them to the project. Lightning emails them a link to set
 their password. Answers 201 with the member, in the same shape as one entry of
 the member list. To add someone who already has an account, use
-`PUT /api/projects/:project_id/members/:user_id`. Any other key answers 422
-with an `unknown_key` entry.
+`PUT /api/projects/:project_id/members/:user_id`.
 
 Notable errors:
 
 - 422 `invalid` with a `taken` entry at `#/email` when the email already has
   an account, as for `POST /api/users`. The entry names nothing about the
   account.
-- 422 `invalid` with a `one_owner` entry at `#/role` for `owner`.
-- 402 `exceeds_limit` when the plan has no seat for a new member. A body that
-  is also invalid answers the 422 instead.
+- 402 `exceeds_limit` when the plan has no seat for a new member.
+
+> Implementation note: `Lightning.Projects.invite_collaborators/3` takes the
+> project, a list of `%{email, first_name, last_name, role}` and the inviter,
+> creates the users, adds them, and emails each a password reset link. The app
+> reaches it through the `add_collaborators` event in
+> `LightningWeb.ProjectLive.InviteCollaboratorComponent`. Differences:
+>
+> - It takes a list, and the inviter must be a `User`.
+> - The policy action `:add_project_user` (owners and admins), the seat check
+>   (`ProjectLimiter.request_new_user/2`) and the role list (`admin`, `editor`,
+>   `viewer`) are all in the LiveView, not the function.
+> - It doesn't look for an existing account. The LiveView does
+>   (`InvitedCollaborators.validate_collaborators/2`). In the function a taken
+>   email fails registration and returns `{:error, :user_registration_failed}`.
 
 ## Set your notifications for a project
 
@@ -428,9 +476,20 @@ Tokens: personal access token. Only the member themself can change these.
 | `failure_alert` | boolean | Required. Email when a run fails. Only sent if the plan includes alerts. |
 | `digest` | string | Required. `never`, `daily`, `weekly` or `monthly`: a summary of the project's work orders. |
 
-Both fields are set together. Answers 200 with the member, also when nothing
-changes. Anyone else, whatever their role, and the service account, get 403
-`forbidden`. Any other key answers 422 with an `unknown_key` entry.
+Answers 200 with the member. Anyone else, whatever their role, gets 403
+`forbidden`.
+
+> Implementation note: `Lightning.Projects.set_notification_pref/3` sets one
+> field on a membership row, through the `set_failure_alert` and `set_digest`
+> events in `LightningWeb.ProjectLive.Settings`. Differences:
+>
+> - One field per call, so setting both isn't atomic.
+> - It takes the membership row, not a user id, and no actor, so it checks
+>   nothing and records no audit event. The policy actions are
+>   `:edit_failure_alerts` and `:edit_digest_alerts` in
+>   `Lightning.Policies.ProjectUsers`, which pass only for the member themself,
+>   and only when the project's MFA requirement is met.
+> - It returns `:unchanged` when nothing changes.
 
 ## Remove a member
 
@@ -444,14 +503,14 @@ Tokens: as for adding a member.
 
 Removes the member and revokes the project's access to credentials they own.
 Answers 204 with no body. A user who isn't a member answers 404 `not_found`.
+Removing the owner answers 422 `invalid` with a `one_owner` entry whose `path`
+is `user_id`.
 
-Notable errors, each a 422 `invalid` entry whose `path` is `user_id`:
-
-- `one_owner` for the owner.
-- `not_allowed` for the caller themself. You can't remove yourself.
-- `not_allowed`, in a sandbox, for an owner or admin of a project above it.
-
-A member another request removes meanwhile answers 409 `concurrent_edit`.
+> Implementation note: `Lightning.Projects.delete_project_user!/2` takes the
+> membership row and an actor, and records the audit event. Differences: it
+> raises `ArgumentError` when asked to remove the owner (or a parent admin from
+> a sandbox) instead of returning an error, so the route has to check first.
+> The policy action is `:remove_project_user` (owners and admins).
 
 ## List a project's sandboxes
 
@@ -463,9 +522,8 @@ GET /api/projects/:project_id/sandboxes
 
 Tokens: personal access token, or service account with `projects:write`. Paged.
 
-Returns the project's direct sandboxes, sorted by name, each in the same shape
-as an entry of `GET /api/projects`. Sandboxes scheduled for deletion are left
-out.
+Returns the project's direct sandboxes, each in the same shape as an entry of
+`GET /api/projects`. Sandboxes scheduled for deletion are left out.
 
 Planned additional scope:
 
@@ -477,6 +535,12 @@ Planned additional scope:
   `update_sandbox`, `delete_sandbox`, `merge_sandbox` and
   `cancel_scheduled_deletion`.
 
+> Implementation note: `Lightning.Projects.list_sandboxes/1` takes a parent id.
+> Differences: it isn't paged, and it deliberately includes sandboxes
+> scheduled for deletion (it is also the walker that purges them), so the route
+> has to filter those out. `Lightning.Projects.list_workspace_projects/2` is
+> the user-facing alternative.
+
 ## Create a sandbox
 
 Status: **Private**
@@ -485,8 +549,8 @@ Status: **Private**
 PUT /api/projects/:project_id/sandboxes/:id
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The caller
-becomes the sandbox's owner, so the service account gets 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor, or service
+account with `projects:write`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -499,23 +563,26 @@ Creates a sandbox under `:id` by cloning the parent's workflows. Credentials are
 shared with the parent, not copied, and every trigger in the sandbox starts
 disabled. The parent's members are copied with their roles, except the parent's
 owner becomes an admin and the caller becomes the sandbox's owner. Answers 201
-with the sandbox in the same shape as `GET /api/projects/:id`. If a sandbox of
-this project already has the id, answers 200 with it unchanged, to an owner or
-admin of the sandbox or of the project at the top of its tree; use
-`PUT /api/projects/:id` to rename it. Any other key answers 422 with an
-`unknown_key` entry.
+with the sandbox in the same shape as `GET /api/projects/:id`. If a sandbox
+already has the id, answers 200 with it unchanged; use `PUT /api/projects/:id`
+to rename it.
 
 Notable errors:
 
 - 422 `invalid` with a `taken` entry at `#/name` when a sibling has the name.
-- 422 `invalid` with a `not_found` entry at `#/dataclip_ids` when a dataclip
-  can't be copied from the parent.
-- 422 `invalid` with a `not_allowed` entry whose `path` is `project_id` when
-  the parent is already at the instance's maximum nesting depth.
-- 402 `exceeds_limit` when the plan has no room for another sandbox. A body
-  that is also invalid answers the 422 instead.
-- 409 `id_taken` when the id belongs to a project that isn't a sandbox of this
-  one.
+- 402 `exceeds_limit` when the plan has no room for another sandbox.
+- 422 `invalid` when the parent is already at the instance's maximum nesting
+  depth.
+
+> Implementation note: `Lightning.Projects.Sandboxes.provision/3` does the work.
+> Differences:
+>
+> - Lightning picks the id; it doesn't take a client id, so `PUT` can't be
+>   idempotent until it does.
+> - The actor must be a `User`, so a service account can't call it yet.
+> - It returns `{:error, :unauthorized}` and `{:error, :nesting_too_deep}` as
+>   atoms rather than changesets, so the route has to map them.
+> - It doesn't check the plan's sandbox limit; only the app's form does.
 
 ## Preview a sandbox merge
 
@@ -547,19 +614,27 @@ sandbox). `diverged` is `true` when the target's workflow has changed since the
 sandbox was created, so merging would overwrite someone else's work.
 `credentials` are the sandbox's credentials the target doesn't have.
 
-Notable errors, each a 422 `invalid` entry at `#/target_project_id`:
+Notable errors: 422 `invalid` with an entry at `#/target_project_id` when the
+target is the sandbox itself, one of its own sandboxes, or scheduled for
+deletion.
 
-- `not_allowed` when the target is the sandbox itself, one of its own
-  sandboxes, or outside the sandbox's workspace.
-- `deleting` when the target is scheduled for deletion.
-- `no_access` when the caller isn't an owner, admin or editor of the target.
-- `not_found` when the caller can't see the target.
-
-A `target_project_id` that isn't a UUID answers the 422 with an entry there
-too. Any other key answers 422 with an `unknown_key` entry.
-
-Planned additional scope: `collections`, the collections a merge would
-create in the target.
+> Implementation note: the `open-merge-modal` event in
+> `LightningWeb.SandboxLive.Index` builds this preview, using
+> `Lightning.Projects.MergeProjects.diverged_workflows/2` both ways round
+> (target against sandbox for `diverged`, sandbox against target for
+> `changed`). Differences:
+>
+> - The pairing, the credential list and the target checks are private
+>   LiveView helpers (`build_merge_workflow_list/4`,
+>   `sandbox_only_credentials/2`, `mergeable_target?/3`). They have to move
+>   into `Lightning.Projects.Sandboxes` first.
+> - Each row has one id: the sandbox workflow's, or the target's for a deleted
+>   one. The route has to add the other side.
+> - Credentials are listed by the sandbox's project credential id, not the
+>   credential id, and that is also what `Sandboxes.merge/4` takes.
+> - The app only offers targets where the caller is owner, admin or editor.
+> - It also previews the collections a merge would create
+>   (`Sandboxes.preview_collections/2`).
 
 ## Merge a sandbox
 
@@ -569,10 +644,9 @@ Status: **Private**
 POST /api/projects/:project_id/sandboxes/:id/merges
 ```
 
-Tokens: personal access token of an owner or admin of the sandbox, or of the
-project at the top of its tree, who is also an editor or above on the target
-project. The merge is recorded as the caller's, so the service account gets
-403 `forbidden`.
+Tokens: personal access token of an owner or admin of the sandbox who is also
+an editor or above on the target project, or service account with
+`projects:write`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -581,29 +655,23 @@ project. The merge is recorded as the caller's, so the service account gets
 
 Copies the sandbox's workflows into the target project, and creates any
 collections the target is missing by name. Collection items are never copied,
-and a merge never deletes a workflow or a collection. Every credential linked
-to the sandbox that the target lacks is linked to the target, so merged jobs
-keep theirs. A change made to the target's workflows since the sandbox was
-created is overwritten. Answers 201 with the target project in the same shape
-as `GET /api/projects/:id`.
+and a merge never deletes collections. Answers 201 with the target project in
+the same shape as `GET /api/projects/:id`.
 
-Notable errors:
-
-- 422 `invalid` with a `not_found` entry at `#/workflow_ids/N` for an id that
-  names no workflow in the sandbox, or a `type` entry at `#/workflow_ids` when
-  it isn't a list.
-- 422 `invalid` with an entry at `#/target_project_id`, as for the preview.
-- 402 `exceeds_limit` for a plan limit.
-- 409 `concurrent_edit` when another request deletes the sandbox or the target
-  meanwhile.
-
-Any other key answers 422 with an `unknown_key` entry.
+A plan limit answers 402 `exceeds_limit`.
 
 Planned additional scope:
 
 - `deleted_target_workflow_ids`: workflows only the target has, to delete as
   part of the merge. Nothing is deleted unless it is listed.
-- `credential_ids`: which of the sandbox's credentials to link to the target,
-  instead of all of them.
+- `credential_ids`: the sandbox's credentials to link to the target. Only
+  credentials linked to the sandbox are taken.
 - The sandbox is scheduled for deletion once it has merged, and the response
   says whether that worked.
+
+> Implementation note: `Lightning.Projects.Sandboxes.merge/4` takes the
+> sandbox, the target, the actor and an options map (`:selected_workflow_ids`,
+> `:deleted_target_workflow_ids`, `:selected_credential_ids`,
+> `:skip_collections`, `:record_release`). Differences: the caller must authorise
+> `:merge_sandbox` first, and failures come back as `:merge_failed` or a usage
+> limiter message, not a changeset.

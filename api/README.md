@@ -1,9 +1,8 @@
 # Lightning API reference
 
 This page covers Lightning's HTTP API for clients outside Lightning (scripts,
-CLIs, infrastructure automation and other services) and, with a
-[session token](./authentication.md#session-tokens) (built on `full-api-test`,
-not merged yet), for Lightning's own app.
+CLIs, infrastructure automation and other services) and, with a planned
+[session token](./authentication.md#session-tokens), for Lightning's own app.
 
 All paths are relative to your instance, for example
 `https://app.openfn.org`. Request and response bodies are JSON unless a section
@@ -44,17 +43,24 @@ Every endpoint carries a status:
 
 | Status | Meaning |
 | --- | --- |
-| **Public** | On Lightning's `main`. Any client with the right token can call it. |
-| **Private** | Built on the `full-api-test` branch in OpenFn/lightning, which hasn't merged to `main` yet. The spec here is how that route behaves. Until the branch merges, only the app's own pages can do this. |
+| **Public** | Available now. Any client with the right token can call it. |
+| **Private** | Lightning can already do this inside the app, but there is no API route for it yet. The spec here is how the route should look, following the same patterns as the public routes. Each one has an implementation note naming the function that does the work today and how it differs from the spec. |
 | **Planned** | Lightning can't do this yet, or can only do part of it. The spec here is how the route should look, following the same patterns. |
 
 A Public or Private endpoint can also list **planned additional scope**: things
 it should do that it doesn't yet, such as a filter, a field or a token kind.
-Where `full-api-test` already adds one of these to a Public route, the line
-says "built on `full-api-test`, not merged yet".
 
-Lightning's own `API.md` and `SERVICE_ACCOUNTS.md` describe the Public routes
-for operators. On `full-api-test` they describe the Private routes too.
+Public means available on the API branch this reference tracks,
+`stuart/api-contract` in OpenFn/lightning, which hasn't merged to `main` yet.
+Its own `API.md` and `SERVICE_ACCOUNTS.md` describe the same routes for
+operators. Most Public routes are on `main` too, but a few aren't:
+`PUT /api/projects/:id`, `GET` and `PUT /api/credentials/:id`, and `GET` and
+`PUT /api/projects/:project_id/collections/:id`. On `main`, the service account
+can only call `/api/users`, with the scopes `users:read` and `users:write`. Its
+scopes `projects:write`, `credentials:write` and `collections:write`, the
+`members` attribute on a project, the problem documents in
+[Errors](./errors.md) and the order of checks there are also missing. Until the
+branch merges, treat those as Public on the branch only.
 
 ## All endpoints
 
@@ -152,7 +158,6 @@ for operators. On `full-api-test` they describe the Private routes too.
 | `POST` | [`/api/projects/:project_id/work_orders/cancellations`](./work-orders.md) | Private |
 | `POST` | [`/api/projects/:project_id/history_exports`](./work-orders.md) | Private |
 | `GET` | [`/api/projects/:project_id/history_exports`, `/api/projects/:project_id/history_exports/:id`](./work-orders.md) | Private |
-| `GET` | [`/api/projects/:project_id/history_exports/:id/download`](./work-orders.md) | Private |
 | `GET` | [`/api/runs`, `/api/runs/:id`, `/api/projects/:project_id/runs`, `/api/projects/:project_id/runs/:id`](./runs.md) | Public |
 | `PATCH` | [`/api/runs/:id`](./runs.md) | Private |
 | `POST` | [`/api/runs/:id/retries`](./runs.md) | Private |
@@ -180,6 +185,7 @@ for operators. On `full-api-test` they describe the Private routes too.
 | `GET` | [`/api/projects/:project_id/channel_requests`, `/api/channel_requests/:id`](./channels.md) | Private |
 | `GET` | [`/api/audit_events`](./audit-events.md) | Private |
 | `GET`, `PUT`, `DELETE` | [`/api/auth_provider`](./authentication.md) | Private |
+
 | `GET`, `POST` | [`/api/projects/:project_id/ai_sessions`](./ai-assistant.md) | Private |
 | `GET` | [`/api/ai_sessions/:id`](./ai-assistant.md) | Private |
 | `POST` | [`/api/ai_sessions/:id/messages`](./ai-assistant.md) | Private |

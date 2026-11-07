@@ -7,7 +7,7 @@ method from that design, one line each, and records where it stands in this API.
 | Status | Meaning |
 | --- | --- |
 | **Public** | This API already has it, as designed. |
-| **Private** | Built as a Private endpoint on Lightning's `full-api-test` branch, not merged to `main` yet. |
+| **Private** | Lightning can do it in the app today, and this API specifies it as a Private endpoint, with an implementation note on how the code differs. |
 | **Partial** | This API has it, but without something the design calls for. The endpoint's section lists the gap under "Planned additional scope". |
 | **Planned** | Lightning can't do this yet, or the part that does this job isn't there. Specified as a Planned endpoint or field. |
 | **Misfit** | Doesn't belong in this API. [Misfits](./misfits.md) says why. |

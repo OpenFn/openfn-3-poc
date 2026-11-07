@@ -75,18 +75,19 @@ Status: **Private**
 PATCH /api/runs/:id
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
 Body: `{"state": "cancelled"}`. No other field or state is accepted. Answers
-200 with the run. An unknown or malformed id answers 403 `forbidden`.
+200 with the run.
 
 Only a run that hasn't been claimed by a worker yet (state `available`) can be
-cancelled. Any other run, or another `state`, answers 422 `invalid` with a
-`not_allowed` entry at `#/state`. A run a worker claims while it is being
-cancelled answers 409 `concurrent_edit`.
+cancelled. Any other run answers 422 `invalid` with a `not_allowed` entry at
+`#/state`.
 
-Planned additional scope: recording who cancelled the run in an audit event.
+> Implementation note: `Lightning.Runs.cancel_run/1` cancels one available run
+> and returns `{:error, :not_available}` otherwise.
+> `Lightning.WorkOrders.cancel_many/2` cancels every available run of several
+> work orders. Differences: neither takes an actor or records an audit event.
 
 ## Retry a run
 
@@ -96,8 +97,7 @@ Status: **Private**
 POST /api/runs/:id/retries
 ```
 
-Tokens: personal access token of a project owner, admin or editor. The service
-account is refused 403 `forbidden`.
+Tokens: personal access token of a project owner, admin or editor.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -109,17 +109,24 @@ new run, in the same shape as `GET /api/runs/:id`.
 
 Notable errors:
 
-- 409 `not_retryable` when the run's workflow has been deleted, before the
-  body is read, and 409 `concurrent_edit` when it is deleted during the retry.
-- 422 `invalid` with a `required` entry at `#/step_id` when it is missing, and
-  a `not_found` entry when the step isn't in this run.
-- 422 `invalid` with a `dataclip_wiped` entry at `#/step_id` when the step's
-  input has been wiped.
-- 429 `too_many_runs` or 402 `exceeds_limit` for run limits, checked once the
-  body is valid.
+- 422 `invalid` with a `not_found` entry at `#/step_id` when the step isn't in
+  this run.
+- 422 `invalid` with a `dataclip_wiped` entry when the step's input has been
+  wiped.
+- 409 `scheduled_for_deletion` when the workflow has been deleted.
+- 429 `too_many_runs` or 402 `exceeds_limit` for run limits.
 
 Planned additional scope: `step_id` becomes optional. Without it, the run is
 retried from the start of its workflow, with the same input.
+
+> Implementation note: the app calls `Lightning.WorkOrders.retry/3` (run id,
+> step id, `created_by:` actor) through a session-cookie route,
+> `POST /projects/:project_id/runs/:run_id/retry`
+> (`LightningWeb.WorkflowController.retry_run/2`).
+> `Lightning.WorkOrders.retry_many/2` retries several work orders at once.
+> Differences: `retry/3` returns `{:error, :workflow_deleted}` as an atom and
+> raises if the step isn't in the run, the controller checks run limits before
+> calling it, and the cookie route answers in its own shape.
 
 ## List a run's steps
 
@@ -130,8 +137,7 @@ GET /api/runs/:id/steps
 GET /api/runs/:id/steps?job_id=:job_id
 ```
 
-Tokens: as for getting a run, so the service account with `projects:write` may
-read them too.
+Tokens: personal access token.
 
 ```json
 {
@@ -157,10 +163,15 @@ read them too.
 }
 ```
 
-Steps are in the order they ran. Not paged. An unknown or malformed run id
-answers as for `GET /api/runs/:id`. A `job_id` that isn't a UUID answers 400
-`invalid_parameter`.
+Steps are in the order they ran. Not paged.
 
 Planned additional scope: `job_name` and `adaptor` on each step, read from the
 snapshot the step ran on, so a step can be labelled after its job is renamed or
 deleted.
+
+> Implementation note: `Lightning.Runs.get/2` with `include: [steps: []]`
+> loads a run with its steps. The app reads them through a session-cookie
+> route, `GET /projects/:project_id/runs/:run_id/steps`
+> (`LightningWeb.WorkflowController.get_run_steps/2`). Differences: the cookie
+> route requires `job_id` and returns that one step in its own shape, where the
+> spec returns a list and makes `job_id` an optional filter.

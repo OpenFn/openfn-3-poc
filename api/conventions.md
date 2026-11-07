@@ -33,9 +33,8 @@ List endpoints that page take:
 | `page` | 1 | |
 | `page_size` | 10 | At most 100. Larger values are cut to 100. |
 
-Each value is read as the number it starts with, so `5abc` is 5 and `2.0` is
-2. A value below 1, or one that doesn't start with a number, is ignored and the
-default applies; it is never refused. Paged responses carry `links`:
+A value below 1, or one that isn't a number, is ignored and the default
+applies. Paged responses carry `links`:
 
 ```json
 "links": {

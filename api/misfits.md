@@ -89,14 +89,6 @@ cover the rest. The second sends a whole collection as one file, with no
 limit on its size. [Streaming items](./collections.md#stream-items) returns the
 same items in batches.
 
-Lightning has routes of this kind too. `GET
-/api/projects/:project_id/workflows/:workflow_id/health/outcomes`, `…/failures`
-and `…/runs` feed the charts on a workflow's health page. They take the
-session cookie, not a token, and `days` (1, 7 or 30); `runs` also reads an
-`x-timezone` header. They're the page's chart data, so this API leaves them
-out. [Runs](./runs.md) and [work orders](./work-orders.md), with their date
-filters, give the same counts.
-
 ## Live connections
 
 `WS JOIN workflow:collaborate/:workflow_id[:vN]`, `WS SEND yjs.sync` /

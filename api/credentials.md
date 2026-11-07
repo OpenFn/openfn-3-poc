@@ -31,11 +31,11 @@ Credential bodies (the secrets) are never returned by any endpoint.
 Links to projects you can't see are left out. A service account token without
 `projects:write` sees every link, but `projects` is empty.
 
-Planned additional scope: `scheduled_deletion` (a timestamp, or `null`) and
-`transfer_status` (`pending`, `completed` or `null`), built on
-`full-api-test`, not merged yet. Also `environments` (the names of its
-environments, such as `[{"name": "main"}]`), `owner` (`id` and `email`, which
-the credentials lists show), and `has_activity_in_projects` (`true` once any run step has used it, which decides whether it can still be
+Planned additional scope: `scheduled_deletion` (a timestamp, or `null`),
+`transfer_status` (`pending`, `completed` or `null`) and `environments` (the
+names of its environments, such as `[{"name": "main"}]`), `owner` (`id` and
+`email`, which the credentials lists show), and `has_activity_in_projects`
+(`true` once any run step has used it, which decides whether it can still be
 deleted outright). For an `oauth` credential, `oauth`: `oauth_client_id` and
 the client's `name` (the type the lists show), the `scopes` granted,
 `expires_at`, and
@@ -59,8 +59,6 @@ or it is linked to a project whose credentials you may list. Anyone else gets
 account with `credentials:write` can see every credential, so only it hears
 404 `not_found` for an unknown id and 400 `invalid_parameter` for one that
 isn't a UUID.
-
-A credential scheduled for deletion can still be read.
 
 ## Create or replace a credential
 
@@ -110,15 +108,14 @@ Notable errors:
 
 - 403 `forbidden` when the id belongs to a credential you may not edit, even
   one you can see through a project.
-- 409 `scheduled_for_deletion` when the credential is scheduled for deletion.
+- 409 `scheduled_for_deletion` when the credential is being deleted.
 - 403 `forbidden` when a person names an owner other than themselves. This is
   answered the same way whether or not the email has an account.
 - 422 `invalid` with entries such as `taken` at `#/name` when the owner
   already has a credential with this name, `not_allowed` at `#/owner` when a
   replace names a different owner (Lightning never moves a credential between
-  owners), `not_found` at `#/owner`, `required` at `#/owner` when a service
-  account leaves it out, `one_body` at `#/credential_bodies`, `mismatch` at
-  `#/id`, `unknown_key` for a field not listed above, or `not_found` or `no_access` at
+  owners), `not_found` at `#/owner`, `one_body` at `#/credential_bodies`,
+  `unknown_key` for a field not listed above, or `not_found` or `no_access` at
   `#/project_credentials/N/project_id` (the owner isn't a member of that
   project, or you can't link credentials there).
 - 503 `not_ready` with `Retry-After` when Lightning can't check the schema yet.
@@ -127,8 +124,7 @@ Planned additional scope:
 
 - Credentials with environments other than `main`, set through
   [the environment routes](#list-a-credentials-environments). A replace leaves
-  the other environments as they are (built on `full-api-test`, not merged
-  yet).
+  the other environments as they are.
 - For an `oauth` credential, a body without `refresh_token` keeps the stored
   one, so a client doesn't have to hold it.
 
@@ -182,9 +178,7 @@ DELETE /api/credentials/:id
 ```
 
 Tokens: personal access token. Only the owner can delete, so a service
-account gets 403 `forbidden`. This is by design: a service account
-[schedules the deletion](#schedule-a-credentials-deletion) instead, which can
-be cancelled until the retention period ends.
+account gets 403 `forbidden`. Service account support is planned.
 
 Answers 204 with no body. Anyone who doesn't own the credential gets 403
 `forbidden`, whether or not it exists or the id is a UUID; nobody hears 404.
@@ -210,25 +204,30 @@ PUT /api/credentials/:id/scheduled_deletion
 Tokens: personal access token of the owner, or service account with
 `credentials:write`.
 
-No body; any key answers 422 `invalid` with an `unknown_key` entry. Unlinks the
-credential from every project straight away, so jobs using it stop getting it,
-revokes any OAuth tokens at the provider and emails the owner. Lightning
+No body. Unlinks the credential from every project straight away, so jobs using
+it stop getting it, and revokes any OAuth tokens at the provider. Lightning
 empties its bodies after the instance's retention period, and deletes it then
-unless runs have used it. Answers 200 with the credential. Scheduling one that
-is already scheduled answers the same and changes nothing: the date doesn't
-move and the owner isn't emailed again.
-
-Until then, the routes that change the credential answer 409
-`scheduled_for_deletion`: replacing it, its environments, linking it and
-transferring it. It can still be read, deleted at once, and its deletion
-cancelled.
-
-Only the service account hears 404 `not_found` for an unknown id and 400
-`invalid_parameter` for one that isn't a UUID. Anyone else who isn't the owner
-gets 403 `forbidden`.
+unless runs have used it. Until then every other route on the credential
+answers 409 `scheduled_for_deletion`, except deleting it at once and
+cancelling the deletion. Answers 200 with the credential.
+Scheduling one that is already scheduled changes nothing.
 
 This differs from projects, where `DELETE` schedules, because
 `DELETE /api/credentials/:id` already deletes at once.
+
+> Implementation note: `Lightning.Credentials.schedule_credential_deletion/2`,
+> through `LightningWeb.Components.CredentialDeletionModal`. It sets
+> `scheduled_deletion` to now plus `purge_deleted_after_days`, removes every
+> project link (jobs lose the credential), revokes OAuth tokens and emails the
+> owner. The Oban `purge_deleted` job in `Lightning.Credentials` empties the
+> bodies and deletes those no step has used. Differences:
+>
+> - only the owner may (`:delete_credential` in `Lightning.Policies.Users`).
+>   There is no service account path.
+> - scheduling again isn't a no-op: it moves the date and emails the owner
+>   again.
+> - it records no audit event for the scheduling itself, only one per OAuth
+>   token it revokes.
 
 ## Cancel a credential's deletion
 
@@ -242,7 +241,14 @@ Tokens: as for scheduling.
 
 Answers 200 with the credential. The project links removed when it was
 scheduled are not restored. A credential that isn't scheduled answers 404
-`not_found`. Who hears 404 for the id is as for scheduling.
+`not_found`.
+
+> Implementation note: `Lightning.Credentials.cancel_scheduled_deletion/2`,
+> through the `cancel_credential_deletion` event in
+> `LightningWeb.CredentialLive.CredentialIndexComponent`. It checks the actor
+> owns the credential and records an `updated` audit event. Differences: only
+> the owner may; it raises on an unknown id (`get_credential!/1`); and a
+> credential that isn't scheduled succeeds with no change instead of 404.
 
 ## Link a credential to a project
 
@@ -255,22 +261,32 @@ PUT /api/projects/:project_id/credentials/:id
 Tokens: personal access token of the credential's owner who is an editor or
 above in the project, or service account with `credentials:write`.
 
-No body; any key answers 422 `invalid` with an `unknown_key` entry. Links the
-credential to the project and to the project's sandboxes. Answers 201 with the
-credential when it links, and 200 if it was already linked.
-
-The credential isn't in the project until it is linked, so only the service
-account hears 404 `not_found` or 400 `invalid_parameter` for its id. Anyone
-else permitted on the project gets 403 `forbidden`.
+No body. Links the credential to the project and to the project's sandboxes.
+Answers 201 with the credential when it links, and 200 if it was already
+linked.
 
 Notable errors:
 
-- 409 `scheduled_for_deletion` when the project or the credential is
-  scheduled for deletion.
 - 422 `invalid` with a `no_access` entry at `path` `project_id` when the owner
   isn't a member of the project.
-- 422 `invalid` with a `taken` entry at `path` `id` when another credential
-  linked to the project has the same `external_id`.
+- 422 `invalid` with a `taken` entry when another credential linked to the
+  project has the same `external_id`.
+
+> Implementation note: `Lightning.Credentials.update_credential/3` with a
+> `project_credentials` entry `%{"project_id" => id}`, through the `save`
+> event in `LightningWeb.CredentialLive.CredentialFormComponent`. It records
+> an `added_to_project` audit event and copies the link to the project's
+> sandboxes. Differences:
+>
+> - it takes the credential's whole list of links, which the form builds with
+>   `LightningWeb.CredentialLive.Helpers.prepare_projects_associations/3`.
+>   Leaving out a link the credential has raises, since `cast_assoc` replaces
+>   the list.
+> - it checks only that the actor owns the credential, not that the owner is
+>   a member of the project or an editor there. The form only offers the
+>   owner's projects, and the API's `create` checks
+>   `:create_project_credential` itself.
+> - an `external_id` clash is a changeset error on `external_id`.
 
 ## Unlink a credential from a project
 
@@ -285,21 +301,23 @@ or admin, or service account with `credentials:write`.
 
 Jobs in the project that use the credential lose it. Links to the project's
 sandboxes stay. Answers 204 with no body. A credential that isn't linked
-answers 404 `not_found` to anyone who may list the project's credentials. To
-see which workflows would lose it first, use
+answers 404 `not_found`. To see which workflows would lose it first, use
 `GET /api/workflows?credential_id=:id&project_id=:project_id`.
+
+> Implementation note: `Lightning.Credentials.update_credential/3` with the
+> link marked `"delete" => "true"`, through the same form. Jobs lose the
+> credential through the foreign key (`on_delete: :nilify_all`), and it
+> records a `removed_from_project` audit event. Sandbox links stay.
+> Differences: only the credential's owner may, so a project owner or admin
+> can't unlink someone else's credential (removing that person from the
+> project does drop their links, in `Lightning.Projects`). It takes the whole
+> list of links, as for linking.
 
 ## Credential environments
 
 A credential has a body per environment, such as `main` and `staging`, so a
 project and its sandboxes can use different secrets. It has between one and
 five. Bodies are never returned.
-
-All three routes take a personal access token of the owner, or a service
-account with `credentials:write`. Only the service account hears 404
-`not_found` for an unknown credential id and 400 `invalid_parameter` for one
-that isn't a UUID; anyone else who isn't the owner gets 403 `forbidden`. A
-credential scheduled for deletion answers 409 `scheduled_for_deletion`.
 
 ### List a credential's environments
 
@@ -309,9 +327,19 @@ Status: **Private**
 GET /api/credentials/:id/environments
 ```
 
+Tokens: personal access token of the owner, or service account with
+`credentials:write`.
+
 ```json
 { "data": [{ "name": "main", "inserted_at": "…", "updated_at": "…" }] }
 ```
+
+> Implementation note: no context function lists them. The credential form
+> (`LightningWeb.CredentialLive.CredentialFormComponent`) preloads
+> `credential_bodies` and reads each `name`, and
+> `Lightning.Credentials.get_credential_body/2` fetches one. Differences: the
+> route has to select the names and timestamps without loading the encrypted
+> bodies, and check ownership itself.
 
 ### Set an environment
 
@@ -321,18 +349,29 @@ Status: **Private**
 PUT /api/credentials/:id/environments/:name
 ```
 
+Tokens: as for listing.
+
 Body: `{"body": {…}}`, checked against the credential's `schema`. Creates the
 environment or replaces its body. A name is lowercase letters, digits, `-`
 and `_`, starting with a letter or digit, at most 32 characters. Answers 201
-when it creates and 200 when it replaces, with `{"data": <environment>}`.
+when it creates and 200 when it replaces, with the environment.
 
-Notable errors:
+Notable errors: 422 `invalid` with an `exceeds_limit` entry at `path` `name`
+for a sixth environment, or `too_many_secrets` at `#/body`.
 
-- 422 `invalid` with an `exceeds_limit` entry at `path` `name` for a sixth
-  environment, a `format` entry there for a name Lightning doesn't accept,
-  `required` or `type` at `#/body` when the body is missing or isn't an
-  object, `too_many_secrets` at `#/body`, or `unknown_key`.
-- 503 `not_ready` with `Retry-After` when Lightning can't check the schema yet.
+> Implementation note: `Lightning.Credentials.update_credential/3` with
+> `credential_bodies: [%{"name" => name, "body" => body}]`, through the form's
+> `save` event. It inserts or updates that body and leaves the others. The
+> body is typed against the schema, and
+> `Lightning.Credentials.CredentialBody.changeset/2` checks the name format
+> and the `max_credential_sensitive_values` limit. Differences:
+>
+> - the five-environment limit is only in the form's `add_environment`
+>   event, not in the context.
+> - when only bodies change it records no audit event, since events come from
+>   changes to the credential row.
+> - it returns the credential, not the environment, and doesn't say whether
+>   it created.
 
 ### Delete an environment
 
@@ -342,19 +381,21 @@ Status: **Private**
 DELETE /api/credentials/:id/environments/:name
 ```
 
-Answers 204 with no body. An environment the credential doesn't have answers
-404 `not_found`. Deleting the last environment answers 422 `invalid` with a
-`required` entry at `path` `name`.
+Tokens: as for listing.
+
+Answers 204 with no body. Deleting the last environment answers 422 `invalid`
+with a `required` entry at `path` `name`.
+
+> Implementation note: `Lightning.Credentials.update_credential/3` with
+> `delete_environments: [name]`, through the form's `delete_environment` and
+> `save` events. Differences: the rule that one environment must remain is
+> only in the form, so the context deletes the last one too. A name that
+> doesn't exist succeeds quietly, and it records no audit event.
 
 ## Transfer a credential
 
 A credential can be given to another user. The owner starts a transfer, then
 confirms it from an email.
-
-Both routes take only the owner's personal access token, so a service account
-gets 403 `forbidden`. Anyone but the owner gets 403 `forbidden` for every id,
-an unknown one or one that isn't a UUID included. A credential scheduled for
-deletion answers 409 `scheduled_for_deletion`.
 
 ### Start a transfer
 
@@ -364,22 +405,36 @@ Status: **Private**
 PUT /api/credentials/:id/transfer
 ```
 
+Tokens: personal access token of the owner.
+
 Body: `{"recipient": "grace@example.com"}`. The recipient must be a member of
 every project the credential is linked to. Lightning emails the owner a link to
 confirm, and ownership moves once they follow it. Answers 200 with the
-credential, `transfer_status` `pending`. Starting again while a transfer is
-pending signs a new link and emails the owner again, since Lightning keeps no
-record of whom a pending transfer is for.
+credential, `transfer_status` `pending`. Starting the same transfer again
+changes nothing.
 
 Notable errors:
 
-- 422 `invalid` with an entry at `#/recipient`: `not_found` when no user has
-  the email, `no_access` when they aren't a member of every linked project,
-  `not_allowed` when it is you, `format` for something that isn't an email,
-  `required` when it is missing, or `type` when it isn't a string. Other keys
-  answer `unknown_key`.
-- 501 `not_implemented` when the instance doesn't allow transfers. This is
-  checked before the credential, so a caller who isn't the owner hears it too.
+- 422 `invalid` with a `not_found` entry at `#/recipient` when no user has the
+  email, or `no_access` when they aren't a member of every linked project.
+- 501 `not_implemented` when the instance doesn't allow transfers.
+
+> Implementation note: `Lightning.Credentials.validate_credential_transfer/3`
+> then `Lightning.Credentials.initiate_credential_transfer/3`, through the
+> `transfer-credential` event in
+> `LightningWeb.CredentialLive.TransferCredentialModal`. It sets
+> `transfer_status` to `pending` and emails the owner a signed link to
+> `/credentials/transfer/:token`, valid for
+> `credential_transfer_token_validity_in_days`. Differences:
+>
+> - the recipient checks (the user exists, isn't you, and is a member of every
+>   linked project) are in `validate_credential_transfer/3`.
+>   `initiate_credential_transfer/3` checks only ownership, so the route must
+>   call both.
+> - starting again signs a new token and sends another email rather than
+>   changing nothing.
+> - `allow_credential_transfer` is read only by the form, not the context.
+> - it records no audit event; `transfered` is recorded on confirmation.
 
 ### Cancel a transfer
 
@@ -389,12 +444,17 @@ Status: **Private**
 DELETE /api/credentials/:id/transfer
 ```
 
+Tokens: personal access token of the owner.
+
 Answers 200 with the credential. A credential with no pending transfer answers
 404 `not_found`.
 
-Cancelling doesn't invalidate the link already emailed. If the owner starts
-another transfer before that link expires, the old link works again and
-transfers to its first recipient.
+> Implementation note: `Lightning.Credentials.revoke_transfer/2`, through the
+> `revoke-transfer` event in the same modal. It checks ownership and returns
+> `:not_pending` when no transfer is pending. Differences: it records no audit
+> event. The token is stateless, so if the owner starts another transfer
+> before an old link expires, that old link works again and transfers to its
+> first recipient.
 
 ## OAuth clients
 
@@ -405,9 +465,6 @@ projects, and a superuser can make it global, which lists it in every project.
 comma-separated strings, as Lightning stores them; the credential form splits
 them on commas into the scope checkboxes, with the mandatory ones always
 selected.
-
-A client belongs to the person who created it. A service account can't own
-one, so it can only list a project's clients.
 
 ```json
 {
@@ -430,8 +487,6 @@ one, so it can only list a project's clients.
 }
 ```
 
-`project_ids` leaves out projects whose credentials you may not list.
-
 ### List OAuth clients
 
 Status: **Private**
@@ -441,13 +496,15 @@ GET /api/oauth_clients
 GET /api/projects/:project_id/oauth_clients
 ```
 
-Tokens: personal access token. With a project, also a service account with
-`credentials:write`; without one, a service account gets 403 `forbidden`.
+Tokens: personal access token, or service account with `credentials:write`.
 
 Without a project, lists your own clients and the global ones. With a project,
-lists the clients linked to it and the global ones; you need a role in the
-project, or support access to it. Returns `{"data": [<client>, …], "links": …}`.
-Paged, by name.
+lists the clients linked to it and the global ones. Paged.
+
+> Implementation note: `Lightning.OauthClients.list_clients/1`, given a
+> `Lightning.Accounts.User` or a `Lightning.Projects.Project`, which the
+> credentials pages call on mount. Differences: it isn't paged, and it does
+> no authorisation check, so the route has to check access to the project.
 
 ### Create or replace an OAuth client
 
@@ -457,25 +514,30 @@ Status: **Private**
 PUT /api/oauth_clients/:id
 ```
 
-Tokens: personal access token. A service account gets 403 `forbidden`.
-Replacing needs the owner; anyone else gets 403 `forbidden`.
+Tokens: personal access token, or service account with `credentials:write`.
+Replacing needs the owner.
 
-Takes the fields above except `user_id`, `inserted_at` and `updated_at`, plus
-`client_secret`. `name`, `client_id`, `client_secret`,
-`authorization_endpoint` and `token_endpoint` are required on create.
-Endpoints and `scopes_doc_url` must be URLs. A replace empties every field the
-body leaves out, except `client_secret`, which it keeps, and `global`.
-`project_ids` is the client's whole list of links among the projects you can
-see: links you leave out are removed, and links to projects you can't see
-stay. Linking a project needs editor or above in it. Answers 201
-`{"data": <client>}` on create and 200 on replace.
+Takes the fields above except `user_id`, plus `client_secret`.
+`name`, `client_id`, `client_secret`, `authorization_endpoint` and
+`token_endpoint` are required on create; leave `client_secret` out of a replace
+to keep it. Endpoints must be URLs. `global` needs a superuser. Linking a
+project needs editor or above in it. Answers 201 on create and 200 on replace.
 
-Notable errors:
-
-- 400 `invalid_parameter` when the id isn't a UUID.
-- 422 `invalid` with `not_allowed` at `#/global` when someone other than a
-  superuser changes it, `not_found` or `no_access` at `#/project_ids/N`,
-  `mismatch` at `#/id`, `unknown_key`, or the field rules above.
+> Implementation note: `Lightning.OauthClients.create_client/3` and
+> `Lightning.OauthClients.update_client/4`, through the `save` event in
+> `LightningWeb.CredentialLive.OauthClientFormComponent`. Both check the actor
+> owns the client and record `created` or `updated` audit events, plus
+> `added_to_project` and `removed_from_project` for links. Leaving
+> `client_secret` out of an update keeps it. Differences:
+>
+> - `global` is cast only when the caller passes `allow_global: true`, which
+>   the page does for superusers. Otherwise it is dropped, not refused.
+> - links are `project_oauth_clients` entries, the whole list each time, as
+>   for credentials. The context checks no role in the project; the page's
+>   gate is `:create_project_credential` on the current project.
+> - Lightning picks the id on create.
+> - only people: ownership compares user ids (`:delete_credential` in
+>   `Lightning.Policies.Users`), so there is no service account path.
 
 ### Delete an OAuth client
 
@@ -485,11 +547,20 @@ Status: **Private**
 DELETE /api/oauth_clients/:id
 ```
 
-Tokens: personal access token of the owner. Anyone else, a service account
-included, gets 403 `forbidden` for every id; nobody hears 404.
+Tokens: personal access token of the owner, or service account with
+`credentials:write`.
 
 Answers 204 with no body. Credentials that used the client stay, but can't get
 new tokens until they are given another client.
+
+> Implementation note: `Lightning.OauthClients.delete_client/2`, through the
+> `delete_oauth_client` event in
+> `LightningWeb.CredentialLive.CredentialIndexComponent`. It checks the actor
+> owns the client, removes its project links and records a `deleted` audit
+> event. Credentials keep their row; the foreign key sets their
+> `oauth_client_id` to null. Differences: owner only, with no service account
+> path, and the page loads the client with `get_client!/1`, which raises on
+> an unknown id.
 
 ## Keychain credentials
 
@@ -520,8 +591,17 @@ GET /api/projects/:project_id/keychain_credentials
 ```
 
 Tokens: personal access token of any project member, as the app shows the
-list to every member, or service account with `credentials:write`. Returns
-`{"data": [<keychain credential>, …], "links": …}`. Paged.
+list to every member, or service account with `credentials:write`. Paged.
+
+> Implementation note:
+> `Lightning.Credentials.list_keychain_credentials_for_project/1`, which the
+> project's credentials tab and the workflow editor call. It preloads
+> `created_by` and `default_credential`, which give `created_by` and
+> `default_credential_name`. Differences: it isn't paged and does no
+> authorisation check. `:view_keychain_credential` in
+> `Lightning.Policies.Credentials` (owners, admins, and support users where
+> the project allows support, subject to the project's MFA rule) exists, but
+> nothing asks it for the list.
 
 ### Create or replace a keychain credential
 
@@ -531,28 +611,26 @@ Status: **Private**
 PUT /api/projects/:project_id/keychain_credentials/:id
 ```
 
-Tokens: personal access token of a project owner or admin, or of a support
-user where the project allows support access, or service account with
-`credentials:write`. A keychain credential records who created it, so a
-service account may replace one but not create one; creating answers 403
-`forbidden`.
+Tokens: personal access token of a project owner or admin, or service account
+with `credentials:write`.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `name` | string | Required. Unique within the project. At most 255 characters. |
 | `path` | string | Required. A JSONPath starting with `$`. At most 500 characters. |
-| `default_credential_id` | UUID | Optional. Used when the path matches nothing. Must be linked to the project. A replace that leaves it out clears it. |
-| `id` | UUID | Optional. Must match the path if sent. |
+| `default_credential_id` | UUID | Optional. Used when the path matches nothing. Must be linked to the project. |
 
-Answers 201 `{"data": <keychain credential>}` on create and 200 on replace.
+Answers 201 on create and 200 on replace.
 
-Notable errors:
-
-- 409 `id_taken` when the id belongs to a keychain credential in another
-  project.
-- 422 `invalid` with `taken` at `#/name`, `format` at `#/path`, `not_found` at
-  `#/default_credential_id` when that credential isn't linked to the project,
-  `required`, `too_long`, `mismatch` at `#/id`, or `unknown_key`.
+> Implementation note: `Lightning.Credentials.create_keychain_credential/3`,
+> on a struct from `new_keychain_credential/2`, and
+> `Lightning.Credentials.update_keychain_credential/3`, through
+> `LightningWeb.CredentialLive.KeychainCredentialFormComponent`. Both ask
+> `Lightning.Policies.Credentials`: owners and admins, and support users where
+> the project allows support, subject to the project's MFA rule.
+> `Lightning.Credentials.KeychainCredential.changeset/2` enforces the field
+> rules above. Differences: Lightning picks the id on create, and it records
+> no audit event.
 
 ### Delete a keychain credential
 
@@ -562,10 +640,15 @@ Status: **Private**
 DELETE /api/projects/:project_id/keychain_credentials/:id
 ```
 
-Tokens: a project owner or admin, a support user where the project allows
-support access, or service account with `credentials:write`.
+Tokens: as for creating.
 
 Answers 204 with no body. Jobs that used it are left without a credential.
+
+> Implementation note: `Lightning.Credentials.delete_keychain_credential/2`,
+> through the `delete_keychain_credential` event in
+> `LightningWeb.CredentialLive.CredentialIndexComponent`, with the same
+> policy as creating. Jobs lose it through the foreign key
+> (`on_delete: :nilify_all`). Differences: it records no audit event.
 
 ## Credential schemas
 
@@ -583,17 +666,19 @@ GET /api/credential_schemas
 Tokens: personal access token, or service account with `credentials:write`.
 
 ```json
-{ "data": [{ "name": "raw", "title": "Raw JSON" }, { "name": "@openfn/language-dhis2", "title": "dhis2" }] }
+{ "data": [{ "name": "@openfn/language-dhis2", "title": "DHIS2" }, { "name": "raw", "title": "Raw JSON" }] }
 ```
 
-Lists `raw`, then every adaptor that has a credential schema, by name. It
-leaves out `@openfn/language-googlesheets` and `@openfn/language-gmail`, which
-connect through OAuth. A schema's name is its adaptor's package name, and its
-`title` is the short name. Short names such as `dhis2` are accepted where a
-schema is named, and stored in full. Answers 503 `not_ready` with
-`Retry-After` before the adaptor catalogue first loads.
+A schema's name is its adaptor's package name. Short names such as `dhis2`
+are accepted where a schema is named, and stored in full.
 
-Planned additional scope: a display title, such as `DHIS2`.
+> Implementation note: `Lightning.Adaptors.packages/1`, filtered to packages
+> with `has_schema`, which the credential form turns into its type list and
+> adds `raw` to. Differences: there is no display title, only the short name
+> from `Lightning.Adaptors.PackageName.short_name/1`. The form also hides
+> `@openfn/language-googlesheets` and `@openfn/language-gmail`, which use
+> OAuth. Before the adaptor catalogue first loads it returns
+> `{:error, :not_ready}`, which the route should answer as 503.
 
 ### Get a credential schema
 
@@ -606,8 +691,13 @@ GET /api/credential_schemas/:name
 Tokens: as for listing.
 
 Answers 200 with `{"data": {"name": …, "title": …, "schema": {…}}}`, where
-`schema` is a JSON Schema and `name` is the full package name, even when you
-asked by short name. `raw` takes any object, so its `schema` is `null`. A
-package name holds a `/`, so encode it in the path. Names are not UUIDs; an
-unknown name, and `oauth`, answer 404 `not_found`. Answers 503 `not_ready` as
-listing does.
+`schema` is a JSON Schema. `raw` has none, since it takes any object. Names are
+not UUIDs; an unknown name answers 404 `not_found`.
+
+> Implementation note: `Lightning.Credentials.get_schema/1`, which resolves a
+> short name with `Lightning.Adaptors.resolve_name/2` and parses
+> `Lightning.Adaptors.schema/2` into a `Lightning.Credentials.Schema`.
+> Differences: the route wants the raw JSON from `Lightning.Adaptors.schema/2`,
+> not the parsed struct. `raw` and `oauth` aren't adaptors, so they come back
+> `:not_found`; an adaptor without a schema gives `{}`. A package name holds a
+> `/`, so the path segment has to be encoded. `:not_ready` should answer 503.
