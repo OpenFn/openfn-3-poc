@@ -150,7 +150,7 @@ libraries, background workers, "no public endpoint" notes) are left out.
 | `GET /projects/:project_id/credentials` | Public | [`GET /api/projects/:project_id/credentials`](./credentials.md#list-credentials) | The design's `include=keychains` is the separate keychain list. |
 | `GET /credentials/:id` | Public | [`GET /api/credentials/:id`](./credentials.md#get-a-credential) | |
 | `POST /credentials` | Public | [`PUT /api/credentials/:id`](./credentials.md#create-or-replace-a-credential), [`POST /api/credentials`](./credentials.md#create-a-credential-owned-by-you) | |
-| `PATCH /credentials/:id` | Partial | [`PUT /api/credentials/:id`](./credentials.md#create-or-replace-a-credential) | Only the `main` environment, and an OAuth refresh token must be resent. |
+| `PATCH /credentials/:id` | Partial | [`PUT /api/credentials/:id`](./credentials.md#create-or-replace-a-credential) | Only the `main` environment; other environments are kept but can't be set. |
 | `GET /credentials/:id/environments` | Private | [`GET /api/credentials/:id/environments`](./credentials.md#list-a-credentials-environments) | |
 | `PUT /credentials/:id/environments/:name` | Private | [`PUT /api/credentials/:id/environments/:name`](./credentials.md#set-an-environment) | |
 | `DELETE /credentials/:id/environments/:name` | Private | [`DELETE /api/credentials/:id/environments/:name`](./credentials.md#delete-an-environment) | |
