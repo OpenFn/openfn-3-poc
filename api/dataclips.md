@@ -66,9 +66,12 @@ project doesn't save dataclips, `wiped_at` is set and the body's contents are
 > Implementation note: `Lightning.Invocation.get_dataclip_with_body!/1`, which
 > the app reaches through a session-cookie route, `GET /dataclip/body/:id`.
 > Differences: it returns the body as a JSON string (`body_json`) rather than
-> an object and raises for a missing id. The cookie route sends the bare body
+> an object and raises for a missing id. The cookie route checks
+> `:view_dataclip` in `Lightning.Policies.Dataclips`, which is project access,
+> and answers a refusal with a plain 403 `{"error": …}`. It sends the bare body
 > with no wrapper, honours `If-Modified-Since`, and scrubs credential values out
-> of `step_result` and `http_request` bodies first. The API route must scrub
+> of `step_result` and `http_request` bodies first, with
+> `Lightning.DataclipScrubber.scrub_dataclip_body!/1`. The API route must scrub
 > the same way.
 
 ## Rename a dataclip
@@ -82,10 +85,15 @@ PATCH /api/dataclips/:id
 Tokens: personal access token of a project owner, admin or editor.
 
 Body: `{"name": "<string or null>"}`. A name saves the dataclip so the
-retention policy doesn't wipe it, and `null` removes the name. Answers 200 with
-the dataclip.
+retention policy doesn't wipe it, and `null` removes the name. Names are unique
+within the project: one already in use answers 422 `invalid` with a `taken`
+entry at `#/name`. Answers 200 with the dataclip.
 
 > Implementation note: `Lightning.Invocation.update_dataclip_name/3`, through
 > a session-cookie route, `PATCH /projects/:project_id/dataclips/:dataclip_id`
-> (`LightningWeb.DataclipController.update_name/2`). Differences: the cookie
-> route answers in its own shape.
+> (`LightningWeb.DataclipController.update_name/2`). It takes the acting user
+> and records a `label_created` or `label_deleted` audit event. The cookie
+> route checks the dataclip is in the project, then `:edit_workflow` (owners,
+> admins and editors) and `:view_dataclip`. Differences: the cookie route
+> answers `{"data": …}` in its own shape, and a taken name is a changeset
+> error on `name`.

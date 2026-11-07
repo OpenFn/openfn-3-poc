@@ -18,6 +18,17 @@ with `collections:write`.
 { "data": { "id": "…", "project_id": "…", "name": "patients" } }
 ```
 
+Notable errors:
+
+- 403 `forbidden` to a caller who isn't an owner or admin of the project, or
+  hasn't met its MFA requirement, whatever the ids.
+- 404 `not_found` for an id that names no collection in the project, and 400
+  `invalid_parameter` for one that isn't a UUID, to a caller the project
+  allows. For a `project_id` that names no project or isn't a UUID, only a
+  superuser and the service account hear these.
+- 409 `scheduled_for_deletion` when the project is being deleted, to a caller
+  the project would otherwise allow.
+
 Planned additional scope: `byte_size_sum`, the bytes the collection's keys and
 values take up, which is what counts against the plan's storage limit.
 
@@ -49,6 +60,8 @@ Notable errors:
   in the project.
 - 402 `exceeds_limit` when creating would go over the plan's limit. A body
   that is also invalid answers 422 instead.
+- 409 `concurrent_edit` when another request deletes the collection while
+  this one renames it.
 
 Planned additional scope: a superuser's personal access token, and moving a
 collection to another project by sending its `id` under the new project's
@@ -142,9 +155,13 @@ API, these routes answer 404 rather than 403 for what you can't see.
 Tokens: personal access token or run token. A run can only reach its own
 project's collections. With a personal access token, reading needs any role in
 the project, writing needs editor or above, and deleting many items at once
-needs owner or admin. Service account support is planned.
+needs owner or admin. A caller who can see the collection but lacks the role,
+or hasn't met the project's MFA requirement, gets 403 `forbidden`. A service
+account or GitHub sync token answers 401 `invalid_token`. Service account
+support is planned.
 
 Writes that would go over the plan's storage limit answer 402 `exceeds_limit`.
+A project being deleted answers 409 `scheduled_for_deletion` to its members.
 
 An item looks like this. `value` is always a string; store JSON by encoding it
 yourself.
@@ -206,9 +223,12 @@ PUT /collections/:name/:key
 ```
 
 Body: `{"value": "<string>"}`. Answers `{"upserted": 1, "error": null}`. A
-value that is missing, not a string or too long to store (over 1,000,000
-characters) answers 422, and so does a key too long to store. A body that
-isn't a JSON object answers 400 `malformed`.
+value Lightning can't store answers 422 `invalid`, writing nothing, with an
+entry at `#/value`: `required` when it is missing, `type` when it isn't a
+string, or `too_long` over 1,000,000 characters. A key over 255 characters
+adds a `too_long` entry with `path` `key`. Lightning used to answer these 200
+with `{"upserted": 0}`. A body that isn't a JSON object answers 400
+`malformed`.
 
 ### Put many items
 
@@ -221,7 +241,9 @@ POST /collections/:name
 Body: `{"items": [{"key": "…", "value": "…"}, …]}`. Answers
 `{"upserted": <count>, "error": null}`. If any item is invalid, nothing is
 written and the 422 has an entry for each bad item, for example
-`#/items/3/key` with `duplicate` for a key that appears twice.
+`#/items/3/key` with `duplicate` for a key that appears twice. A missing
+`items` is a `required` entry at `#/items`. A body that isn't a JSON object
+answers 400 `malformed`.
 
 ### Delete one item
 

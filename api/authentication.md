@@ -1,7 +1,8 @@
 # Authentication
 
-Apart from the token endpoints, webhooks and a few account routes, every
-endpoint takes a token. Most take a bearer token in the `Authorization` header:
+Apart from the token endpoints, webhooks, sign-up and a few account routes,
+every endpoint takes a token. Most take a bearer token in the `Authorization`
+header:
 
 ```
 Authorization: Bearer <token>
@@ -15,13 +16,24 @@ it takes.
 | Personal access token | A person | Create one in the app under your user profile. It acts as that person, with their project roles. |
 | Service account access token | Automation | Trade a signed assertion at `POST /api/oauth/token` (see below). It lasts five minutes and carries scopes. |
 | Run token | A running job | Issued by Lightning to a run. Only used by the collections item API. |
-| GitHub sync token | Lightning's GitHub integration | Created when a project is connected to a repository. Only used by provisioning, for that project. Any other route answers it 403 `insufficient_scope`. |
+| GitHub sync token | Lightning's GitHub integration | Created when a project is connected to a repository. Only used by provisioning, for that project. It holds one grant, `projects:provision`, which the token endpoint never issues, so any other `/api` route answers it 403 `insufficient_scope`. |
+| Web app session | A person signed in to Lightning's web app | Sign in at `/users/log_in`. A cookie, not a header. Only a few routes take it today, and they take nothing else (see below). |
 | Session token (planned) | A person using Lightning's own app | Sign in with `POST /api/session` (see below). Sent as a cookie, not a header. |
+
+## The web app's session
+
+A few Public routes serve Lightning's own web app and take its session cookie
+instead of a bearer token: the AI assistant's session list and the workflow
+health routes. They take no bearer token, not even a personal access token.
+Without a signed-in session they answer 401 `unauthenticated` with
+`WWW-Authenticate: Session realm="Lightning"`. So does a session that still
+owes an MFA code, or whose email must be confirmed first. Each of these routes
+says so in its own section.
 
 ## Session tokens
 
-Planned. A session token is how Lightning's own app calls the API for the
-person using it. The other tokens are for clients outside Lightning, and a
+Planned. A session token grows the web app's session into the way Lightning's
+own app signs in and calls the whole API for the person using it. The other tokens are for clients outside Lightning, and a
 script holding one may not have a person behind it. A session token always
 does, so it is the only kind that can sign a person in, change how they prove
 who they are, or use the AI assistant.
@@ -59,6 +71,10 @@ bad value stops Lightning at boot with a message naming the variable. While it
 is set, the web app's first setup page is turned off, so the first superuser
 comes from [`POST /api/users`](./users.md).
 
+If `SERVICE_ACCOUNT_PUBLIC_KEY` isn't set, the instance has no service account.
+The token endpoint still answers, and refuses every assertion with 401
+`invalid_client`, the same answer as for a wrong `iss`.
+
 The service account isn't a user. It can't own credentials, so `POST` and
 `DELETE /api/credentials` answer it 403 `forbidden`. It can't provision through
 `POST /api/provision`, and it can't use the `/collections` item API that jobs
@@ -93,7 +109,7 @@ The body must be form encoded. JSON is refused.
 | `grant_type` | `client_credentials` |
 | `client_assertion_type` | `urn:ietf:params:oauth:client-assertion-type:jwt-bearer` |
 | `client_assertion` | A JWT signed with RS256 by the private key |
-| `scope` | Space-separated scopes, sent once. Required: a request with no `scope` is refused. |
+| `scope` | Space-separated scopes, as one value. Required: a request with no `scope` is refused. |
 | `client_id` | Optional. If sent, it must be the service account's id. |
 
 The assertion's claims:
@@ -119,7 +135,8 @@ A successful response:
 }
 ```
 
-There is no refresh token. Sign a new assertion when you need a new token.
+The response is sent with `Cache-Control: no-store`. There is no refresh
+token. Sign a new assertion when you need a new token.
 Each token issued records a `token_issued` audit event with the scopes it
 carries.
 
@@ -133,12 +150,17 @@ documents the rest of the API uses, whatever `Accept` says.
 `error_description` says what to fix, so a client can show it. A 401 from the
 token endpoint has no `WWW-Authenticate` header.
 
+Lightning checks a token request in this order, and the first check that fails
+answers: the body is form encoded, `grant_type`, the assertion's type and
+presence, `scope`, then the assertion itself. So a request with a bad `scope`
+and a bad assertion hears `invalid_scope`.
+
 | Status | `error` | Meaning |
 | --- | --- | --- |
-| 400 | `invalid_request` | The body isn't form encoded or can't be parsed, `grant_type`, `client_assertion_type`, `client_assertion` or `scope` is missing or sent more than once, or `grant_type` is in the query string. |
+| 400 | `invalid_request` | The body isn't form encoded or can't be parsed; `grant_type` is missing, isn't a single value or is in the query string; `client_assertion_type` isn't the JWT bearer type or `client_assertion` is missing; or `scope` isn't a single value. |
 | 413 | `invalid_request` | The body is too large. |
 | 400 | `unsupported_grant_type` | `grant_type` isn't `client_credentials`. |
-| 400 | `invalid_scope` | `scope` is missing or empty, or names a scope that doesn't exist. |
+| 400 | `invalid_scope` | `scope` is missing or empty, or names a scope the token endpoint doesn't issue (`projects:provision` included). |
 | 401 | `invalid_client` | The assertion was refused: not a JWT, wrong `iss`, `sub`, `aud` or `client_id`, a bad signature, missing or bad `exp`, `iat` or `jti`, expired, living longer than 60 seconds, issued in the future, or a `jti` used before. `error_description` says which. |
 
 ### Node.js example

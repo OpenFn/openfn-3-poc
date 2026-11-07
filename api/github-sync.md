@@ -62,7 +62,11 @@ Tokens: personal access token. A project with no connection answers 404
 > - the stored `config_path` is nil when Lightning wrote the default config;
 >   `ProjectRepoConnection.config_path/1` gives the real path. v2 (CLI
 >   workspace) connections also have `sync_version` and `workspace_path`,
->   which the spec doesn't show.
+>   which the spec doesn't show. A v2 connection has no config file: the
+>   check skips it and `config_path/1` names the workspace's `openfn.yaml`.
+> - for v2, `Lightning.VersionControl.get_sync_status/1` also reports which
+>   project the branch tracks and the last pull and deploy runs on GitHub.
+>   The spec doesn't show those either.
 
 ## Connect or reconnect a repo
 
@@ -81,7 +85,7 @@ their GitHub account.
 | `repo` | string | Required. `owner/name`. |
 | `branch` | string | Required. |
 | `sync_direction` | string | `pull` (the project is the source: sync it to the repo now) or `deploy` (the repo is the source). Defaults to `pull`. |
-| `config_path` | string | Required for `deploy`. Where the project's config is in the repo. |
+| `config_path` | string | Required for `deploy` on a legacy connection. Where the project's config is in the repo. |
 
 Creates the connection, or replaces it, and writes the GitHub workflows,
 config and secret to the repo again. Answers 201 when it creates and 200 when it
@@ -107,14 +111,19 @@ Notable errors:
 > - reconnecting only takes `sync_direction`, `workspace_path` and
 >   `local_alias`. It can't change the repo, branch or installation, so a PUT
 >   that changes those has to remove and create.
-> - the changeset requires `accept: true` (the "please tick the box" field).
->   The route has to set it.
+> - the changeset requires `accept: true` (the "please tick the box" field,
+>   code `must_accept`). The route has to set it.
+> - a v2 connection never needs `config_path`; the spec has no way to choose
+>   v2 or legacy (`sync_version`).
 > - create doesn't check the installation belongs to the caller, as
 >   `fetch_repo_branches/3` does. Writes use the caller's own token, so GitHub
 >   still refuses a repo they can't reach.
-> - a project family can't use the same repo and branch twice. Create returns
->   `:branch_used_in_project_tree` for that, and the export pre-flight returns
->   a plain string when workflow or job names collide. The spec lists neither.
+> - a project family can't use the same repo and branch twice. Create
+>   returns a changeset error on `branch` with the code
+>   `tree_branch_conflict`, or `:branch_used_in_project_tree` when two
+>   connects race. The export pre-flight runs before anything is written to
+>   the repo, and returns a plain string when workflow or job names collide.
+>   The spec lists neither.
 > - only create and a moved `workspace_path` record an audit event.
 > - files already pushed stay in the repo when a later GitHub step fails.
 
@@ -132,14 +141,18 @@ Removes the connection, and then tries to remove the deploy workflow, config
 and secret from the repo. It answers 204 with no body even if GitHub can't be
 reached, so check the repo if that matters.
 
-> Implementation note: `Lightning.VersionControl.remove_github_connection/2`,
+> Implementation note: `Lightning.VersionControl.remove_github_connection/3`,
 > from the component's `delete-connection` event. It deletes the row with an
 > audit event, then cleans up the repo with the caller's GitHub token and
-> ignores the result. Differences: it does no authorisation check (the
-> component checks `:write_github_connection`), and it skips the clean-up
-> silently when the caller has no GitHub account connected. The shared
-> `openfn-pull.yml` on the default branch is left in place, and a v2
-> connection's `openfn.yaml` too.
+> ignores the result. With `delete_files: true`, which the component passes
+> unless "Preserve project files" is ticked, a v2 connection also removes this
+> project's files from the branch in one commit: its copies under
+> `.projects` and, when the branch tracks this project, its checkout.
+> Differences: it does no authorisation check (the component checks
+> `:write_github_connection`), and it skips the clean-up silently when the
+> caller has no GitHub account connected. The spec has no way to keep or
+> remove the project files. The shared `openfn-pull.yml` on the default
+> branch is left in place, and a v2 connection's `openfn.yaml` too.
 
 ## Sync to GitHub
 

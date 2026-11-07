@@ -5,8 +5,10 @@ edges, credential links, collections and channels) as one document. It is
 what the OpenFn CLI uses for deploys.
 
 Tokens: personal access token, a GitHub sync token for its own project, or
-service account with `projects:write` to export. Deploying to an existing
-project needs owner or admin, and creating a new project needs a superuser.
+service account with `projects:write` to export. A GitHub sync token holds the
+one grant `projects:provision`, and can export and deploy its own project but
+no other. Deploying to an existing project needs owner or admin, and creating
+a new project needs a superuser.
 Exporting needs any role on the project; a superuser who isn't a member is
 refused. The service account can't deploy: it gets 403 `forbidden` whatever
 the body names, or 403 `insufficient_scope` naming `projects:write` without

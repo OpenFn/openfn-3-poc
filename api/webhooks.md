@@ -14,6 +14,10 @@ POST /i/:trigger_id
 POST /i/:project_id/:custom_path
 ```
 
+Segments after the trigger are ignored, so `/i/:trigger_id/Patient` posts to
+the same trigger as `/i/:trigger_id`. A trigger that had a custom path before
+paths were scoped to a project also still answers at `/i/:custom_path`.
+
 The body (JSON) becomes the first step's input. Answers depend on the
 trigger's `webhook_reply` setting:
 
@@ -27,14 +31,15 @@ Responses carry `x-meta-work-order-id` and, when a run was created,
 
 If the work order is saved but the run isn't started (for example because of
 a run limit), the answer carries the `work_order_id` and the reason: a 200 with
-an `error` member, or a 429 for an `after_completion` trigger. Don't resend in
-that case; the payload is stored.
+an `error` member, or a 429 problem document with a `work_order_id` member for an
+`after_completion` trigger. Don't resend in that case; the payload is stored.
+A 504 `timeout` carries the `work_order_id` too.
 
 Errors are problem documents: 400 `malformed` for a JSON body that doesn't
 parse (`bad_request` for a form body that isn't UTF-8), 401 `unauthenticated`
 when the trigger needs credentials and none were sent (with an
 `ApiKey header="x-api-key"` challenge when it takes an API key), 404
-`not_found` for an unknown trigger or wrong credentials, 403
+`not_found` for an unknown trigger, a cron trigger or wrong credentials, 403
 `trigger_disabled`, 413 `content_too_large` for a body over the instance's
 size limit, 415 `unsupported_media_type` for a body Lightning doesn't read,
 422 `invalid` when the work order can't be saved, 429 for any rate or plan
@@ -130,9 +135,10 @@ it again in the app.
 > - Step-up today is `sudo_mode?` in `WebhookAuthMethodFormComponent`: the
 >   `reauthenticate-user` event checks the password or a TOTP code, keeps the
 >   result only in that component's state, and records no audit event.
-> - It doesn't leave out methods scheduled for deletion, and checks nothing.
->   The page gates it on `:write_webhook_auth_method` (owner or admin) in
->   `Lightning.Policies.ProjectUsers`.
+> - It returns `nil` for an id that isn't a UUID or names another project's
+>   method. It doesn't leave out methods scheduled for deletion, and checks
+>   nothing. The page gates it on `:write_webhook_auth_method` (owner or
+>   admin) in `Lightning.Policies.ProjectUsers`.
 
 ### Create or replace a webhook auth method
 
@@ -195,5 +201,5 @@ Answers 204 with no body. Deleting one that is already scheduled answers 409
 > Oban `purge_deleted` job removes the row later. Differences: it checks no
 > authorisation (the page checks `:write_webhook_auth_method`, owner or
 > admin, when it opens the modal), and an already scheduled method comes back
-> as a changeset error on `scheduled_deletion` that the route has to turn
-> into the 409.
+> as a changeset error on `scheduled_deletion`, with the code
+> `already_scheduled`, that the route has to turn into the 409.

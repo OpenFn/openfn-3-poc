@@ -92,7 +92,8 @@ holds it. To make a retry safe, look the user up with `?email=` on
 Planned additional scope:
 
 - Without a token, on an instance that allows sign-up, anyone can create an
-  account for themselves. They send `email`, `password`, `first_name`,
+  account for themselves. This is Lightning's own sign-up, which needs no
+  extension, unlike [`POST /api/users/register`](./account.md#sign-up). They send `email`, `password`, `first_name`,
   `last_name` and `terms_accepted: true`, and get role `user`. Lightning emails
   them a confirmation link. On an instance with no superuser yet (`needs_setup`
   on [`GET /api/instance`](./account.md#get-the-instance)), the account made
@@ -113,7 +114,8 @@ PATCH /api/users/:id
 Takes any of `first_name`, `last_name`, `role`, `password` and `confirmed`.
 The email can't be changed: sending `email` or any other key answers 422 with
 an `unknown_key` entry. `confirmed` only ever confirms. A new role or password
-signs the user out of every browser session. Answers 200 with the user.
+signs the user out of every browser session. Answers 200 with the user. A user
+deleted while the request runs answers 409 `concurrent_edit`.
 
 Planned additional scope:
 

@@ -35,8 +35,9 @@ same security headers:
   `ApiKey header="x-api-key"` when the channel takes an API key, and never
   with Basic.
 - 502 `bad_gateway` when the destination credential can't be used, for
-  example because it has no values for the project's environment (`main` for
-  a project that doesn't set one). The request is recorded, and wasn't sent.
+  example because it has no values for the project's environment. A
+  top-level project that doesn't set one uses `main`; a sandbox that doesn't
+  set one gets the 502. The request is recorded, and wasn't sent.
 - 500 `internal` when Lightning can't save the channel's snapshot.
 
 A destination that can't be reached answers 502 or 504, and one in a private
@@ -164,7 +165,8 @@ Provisioning creates and changes channels too, but can't delete them.
 >
 > - Neither checks authorisation. The page checks `:create_channel` and
 >   `:update_channel` in `Lightning.Policies.ProjectUsers`, which allow
->   owners, admins and editors.
+>   owners, admins and editors, and support users with no membership where
+>   the project allows support access.
 > - Lightning picks the id on create, so `PUT` can't create a channel at the
 >   caller's id yet.
 > - Auth methods are nested join rows, not id lists:
@@ -176,9 +178,11 @@ Provisioning creates and changes channels too, but can't delete them.
 >   id.
 > - `lock_version` isn't cast from the attributes. The check uses the version
 >   on the loaded struct, so the route has to put the caller's version there.
->   A mismatch comes back as an error on `lock_version`, not a raise.
-> - A taken name is an error on `name`; an out-of-project id is an error on
->   the nested auth method row.
+>   A mismatch comes back from `update_channel/3` as
+>   `{:error, :concurrent_edit}`.
+> - A taken name is an error on `name`. An out-of-project id is an error on
+>   the nested auth method row with the code `credential_not_allowed`, not
+>   `not_found`.
 
 ## Delete a channel
 
@@ -199,7 +203,7 @@ body. If a request arrives while it is deleting, answers 409
 > `deleted` audit event. Differences:
 >
 > - It doesn't check authorisation. The page checks `:delete_channel`
->   (owners, admins and editors).
+>   (owners, admins, editors and support users, as above).
 > - It deletes the recorded requests in batches before, and outside, the
 >   transaction that deletes the channel. If that transaction fails, the
 >   history is already gone.

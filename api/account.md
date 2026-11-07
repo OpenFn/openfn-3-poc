@@ -1,7 +1,7 @@
 # Account
 
-These routes are for Lightning's own app: signing in and out, and a person
-managing their own account. Most of them take only a
+These routes are for Lightning's own app: signing up, signing in and out, and
+a person managing their own account. Most of them take only a
 [session token](./authentication.md#session-tokens), because they need a person
 at the keyboard rather than a script. Managing other people's accounts is in
 [Users](./users.md).
@@ -24,7 +24,7 @@ What the app needs to know before anyone signs in:
     "needs_setup": false,
     "allow_signup": true,
     "url": "https://lightning.example.org",
-    "release": { "label": "v2.19.1", "commit": "a1b2c3d", "image_tag": "v2.19.1", "branch": null },
+    "release": { "label": "2.20.1", "commit": "a1b2c3d", "image_tag": "2.20.1", "branch": null },
     "admin_email": "support@example.org",
     "purge_deleted_after_days": 7,
     "sign_in_providers": [
@@ -46,9 +46,10 @@ What the app needs to know before anyone signs in:
 - `ai_assistant` and `github_sync` say whether the instance has them set up.
 - `url` is the instance's own base URL. A sign-in provider's `redirect_uri` is
   built from it.
-- `release` is the running build. `label` is the version shown under the logo;
-  on an `edge` image Lightning shows `commit` instead. `commit`, `image_tag`
-  and `branch` are `null` when the build doesn't set them.
+- `release` is the running build. `label` is the version shown under the logo,
+  with no leading `v`; on an `edge` image Lightning shows `commit` instead.
+  `commit`, `image_tag` and `branch` are `null` when the build doesn't set
+  them.
 - `admin_email` is the instance's support address, behind the user menu's
   Support link. It is `null` without a session token.
 - `purge_deleted_after_days` is the retention period: how long a project or
@@ -82,6 +83,31 @@ What the app needs to know before anyone signs in:
 > - The GitHub link is built by a private helper in
 >   `LightningWeb.Components.GithubComponents` from the `:github_app`
 >   `client_id` and the `/oauth/github/callback` URL, and opens in a new tab.
+
+## Sign up
+
+### Register
+
+Status: **Public**
+
+```
+POST /api/users/register
+```
+
+Tokens: none needed.
+
+Lightning hands this request to the instance's registration extension, which
+decides what the body holds, whether sign-up is open and what it answers. An
+instance without one answers 501 `not_implemented`. Before the extension sees
+the request, Lightning refuses a body it can't read, as on any route (see
+[Content type](./conventions.md#content-type)).
+
+The web app's own sign-up page, `/users/register`, doesn't use this route. It
+is a form that the `:allow_signup` flag turns on and off.
+
+Planned additional scope: Lightning's own sign-up, which needs no extension, as
+`POST /api/users` without a token (see
+[Create a user](./users.md#create-a-user)).
 
 ## Sessions
 
@@ -394,8 +420,10 @@ Tokens: personal access token or session token.
 > Implementation note: `Lightning.Accounts.list_api_tokens/1`, newest first,
 > shown by `LightningWeb.TokensLive.Index` at `/profile/tokens`. Differences:
 > it returns whole tokens, which the LiveView masks to `...` and the last ten
-> characters, so the route must mask them. `last_used_at` is never written
-> (`UserToken.last_used_changeset/1` has no caller), so it is always null.
+> characters, so the route must mask them. `last_used_at` is set each time the
+> token authenticates on an `/api` route
+> (`LightningWeb.UserAuth.authenticate_bearer/2`), but not on `/collections`,
+> and is `null` for a token never used on `/api`.
 
 ### Create a personal access token
 

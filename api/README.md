@@ -50,17 +50,17 @@ Every endpoint carries a status:
 A Public or Private endpoint can also list **planned additional scope**: things
 it should do that it doesn't yet, such as a filter, a field or a token kind.
 
-Public means available on the API branch this reference tracks,
-`stuart/api-contract` in OpenFn/lightning, which hasn't merged to `main` yet.
-Its own `API.md` and `SERVICE_ACCOUNTS.md` describe the same routes for
-operators. Most Public routes are on `main` too, but a few aren't:
-`PUT /api/projects/:id`, `GET` and `PUT /api/credentials/:id`, and `GET` and
-`PUT /api/projects/:project_id/collections/:id`. On `main`, the service account
-can only call `/api/users`, with the scopes `users:read` and `users:write`. Its
-scopes `projects:write`, `credentials:write` and `collections:write`, the
-`members` attribute on a project, the problem documents in
-[Errors](./errors.md) and the order of checks there are also missing. Until the
-branch merges, treat those as Public on the branch only.
+Public means live on `main` in OpenFn/lightning. Its `API.md` and
+`SERVICE_ACCOUNTS.md` describe the same routes for operators. A few Public
+routes serve only Lightning's own web app: they take the web app's session
+cookie, not a bearer token, and each says so.
+
+Where a Public route does less than this reference would like, such as reads
+that need a write grant, the route describes what Lightning does today and
+lists the rest as planned additional scope.
+
+This reference is the source of truth for the API. Lightning's other API work
+follows it, not the other way round.
 
 ## All endpoints
 
@@ -69,6 +69,7 @@ branch merges, treat those as Public on the branch only.
 | `GET` | [`/.well-known/oauth-authorization-server`](./authentication.md) | Public |
 | `POST` | [`/api/oauth/token`](./authentication.md) | Public |
 | `GET` | [`/api/instance`](./account.md) | Private |
+| `POST` | [`/api/users/register`](./account.md#register) | Public |
 | `POST`, `GET`, `DELETE` | [`/api/session`](./account.md) | Private |
 | `POST` | [`/api/password_resets`](./account.md) | Private |
 | `PUT` | [`/api/password_resets/:token`](./account.md) | Private |
@@ -146,6 +147,9 @@ branch merges, treat those as Public on the branch only.
 | `PATCH`, `PUT` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Public |
 | `DELETE` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Private |
 | `POST` | [`/api/projects/:project_id/workflows/validations`](./workflows.md) | Planned |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/outcomes`](./workflows.md#work-order-outcomes) | Public |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/failures`](./workflows.md#failures) | Public |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/runs`](./workflows.md#runs-over-time) | Public |
 | `GET` | [`/api/workflows/:id/snapshots`, `/api/workflows/:id/snapshots/:snapshot_id`](./workflows.md) | Private |
 | `GET` | [`/api/workflows/:id/versions`](./workflows.md) | Private |
 | `GET` | [`/api/workflow_templates`](./workflows.md) | Private |
@@ -185,7 +189,7 @@ branch merges, treat those as Public on the branch only.
 | `GET` | [`/api/projects/:project_id/channel_requests`, `/api/channel_requests/:id`](./channels.md) | Private |
 | `GET` | [`/api/audit_events`](./audit-events.md) | Private |
 | `GET`, `PUT`, `DELETE` | [`/api/auth_provider`](./authentication.md) | Private |
-
+| `GET` | [`/api/ai_assistant/sessions`](./ai-assistant.md#list-ai-sessions-in-the-web-app) | Public |
 | `GET`, `POST` | [`/api/projects/:project_id/ai_sessions`](./ai-assistant.md) | Private |
 | `GET` | [`/api/ai_sessions/:id`](./ai-assistant.md) | Private |
 | `POST` | [`/api/ai_sessions/:id/messages`](./ai-assistant.md) | Private |
