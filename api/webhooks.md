@@ -14,6 +14,11 @@ POST /i/:trigger_id
 POST /i/:project_id/:custom_path
 ```
 
+The trigger id can be followed by more path segments
+(`/i/:trigger_id/Patient`), and so can the custom path. They're kept with the
+request, in its `path`. A trigger whose custom path was saved before custom paths
+were scoped to a project also answers at `/i/:custom_path`.
+
 The body (JSON) becomes the first step's input. Answers depend on the
 trigger's `webhook_reply` setting:
 
@@ -65,7 +70,8 @@ A webhook auth method is a username and password, or an API key, that a
 project's webhook triggers and channels can require. It belongs to the project.
 Attach it to a trigger with the trigger's `webhook_auth_method_ids` (see
 [Workflows](./workflows.md#the-workflow-object)). Secrets are returned only when
-an API key is created, and to a stepped-up session token (below).
+an API key is created, and to a stepped-up session token (below). These
+routes are for people only: the service account is refused 403 `forbidden`.
 
 ```json
 {
@@ -97,15 +103,10 @@ Status: **Private**
 GET /api/projects/:project_id/webhook_auth_methods
 ```
 
-Tokens: personal access token. Paged. Methods scheduled for deletion are left
-out.
-
-> Implementation note: `Lightning.WebhookAuthMethods.list_for_project/1`, which
-> the project settings page (`LightningWeb.ProjectLive.Settings`, Webhook
-> security panel) shows to any project member. Differences: it returns every
-> method in one list ordered by name, with no paging, and doesn't preload
-> `triggers`. It takes a project struct and checks nothing, so the route has
-> to check membership.
+Tokens: personal access token or session token of any project member. Paged,
+by name. Methods scheduled for deletion are left out. Only an owner or admin
+sees each method's `username` and `api_key_last_characters`; anyone else gets
+them as `null`.
 
 ### Get a webhook auth method
 
@@ -115,24 +116,12 @@ Status: **Private**
 GET /api/projects/:project_id/webhook_auth_methods/:id
 ```
 
-Tokens: personal access token of a project owner or admin.
+Tokens: personal access token or session token of a project owner or admin.
 
 With a [session token](./authentication.md#session-tokens) stepped up, it also
 returns the secret: `api_key`, or `password` for `basic`, so a person can see
-it again in the app.
-
-> Implementation note: `Lightning.WebhookAuthMethods.find_for_project/3`, with
-> `include: [:triggers]`, behind the settings page's `show_modal` event.
-> Differences:
->
-> - It returns the secrets decrypted on the struct; the route has to drop
->   them unless the token is stepped up.
-> - Step-up today is `sudo_mode?` in `WebhookAuthMethodFormComponent`: the
->   `reauthenticate-user` event checks the password or a TOTP code, keeps the
->   result only in that component's state, and records no audit event.
-> - It doesn't leave out methods scheduled for deletion, and checks nothing.
->   The page gates it on `:write_webhook_auth_method` (owner or admin) in
->   `Lightning.Policies.ProjectUsers`.
+it again in the app. A method scheduled for deletion answers 409
+`scheduled_for_deletion`.
 
 ### Create or replace a webhook auth method
 
@@ -142,36 +131,36 @@ Status: **Private**
 PUT /api/projects/:project_id/webhook_auth_methods/:id
 ```
 
-Tokens: personal access token of a project owner or admin.
+Tokens: personal access token or session token of a project owner or admin.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `name` | string | Required. Unique within the project. |
 | `auth_type` | string | Required on create, and can't change. `basic` or `api`. |
 | `username` | string | Required for `basic` on create, and can't change. |
-| `password` | string | Required for `basic` on create. 8 to 72 characters. Leave it out of a replace to keep it. |
+| `password` | string | Required for `basic` on create. 8 to 72 characters. Can't change. |
+| `id` | UUID | Optional. Must match the path if sent. |
 
-For `api`, Lightning generates the key. Answers 201 on create and 200 on
-replace. The 201 for an `api` method is the only response that carries the
-whole key, as `api_key`. Store it then.
+Creates the method under `:id`, or replaces the project's method that has it.
+A replace changes only `name`. `auth_type`, `username` and `password` can be
+sent again as they are, or left out; a different value is refused. For `api`,
+Lightning generates the key. Answers 201 on create and 200 on replace. The 201
+for an `api` method is the only response that carries the whole key, as
+`api_key`. Store it then. Sending what is stored changes nothing and records
+no audit event.
 
-> Implementation note: `Lightning.WebhookAuthMethods.create_auth_method/2` and
-> `update_auth_method/3`, both with `actor:`, which record a `created` or
-> `updated` audit event. The app reaches them through the `save` event of
-> `LightningWeb.WorkflowLive.WebhookAuthMethodFormComponent`. Differences:
->
-> - Lightning picks the id on create, so PUT can't be idempotent yet.
-> - The create changeset casts `project_id`, `api_key` and
->   `scheduled_deletion` from the attributes. The route has to set the
->   project from the path and drop the others, or a caller can choose its
->   own key.
-> - A replace only changes `name` (`WebhookAuthMethod.update_changeset/2`),
->   so a `password` can't be changed at all, not just kept.
-> - The update changeset has no unique constraint on `name`, so a duplicate
->   name raises `Ecto.ConstraintError` instead of returning an error.
-> - Neither function checks authorisation. The page checks
->   `:write_webhook_auth_method` (owner or admin) only when it opens the
->   form, and hides the panel's actions in a sandbox; the functions don't.
+Notable errors:
+
+- 422 `invalid` with a `taken` entry at `#/name` when the project has a
+  method with the name.
+- 422 `invalid` with a `not_allowed` entry at `#/auth_type`, `#/username` or
+  `#/password` when a replace sends a value other than the stored one.
+- 409 `id_taken` when the id belongs to a method in another project.
+- 409 `scheduled_for_deletion` for a method scheduled for deletion, and 409
+  `concurrent_edit` for one another request deletes at the same time.
+
+Planned additional scope: changing a `basic` method's password. Lightning
+can't do this today: `WebhookAuthMethod.update_changeset/2` casts only `name`.
 
 ### Delete a webhook auth method
 
@@ -181,19 +170,10 @@ Status: **Private**
 DELETE /api/projects/:project_id/webhook_auth_methods/:id
 ```
 
-Tokens: personal access token of a project owner or admin.
+Tokens: personal access token or session token of a project owner or admin.
 
 Schedules the method for deletion. Lightning detaches it from its triggers and
 channels straight away, and deletes it after the instance's retention period.
 Answers 204 with no body. Deleting one that is already scheduled answers 409
-`scheduled_for_deletion`.
-
-> Implementation note: `Lightning.WebhookAuthMethods.schedule_for_deletion/2`,
-> from the `perform_deletion` event of
-> `LightningWeb.WorkflowLive.WebhookAuthMethodDeleteModal`. It records a
-> `deleted` audit event and one for each trigger and channel it detaches; the
-> Oban `purge_deleted` job removes the row later. Differences: it checks no
-> authorisation (the page checks `:write_webhook_auth_method`, owner or
-> admin, when it opens the modal), and an already scheduled method comes back
-> as a changeset error on `scheduled_deletion` that the route has to turn
-> into the 409.
+`scheduled_for_deletion`, and one another request changes at the same time
+answers 409 `concurrent_edit`.
