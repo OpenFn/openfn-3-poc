@@ -50,17 +50,8 @@ Every endpoint carries a status:
 A Public or Private endpoint can also list **planned additional scope**: things
 it should do that it doesn't yet, such as a filter, a field or a token kind.
 
-Public means available on the API branch this reference tracks,
-`stuart/api-contract` in OpenFn/lightning, which hasn't merged to `main` yet.
-Its own `API.md` and `SERVICE_ACCOUNTS.md` describe the same routes for
-operators. Most Public routes are on `main` too, but a few aren't:
-`PUT /api/projects/:id`, `GET` and `PUT /api/credentials/:id`, and `GET` and
-`PUT /api/projects/:project_id/collections/:id`. On `main`, the service account
-can only call `/api/users`, with the scopes `users:read` and `users:write`. Its
-scopes `projects:write`, `credentials:write` and `collections:write`, the
-`members` attribute on a project, the problem documents in
-[Errors](./errors.md) and the order of checks there are also missing. Until the
-branch merges, treat those as Public on the branch only.
+Public means available on `main` in OpenFn/lightning. Its `API.md` and
+`SERVICE_ACCOUNTS.md` describe the same routes for operators.
 
 ## All endpoints
 
