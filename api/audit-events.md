@@ -65,7 +65,8 @@ Each event:
 >   `:ensure_admin` hook.
 > - `actor_display` is a map of `identifier` (an email, or the service
 >   account's id from `metadata`) and `label` (a name, "GitHub", the trigger
->   type, "Service account" or "(User deleted)"), not one string.
+>   type, "Service account", or "(User deleted)", "(Trigger Deleted)" or
+>   "(Project Repo Connection Deleted)"), not one string.
 > - credential events keep their bodies, encrypted and base64 encoded, in
 >   `metadata.credential_bodies`, and the page shows them. The route has to
 >   drop them.
