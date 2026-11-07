@@ -153,24 +153,17 @@ DELETE /api/users/:id
 Tokens: service account with `users:write`.
 
 Schedules the user for deletion. The user is disabled, signed out of every
-session and their access tokens revoked straight away. They are removed after
-the instance's retention period, unless they have created runs, project files
-or keychain credentials, in which case they stay disabled. Answers 204 with no
-body. A user who is already scheduled answers 409 `scheduled_for_deletion`
-(see [Immediate purges](./misfits.md#immediate-purges)).
+session, their access tokens revoked straight away, and emailed. They are
+removed after the instance's retention period, unless they have created runs,
+project files or keychain credentials, in which case they stay disabled.
+Answers 204 with no body. A user who is already scheduled answers 409
+`scheduled_for_deletion` (see [Immediate purges](./misfits.md#immediate-purges)).
+A superuser can't be scheduled and answers 409 `superuser`; change their role
+first.
 
 Planned additional scope: a person can schedule their own deletion with a
 session token stepped up. They are signed out straight away, so only a
 superuser or the service account can cancel it.
-
-> Implementation note: `Lightning.Accounts.schedule_user_deletion/2` takes the
-> user and their email, which the app asks for as a confirmation. Differences:
-> it takes no actor, so it records no audit event, it refuses superusers, and
-> it emails the user. The route should pass the user's own email and the
-> caller as actor.
-> `Lightning.Accounts.purge_user/1` deletes at once (the users list's "Delete
-> now" on a scheduled user), but refuses a user who has created runs, so it
-> doesn't suit the API.
 
 ## Cancel a user's deletion
 
@@ -184,9 +177,5 @@ Tokens: service account with `users:write`.
 
 Cancels a scheduled deletion and re-enables the user. Answers 200 with the user.
 A user who isn't scheduled answers 404 `not_found`.
-
-> Implementation note: `Lightning.Accounts.cancel_scheduled_deletion/1` takes a
-> user id. Differences: it takes no actor and records no audit event, raises
-> for a missing user, and succeeds for one who isn't scheduled.
 
 The current user and their own tokens are in [Account](./account.md#the-current-user).

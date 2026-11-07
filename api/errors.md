@@ -35,10 +35,18 @@ answers. A body that can't be read at all (invalid JSON as 400 `malformed`, 413
 or 415) is refused before any of these.
 
 1. Authentication. A missing or bad token is 401, or 400 `invalid_request` for
-   an `Authorization` header Lightning can't read.
+   an `Authorization` header Lightning can't read. On `full-api-test` (not
+   merged yet), a write on a session token without its `x-csrf-token` is 400
+   `invalid_header` here.
 2. Scope. A token without the scope the route needs is 403
    `insufficient_scope`, even if the id doesn't exist or the body is wrong.
-3. Permission. If you may not do this to the project or record, it is 403
+3. Permission. A token kind the route isn't open to is 403 `forbidden`, and
+   on `full-api-test` (not merged yet) a session that hasn't stepped up is 403
+   `step_up_required`, both before anything is looked up. Then 501
+   `not_implemented` for a feature the instance has turned off: credential
+   transfers on an instance that doesn't allow them answer 501 before the
+   credential is looked up, even to someone who isn't its owner. Then, if you
+   may not do this to the project or record, it is 403
    `forbidden`, whether or not the record exists and whether or not the id is a
    UUID.
 4. Project state. A project in the path that is scheduled for deletion is 409
@@ -70,6 +78,8 @@ Everyone else hears 403 `forbidden`.
 | A project | Superusers and the service account |
 | A workflow, job, run or work order at the top level | The service account |
 | A credential, to read it | The service account |
+| A credential, to schedule its deletion, change its environments or link it to a project (built on `full-api-test`, not merged yet) | The service account |
+| A credential, to transfer it, or an OAuth client, to delete it (built on `full-api-test`, not merged yet) | Nobody |
 | A user | The service account |
 
 ## Response codes
@@ -83,23 +93,25 @@ Everyone else hears 403 `forbidden`.
 | 400 | `invalid_header` | A request header is not valid. |
 | 401 | `unauthenticated` | No `Authorization` header. |
 | 401 | `invalid_token` | The token is expired or bad, or this route doesn't accept its kind. |
-| 401 | `invalid_credentials` | Planned. Signing in failed. The same for every reason, so it can't be used to find accounts. |
-| 401 | `mfa_required` | Planned. Signing in needs an MFA code too. |
+| 401 | `invalid_credentials` | Built on `full-api-test`, not merged yet. Signing in failed. The same for every reason, so it can't be used to find accounts. |
+| 401 | `mfa_required` | Built on `full-api-test`, not merged yet. Signing in needs an MFA code too. |
 | 402 | `exceeds_limit` | This would exceed a limit of your plan. |
 | 403 | `forbidden` | You may not do this, or it might not exist. Also sent when the project requires MFA you haven't set up, and to a token kind the route isn't open to. |
 | 403 | `insufficient_scope` | The token lacks the scope this route needs. `scope` in the body names it. |
-| 403 | `step_up_required` | Planned. The person must enter their password or an MFA code again first. See [session tokens](./authentication.md#session-tokens). |
+| 403 | `step_up_required` | Built on `full-api-test`, not merged yet. The person must enter their password or an MFA code again first. See [session tokens](./authentication.md#session-tokens). |
 | 403 | `trigger_disabled` | The webhook's trigger is disabled. |
 | 404 | `not_found` | The record doesn't exist, or the route doesn't. Only sent to a caller who may learn which records exist. |
 | 406 | `not_acceptable` | The resource can't be returned in the format you asked for. |
 | 408 | `request_timeout` | The request body did not arrive in time. Listed in Lightning's codes, but its web server doesn't send it today. |
-| 409 | `scheduled_for_deletion` | The project or credential is scheduled for deletion. |
-| 409 | `id_taken` | The id belongs to a record elsewhere, such as another project's collection. |
+| 409 | `scheduled_for_deletion` | The project, credential or user is scheduled for deletion. |
+| 409 | `id_taken` | A `PUT` names an id another project already holds, such as another project's collection or keychain credential. |
 | 409 | `being_edited` | The workflow is open in the editor. |
 | 409 | `concurrent_edit` | Another request changed or deleted this record. Fetch it again and retry. |
 | 409 | `in_use` | The credential has been used by runs and can't be deleted. |
 | 409 | `ambiguous_name` | More than one collection has this name. Add `project_id`. |
-| 409 | `export_conflict` | Two items in this project export under the same key. Listed in Lightning's codes but not sent yet: today a clash on `GET /api/provision/yaml` falls through to a 500. |
+| 409 | `export_conflict` | Two items in this project export under the same key. Not sent on `main`, where a clash on `GET /api/provision/yaml` falls through to a 500. On `full-api-test` (not merged yet), the workflow template `PUT` and the repo connection `PUT` and sync send it; `GET /api/provision/yaml` still answers a 500. |
+| 409 | `not_retryable` | Built on `full-api-test`, not merged yet. Retrying a run whose workflow was deleted, or an AI message that isn't a failed user message. |
+| 409 | `superuser` | Built on `full-api-test`, not merged yet. A superuser can't be scheduled for deletion. Change their role first. |
 | 413 | `content_too_large` | The body is too large. |
 | 414 | `uri_too_long` | The query string is too long. |
 | 415 | `unsupported_media_type` | The body must be JSON. |
@@ -121,6 +133,8 @@ expired service account token says so in it:
 `error_description="The access token expired"`. A 403 `insufficient_scope`
 carries one naming the scope you need, for example
 `WWW-Authenticate: Bearer error="insufficient_scope", scope="credentials:write"`.
+On `full-api-test` (not merged yet), a 401 on a route that takes the session
+cookie carries `WWW-Authenticate: Session realm="Lightning"`.
 
 ## Entry codes
 

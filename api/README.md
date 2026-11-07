@@ -1,8 +1,9 @@
 # Lightning API reference
 
 This page covers Lightning's HTTP API for clients outside Lightning (scripts,
-CLIs, infrastructure automation and other services) and, with a planned
-[session token](./authentication.md#session-tokens), for Lightning's own app.
+CLIs, infrastructure automation and other services) and, with a
+[session token](./authentication.md#session-tokens) (built on `full-api-test`,
+not merged yet), for Lightning's own app.
 
 All paths are relative to your instance, for example
 `https://app.openfn.org`. Request and response bodies are JSON unless a section
