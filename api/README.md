@@ -147,6 +147,9 @@ follows it, not the other way round.
 | `PATCH`, `PUT` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Public |
 | `DELETE` | [`/api/projects/:project_id/workflows/:id`](./workflows.md) | Private |
 | `POST` | [`/api/projects/:project_id/workflows/validations`](./workflows.md) | Planned |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/outcomes`](./workflows.md#work-order-outcomes) | Public |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/failures`](./workflows.md#failures) | Public |
+| `GET` | [`/api/projects/:project_id/workflows/:workflow_id/health/runs`](./workflows.md#runs-over-time) | Public |
 | `GET` | [`/api/workflows/:id/snapshots`, `/api/workflows/:id/snapshots/:snapshot_id`](./workflows.md) | Private |
 | `GET` | [`/api/workflows/:id/versions`](./workflows.md) | Private |
 | `GET` | [`/api/workflow_templates`](./workflows.md) | Private |
@@ -186,7 +189,7 @@ follows it, not the other way round.
 | `GET` | [`/api/projects/:project_id/channel_requests`, `/api/channel_requests/:id`](./channels.md) | Private |
 | `GET` | [`/api/audit_events`](./audit-events.md) | Private |
 | `GET`, `PUT`, `DELETE` | [`/api/auth_provider`](./authentication.md) | Private |
-
+| `GET` | [`/api/ai_assistant/sessions`](./ai-assistant.md#list-ai-sessions-in-the-web-app) | Public |
 | `GET`, `POST` | [`/api/projects/:project_id/ai_sessions`](./ai-assistant.md) | Private |
 | `GET` | [`/api/ai_sessions/:id`](./ai-assistant.md) | Private |
 | `POST` | [`/api/ai_sessions/:id/messages`](./ai-assistant.md) | Private |
