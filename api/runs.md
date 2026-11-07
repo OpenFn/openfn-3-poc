@@ -85,7 +85,10 @@ cancelled. Any other run answers 422 `invalid` with a `not_allowed` entry at
 `#/state`.
 
 > Implementation note: `Lightning.Runs.cancel_run/1` cancels one available run
-> and returns `{:error, :not_available}` otherwise.
+> and returns `{:error, :not_available}` otherwise. The History and run pages'
+> `cancel-run` event reaches it through
+> `LightningWeb.RunLive.CancelHelper.cancel_run/2`, which finds the run in the
+> project first, and needs the `:run_workflow` policy action.
 > `Lightning.WorkOrders.cancel_many/2` cancels every available run of several
 > work orders. Differences: neither takes an actor or records an audit event.
 

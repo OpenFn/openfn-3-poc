@@ -130,6 +130,8 @@ Notable errors:
   a superuser or the service account. Anyone else gets 403 `forbidden`.
 - 409 `scheduled_for_deletion` when the project is being deleted, to a caller
   who could otherwise replace it.
+- 409 `concurrent_edit` when another request deletes the project while this
+  one replaces it.
 
 Planned additional scope:
 
@@ -257,7 +259,7 @@ Notable errors:
 >   it.
 > - Nothing refuses a sandbox. Only the form disables the switch. A sandbox
 >   copies the flag when it is provisioned and keeps its own copy after that,
->   and `Lightning.Projects.Scope` reads the sandbox's own flag.
+>   and `Lightning.Scope` reads the sandbox's own flag.
 
 ## Allow support access to a project
 

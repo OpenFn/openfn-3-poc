@@ -53,7 +53,8 @@ GET /api/credentials/:id
 
 Tokens: personal access token, or service account with `credentials:write`.
 
-Returns `{"credential": <credential>}`. You can see a credential if you own it
+Returns `{"credential": <credential>, "errors": {}}`. `errors` is always an
+empty object; a refusal is a problem document. You can see a credential if you own it
 or it is linked to a project whose credentials you may list. Anyone else gets
 403 `forbidden`, whether or not it exists or the id is a UUID. A service
 account with `credentials:write` can see every credential, so only it hears
@@ -71,7 +72,10 @@ PUT /api/credentials/:id
 Tokens: personal access token, or service account with `credentials:write`.
 
 Creates the credential under `:id`, or replaces the name, schema and `main`
-body of the credential that has it.
+body of the credential that has it. A replace leaves the credential's other
+environments as they are. For an `oauth` credential, a replace whose `main`
+body has no `refresh_token` keeps the stored one, so a client doesn't have to
+hold it.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -97,8 +101,9 @@ curl -X PUT https://lightning.example.org/api/credentials/$CREDENTIAL_ID \
   }'
 ```
 
-Answers 201 `{"credential": <credential>}` when it creates one, 200 when it
-replaces one.
+Answers 201 `{"credential": <credential>, "errors": {}}` when it creates one,
+200 when it replaces one. The response leaves out links to projects you can't
+see, as `GET` does.
 
 Only the owner and a service account may replace a credential. An id that
 isn't a UUID answers 400 `invalid_parameter` to anyone, since anyone may
@@ -118,15 +123,12 @@ Notable errors:
   `unknown_key` for a field not listed above, or `not_found` or `no_access` at
   `#/project_credentials/N/project_id` (the owner isn't a member of that
   project, or you can't link credentials there).
+- 409 `concurrent_edit` when another request deletes the credential while
+  this one replaces it.
 - 503 `not_ready` with `Retry-After` when Lightning can't check the schema yet.
 
-Planned additional scope:
-
-- Credentials with environments other than `main`, set through
-  [the environment routes](#list-a-credentials-environments). A replace leaves
-  the other environments as they are.
-- For an `oauth` credential, a body without `refresh_token` keeps the stored
-  one, so a client doesn't have to hold it.
+Planned additional scope: setting environments other than `main`, through
+[the environment routes](#list-a-credentials-environments).
 
 ## List credentials
 
@@ -143,8 +145,21 @@ A service account must name a project; without one it gets 403 `forbidden`.
 
 Without a project, lists your own credentials. With a project, lists every
 credential linked to it, whoever owns it; you need a role in the project, or
-support access to it. Returns `{"credentials": [<credential>, …], "links": …}`.
-Paged, by name.
+support access to it. Returns
+`{"credentials": [<credential>, …], "errors": {}, "links": …}`, where `errors`
+is always empty. Both lists page, 10 to a page by default, sorted by name
+without regard to case. Follow `links.next` to read the whole list.
+
+Notable errors, with a project:
+
+- 403 `forbidden` to a caller with no role in the project, or who hasn't met
+  its MFA requirement, whether or not the project exists and whether or not
+  the id is a UUID.
+- 404 `not_found` for an id that names no project, and 400
+  `invalid_parameter` for one that isn't a UUID. Only a superuser and the
+  service account hear these.
+- 409 `scheduled_for_deletion` when the project is being deleted, to a caller
+  who may list it.
 
 ## Create a credential (owned by you)
 
@@ -160,14 +175,16 @@ creates through `PUT`, naming an owner.
 | Field | Type | Notes |
 | --- | --- | --- |
 | `name` | string | Required. |
-| `credential_bodies` | array of `{name, body}` | The secret values, for example `[{"name": "main", "body": {…}}]`. |
+| `credential_bodies` | array of `{name, body}` | The secret values, one per environment, for example `[{"name": "main", "body": {…}}]`. |
 | `schema` | string | Required. The credential type. |
 | `project_credentials` | array of `{project_id}` | Optional. You must be an editor or above on each project. |
 
-Answers 201 `{"credential": <credential>}`. Lightning picks the id. Prefer
-`PUT` if you need to retry safely. A name you already hold answers 422
-`invalid` with a `taken` entry at `#/name`, and it answers 503 `not_ready`
-while Lightning can't check the schema yet.
+Answers 201 `{"credential": <credential>, "errors": {}}`. Lightning picks the
+id. Prefer `PUT` if you need to retry safely. A name you already hold answers
+422 `invalid` with a `taken` entry at `#/name`. A link you can't make answers
+422 with an entry at `#/project_credentials/N/project_id`: `not_found` for a
+project you can't see, or `no_access` for one where you aren't an editor or
+above. It answers 503 `not_ready` while Lightning can't check the schema yet.
 
 ## Delete a credential
 
@@ -222,10 +239,11 @@ This differs from projects, where `DELETE` schedules, because
 > owner. The Oban `purge_deleted` job in `Lightning.Credentials` empties the
 > bodies and deletes those no step has used. Differences:
 >
-> - only the owner may (`:delete_credential` in `Lightning.Policies.Users`).
->   There is no service account path.
-> - scheduling again isn't a no-op: it moves the date and emails the owner
->   again.
+> - only the owner may (`:delete_credential` in
+>   `Lightning.Policies.Credentials`, which no operator passes). There is no
+>   service account path.
+> - scheduling again isn't a no-op: it returns
+>   `{:error, :scheduled_for_deletion}`.
 > - it records no audit event for the scheduling itself, only one per OAuth
 >   token it revokes.
 
@@ -282,10 +300,12 @@ Notable errors:
 >   `LightningWeb.CredentialLive.Helpers.prepare_projects_associations/3`.
 >   Leaving out a link the credential has raises, since `cast_assoc` replaces
 >   the list.
-> - it checks only that the actor owns the credential, not that the owner is
->   a member of the project or an editor there. The form only offers the
->   owner's projects, and the API's `create` checks
->   `:create_project_credential` itself.
+> - it checks that the actor may edit the credential (`:edit_credential`:
+>   the owner or the service account) and that the owner is a member of each
+>   new project (a `no_access` error on `project_credentials`), but not that
+>   the caller is an editor there. The form only offers the owner's projects,
+>   and `POST` and `PUT /api/credentials` check `:create_project_credential`
+>   themselves.
 > - an `external_id` clash is a changeset error on `external_id`.
 
 ## Unlink a credential from a project
@@ -308,8 +328,8 @@ answers 404 `not_found`. To see which workflows would lose it first, use
 > link marked `"delete" => "true"`, through the same form. Jobs lose the
 > credential through the foreign key (`on_delete: :nilify_all`), and it
 > records a `removed_from_project` audit event. Sandbox links stay.
-> Differences: only the credential's owner may, so a project owner or admin
-> can't unlink someone else's credential (removing that person from the
+> Differences: only the credential's owner (or the service account) may, so a
+> project owner or admin can't unlink someone else's credential (removing that person from the
 > project does drop their links, in `Lightning.Projects`). It takes the whole
 > list of links, as for linking.
 

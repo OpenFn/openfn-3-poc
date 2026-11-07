@@ -82,8 +82,15 @@ for one project. Not paged. The service account can access every project. A
 `project_id` you may not access answers 403 `forbidden`, whether or not the
 project exists; see [who hears 404](./errors.md#who-hears-404).
 
+Without a project, the list leaves out workflows marked deleted and is newest
+first. With a project, in the path or the query, it is ordered by name and
+still includes workflows marked deleted, under the name Lightning gave them
+when it deleted them.
+
 Planned additional scope:
 
+- A project's list leaves out workflows marked deleted, as the list without a
+  project does.
 - `credential_id`: only workflows with a job that uses this credential. Use it
   before unlinking or deleting a credential to see what would lose it.
 - `q` (a name search), `sort` (`name` or `updated_at`), and paging.
@@ -106,9 +113,10 @@ Planned additional scope:
 > Implementation note: `Lightning.DashboardStats.get_workflows_stats/1`
 > computes `include=stats` for a list of workflows in batched queries, and
 > `sort_workflow_stats/3` and `aggregate_project_metrics/1` do the sorting and
-> the project totals. They name the fields `workorders_count`,
-> `failed_workorders_count`, `grouped_workorders_count` and
-> `grouped_runs_count`.
+> the project totals. They name the fields `last_workorder`,
+> `last_failed_workorder`, `workorders_count`, `failed_workorders_count`,
+> `grouped_workorders_count` and `grouped_runs_count`. For one workflow, the
+> [health routes](#workflow-health) give finer counts.
 
 ## Get a workflow
 
@@ -121,11 +129,12 @@ GET /api/projects/:project_id/workflows/:id
 
 Returns `{"workflow": <workflow>}`.
 
-On the nested route, a workflow that isn't in the path's project, or is marked
-deleted, answers 404 to a caller who can access the project. On
-`/api/workflows/:id`, a caller who may not access the workflow's project
-answers 403 `forbidden`, and so does an unknown or malformed id, unless the
-caller is the service account, which hears 404 or 400.
+On the nested route, a workflow that isn't in the path's project answers 404
+to a caller who can access the project. On `/api/workflows/:id`, a caller who
+may not access the workflow's project answers 403 `forbidden`, and so does an
+unknown or malformed id, unless the caller is the service account, which hears
+404 or 400. On either route, a workflow marked deleted answers 404 to a caller
+who can access its project.
 
 ## Create a workflow
 
@@ -223,8 +232,135 @@ open in the editor answers 409 `being_edited`.
 > The policy action is `:delete_workflow` (owners, admins and editors).
 > `Lightning.Workflows.delete_workflow/1` is a separate hard delete that only
 > works once the workflow has no history. Neither checks whether the workflow
-> is open in the editor; the route has to. The project's workflow list doesn't
-> filter out soft-deleted workflows yet.
+> is open in the editor; the route has to. A project's
+> [workflow list](#list-workflows) still includes soft-deleted workflows.
+
+## Workflow health
+
+Three routes give the counts a workflow's health page draws, one per chart.
+They serve only Lightning's own web app: they take the web app's session
+cookie, not a bearer token. A request without a signed-in session answers 401
+`unauthenticated`.
+
+Any project member can read them, viewers included, and so can a support user
+where the project allows support access. A member who hasn't set up MFA on a
+project that requires it hears 403 `forbidden`. A project scheduled for
+deletion answers 409 `scheduled_for_deletion`. A workflow that isn't in the
+path's project, or is marked deleted, answers 404 to a caller who can access
+the project; see [who hears 404](./errors.md#who-hears-404).
+
+Each takes `days`: `1`, `7` or `30`, default `7`. Any other value answers 400
+`invalid_parameter` with a `not_allowed` entry. `window` in each answer is the
+range counted. Answers are cached, so a count can be up to five minutes old,
+or two minutes for runs.
+
+### Work order outcomes
+
+Status: **Public**
+
+```
+GET /api/projects/:project_id/workflows/:workflow_id/health/outcomes
+GET /api/projects/:project_id/workflows/:workflow_id/health/outcomes?days=30
+```
+
+Tokens: the web app's session.
+
+```json
+{
+  "window": { "from": "…", "to": "…" },
+  "counts": {
+    "success": 120,
+    "failed": 4,
+    "crashed": 1,
+    "cancelled": 0,
+    "killed": 0,
+    "exception": 0,
+    "lost": 0,
+    "rejected": 2
+  }
+}
+```
+
+Counts the workflow's finished work orders by state, by last activity in the
+window. Every finished state is there, `0` when there are none.
+
+### Failures
+
+Status: **Public**
+
+```
+GET /api/projects/:project_id/workflows/:workflow_id/health/failures
+```
+
+Tokens: the web app's session.
+
+```json
+{
+  "window": { "from": "…", "to": "…" },
+  "signatures": [
+    {
+      "count": 3,
+      "exit_reason": "fail",
+      "error_type": "RuntimeError",
+      "job_id": "…",
+      "step_name": "Extract data",
+      "adaptor": "@openfn/language-common@latest"
+    }
+  ]
+}
+```
+
+Failed work orders in the window, grouped by where they failed: `exit_reason`,
+`error_type` and `job_id`. Failed is any finished state but `success` and
+`cancelled`. Each failing step of a work order's latest run makes a row, so a
+work order that failed in two steps counts in both, and the counts can add up
+to more than the outcomes. A run that failed without a step reporting gives
+the run's own reason and error type. `step_name` and `adaptor` come from the
+snapshot the step ran on, so a deleted job still has a name. A work order
+rejected by the run limit has `exit_reason` `rejected`, `error_type`
+`RunLimitExceeded` and a `null` job. The largest count comes first.
+
+### Runs over time
+
+Status: **Public**
+
+```
+GET /api/projects/:project_id/workflows/:workflow_id/health/runs
+```
+
+Tokens: the web app's session.
+
+Also takes an `x-timezone` header, an IANA zone such as `Africa/Nairobi`, for
+the clock the buckets are cut on. Without it, or with `Etc/Unknown`, the
+buckets are cut in UTC. A zone Lightning doesn't know answers 400
+`invalid_header`, checked after `days`. The answer carries `vary: x-timezone`.
+
+```json
+{
+  "window": { "from": "…", "to": "…" },
+  "timezone": "Africa/Nairobi",
+  "bucket_hours": 24,
+  "buckets": [
+    {
+      "at": "…",
+      "success": 40,
+      "failed": 2,
+      "crashed": 0,
+      "cancelled": 0,
+      "killed": 0,
+      "exception": 0,
+      "lost": 0
+    }
+  ]
+}
+```
+
+Finished runs by state, in buckets of local time: 13 two-hour buckets for
+`days=1`, 15 half-day buckets for `7` and 31 daily buckets for `30`. `at` is
+when each bucket starts, in UTC. A run counts in the bucket it was created in.
+Every bucket and every state is there, oldest first. The last bucket is still
+filling, and the first starts before the window would, so `window.from` is the
+start of the first bucket.
 
 ## Workflow snapshots
 
@@ -258,7 +394,7 @@ These are the ids `GET /api/provision/:id?snapshots[]=` takes.
 >
 > - it takes a loaded workflow and checks nothing; the channel relies on the
 >   join's `:access_read` check, so the route has to check project access.
-> - it returns every full snapshot, unpaged, ordered by `inserted_at`. The
+> - it returns every full snapshot, unpaged, newest first by `inserted_at`. The
 >   channel reply leaves out the snapshot `id`, which the route must return.
 
 ### Get a snapshot

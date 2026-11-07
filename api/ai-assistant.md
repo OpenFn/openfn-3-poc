@@ -2,9 +2,11 @@
 
 The AI assistant is a chat beside the workflow editor. It helps write a job's
 code, or a whole workflow. A chat belongs to a project, and everyone in the
-project can read it. These routes take only a
+project can read it. The `/api/ai_sessions` routes take only a
 [session token](./authentication.md#session-tokens), since a person has to
-accept the assistant's disclaimer before anything is sent to it.
+accept the assistant's disclaimer before anything is sent to it. Lightning's
+web app lists sessions today through its own route,
+[`GET /api/ai_assistant/sessions`](#list-ai-sessions-in-the-web-app).
 
 Whether the instance has the assistant is `ai_assistant` on
 [`GET /api/instance`](./account.md#get-the-instance). Whether the project has
@@ -52,6 +54,65 @@ disclaimer is `ai_disclaimer_accepted` on
   the assistant answers, then `success` or `error`. Lists leave `messages`
   out.
 
+## List AI sessions in the web app
+
+Status: **Public**
+
+```
+GET /api/ai_assistant/sessions?session_type=job_code&job_id=:job_id
+GET /api/ai_assistant/sessions?session_type=workflow_template&project_id=:project_id
+GET /api/ai_assistant/sessions?session_type=workflow_template&project_id=:project_id&workflow_id=:workflow_id
+```
+
+Tokens: the web app's session. This route serves only Lightning's own web
+app: it takes the web app's session cookie, not a bearer token. A request
+without a signed-in session answers 401 `unauthenticated`.
+
+| Parameter | Notes |
+| --- | --- |
+| `session_type` | Required. `job_code` or `workflow_template`, Lightning's two kinds of session. |
+| `job_id` | Required with `job_code`. A saved job's id, or the id of a job not saved yet. |
+| `project_id` | Required with `workflow_template`. |
+| `workflow_id` | Optional, with `workflow_template`. Lists only the sessions about this workflow. Left out, or naming no saved workflow, it lists the project's sessions about no workflow. |
+| `offset` | Default 0. |
+| `limit` | Default 20. |
+
+Newest first by `updated_at`.
+
+```json
+{
+  "sessions": [
+    {
+      "id": "…",
+      "title": "Map patients to FHIR",
+      "session_type": "workflow_template",
+      "message_count": 4,
+      "updated_at": "…",
+      "project_name": "malaria-programme",
+      "workflow_name": "Data processing pipeline"
+    }
+  ],
+  "pagination": { "total_count": 12, "has_next_page": true, "has_prev_page": false }
+}
+```
+
+A `job_code` session has `job_name` and `workflow_name` instead, and
+`is_unsaved: true` when its job isn't saved yet. A deleted job's name is
+`[Deleted Job]`.
+
+With `project_id`, any project member can list, viewers included, and so can a
+support user where the project allows support access. A project the caller
+can't access answers 403 `forbidden`, whether or not it exists, and is checked
+before the other parameters. Only superusers hear 404 for an unknown project,
+or 400 for an id that isn't a UUID. A project scheduled for deletion answers
+409 `scheduled_for_deletion`.
+
+A `job_id` is a filter, not a target. A job the caller can't see, or someone
+else's session about an unsaved job in no workflow, lists nothing, as an
+unknown job does. Only a `job_id` that isn't a UUID answers 400
+`invalid_parameter`. Every bad parameter is reported together in one 400
+`invalid_parameter`.
+
 ## List a project's AI sessions
 
 Status: **Private**
@@ -63,27 +124,23 @@ GET /api/projects/:project_id/ai_sessions?workflow_id=:workflow_id
 
 Tokens: session token. Paged, newest first. Send `job_id` or `workflow_id`.
 
-> Implementation note: `Lightning.AiAssistant.list_sessions/3`, which the app
-> reaches through a session-cookie route, `GET /api/ai_assistant/sessions`
+> Implementation note: `Lightning.AiAssistant.list_sessions/3`, which the web
+> app reaches through the live route
+> [`GET /api/ai_assistant/sessions`](#list-ai-sessions-in-the-web-app)
 > (`LightningWeb.API.AiAssistantController.list_sessions/2`). Differences:
 >
-> - the cookie route takes `session_type` (`job_code` or `workflow_template`)
->   with `job_id`, or `project_id` and an optional `workflow_id`, and pages
->   with `offset` and `limit` (default 20). "Newest" is by `updated_at`.
-> - a `job_id` is a filter, not a target: it lists by job alone, and nothing
->   checks it is in the path's project. It also matches sessions for a job not
->   yet saved, by the id in `meta`. A job the caller can't see, or someone
->   else's unsaved-job session with no workflow, lists nothing, as an unknown
->   job does. Only a `job_id` that isn't a UUID is refused, with 400
->   `invalid_parameter`.
-> - a `workflow_id` with no saved workflow lists the project's sessions that
->   have no workflow, instead of none. So does leaving `workflow_id` out, since
->   the controller always passes a `workflow:` option.
-> - with `project_id`, the cookie route checks the project with
+> - the live route has no project in the path. It takes `session_type` with
+>   `job_id`, or `project_id` and an optional `workflow_id`, pages with
+>   `offset` and `limit`, and answers in its own shape.
+> - its `job_id` lists by job alone, and nothing checks the job is in a given
+>   project. It also matches sessions for a job not yet saved, by the id in
+>   `meta`.
+> - its `workflow_id`, left out or naming no saved workflow, lists the
+>   project's sessions that have no workflow, instead of all of them or none,
+>   since the controller always passes a `workflow:` option.
+> - with `project_id`, it checks the project with
 >   `LightningWeb.API.Target.project/3` and `:access_project` (standing, and
->   MFA where the project requires it), so any project member passes. A
->   project the caller can't access is 403 `forbidden`, as is an unknown one
->   except to a superuser. It answers in its own shape.
+>   MFA where the project requires it).
 
 ## Start an AI session
 

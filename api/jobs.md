@@ -15,9 +15,10 @@ GET /api/jobs/:id
 GET /api/projects/:project_id/jobs/:id
 ```
 
-Lists are paged. Without a project they cover every project you can access;
-the service account can access every project. A `project_id` you may not
-access answers 403 `forbidden`, whether or not the project exists.
+Lists are paged, in no set order. Without a project they cover every project
+you can access; the service account can access every project. A `project_id`
+you may not access answers 403 `forbidden`, whether or not the project exists.
+The jobs of a workflow marked deleted still appear, in lists and by id.
 
 On the nested route, a job that isn't in the path's project answers 404 to a
 caller who can access the project. On `/api/jobs/:id`, an unknown or malformed
