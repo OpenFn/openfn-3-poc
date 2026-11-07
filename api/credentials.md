@@ -54,12 +54,12 @@ GET /api/credentials/:id
 Tokens: personal access token, or service account with `credentials:write`.
 
 Returns `{"credential": <credential>, "errors": {}}`. `errors` is always an
-empty object; a refusal is a problem document. You can see a credential if you own it
-or it is linked to a project whose credentials you may list. Anyone else gets
-403 `forbidden`, whether or not it exists or the id is a UUID. A service
-account with `credentials:write` can see every credential, so only it hears
-404 `not_found` for an unknown id and 400 `invalid_parameter` for one that
-isn't a UUID.
+empty object; a refusal is a problem document. You can see a credential if you
+own it or it is linked to a project whose credentials you may list. Anyone
+else gets 403 `forbidden`, whether or not it exists or the id is a UUID. A
+service account with `credentials:write` can see every credential, so only it
+hears 404 `not_found` for an unknown id and 400 `invalid_parameter` for one
+that isn't a UUID.
 
 ## Create or replace a credential
 
@@ -152,8 +152,8 @@ without regard to case. Follow `links.next` to read the whole list.
 
 Notable errors, with a project:
 
-- 403 `forbidden` to a caller with no role in the project, or who hasn't met
-  its MFA requirement, whether or not the project exists and whether or not
+- 403 `forbidden` to a caller with neither a role in the project nor support
+  access to it, or who hasn't met its MFA requirement, whether or not the project exists and whether or not
   the id is a UUID.
 - 404 `not_found` for an id that names no project, and 400
   `invalid_parameter` for one that isn't a UUID. Only a superuser and the

@@ -24,7 +24,8 @@ Notable errors:
   hasn't met its MFA requirement, whatever the ids.
 - 404 `not_found` for an id that names no collection in the project, and 400
   `invalid_parameter` for one that isn't a UUID, to a caller the project
-  allows.
+  allows. For a `project_id` that names no project or isn't a UUID, only a
+  superuser and the service account hear these.
 - 409 `scheduled_for_deletion` when the project is being deleted, to a caller
   the project would otherwise allow.
 
