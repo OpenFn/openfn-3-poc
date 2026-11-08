@@ -126,10 +126,13 @@ Planned additional scope:
   timestamp, or `null`), as Lightning's user form lets a superuser do. Setting
   `scheduled_deletion` revokes the user's access tokens. A superuser's
   `scheduled_deletion` is always `null`.
-- A person can update their own account, with a personal access token or a
-  session token:
+- A person can update their own account, on their own id, with a personal
+  access token or a session token. Any other id still answers them 403
+  `forbidden`, before it is looked up, and any key they may not change, `role`
+  included, answers 422 with an `unknown_key` entry.
   - `first_name`, `last_name` and `contact_preference` (`critical` or `any`:
-    which emails they get), with either token.
+    which emails they get), with either token. None of these signs them out,
+    and a change to their names is recorded with the person as the actor.
   - `email`, with a session token stepped up. It isn't changed until the person
     follows the link sent to the new address; until then it is
     `pending_email` on `GET /api/me`. The old address is told.
@@ -143,6 +146,12 @@ Planned additional scope:
 
   A person can't change their own `role`, `confirmed`, `support_user` or
   `disabled`.
+
+> Implementation note: the account page (`ProfileLive.FormComponent`) changes
+> the names and contact preference with `Lightning.Accounts.update_user_info/2`
+> over `User.info_changeset/2`. Differences: it takes no actor and records no
+> audit event, and it doesn't catch a user deleted mid-write, which the route
+> should answer 409 `concurrent_edit`, as `Accounts.update_user/3` does.
 
 ## Delete a user
 
