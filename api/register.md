@@ -49,7 +49,7 @@ libraries, background workers, "no public endpoint" notes) are left out.
 | `GET /me` | Private | [`GET /api/me`](./account.md#get-the-current-user) | Memberships come from `GET /api/projects`; permissions from `GET /api/projects/:id`. |
 | `POST /users` | Partial | [`POST /api/users`](./users.md#create-a-user), [`POST /api/users/register`](./account.md#register) | Sign-up without a token goes to `/api/users/register`, which only works where the instance has a registration extension. |
 | `POST /setup/superuser` | Partial | [`POST /api/users`](./users.md#create-a-user) | The first account on a new instance becomes the superuser. |
-| `PATCH /me` | Partial | [`PATCH /api/users/:id`](./users.md#update-a-user) | `first_name`, `last_name` and `contact_preference`, on your own id, with either token. |
+| `PATCH /me` | Partial | [`PATCH /api/users/:id`](./users.md#update-a-user) | A person can't update themselves yet. |
 | `PUT /me/password` | Partial | [`PATCH /api/users/:id`](./users.md#update-a-user) | `password`, with a stepped-up session. |
 | `POST /password_resets` | Private | [`POST /api/password_resets`](./account.md#request-a-password-reset) | |
 | `POST /password_resets/:token` | Private | [`PUT /api/password_resets/:token`](./account.md#reset-a-password) | |
