@@ -135,7 +135,7 @@ Codes that can appear on an entry in `errors`:
 `deleting`, `discovery_failed`, `duplicate`, `exceeds_limit`, `exclusive`,
 `format`, `invalid`, `missing_trigger_edge`, `mismatch`, `must_accept`,
 `no_access`, `not_allowed`, `not_found`, `not_supported`, `one_body`,
-`one_enabled`, `one_enabled_edge`, `one_owner`, `out_of_range`, `required`,
+`one_admin`, `one_enabled`, `one_enabled_edge`, `one_owner`, `out_of_range`, `required`,
 `reserved`, `scope_not_granted`, `single_target`, `storage_failed`, `taken`,
 `too_long`, `too_many_secrets`, `too_short`, `tree_branch_conflict`,
 `trigger_removed`, `type`, `unchanged`, `unknown_key`, `wrong_length`.

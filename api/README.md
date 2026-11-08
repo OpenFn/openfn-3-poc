@@ -14,6 +14,7 @@ says otherwise.
 - [Account](./account.md): signing in, and a person's own account, MFA and tokens
 - [Conventions](./conventions.md): identifiers, content types, idempotent writes, pagination, dates
 - [Errors](./errors.md): problem documents, order of checks, response and entry codes, unknown routes
+- [Organizations](./organizations.md): organizations and their members
 - [Projects](./projects.md): projects, members and sandboxes
 - [Credentials](./credentials.md)
 - [Collections](./collections.md): collections and their items
@@ -83,6 +84,10 @@ follows it, not the other way round.
 | `DELETE` | [`/api/me/identities/:id`](./account.md) | Planned |
 | `DELETE` | [`/api/me/github_connection`](./account.md) | Private |
 | `GET` | [`/api/me/github_repos`, `/api/me/github_repos/:owner/:name/branches`](./account.md) | Private |
+| `GET`, `POST` | [`/api/organizations`](./organizations.md) | Planned |
+| `GET`, `PATCH` | [`/api/organizations/:id`](./organizations.md) | Planned |
+| `GET`, `POST` | [`/api/organizations/:organization_id/members`](./organizations.md) | Planned |
+| `PATCH`, `DELETE` | [`/api/organizations/:organization_id/members/:user_id`](./organizations.md) | Planned |
 | `GET` | [`/api/projects`](./projects.md) | Public |
 | `GET` | [`/api/projects/:id`](./projects.md) | Public |
 | `PUT` | [`/api/projects/:id`](./projects.md) | Public |

@@ -212,6 +212,7 @@ if it held every role, but it never appears as a project member.
 | `projects:write` | Reading, creating and changing projects, and reading what's in them: workflows, jobs, work orders, runs and log lines. Also creating and changing workflows. |
 | `credentials:write` | Reading, creating and replacing credentials, and which projects they're linked to |
 | `collections:write` | Reading, creating and renaming collections |
+| `organizations:write` | Planned. Reading, creating and renaming organizations, and adding, changing and removing their members |
 
 Projects, credentials and collections have no read scopes. Their `GET` routes
 need the same `:write` scope as their `PUT` routes.
