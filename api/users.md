@@ -1,15 +1,16 @@
 # Users
 
-Tokens: service account only. `users:read` for `GET`, `users:write` for `POST`
-and `PATCH`. A service account without the grant gets 403
-`insufficient_scope` naming it, and so does a GitHub sync token. A personal
-access token, a superuser's included, gets 403 `forbidden` on every route,
-whether or not the user exists and whether or not the id is a UUID.
+Tokens: service account, except that a person may update their own account
+(see [Update a user](#update-a-user)). `users:read` for `GET`, `users:write`
+for `POST` and `PATCH`. A service account without the grant gets 403
+`insufficient_scope` naming it, and so does a GitHub sync token. Anywhere else,
+a personal access token or session token, a superuser's included, gets 403
+`forbidden`, whether or not the user exists and whether or not the id is a UUID.
 
-Personal access token support is planned. Access will depend on the user's
-instance role: today, only superusers can manage users, in the app. Planned
-additional scope on some sections lets people create and change their own
-account.
+Wider personal access token support is planned. Access will depend on the
+user's instance role: today, only superusers can manage other users, in the
+app. Planned additional scope on some sections lets people create their own
+account and change more of it.
 
 ## The user object
 
@@ -117,6 +118,13 @@ an `unknown_key` entry. `confirmed` only ever confirms. A new role or password
 signs the user out of every browser session. Answers 200 with the user. A user
 deleted while the request runs answers 409 `concurrent_edit`.
 
+A person may update their own account, on their own id, with a personal access
+token or a session token. They can change `first_name`, `last_name` and
+`contact_preference` (`critical` or `any`: which emails they get). Any other
+key, `role` included, answers 422 with an `unknown_key` entry, like the rest.
+None of these signs them out, and the change is recorded with the person as
+the actor. Any other id answers them 403 `forbidden`, as above.
+
 Planned additional scope:
 
 - `support_user` and `disabled`. Disabling a user signs them out of every
@@ -126,10 +134,7 @@ Planned additional scope:
   timestamp, or `null`), as Lightning's user form lets a superuser do. Setting
   `scheduled_deletion` revokes the user's access tokens. A superuser's
   `scheduled_deletion` is always `null`.
-- A person can update their own account, with a personal access token or a
-  session token:
-  - `first_name`, `last_name` and `contact_preference` (`critical` or `any`:
-    which emails they get), with either token.
+- A person can change more of their own account:
   - `email`, with a session token stepped up. It isn't changed until the person
     follows the link sent to the new address; until then it is
     `pending_email` on `GET /api/me`. The old address is told.
