@@ -135,10 +135,18 @@ Planned additional scope:
     and a change to their names is recorded with the person as the actor.
   - `email`, with a session token stepped up. It isn't changed until the person
     follows the link sent to the new address; until then it is
-    `pending_email` on `GET /api/me`. The old address is told.
-  - `password`, with a session token stepped up. It ends every other session
-    and revokes their personal access tokens. An account that only signs in
-    through a provider can set its first password this way.
+    `pending_email` on `GET /api/me`. The old address is told. The address
+    they already have answers 422 with an `unchanged` entry, and one someone
+    else holds a `taken` entry.
+  - `password`, with a session token stepped up. It ends every other session,
+    keeping the one that sent it, and revokes their personal access tokens and
+    password reset links. The password they already have changes nothing. An
+    account that only signs in through a provider can set its first password
+    this way.
+
+  Sending `email` or `password` on a personal access token answers 403
+  `forbidden`, and on a session that hasn't stepped up 403
+  `step_up_required`, before the body is checked.
   - `consent` and `ai_disclaimer_accepted` (`true`), with a session token. On
     instances with a consent extension, `consent` holds the person's choices.
   - `experimental_features` (`true` or `false`), with either token. It is the
@@ -152,6 +160,13 @@ Planned additional scope:
 > over `User.info_changeset/2`. Differences: it takes no actor and records no
 > audit event, and it doesn't catch a user deleted mid-write, which the route
 > should answer 409 `concurrent_edit`, as `Accounts.update_user/3` does.
+>
+> It changes the email with `Accounts.request_email_update/2`, after
+> `Accounts.validate_change_user_email/2` checks the current password, and the
+> password with `Accounts.update_user_password/3`. Differences: both ask for
+> the current password where the route takes a stepped-up session, and a new
+> password ends every session, the one that changed it included, rather than
+> every other one.
 
 ## Delete a user
 
