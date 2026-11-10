@@ -21,7 +21,8 @@ export default function ProjectGate() {
   if (mfa === true) return <Navigate to="/mfa_required" replace />;
   return (
     <AsyncBoundary status={status} titleAs="h1">
-      <Outlet />
+      {/* Switching project starts the page afresh, as Lightning's full page load does. */}
+      <Outlet key={projectId} />
     </AsyncBoundary>
   );
 }
