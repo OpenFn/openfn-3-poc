@@ -229,9 +229,14 @@ apart.
   work orders). Lightning's History filters by run status and run creation
   date (`filters[run_status][]`, `filters[run_date_after]`,
   `filters[run_date_before]`) and by error signature (exit reason, error
-  type and job), which the Error Signatures page links to. The list takes
-  none of them. Would need `run_state`, `run_inserted_after`/`_before` and
-  an `error_signature` filter. Replica: reads them from the URL and shows
+  type and job). The list takes none of them, though the server already
+  groups failures by those three fields for Workflow Health
+  (`health/failures`, api/workflows.md), and Health links each one to
+  History with `filters[error_signature_*]`: that link lands on every work
+  order, not the ones that failed that way. `GET /api/runs` filters runs by
+  `state` and dates, but not the work order list. Would need `run_state`,
+  `run_inserted_after`/`_before`, and `exit_reason`, `error_type` and
+  `job_id` filters matching a `health/failures` row. Replica: reads them from the URL and shows
   their chips, but doesn't send them, so the rows aren't narrowed by them.
 - **History: a work order's runs come without their steps**
   (api/work-orders.md, `include=runs`; api/runs.md). Runs come as
