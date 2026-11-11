@@ -17,7 +17,7 @@ export { default as AuthRegisterPage } from "./pages/auth/register/AuthRegisterP
 export { default as ChannelRequestShowPage } from "./pages/history/channel-request/ChannelRequestShowPage";
 export { default as DataclipShowPage } from "./pages/history/dataclip/DataclipShowPage";
 export { default as HistoryChannelLogsPage } from "./pages/history/HistoryChannelLogsPage";
-export { default as HistoryWorkOrdersPage } from "./pages/history/HistoryWorkOrdersPage";
+export { default as HistoryWorkOrdersPage } from "./pages/history/work-orders/HistoryWorkOrdersPage";
 export { default as RunShowPage } from "./pages/history/RunShowPage";
 export { default as ProjectSettingsPage } from "./pages/project-settings/ProjectSettingsPage";
 export { default as BackupCodesPage } from "./pages/profile/backup-codes/BackupCodesPage";
@@ -48,7 +48,7 @@ export type { AuthRegisterPageProps } from "./pages/auth/register/AuthRegisterPa
 export type { ChannelRequestShowPageProps } from "./pages/history/channel-request/ChannelRequestShowPage";
 export type { DataclipShowPageProps } from "./pages/history/dataclip/DataclipShowPage";
 export type { HistoryChannelLogsPageProps } from "./pages/history/HistoryChannelLogsPage";
-export type { HistoryWorkOrdersPageProps } from "./pages/history/HistoryWorkOrdersPage";
+export type { HistoryWorkOrdersPageProps } from "./pages/history/work-orders/HistoryWorkOrdersPage";
 export type { RunShowPageProps } from "./pages/history/RunShowPage";
 export type { ProjectSettingsPageProps } from "./pages/project-settings/ProjectSettingsPage";
 export type { BackupCodesPageProps } from "./pages/profile/backup-codes/BackupCodesPage";

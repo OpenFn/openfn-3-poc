@@ -19,6 +19,7 @@ import { mfaRoutes, resetMfa } from "./mfa";
 import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
+import { workOrderRoutes } from "./workOrders";
 
 export type { Problem } from "./answers";
 export { FAKE_BACKUP_CODE, FAKE_CONFIRM_TOKEN, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
@@ -68,6 +69,7 @@ const routes: Record<string, Handler> = {
   ...mfaRoutes,
   ...instanceRoutes,
   ...userRoutes,
+  ...workOrderRoutes,
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */
