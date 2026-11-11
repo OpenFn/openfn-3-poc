@@ -225,6 +225,20 @@ apart.
   api/errors.md). Replica: No Access for a 403, Not Found when `project_id`
   isn't the URL's project.
 
+- **History: no filter on a work order's runs** (api/work-orders.md, List
+  work orders). Lightning's History filters by run status and run creation
+  date (`filters[run_status][]`, `filters[run_date_after]`,
+  `filters[run_date_before]`) and by error signature (exit reason, error
+  type and job), which the Error Signatures page links to. The list takes
+  none of them. Would need `run_state`, `run_inserted_after`/`_before` and
+  an `error_signature` filter. Replica: reads them from the URL and shows
+  their chips, but doesn't send them, so the rows aren't narrowed by them.
+- **History: a work order has no workflow name.** The list sends
+  `workflow_id` only. Would need `workflow_name` on a work order, or
+  `include=workflow`. Replica: takes the name from the project's workflows
+  list, which it loads anyway for the workflow filter; a deleted workflow
+  shows "Untitled".
+
 ## Superuser access (api/projects.md, api/collections.md, api/users.md)
 
 - **Needed: the planned superuser scope on `GET /api/projects` must be

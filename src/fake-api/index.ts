@@ -36,6 +36,7 @@ const seed = (): StoredToken[] =>
 
 let tokens = seed();
 const failures = new Map<string, Problem>();
+const sent: string[] = [];
 
 // Lightning's `mask_token`: "..." and the last ten characters.
 const mask = (token: string) => "..." + token.slice(-10);
@@ -87,6 +88,7 @@ function match(method: string, path: string): [string, Record<string, string>] |
 
 /** Answers a request as Lightning would. Same arguments as `fetch`, for paths under /api. */
 export async function fakeFetch(input: string, init: RequestInit = {}): Promise<Response> {
+  sent.push(`${init.method ?? "GET"} ${input}`);
   await new Promise((resolve) => setTimeout(resolve, WAIT_MS));
   const [path, search = ""] = input.split("?") as [string, string?];
   const found = match(init.method ?? "GET", path);
@@ -102,6 +104,11 @@ export async function fakeFetch(input: string, init: RequestInit = {}): Promise<
   }
   const body = typeof init.body === "string" ? (JSON.parse(init.body) as Body) : {};
   return routes[key]!(params, body, new URLSearchParams(search));
+}
+
+/** For tests: every request since the last reset, as `"GET /api/…?…"`, oldest first. */
+export function sentRequests() {
+  return [...sent];
 }
 
 /** For stories and tests: the next request to this route (`"POST /api/me/tokens"`) is refused with this problem. */
@@ -122,4 +129,5 @@ export function resetFakeApi() {
   setNeedsSetup(false);
   setAllowSignup(false);
   failures.clear();
+  sent.length = 0;
 }

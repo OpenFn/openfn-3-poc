@@ -93,10 +93,11 @@ export default function HistoryWorkOrdersPageReplica() {
   const { canRunWorkflow, canEditDataRetention } = usePermissions(project);
   const toast = useToast();
   const [changes, setChanges] = useState<Changes>({ runs: {}, workOrders: {}, runStates: {} });
+  const [now] = useState(Date.now);
   if (!project) return <Navigate to="/projects" replace />;
 
   const workflows = workflowsIn(projectId).map((w) => ({ id: w.id, name: w.name, jobs: workflowJobs(w.id) }));
-  const parsed = filtersFrom(params);
+  const parsed = filtersFrom(params, now);
   const sig = parsed.errorSignature;
   // RunLive.Index names the signature's job (`error_signature_job_name`).
   const filters = sig?.jobId

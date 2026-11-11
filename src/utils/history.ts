@@ -135,9 +135,10 @@ function isoOf(value: string | null) {
 
 /**
  * The URL's `filters[…]`, or Lightning's `init_filters` when it has none:
- * runs logs searched, last activity in the past 30 days.
+ * runs logs searched, last activity in the 30 days before `now`. Pass the
+ * same `now` while the page is open, as Lightning works it out once on mount.
  */
-export function filtersFrom(params: URLSearchParams): WorkOrderFilters {
+export function filtersFrom(params: URLSearchParams, now: number): WorkOrderFilters {
   const bare = ![...params.keys()].some((k) => k.startsWith("filters["));
   const get = (key: string) => params.get(`filters[${key}]`) || null;
   const on = (key: string) => get(key) === "true";
@@ -147,7 +148,7 @@ export function filtersFrom(params: URLSearchParams): WorkOrderFilters {
     statuses: historyStatuses.map((s) => s.id).filter(on),
     receivedAfter: isoOf(get("wo_date_after")),
     receivedBefore: isoOf(get("wo_date_before")),
-    activityAfter: bare ? new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString() : isoOf(get("date_after")),
+    activityAfter: bare ? new Date(now - 30 * 24 * 3600 * 1000).toISOString() : isoOf(get("date_after")),
     activityBefore: isoOf(get("date_before")),
     runStatuses: params.getAll("filters[run_status][]") as RunState[],
     runCreatedAfter: isoOf(get("run_date_after")),
