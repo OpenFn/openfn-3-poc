@@ -3,7 +3,7 @@
  * state labels, work order selection, History's search in words and as URL
  * params. No fixture access.
  */
-import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
+import type { HistoryWorkflowRef, LogLine, RunDisplayState, RunState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
 import type { SortState } from "@/types/lists";
 import { historySearchFields, historyStatuses } from "@/constants";
 import type { ParamPatch } from "./useUrlParams";
@@ -124,3 +124,40 @@ export function workOrderFilterParams(f: WorkOrderFilters, sort: SortState): Par
     "filters[sort_direction]": sort.direction,
   };
 }
+
+/** A URL date: an ISO string, or a datetime-local value Lightning reads as UTC. */
+function isoOf(value: string | null) {
+  if (!value) return null;
+  const d = new Date(/[zZ]$|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+/**
+ * The URL's `filters[…]`, or Lightning's `init_filters` when it has none:
+ * runs logs searched, last activity in the 30 days before `now`. Pass the
+ * same `now` while the page is open, as Lightning works it out once on mount.
+ */
+export function filtersFrom(params: URLSearchParams, now: number): WorkOrderFilters {
+  const bare = ![...params.keys()].some((k) => k.startsWith("filters["));
+  const get = (key: string) => params.get(`filters[${key}]`) || null;
+  const on = (key: string) => get(key) === "true";
+  const sigReason = get("error_signature_exit_reason");
+  return {
+    workflowId: get("workflow_id"),
+    statuses: historyStatuses.map((s) => s.id).filter(on),
+    receivedAfter: isoOf(get("wo_date_after")),
+    receivedBefore: isoOf(get("wo_date_before")),
+    activityAfter: bare ? new Date(now - 30 * 24 * 3600 * 1000).toISOString() : isoOf(get("date_after")),
+    activityBefore: isoOf(get("date_before")),
+    runStatuses: params.getAll("filters[run_status][]") as RunState[],
+    runCreatedAfter: isoOf(get("run_date_after")),
+    runCreatedBefore: isoOf(get("run_date_before")),
+    workorderId: get("workorder_id"),
+    errorSignature: sigReason
+      ? { exitReason: sigReason, errorType: get("error_signature_error_type"), jobId: get("error_signature_job_id"), jobName: null }
+      : null,
+    searchTerm: get("search_term") ?? "",
+    searchFields: bare ? ["log"] : historySearchFields.map((f) => f.id).filter(on),
+  };
+}
+

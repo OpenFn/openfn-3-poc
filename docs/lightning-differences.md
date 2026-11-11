@@ -157,6 +157,22 @@ goes back to Lightning's way.
   parse, "Run From Here" shows "Fix the JSON input to run". Lightning gives
   no reason.
 
+## History
+
+- **Work orders refresh by asking again, every 5 seconds, while a row on
+  screen is pending or running.** Lightning pushes each change over its
+  socket. Here the list asks the server again and stops once every row on
+  the page has finished; a work order that starts while you look appears on
+  the next load.
+- **The run status, run date and error signature filters don't narrow the
+  rows.** The API has no such filters (docs/api-gaps.md, History). Their
+  chips still show from the URL.
+- **Steps aren't marked as cloned from an earlier run, as having a wiped
+  input, or as belonging to a deleted job.** The API doesn't say
+  (docs/api-gaps.md, History).
+- **For now, rows have no cancel or retry, and bulk actions and export say
+  "Not on the API yet".** They return as the API covers them.
+
 ## Dataclip
 
 - **A dataclip that isn't there, isn't this project's, or has a malformed

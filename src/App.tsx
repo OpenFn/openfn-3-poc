@@ -22,7 +22,7 @@ import SandboxesIndexPage from "./pages/projects/sandboxes/SandboxesIndexPage.qu
 import ChannelsIndexPage from "./pages/projects/channels/ChannelsIndexPage.query";
 import WorkflowEditorPage from "./pages/workflow-editor/WorkflowEditorPage";
 
-import HistoryWorkOrdersPage from "./pages/history/HistoryWorkOrdersPage.replica";
+import HistoryWorkOrdersPage from "./pages/history/work-orders/HistoryWorkOrdersPage.query";
 import HistoryChannelLogsPage from "./pages/history/HistoryChannelLogsPage.replica";
 import ChannelRequestShowPage from "./pages/history/channel-request/ChannelRequestShowPage.query";
 import RunShowPage from "./pages/history/RunShowPage.replica";

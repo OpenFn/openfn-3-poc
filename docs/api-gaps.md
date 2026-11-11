@@ -225,6 +225,36 @@ apart.
   api/errors.md). Replica: No Access for a 403, Not Found when `project_id`
   isn't the URL's project.
 
+- **History: no filter on a work order's runs** (api/work-orders.md, List
+  work orders). Lightning's History filters by run status and run creation
+  date (`filters[run_status][]`, `filters[run_date_after]`,
+  `filters[run_date_before]`) and by error signature (exit reason, error
+  type and job). The list takes none of them, though the server already
+  groups failures by those three fields for Workflow Health
+  (`health/failures`, api/workflows.md), and Health links each one to
+  History with `filters[error_signature_*]`: that link lands on every work
+  order, not the ones that failed that way. `GET /api/runs` filters runs by
+  `state` and dates, but not the work order list. Would need `run_state`,
+  `run_inserted_after`/`_before`, and `exit_reason`, `error_type` and
+  `job_id` filters matching a `health/failures` row. Replica: reads them from the URL and shows
+  their chips, but doesn't send them, so the rows aren't narrowed by them.
+- **History: a work order's runs come without their steps**
+  (api/work-orders.md, `include=runs`; api/runs.md). Runs come as
+  `GET /api/runs/:id` sends them, and steps only from
+  `GET /api/runs/:id/steps`, one request per run. History shows every run's
+  steps when a row opens, and the error signature filter and "Retry from"
+  need them. Would need `include=runs.steps`. A step also doesn't say
+  whether it was cloned from an earlier run, whether its input was wiped,
+  or whether its job was deleted, which Lightning marks. Replica: the fake
+  sends `steps` on each run, outside the contract, and the mapper reads
+  them if they're there, so a real Lightning answer shows runs with no
+  steps. Cloned, wiped and deleted read as "no".
+- **History: a work order has no workflow name.** The list sends
+  `workflow_id` only. Would need `workflow_name` on a work order, or
+  `include=workflow`. Replica: takes the name from the project's workflows
+  list, which it loads anyway for the workflow filter; a deleted workflow
+  shows "Untitled".
+
 ## Superuser access (api/projects.md, api/collections.md, api/users.md)
 
 - **Needed: the planned superuser scope on `GET /api/projects` must be

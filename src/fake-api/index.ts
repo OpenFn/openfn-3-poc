@@ -19,6 +19,7 @@ import { mfaRoutes, resetMfa } from "./mfa";
 import { instanceRoutes, setAllowSignup, setNeedsSetup } from "./instance";
 import { isSteppedUp, refuse, resetSession, sessionRoutes } from "./session";
 import { userRoutes } from "./users";
+import { workOrderRoutes } from "./workOrders";
 
 export type { Problem } from "./answers";
 export { FAKE_BACKUP_CODE, FAKE_CONFIRM_TOKEN, FAKE_MFA_CODE, FAKE_PASSWORD, FAKE_RESET_TOKEN } from "./session";
@@ -35,6 +36,7 @@ const seed = (): StoredToken[] =>
 
 let tokens = seed();
 const failures = new Map<string, Problem>();
+const sent: string[] = [];
 
 // Lightning's `mask_token`: "..." and the last ten characters.
 const mask = (token: string) => "..." + token.slice(-10);
@@ -68,6 +70,7 @@ const routes: Record<string, Handler> = {
   ...mfaRoutes,
   ...instanceRoutes,
   ...userRoutes,
+  ...workOrderRoutes,
 };
 
 /** The route a path matches (`"DELETE /api/me/tokens/:id"`) and its path parameters. */
@@ -85,6 +88,8 @@ function match(method: string, path: string): [string, Record<string, string>] |
 
 /** Answers a request as Lightning would. Same arguments as `fetch`, for paths under /api. */
 export async function fakeFetch(input: string, init: RequestInit = {}): Promise<Response> {
+  sent.push(`${init.method ?? "GET"} ${input}`);
+  if (sent.length > 200) sent.shift(); // History's refresh would grow it for as long as a tab is open.
   await new Promise((resolve) => setTimeout(resolve, WAIT_MS));
   const [path, search = ""] = input.split("?") as [string, string?];
   const found = match(init.method ?? "GET", path);
@@ -100,6 +105,11 @@ export async function fakeFetch(input: string, init: RequestInit = {}): Promise<
   }
   const body = typeof init.body === "string" ? (JSON.parse(init.body) as Body) : {};
   return routes[key]!(params, body, new URLSearchParams(search));
+}
+
+/** For tests: every request since the last reset, as `"GET /api/…?…"`, oldest first. */
+export function sentRequests() {
+  return [...sent];
 }
 
 /** For stories and tests: the next request to this route (`"POST /api/me/tokens"`) is refused with this problem. */
@@ -120,4 +130,5 @@ export function resetFakeApi() {
   setNeedsSetup(false);
   setAllowSignup(false);
   failures.clear();
+  sent.length = 0;
 }
