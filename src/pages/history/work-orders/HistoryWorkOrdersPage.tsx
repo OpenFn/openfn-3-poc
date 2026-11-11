@@ -79,8 +79,8 @@ const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x
  * Inventory view `history-work-orders` (RunLive.Index :index,
  * run_live/index.html.heex): the filter chips, the search, and the work
  * orders table with its bulk actions. The search lives in the URL, as
- * Lightning keeps it; props only, so it can run unchanged in Lightning. The
- * replica's data lives in HistoryWorkOrdersPage.replica.tsx.
+ * Lightning keeps it; props only, so it can run unchanged in Lightning. Its
+ * data comes from HistoryWorkOrdersPage.query.tsx.
  */
 export default function HistoryWorkOrdersPage({
   project,

@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ApiProvider from "@/api/ApiProvider";
 import { failNext, resetFakeApi, sentRequests } from "@/api/testing";
-import { WORK_ORDER_REFRESH_MS } from "@/api/work-orders";
+import { WORK_ORDER_REFRESH_MS } from "@/api/workOrders";
 import { session } from "@/mock-data/users";
 import { ReactRouterAdapter } from "@/routing/ReactRouterAdapter";
 import SessionProvider from "@/session/SessionProvider";

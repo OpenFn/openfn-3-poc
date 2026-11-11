@@ -1,10 +1,9 @@
-import type { RunState } from "@/types/history";
 /**
  * Pure helpers over history records: log filtering, failure counts, run
  * state labels, work order selection, History's search in words and as URL
  * params. No fixture access.
  */
-import type { HistoryWorkflowRef, LogLine, RunDisplayState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
+import type { HistoryWorkflowRef, LogLine, RunDisplayState, RunState, SearchFieldId, WorkOrderFilters, WorkOrderRow } from "@/types/history";
 import type { SortState } from "@/types/lists";
 import { historySearchFields, historyStatuses } from "@/constants";
 import type { ParamPatch } from "./useUrlParams";

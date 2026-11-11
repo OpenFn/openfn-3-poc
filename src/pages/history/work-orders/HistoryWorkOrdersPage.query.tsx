@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useCurrentProject, useProjectPermissions, useProjectTree } from "@/api/projects";
-import { useWorkOrders, WORK_ORDER_PAGE_SIZE, workOrderRow } from "@/api/work-orders";
+import { useWorkOrders, WORK_ORDER_PAGE_SIZE } from "@/api/workOrders";
 import { useWorkflows } from "@/api/workflows";
 import { projectLabel } from "@/components/shell/projectPickerItems";
 import { useCurrentUser } from "@/session/session";
@@ -12,6 +12,9 @@ import HistoryWorkOrdersPage from "./HistoryWorkOrdersPage";
 /** Invocation's `@workorders_count_limit`: the server counts a search no further. */
 const SEARCH_LIMIT = 50;
 const notOnApi = () => Promise.reject(new Error("Not on the API yet"));
+// Both lists, so rows never show "Untitled" while the workflow names load.
+const stateOf = (states: string[]) =>
+  states.every((s) => s === "ready") ? "ready" : states.includes("loading") ? "loading" : "error";
 
 /**
  * HistoryWorkOrdersPage's query, under ProjectGate: the URL's filters in
@@ -33,9 +36,9 @@ export default function HistoryWorkOrdersPageQuery() {
     direction: params.get("filters[sort_direction]") === "asc" ? "asc" : "desc",
   };
   const pageNumber = Math.max(1, Number(params.get("page") ?? "1") || 1);
-  const { status, data } = useWorkOrders(project.id, filters, sort, pageNumber);
-  const { workflows } = useWorkflows(project.id, { key: "name", direction: "asc" });
+  const { status: workflowsStatus, workflows } = useWorkflows(project.id, { key: "name", direction: "asc" });
   const nameOf = (id: string) => workflows.find((w) => w.id === id)?.name ?? "Untitled";
+  const { status, rows, totalEntries } = useWorkOrders(project.id, filters, sort, pageNumber, nameOf);
 
   return (
     <HistoryWorkOrdersPage
@@ -47,9 +50,9 @@ export default function HistoryWorkOrdersPageQuery() {
       // The API sends no jobs per workflow; "Retry from" isn't on the API yet either.
       workflows={workflows.map((w) => ({ id: w.id, name: w.name, jobs: [] }))}
       filters={filters}
-      rows={(data?.data ?? []).map((wo) => workOrderRow(wo, project.id, nameOf))}
-      state={status.state === "ready" ? "ready" : status.state === "loading" ? "loading" : "error"}
-      page={{ number: pageNumber, size: WORK_ORDER_PAGE_SIZE, totalEntries: data?.meta.total_entries ?? 0 }}
+      rows={rows}
+      state={stateOf([status.state, workflowsStatus.state])}
+      page={{ number: pageNumber, size: WORK_ORDER_PAGE_SIZE, totalEntries }}
       sort={sort}
       searchLimit={SEARCH_LIMIT}
       // Hides the row actions until they're on the API.

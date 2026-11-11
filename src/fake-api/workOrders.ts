@@ -2,7 +2,8 @@
 import { findDataclip, stepsOf, workOrdersIn } from "@/mock-data/history";
 import { logsOf, runsOfWorkOrder } from "@/mock-data/history-extra";
 import type { WorkOrder } from "@/mock-data/models/history";
-import { badInclude, json, paged, problem, type Handler, type Problem } from "./answers";
+import { badInclude, forbidden, json, ORIGIN, paged, problem, type Handler, type Problem } from "./answers";
+import { canEnter, findProject } from "./projects";
 
 const STATES = ["rejected", "pending", "running", "success", "failed", "crashed", "cancelled", "killed", "exception", "lost"];
 const SEARCH_FIELDS = ["id", "dataclip_name", "body", "log"];
@@ -18,6 +19,11 @@ function stateOf(state: string) {
 }
 
 const isIso = (v: string) => !Number.isNaN(new Date(v).getTime());
+// `body` and `log` match words starting with the text: each word searched starts a word there.
+const hasWord = (text: string, term: string) => {
+  const words = text.split(/\W+/);
+  return term.split(/\W+/).filter(Boolean).every((t) => words.some((word) => word.startsWith(t)));
+};
 const inRange = (iso: string, after: string | null, before: string | null) => (!after || iso >= after) && (!before || iso <= before);
 
 function searched(wo: WorkOrder, term: string, fields: string[]) {
@@ -26,8 +32,8 @@ function searched(wo: WorkOrder, term: string, fields: string[]) {
   return fields.some((field) => {
     if (field === "id") return [wo.id, ...runs.flatMap((r) => [r.id, ...stepsOf(r).map((s) => s.id)])].some((id) => id.toLowerCase().includes(term));
     if (field === "dataclip_name") return (dataclip?.name ?? "").toLowerCase().includes(term);
-    if (field === "body") return JSON.stringify(dataclip?.body ?? "").toLowerCase().includes(term);
-    return runs.some((r) => logsOf(r).some((l) => l.message.toLowerCase().includes(term)));
+    if (field === "body") return hasWord(JSON.stringify(dataclip?.body ?? "").toLowerCase(), term);
+    return runs.some((r) => logsOf(r).some((l) => hasWord(l.message.toLowerCase(), term)));
   });
 }
 
@@ -45,35 +51,54 @@ function resource(wo: WorkOrder, withRuns: boolean) {
       dataclip_id: wo.dataclipId,
       dataclip_wiped: !!findDataclip(wo.dataclipId)?.wiped,
     },
-    // Planned scope: include=runs, newest first, each as GET /api/runs/:id would send it.
+    // Planned scope: include=runs, newest first, each as GET /api/runs/:id sends it (inserted_at planned).
     ...(withRuns && {
-      runs: runsOfWorkOrder(wo).map((r) => ({
-        id: r.id,
-        state: r.state,
-        inserted_at: r.insertedAt,
-        started_at: r.startedAt,
-        finished_at: r.finishedAt,
-        steps: stepsOf(r).map((s) => ({
-          id: s.id,
-          job_id: s.jobId,
-          job_name: s.jobName,
-          exit_reason: s.exitReason,
-          error_type: s.errorType ?? null,
-          inserted_at: s.insertedAt ?? s.startedAt,
-          started_at: s.startedAt,
-          finished_at: s.finishedAt,
-          input_wiped: !!findDataclip(s.inputDataclipId)?.wiped,
-        })),
-      })),
+      runs: runsOfWorkOrder(wo).map((r) => {
+        const steps = stepsOf(r);
+        return {
+          type: "runs",
+          id: r.id,
+          attributes: {
+            state: r.state,
+            started_at: r.startedAt,
+            finished_at: r.finishedAt,
+            priority: "normal",
+            error_type: steps.findLast((s) => s.errorType)?.errorType ?? null,
+            inserted_at: r.insertedAt,
+          },
+          // Not in api/ (docs/api-gaps.md, History): each run's steps, as GET /api/runs/:id/steps sends them (job_name planned).
+          steps: steps.map((s) => ({
+            type: "steps",
+            id: s.id,
+            attributes: {
+              job_id: s.jobId,
+              job_name: s.jobName,
+              exit_reason: s.exitReason,
+              error_type: s.errorType ?? null,
+              started_at: s.startedAt,
+              finished_at: s.finishedAt,
+              input_dataclip_id: s.inputDataclipId,
+              output_dataclip_id: s.outputDataclipId,
+            },
+            relationships: {},
+            links: {},
+          })),
+          relationships: {},
+          links: { self: `${ORIGIN}/api/runs/${r.id}` },
+        };
+      }),
     }),
     relationships: {},
-    links: { self: `http://localhost:4000/api/work_orders/${wo.id}` },
+    links: { self: `${ORIGIN}/api/work_orders/${wo.id}` },
   };
 }
 
 export const workOrderRoutes: Record<string, Handler> = {
   // Public. last_activity_*, search, search_fields, sort and include=runs are planned scope.
   "GET /api/projects/:project_id/work_orders": ({ project_id }, _body, query) => {
+    // Checked before the filters.
+    const project = findProject(project_id!);
+    if (!project || !canEnter(project)) return forbidden();
     const refused = badInclude(query, ["runs"]);
     if (refused) return refused;
     const errors: NonNullable<Problem["errors"]> = [];
@@ -102,6 +127,8 @@ export const workOrderRoutes: Record<string, Handler> = {
           (!states.length || states.includes(stateOf(wo.state))) &&
           inRange(wo.insertedAt, iso("inserted_after"), iso("inserted_before")) &&
           inRange(wo.lastActivity, iso("last_activity_after"), iso("last_activity_before")) &&
+          // The fixtures keep no updated_at; the fake sends last_activity for it.
+          inRange(wo.lastActivity, iso("updated_after"), iso("updated_before")) &&
           (!term || searched(wo, term, fields))
       )
       .sort((a, b) => (sort.startsWith("-") ? -1 : 1) * a[field].localeCompare(b[field]));

@@ -167,6 +167,9 @@ goes back to Lightning's way.
 - **The run status, run date and error signature filters don't narrow the
   rows.** The API has no such filters (docs/api-gaps.md, History). Their
   chips still show from the URL.
+- **Steps aren't marked as cloned from an earlier run, as having a wiped
+  input, or as belonging to a deleted job.** The API doesn't say
+  (docs/api-gaps.md, History).
 - **For now, rows have no cancel or retry, and bulk actions and export say
   "Not on the API yet".** They return as the API covers them.
 

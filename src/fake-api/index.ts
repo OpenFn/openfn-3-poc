@@ -89,6 +89,7 @@ function match(method: string, path: string): [string, Record<string, string>] |
 /** Answers a request as Lightning would. Same arguments as `fetch`, for paths under /api. */
 export async function fakeFetch(input: string, init: RequestInit = {}): Promise<Response> {
   sent.push(`${init.method ?? "GET"} ${input}`);
+  if (sent.length > 200) sent.shift(); // History's refresh would grow it for as long as a tab is open.
   await new Promise((resolve) => setTimeout(resolve, WAIT_MS));
   const [path, search = ""] = input.split("?") as [string, string?];
   const found = match(init.method ?? "GET", path);

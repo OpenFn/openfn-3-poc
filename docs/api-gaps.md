@@ -233,6 +233,17 @@ apart.
   none of them. Would need `run_state`, `run_inserted_after`/`_before` and
   an `error_signature` filter. Replica: reads them from the URL and shows
   their chips, but doesn't send them, so the rows aren't narrowed by them.
+- **History: a work order's runs come without their steps**
+  (api/work-orders.md, `include=runs`; api/runs.md). Runs come as
+  `GET /api/runs/:id` sends them, and steps only from
+  `GET /api/runs/:id/steps`, one request per run. History shows every run's
+  steps when a row opens, and the error signature filter and "Retry from"
+  need them. Would need `include=runs.steps`. A step also doesn't say
+  whether it was cloned from an earlier run, whether its input was wiped,
+  or whether its job was deleted, which Lightning marks. Replica: the fake
+  sends `steps` on each run, outside the contract, and the mapper reads
+  them if they're there, so a real Lightning answer shows runs with no
+  steps. Cloned, wiped and deleted read as "no".
 - **History: a work order has no workflow name.** The list sends
   `workflow_id` only. Would need `workflow_name` on a work order, or
   `include=workflow`. Replica: takes the name from the project's workflows
