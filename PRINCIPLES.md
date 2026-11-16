@@ -16,7 +16,8 @@ towards ([openfn-ia-demo](https://github.com/brandonjackson/openfn-ia-demo)),
 and it wins on looks and words where it differs from Lightning. We take what
 he designed, not how he built it: every piece is rebuilt by these principles.
 Lightning still tells us what a page does, so the same scenario tests pass on
-both. The new API (`api/`) decides the data's shapes; where a page needs
+both. The new API (the spec in
+lightning-api-spec) decides the data's shapes; where a page needs
 something the API doesn't send, that's a change to the contract, not a
 workaround in the page. Every place we change or drop something Lightning
 does is listed in

@@ -2,7 +2,8 @@
 
 The frontend that replaces Lightning's LiveView UI, decoupled from its
 backend. It started as a page-by-page React replica of Lightning; it now
-moves towards Brandon's design and the new API (`api/`), page by page as each
+moves towards Brandon's design and the new API (the spec in
+lightning-api-spec), page by page as each
 is worked on (PRINCIPLES.md "Where the design comes from"). Built with React,
 TypeScript, Vite, Tailwind 4.
 
@@ -20,7 +21,7 @@ Lightning touches one wrapper file and nothing else (see The data seam).
 | Choosing or changing a colour, or a theme | [docs/colour.md](./docs/colour.md): the roles, what a theme may change, when to add a role |
 | Building a component or page Brandon has designed | His version in [openfn-ia-demo](https://github.com/brandonjackson/openfn-ia-demo) and its story first. Rebuild it by PRINCIPLES.md, never by copying his code |
 | Changing or dropping something Lightning does | [docs/lightning-differences.md](./docs/lightning-differences.md): it may already be on purpose; if not, add a line, with why |
-| Shaping data | `api/`: the contract with Lightning |
+| Shaping data | The API spec in [lightning-api-spec](https://github.com/OpenFn/lightning-api-spec), cloned beside this repo: `spec/` is the contract with Lightning, `notes/api-gaps.md` what pages need that it lacks. Anything here that says `api/` means its `spec/` |
 
 `.claude/rules/` holds the rules for one kind of file (tests, stories, mock
 data, comments, lint) and loads by itself when you touch one.
